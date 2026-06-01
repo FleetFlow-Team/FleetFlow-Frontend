@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow - Dispatcher Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel="stylesheet" href="../style/base.css">
+    
+    <link rel="stylesheet" href="../style/pages/dispatcher.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar custom-navbar fixed-top">
+            <div class="container-base h-100 position-relative">
+                
+                <a class="navbar-brand brand-overflow" href="#">
+                    <img src="../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
+                </a>
+
+                <div class="navbar-slogan d-none d-md-block">
+                    Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
+                </div>
+
+                <div class="user-profile">
+                    <div class="notification-bell">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge" id="notiCount">3</span>
+                    </div>
+                    
+                    <div class="d-none d-sm-block text-end ms-2">
+                        <div class="fw-bold fs-6 lh-1">Nguyễn Điều Phối</div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem">Dispatcher</div>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=1a1c1a&color=fff" alt="Avatar" />
+                </div>
+                
+            </div>
+        </nav>
+    </header>
+
+    <div class="wrapper">
+        <aside class="sidebar shadow-sm">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="switchTab('tab-dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
+                <li><a href="#" onclick="switchTab('tab-approvals', this)"><i class="fa-solid fa-clipboard-list"></i> Phê duyệt đơn <span class="badge bg-danger ms-auto rounded-pill" id="approvalCount">2</span></a></li>
+                <li><a href="#" onclick="switchTab('tab-gps', this)"><i class="fa-solid fa-map-location-dot"></i> Giám sát GPS</a></li>
+                <li><a href="#" onclick="switchTab('tab-incidents', this)"><i class="fa-solid fa-triangle-exclamation"></i> Hotline & Sự cố <span class="badge bg-danger ms-auto rounded-pill">1</span></a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            
+            <section id="tab-dashboard" class="tab-section active">
+                <h4 class="fw-bold mb-4 text-dark">Tổng quan vận hành</h4>
+                <div class="row g-4 mb-4">
+                    <div class="col-md-4"><div class="stat-card border-success border-start border-4"><div><p class="text-muted small fw-bold text-uppercase mb-1">Xe đang chạy</p><h3 class="fw-bold m-0 text-dark">24</h3></div><div class="stat-icon bg-icon-green"><i class="fa-solid fa-car"></i></div></div></div>
+                    <div class="col-md-4"><div class="stat-card border-primary border-start border-4"><div><p class="text-muted small fw-bold text-uppercase mb-1">Đơn chờ duyệt</p><h3 class="fw-bold m-0 text-dark">02</h3></div><div class="stat-icon bg-icon-blue"><i class="fa-solid fa-clipboard-check"></i></div></div></div>
+                    <div class="col-md-4"><div class="stat-card border-danger border-start border-4"><div><p class="text-muted small fw-bold text-uppercase mb-1">Sự cố & Tranh chấp</p><h3 class="fw-bold m-0 text-danger">01</h3></div><div class="stat-icon bg-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div></div></div>
+                </div>
+            </section>
+
+            <section id="tab-approvals" class="tab-section">
+                <h4 class="fw-bold mb-1 text-dark">Đơn đặt xe chờ duyệt</h4>
+                <p class="text-muted small mb-4">Kiểm tra thông tin lộ trình trước khi kích hoạt luồng phát sóng tìm tài xế.</p>
+                <div class="table-responsive table-custom">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Mã Booking</th>
+                                <th>Khách hàng</th>
+                                <th>Lộ trình & Thời gian</th>
+                                <th>Dòng xe</th>
+                                <th class="text-end">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="row-bk001">
+                                <td class="fw-bold text-primary">#BK-001</td>
+                                <td><div class="fw-bold">Lê Văn B</div><div class="small text-muted">0912 345 678</div></td>
+                                <td>
+                                    <div class="fw-medium text-dark">Hồ Chí Minh <i class="fa-solid fa-arrow-right mx-1 text-muted small"></i> Vũng Tàu</div>
+                                    <div class="small text-muted mt-1"><i class="fa-regular fa-clock me-1"></i> 14:00 | 25/10/2026</div>
+                                </td>
+                                <td><span class="badge bg-light text-dark border">7 Chỗ (SUV)</span></td>
+                                <td class="text-end">
+                                    <button class="btn-action btn-detail me-1" data-bs-toggle="modal" data-bs-target="#bookingDetailModal"><i class="fa-solid fa-eye"></i> Chi tiết</button>
+                                    <button class="btn-action btn-approve me-1" onclick="approveBooking('row-bk001')">Phát sóng</button>
+                                    <button class="btn-action btn-reject" onclick="rejectBooking('row-bk001')">Từ chối</button>
+                                </td>
+                            </tr>
+                            <tr id="row-bk002">
+                                <td class="fw-bold text-primary">#BK-002</td>
+                                <td><div class="fw-bold">Trần Thị C</div><div class="small text-muted">0988 777 666</div></td>
+                                <td>
+                                    <div class="fw-medium text-dark">Hồ Chí Minh <i class="fa-solid fa-arrow-right mx-1 text-muted small"></i> Đà Lạt</div>
+                                    <div class="small text-muted mt-1"><i class="fa-regular fa-clock me-1"></i> 06:00 | 26/10/2026</div>
+                                </td>
+                                <td><span class="badge bg-light text-dark border">16 Chỗ (Van)</span></td>
+                                <td class="text-end">
+                                    <button class="btn-action btn-detail me-1" data-bs-toggle="modal" data-bs-target="#bookingDetailModal"><i class="fa-solid fa-eye"></i> Chi tiết</button>
+                                    <button class="btn-action btn-approve me-1" onclick="approveBooking('row-bk002')">Phát sóng</button>
+                                    <button class="btn-action btn-reject" onclick="rejectBooking('row-bk002')">Từ chối</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="tab-gps" class="tab-section">
+                <h4 class="fw-bold mb-4 text-dark">Trung tâm Giám sát Hành trình</h4>
+                <div class="map-layout">
+                    <div class="map-view shadow-sm">
+                        <div class="position-absolute top-50 start-50 translate-middle text-muted fw-bold fs-5 text-center">
+                            <i class="fa-solid fa-satellite-dish fs-1 mb-2 text-primary"></i><br>
+                            Khu vực nhúng iframe Google Maps API
+                        </div>
+                        <div class="map-pin active" style="top: 30%; left: 40%;" title="Tín hiệu tốt"><i class="fa-solid fa-car"></i></div>
+                        <div class="map-pin lost" style="top: 60%; left: 70%;" title="Mất tín hiệu (90s)"><i class="fa-solid fa-car"></i></div>
+                    </div>
+                    
+                    <div class="vehicle-list shadow-sm">
+                        <div class="vehicle-list-header">Danh sách xe đang chạy (24)</div>
+                        <div class="overflow-auto" style="height: 100%;">
+                            <div class="vehicle-item border-start border-4 border-success">
+                                <div><div class="fw-bold text-dark">51H-123.45</div><div class="small text-muted">Tài xế: Nguyễn Trọng A</div></div>
+                                <div class="text-end"><span class="status-dot dot-green"></span><span class="small text-success fw-bold">Trực tuyến</span></div>
+                            </div>
+                            <div class="vehicle-item border-start border-4 border-danger bg-danger bg-opacity-10">
+                                <div><div class="fw-bold text-dark">51G-987.65</div><div class="small text-muted">Tài xế: Trần Văn B</div></div>
+                                <div class="text-end"><span class="status-dot dot-red"></span><span class="small text-danger fw-bold">Mất tín hiệu</span></div>
+                            </div>
+                            <div class="vehicle-item border-start border-4 border-success">
+                                <div><div class="fw-bold text-dark">51K-555.22</div><div class="small text-muted">Tài xế: Lê Tuấn C</div></div>
+                                <div class="text-end"><span class="status-dot dot-green"></span><span class="small text-success fw-bold">Trực tuyến</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-incidents" class="tab-section">
+                <h4 class="fw-bold mb-4 text-dark">Tiếp nhận Sự cố & Tranh chấp</h4>
+
+                <div class="sos-alert shadow-sm mb-5" id="sosBox">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold text-danger mb-1"><i class="fa-solid fa-bell-concierge fa-shake me-2"></i>Cuộc gọi khẩn cấp (Hotline)!</h5>
+                            <p class="m-0 text-dark"><strong>Hành trình: #BK-888 (Xe 51G-987.65)</strong> | Tài xế báo cáo nổ lốp trên cao tốc.</p>
+                            <p class="m-0 text-muted small mt-1">Thời gian phát tín hiệu: 10:05 AM (Vừa xong)</p>
+                        </div>
+                        <button class="btn btn-danger fw-bold shadow-sm px-4 py-2" onclick="handleSOS()">Tiếp nhận xử lý</button>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-dark text-uppercase small mb-3">Xử lý khiếu nại / Tranh chấp phụ phí</h6>
+                <div class="table-responsive table-custom shadow-sm">
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th>Chuyến đi</th>
+                                <th>Bên khiếu nại</th>
+                                <th>Nội dung sự việc</th>
+                                <th>Trạng thái tài chính</th>
+                                <th class="text-end">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="row-dispute1">
+                                <td class="fw-bold text-primary">#BK-555</td>
+                                <td><span class="badge bg-secondary">Khách hàng</span></td>
+                                <td>Khách phản ánh tài xế thu khống phí bến bãi 100.000đ. Biên lai chụp bị mờ.</td>
+                                <td><span class="badge bg-warning text-dark"><i class="fa-solid fa-snowflake me-1"></i>Đang đóng băng</span></td>
+                                <td class="text-end">
+                                    <button class="btn-action btn-detail" data-bs-toggle="modal" data-bs-target="#disputeModal">Giải quyết</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div class="modal fade" id="bookingDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-bottom-0 pb-0">
+                    <h5 class="fw-bold text-dark mb-0">Chi tiết Booking #BK-001</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="bg-light p-3 rounded-3 mb-3 border">
+                        <div class="fw-bold text-dark mb-2">Thông tin Khách hàng</div>
+                        <div class="small">Họ tên: Lê Văn B</div>
+                        <div class="small">SĐT: 0912 345 678</div>
+                        <div class="small">Ghi chú: Khách mang theo nhiều hành lý.</div>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-2">
+                        <span class="small text-muted">Giá cước cơ bản:</span>
+                        <span class="fw-medium text-dark">1,000,000đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between border-bottom pb-2 mb-3">
+                        <span class="small text-muted">Phụ phí cao điểm (Lễ/Cuối tuần):</span>
+                        <span class="fw-medium text-danger">+ 200,000đ</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold">Tổng thanh toán dự kiến:</span>
+                        <span class="fw-bold text-success fs-5">1,200,000đ</span>
+                    </div>
+                </div>
+                <div class="modal-footer border-top-0 pt-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal" onclick="approveBooking('row-bk001')">Phát sóng đơn</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="disputeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header">
+                    <h5 class="fw-bold text-danger mb-0">Xử lý Tranh chấp #BK-555</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label fw-bold small">Hướng giải quyết</label>
+                    <select class="form-select mb-3">
+                        <option>Bác bỏ khiếu nại (Mở khóa hóa đơn)</option>
+                        <option>Đồng ý khiếu nại (Hoàn tiền phụ phí cho khách)</option>
+                        <option>Phạt cảnh cáo tài xế</option>
+                    </select>
+                    <label class="form-label fw-bold small">Ghi chú xử lý (Audit Log)</label>
+                    <textarea class="form-control" rows="3" placeholder="Nhập lý do xử lý để lưu vào lịch sử hệ thống..."></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger w-100" data-bs-dismiss="modal" onclick="resolveDispute()">Hoàn tất & Mở băng tài chính</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/dispatcher.js"></script>
+</body>
+</html>

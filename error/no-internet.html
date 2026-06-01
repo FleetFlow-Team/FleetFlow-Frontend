@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow - Mất kết nối Internet</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel="stylesheet" href="../style/base.css">
+    
+    <style>
+        /* =========================================
+           OFFLINE PAGE - CĂN GIỮA (CENTERED)
+        ========================================= */
+        .error-universe {
+            /* Nền gradient ngả tông xanh đêm tĩnh lặng, biểu thị sự cô lập/mất sóng */
+            background: radial-gradient(circle at center, #1f2937 0%, #111827 50%, #030712 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            overflow: hidden;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* Lưới radar mờ nhạt làm nền */
+        .error-universe::before {
+            content: '';
+            position: absolute;
+            width: 120vw;
+            height: 120vh;
+            background: repeating-radial-gradient(
+                rgba(255, 255, 255, 0.03) 0,
+                rgba(255, 255, 255, 0.03) 1px,
+                transparent 1px,
+                transparent 40px
+            );
+            z-index: 0;
+            animation: pulse-radar 4s infinite linear;
+        }
+
+        @keyframes pulse-radar {
+            0% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 0.5; }
+        }
+
+        .error-container {
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Biểu tượng Wifi / Vệ tinh bị mất sóng */
+        .signal-icon-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .signal-icon {
+            font-size: 15rem;
+            color: #9ca3af; /* Xám mờ */
+            /* Hiệu ứng chập chờn (flicker) */
+            animation: flicker 3s infinite;
+        }
+
+        /* Dấu gạch chéo đỏ báo hiệu ngắt kết nối */
+        .slash-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 120%;
+            height: 8px;
+            background-color: #ef4444; /* Đỏ cảnh báo */
+            border-radius: 4px;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+        }
+
+        @keyframes flicker {
+            0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; text-shadow: 0 0 20px rgba(255, 255, 255, 0.2); }
+            20%, 24%, 55% { opacity: 0.2; text-shadow: none; }
+        }
+
+        /* Tiêu đề chính */
+        .error-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 16px;
+            color: #ffffff;
+        }
+
+        /* Phụ đề giải thích */
+        .error-desc {
+            font-family: 'Inter', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 400;
+            color: #9ca3af; 
+            line-height: 1.6;
+            margin: 0 auto 40px auto;
+            max-width: 500px;
+        }
+
+        /* =========================================
+           NÚT BẤM (BUTTONS)
+        ========================================= */
+        .error-buttons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Nút Retry với hiệu ứng Gradient sáng */
+        .btn-retry {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 40px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #ffffff;
+            background-color: var(--color-1);
+            border: none;
+            border-radius: 50px; /* Nút bo tròn hoàn toàn */
+            text-decoration: none;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 15px rgba(0, 177, 79, 0.3);
+        }
+
+        .btn-retry:hover {
+            background-color: #009640;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 177, 79, 0.4);
+            color: #ffffff;
+        }
+
+        .btn-retry:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
+        }
+
+        .btn-retry i {
+            transition: transform 0.3s ease;
+        }
+        
+        .btn-retry:hover i {
+            transform: rotate(180deg);
+        }
+
+        /* Responsive Mobile */
+        @media (max-width: 576px) {
+            .signal-icon { font-size: 5rem; }
+            .error-title { font-size: 1.8rem; }
+            .error-desc { font-size: 1rem; padding: 0 15px; }
+            .btn-retry { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <main class="error-universe">
+        <div class="error-container">
+            
+            <div class="signal-icon-wrapper">
+                <i class="fa-solid fa-wifi signal-icon"></i>
+                <div class="slash-overlay"></div>
+            </div>
+            
+            <h1 class="error-title">Mất kết nối Internet</h1>
+            
+            <p class="error-desc" id="statusMessage">
+                Thiết bị của bạn đang ngoại tuyến. Hệ thống FleetFlow cần tín hiệu mạng liên tục để định vị chuyến đi và điều phối dữ liệu. Vui lòng kiểm tra lại kết nối Wifi hoặc 3G/4G của bạn!
+            </p>
+            
+            <div class="error-buttons">
+                <button onclick="checkConnection()" class="btn-retry" id="retryBtn">
+                    <i class="fa-solid fa-rotate me-2"></i> Thử kết nối lại
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function checkConnection() {
+            const btn = document.getElementById('retryBtn');
+            const msg = document.getElementById('statusMessage');
+            
+            // Tạo hiệu ứng loading cho nút bấm
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải...';

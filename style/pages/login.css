@@ -1,0 +1,154 @@
+/* =========================================
+   WRAPPER & BACKGROUND TỔNG
+========================================= */
+.login-wrapper {
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    background-image: url('assests/img/'); /* Đường dẫn ảnh nền */
+    /* Nếu muốn nền tối hơn chút để nổi form, có thể dùng linear-gradient chèn vào background-image trong HTML, 
+       nhưng ảnh Index FF.jpg của bạn đã có lớp phủ xanh khá đẹp rồi nên tôi giữ nguyên */
+}
+
+/* =========================================
+   CỘT TRÁI (LOGO & TEXT)
+========================================= */
+.login-logo {
+    max-width: 400px; /* Tăng số này lên (ví dụ: 450px, 500px) nếu bạn muốn to hơn nữa. Mặc định lúc trước là 280px */
+    width: 100%; /* Thêm dòng này để logo tự động co giãn không bị tràn màn hình trên điện thoại */
+    height: auto;
+    object-fit: contain;
+}
+
+.login-heading {
+    font-size: 3.5rem;
+    letter-spacing: -1px;
+}
+
+.login-subheading {
+    font-size: 2.5rem;
+    opacity: 0.9;
+}
+
+.forgot-pwd-link {
+    color: var(--color-2); /* Trắng */
+    font-size: 1.15rem;
+    font-weight: 600;
+    text-decoration: underline !important;
+    text-decoration-thickness: 2px !important;
+    text-underline-offset: 6px;
+    transition: color var(--transition-speed) ease;
+}
+
+.forgot-pwd-link:hover {
+    color: var(--color-3) !important; /* Đổi sang vàng khi hover */
+}
+
+/* =========================================
+   CỘT PHẢI (FORM ĐĂNG NHẬP - DARK CARD)
+========================================= */
+/* =========================================
+   CỘT PHẢI (FORM ĐĂNG NHẬP - GLASSMORPHISM)
+========================================= */
+.login-card {
+    /* Đổi mã màu #1a1c1a thành dạng rgba có độ trong suốt (chữ số cuối 0.65 là 65% độ đậm) */
+    background-color: rgba(26, 28, 26, 0.65); 
+    
+    /* Thuộc tính quan trọng nhất: Làm mờ ảnh nền phía sau khung đăng nhập */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px); /* Hỗ trợ trình duyệt Safari của Apple */
+    
+    border-radius: 24px;
+    padding: 3.5rem 3rem;
+    
+    /* Tăng độ sáng của viền lên một chút để khung kính nổi bật hơn */
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Thêm bóng đổ mờ xung quanh khung */
+}
+
+.login-card-title {
+    color: var(--color-2);
+    text-align: center;
+    font-size: 2.2rem;
+    line-height: 1.2;
+}
+
+/* Nhãn (Label) của Form */
+.custom-label {
+    color: var(--color-2);
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    margin-left: 15px; /* Thụt vào một chút để thẳng hàng với text trong ô input */
+}
+
+/* Ô nhập liệu (Input) */
+.custom-input {
+    background-color: #444743 !important; /* Màu xám tối */
+    border: 1px solid transparent !important;
+    border-radius: 50px !important; /* Bo tròn hoàn toàn */
+    color: var(--color-2) !important;
+    padding: 14px 24px !important;
+    font-size: 1rem;
+    transition: all var(--transition-speed) ease;
+}
+
+/* Đổi màu chữ Placeholder (những chữ mờ mờ trong ô input) */
+.custom-input::placeholder {
+    color: #9ba09b !important;
+    font-weight: 400;
+}
+
+/* Hiệu ứng khi click vào ô Input */
+.custom-input:focus {
+    background-color: #4e524d !important;
+    border: 1px solid var(--color-3) !important; /* Viền vàng khi focus */
+    box-shadow: 0 0 0 4px rgba(255, 222, 89, 0.15) !important; /* Vầng sáng vàng mờ */
+}
+
+/* Nút Submit Đăng nhập */
+.btn-login-submit {
+    background-color: var(--color-3); /* Màu vàng từ base.css */
+    color: #111 !important; /* Chữ màu đen đậm */
+    border: none;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1.15rem;
+    padding: 14px;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-login-submit:hover {
+    background-color: #f0ce42; /* Vàng sậm hơn chút khi hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 222, 89, 0.3);
+}
+
+/* =========================================
+   RESPONSIVE (MOBILE & TABLET)
+========================================= */
+@media (max-width: 991.98px) {
+    .login-wrapper {
+        padding: 40px 0;
+        height: auto;
+    }
+    
+    .login-content-left {
+        text-align: center;
+    }
+    
+    .login-heading { font-size: 2.8rem; }
+    .login-subheading { font-size: 2rem; }
+    
+    .login-logo {
+        margin: 0 auto;
+        max-width: 280px; /* Thu nhỏ lại một chút trên điện thoại cho cân đối */
+    }
+    
+    .login-card {
+        padding: 2.5rem 1.5rem;
+    }
+}

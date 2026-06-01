@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="FleetFlow - Tìm kiếm phương tiện di chuyển phù hợp nhất với bạn." />
+    <title>FleetFlow - Tìm Kiếm Phương Tiện</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <link rel="stylesheet" href="../style/base.css" />    
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel="stylesheet" href="../style/pages/findCar.css" />
+</head>
+<body>
+    <header>
+      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+        <div class="container-base position-relative h-100">
+          <a class="navbar-brand brand-overflow" href="#">
+            <img src="../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
+          </a>
+
+          <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#fleetflowNav">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="fleetflowNav">
+            <ul class="navbar-nav ms-auto align-items-center gap-4 mt-3 mt-lg-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link text-white fw-medium dropdown-toggle" href="#" id="partnerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Trở thành Đối tác của FleetFlow
+                </a>
+                <ul class="dropdown-menu shadow border-0" aria-labelledby="partnerDropdown">
+                  <li><a class="dropdown-item py-2" href="#">Đăng kí trở thành tài xế FleetFlow</a></li>
+                  <li><a class="dropdown-item py-2" href="#">Đăng kí trở thành kĩ thuật viên FleetFlow</a></li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li><a class="dropdown-item py-2" href="#">Đăng kí cho thuê xe</a></li>
+                </ul>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link text-white fw-medium" href="#support">Trung tâm hỗ trợ</a>
+              </li>
+              <li class="nav-item ms-lg-2">
+                <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
+                  <span><a href="login.html" class="text-decoration-none">Đăng nhập</a></span>
+                  <i class="fa-regular fa-user-circle fs-5"></i>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="py-5 bg-light-custom">
+      <div class="container-base">
+        <div class="row g-4">
+          <aside class="col-lg-3">
+            <div class="filter-sidebar shadow-sm">
+              <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+                <h5 class="fw-bold m-0"><i class="fa-solid fa-sliders me-2 text-success"></i>Bộ lọc xe</h5>
+                <button type="reset" class="btn btn-sm btn-link text-success p-0 text-decoration-none fw-semibold">Xóa lọc</button>
+              </div>
+
+              <div class="filter-section mb-4">
+                <h6 class="filter-title text-uppercase fw-bold mb-3">Số chỗ ngồi</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input custom-checkbox" type="checkbox" id="seat4" checked />
+                  <label class="form-check-label filter-label" for="seat4">4 chỗ (Sedan/Hatchback)</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input custom-checkbox" type="checkbox" id="seat7" checked />
+                  <label class="form-check-label filter-label" for="seat7">7 chỗ (SUV/MPV)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="checkbox" id="seat16" />
+                  <label class="form-check-label filter-label" for="seat16">16 chỗ (Xe du lịch)</label>
+                </div>
+              </div>
+
+              <div class="filter-section mb-4">
+                <h6 class="filter-title text-uppercase fw-bold mb-3">Hãng xe</h6>
+                <select class="form-select filter-select">
+                  <option value="" selected>Tất cả các hãng</option>
+                  <option value="vinfast">VinFast</option>
+                  <option value="honda">Honda</option>
+                  <option value="toyota">Toyota</option>
+                  <option value="mazda">Mazda</option>
+                  <option value="hyundai">Hyundai</option>
+                </select>
+              </div>
+
+              <div class="filter-section mb-4">
+                <div class="filter-section mb-4">
+                  <h6 class="filter-title text-uppercase fw-bold mb-3">Mẫu xe</h6>
+                  <select class="form-select filter-select">
+                    <option value="" selected>Tất cả mẫu xe</option>
+                    <option value="vf8">VinFast VF8 Plus 2023</option>
+                    <option value="vf5">VinFast VF5 Plus</option>
+                    <option value="crv">Honda CR-V Turbo 2022</option>
+                    <option value="city">Honda City RS</option>
+                    <option value="mazda6">Mazda 6 Premium 2021</option>
+                    <option value="cx5">Mazda CX-5</option>
+                    <option value="fortuner">Toyota Fortuner 2022</option>
+                    <option value="vios">Toyota Vios G</option>
+                    <option value="tucson">Hyundai Tucson</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="filter-section mb-4">
+                <h6 class="filter-title text-uppercase fw-bold mb-3">Hộp số</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input custom-checkbox" type="radio" name="transmission" id="transAuto" checked />
+                  <label class="form-check-label filter-label" for="transAuto">Số tự động (AT)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="radio" name="transmission" id="transManual" />
+                  <label class="form-check-label filter-label" for="transManual">Số sàn (MT)</label>
+                </div>
+              </div>
+
+              <div class="filter-section mb-2">
+                <h6 class="filter-title text-uppercase fw-bold mb-3">Nhiên liệu</h6>
+                <div class="form-check mb-2">
+                  <input class="form-check-input custom-checkbox" type="checkbox" id="fuelGas" checked />
+                  <label class="form-check-label filter-label" for="fuelGas">Xe Xăng/Dầu</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input custom-checkbox" type="checkbox" id="fuelElectric" checked />
+                  <label class="form-check-label filter-label" for="fuelElectric">Xe Điện thông minh</label>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="col-lg-9">
+            <div class="sort-bar d-flex flex-column flex-md-row justify-content-between align-items-md-center shadow-sm mb-4 gap-3">
+              <div class="text-muted fw-medium">
+                Tìm thấy <span class="text-success fw-bold">128</span> phương tiện gần bạn
+              </div>
+              <div class="d-flex align-items-center gap-2">
+                <span class="text-nowrap small fw-bold text-uppercase text-muted">Sắp xếp:</span>
+                <select class="form-select sort-select border-0 fw-semibold text-dark">
+                  <option value="near" selected>Khoảng cách gần nhất</option>
+                  <option value="priceAsc">Giá từ thấp đến cao</option>
+                  <option value="priceDesc">Giá từ cao đến thấp</option>
+                  <option value="rating">Đánh giá tốt nhất</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-4">
+              <div class="col-md-6 col-xl-4">
+                <div class="vehicle-card h-100 shadow-sm">
+                  <div class="vehicle-badge-discount">Giảm 17%</div>
+                  <div class="vehicle-img-box">
+                    <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=600" alt="VinFast VF8" class="v-img" loading="lazy" />
+                  </div>
+                  <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <span class="v-location text-muted"><i class="fa-solid fa-location-dot text-success me-1"></i>Quận 1, HCM</span>
+                      <span class="v-distance fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 1.1 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold">VinFast VF8 Plus 2023</h5>
+                    <div class="v-specs d-flex gap-3 text-muted small my-3">
+                      <span><i class="fa-solid fa-bolt me-1 text-warning"></i>Xe Điện</span>
+                      <span><i class="fa-solid fa-circle-dot me-1"></i>Số tự động</span>
+                      <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                      <div class="price-container">
+                        <span class="price-old text-muted text-decoration-line-through me-2">650K</span>
+                        <span class="price-current fw-bold text-success">540K<span class="small-text">/ngày</span></span>
+                      </div>
+                      <button class="btn-base px-3 py-2 small shadow-sm" onclick="alert('Tiến hành giữ xe này!')">Đặt xe</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="vehicle-card h-100 shadow-sm">
+                  <div class="vehicle-badge-discount bg-danger">Giảm 10%</div>
+                  <div class="vehicle-img-box">
+                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600" alt="Honda CR-V" class="v-img" loading="lazy" />
+                  </div>
+                  <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <span class="v-location text-muted"><i class="fa-solid fa-location-dot text-success me-1"></i>Bình Thạnh, HCM</span>
+                      <span class="v-distance fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 2.4 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold">Honda CR-V Turbo 2022</h5>
+                    <div class="v-specs d-flex gap-3 text-muted small my-3">
+                      <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                      <span><i class="fa-solid fa-circle-dot me-1"></i>Số tự động</span>
+                      <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                      <div class="price-container">
+                        <span class="price-old text-muted text-decoration-line-through me-2">1.100K</span>
+                        <span class="price-current fw-bold text-success">990K<span class="small-text">/ngày</span></span>
+                      </div>
+                      <button class="btn-base px-3 py-2 small shadow-sm">Đặt xe</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6 col-xl-4">
+                <div class="vehicle-card h-100 shadow-sm">
+                  <div class="vehicle-badge-discount bg-primary">Bán chạy</div>
+                  <div class="vehicle-img-box">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                  </div>
+                  <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                      <span class="v-location text-muted"><i class="fa-solid fa-location-dot text-success me-1"></i>Quận 7, HCM</span>
+                      <span class="v-distance fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-muted small my-3">
+                      <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                      <span><i class="fa-solid fa-circle-dot me-1"></i>Số tự động</span>
+                      <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                      <div class="price-container">
+                        <span class="price-current fw-bold text-success">850K<span class="small-text">/ngày</span></span>
+                      </div>
+                      <button class="btn-base px-3 py-2 small shadow-sm">Đặt xe</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <nav aria-label="Page navigation" class="mt-5 mb-4">
+              <ul class="pagination justify-content-center custom-pagination gap-2">
+                <li class="page-item disabled"><a class="page-link shadow-sm" href="#" tabindex="-1" aria-disabled="true"><i class="fa-solid fa-chevron-left"></i></a></li>
+                <li class="page-item active"><a class="page-link shadow-sm" href="findCar.html">1</a></li>
+                <li class="page-item"><a class="page-link shadow-sm" href="findCar_page2.html">2</a></li>
+                <li class="page-item"><a class="page-link shadow-sm" href="findCar_page3.html">3</a></li>
+                <li class="page-item"><span class="page-link border-0 bg-transparent text-muted">...</span></li>
+                <li class="page-item"><a class="page-link shadow-sm" href="findCar_page10.html">10</a></li>
+                <li class="page-item"><a class="page-link shadow-sm" href="findCar_page2.html"><i class="fa-solid fa-chevron-right"></i></a></li>
+              </ul>
+            </nav>
+
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer-corporate">
+      <div class="container-base">
+        <div class="row g-4">
+          <div class="col-lg-4 col-md-6">
+            <h5 class="footer-title">Hệ thống FleetFlow</h5>
+            <p class="footer-text">
+              Hệ thống nền tảng công nghệ kết nối đặt xe thông minh, tối ưu hiệu suất và mang lại sự an tâm tuyệt đối cho khách hàng trên từng chặng hành trình.
+            </p>
+          </div>
+          <div class="col-lg-4 col-md-6">
+            <h5 class="footer-title">Chính sách & Quy định</h5>
+            <ul class="footer-links list-unstyled d-flex flex-column gap-2">
+              <li><a href="#">Chính sách bảo mật thông tin</a></li>
+              <li><a href="#">Quy chế vận hành và tranh chấp</a></li>
+              <li><a href="#">Thỏa thuận sử dụng dịch vụ đối tác</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4 col-md-12">
+            <h5 class="footer-title">Tổng đài hỗ trợ</h5>
+            <div class="footer-contact d-flex flex-column gap-2">
+              <p class="m-0"><i class="fa-solid fa-headset me-2"></i>Hotline CSKH: 1900 5335 <span class="contact-time">(7:00 - 22:00)</span></p>
+              <p class="m-0"><i class="fa-solid fa-envelope me-2"></i>Email: support@fleetflow.vn</p>
+            </div>
+          </div>
+        </div>
+        <hr class="footer-divider" />
+        <div class="footer-bottom text-center">
+          &copy; 2026 FleetFlow Corporation
+        </div>
+      </div>
+    </footer>
+
+    <style>
+        /* Container Tối Tượng */
+        .ai-chat-widget {
+            font-family: 'Inter', sans-serif;
+            position: fixed;
+            bottom: 30px;
+            right: 30px; 
+            z-index: 1060; 
+        }
+
+        /* --- 1. FAB BUTTON (NÚT NỔI) --- */
+        .ai-fab-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Vòng hào quang nhịp tim phía sau */
+        .ai-fab-glow {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: var(--color-1, #00B14F);
+            border-radius: 50%;
+            z-index: 1;
+            animation: pulse-glow 2s infinite;
+        }
+
+        @keyframes pulse-glow {
+            0% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.4); opacity: 0; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .ai-chat-fab {
+            position: relative;
+            z-index: 2;
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            /* Gradient Xanh - Lục bảo hiện đại */
+            background: linear-gradient(135deg, #00B14F 0%, #05d564 100%);
+            color: #ffffff;
+            border: none;
+            box-shadow: 0 8px 24px rgba(0, 177, 79, 0.4);
+            font-size: 1.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
+        }
+
+        .ai-chat-fab:hover {
+            transform: scale(1.1) translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 177, 79, 0.5);
+        }
+
+        /* Chấm đỏ thông báo */
+        .ai-chat-badge {
+            position: absolute;
+            top: 0;
+            right: -2px;
+            background: #ff4757;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 800;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+
+        /* --- 2. CHAT WINDOW (CỬA SỔ CHAT) --- */
+        .ai-chat-window {
+            position: absolute;
+            bottom: 85px;
+            right: 0; 
+            width: 380px; /* Tăng độ rộng chút cho thoáng */
+            height: 580px; /* Tăng chiều cao */
+            background: #fdfdfd;
+            border-radius: 24px; /* Bo góc mềm mại kiểu iOS */
+            box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            
+            /* Hiệu ứng Pop-up kiểu lò xo */
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(30px) scale(0.9);
+            transform-origin: bottom right;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .ai-chat-window.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0) scale(1);
+        }
+
+        /* Glassmorphism Header */
+        .ai-chat-header {
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px); /* Kính mờ */
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 10;
+        }
+        
+        .ai-header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        
+        .ai-avatar-wrapper {
+            position: relative;
+        }
+        
+        .ai-avatar {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #00B14F 0%, #05d564 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
+        }
+        
+        .ai-online-dot {
+            position: absolute;
+            bottom: 2px;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+        }
+        
+        .ai-header-title h5 {
+            margin: 0 0 2px 0;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #111827;
+            letter-spacing: -0.3px;
+        }
+        .ai-header-title p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .ai-header-actions button {
+            background: #f1f5f9;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            color: #64748b;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ai-header-actions button:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        /* --- 3. MESSAGE BODY --- */
+        .ai-chat-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 20px;
+            background: #f4f7f9; /* Nền xanh xám cực nhạt, sang trọng */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+        .ai-chat-body::-webkit-scrollbar { width: 5px; }
+        .ai-chat-body::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
+
+        .ai-msg-row {
+            display: flex;
+            gap: 12px;
+            max-width: 90%;
+            animation: aiFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes aiFadeInUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .ai-msg-row.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        .ai-msg-row.ai { align-self: flex-start; }
+
+        .ai-msg-bubble {
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            line-height: 1.55;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        
+        .ai-msg-row.user .ai-msg-bubble {
+            background: linear-gradient(135deg, #00B14F 0%, #05d564 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2);
+        }
+        
+        .ai-msg-row.ai .ai-msg-bubble {
+            background: #ffffff;
+            color: #1f2937;
+            border-bottom-left-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+        
+        .ai-msg-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--color-1, #00B14F);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            margin-top: auto;
+            box-shadow: 0 2px 6px rgba(0, 177, 79, 0.3);
+        }
+
+        /* Modern Typing Indicator */
+        .ai-typing-dots {
+            display: flex;
+            align-items: center;
+            height: 20px;
+            padding: 0 4px;
+        }
+        .ai-typing-dots span {
+            display: block;
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            margin: 0 3px;
+            animation: typingWave 1.2s infinite ease-in-out;
+        }
+        .ai-typing-dots span:nth-child(1) { animation-delay: 0s; }
+        .ai-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .ai-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        
+        @keyframes typingWave {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
+            30% { transform: translateY(-4px); opacity: 1; background: var(--color-1); }
+        }
+
+        /* Rich UI - Vehicle Carousel Enhancement */
+        .ai-carousel-wrapper { width: 100%; margin-top: 4px; }
+        .ai-carousel {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            width: 290px;
+            scroll-snap-type: x mandatory;
+        }
+        .ai-carousel::-webkit-scrollbar { height: 0; display: none; } /* Hide scrollbar for clean look */
+        
+        .ai-v-card {
+            min-width: 240px;
+            background: white;
+            border-radius: 16px;
+            border: 1px solid rgba(0,0,0,0.04);
+            overflow: hidden;
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+        .ai-v-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
+        
+        .ai-v-card-img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+        }
+        .ai-v-card-body { padding: 14px; }
+        .ai-v-card-title {
+            font-size: 1rem; font-weight: 700; margin: 0 0 6px 0; color: #111827;
+        }
+        .ai-v-card-price {
+            font-size: 1.05rem; font-weight: 800; color: var(--color-1); margin-bottom: 12px;
+        }
+        .ai-v-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+        .ai-v-card-tag {
+            font-size: 0.7rem; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; color: #475569; font-weight: 600;
+        }
+        .ai-v-card-btn {
+            width: 100%; padding: 10px; border: none; border-radius: 8px;
+            background: #f1f5f9; color: var(--color-1); font-weight: 700; font-size: 0.9rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .ai-v-card-btn:hover { background: var(--color-1); color: white; }
+
+        /* --- 4. CHAT FOOTER (INPUT) --- */
+        .ai-chat-footer {
+            padding: 14px 20px 20px 20px;
+            background: #ffffff;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            z-index: 10;
+        }
+        
+        /* Quick Replies - Pill Design */
+        .ai-quick-replies {
+            display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px;
+        }
+        .ai-quick-replies::-webkit-scrollbar { display: none; }
+        .ai-chip {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .ai-chip:hover {
+            background: var(--color-1); color: white; border-color: var(--color-1);
+            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 177, 79, 0.2);
+        }
+
+        /* Input Area - Modern Pill */
+        .ai-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            background: #f8fafc;
+            padding: 8px 12px 8px 18px;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        .ai-input-wrapper:focus-within {
+            background: #ffffff;
+            border-color: var(--color-1);
+            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.1);
+        }
+
+        .ai-input-wrapper textarea {
+            flex: 1; border: none; background: transparent; outline: none; resize: none;
+            max-height: 96px; font-size: 0.95rem; font-family: inherit; line-height: 1.5;
+            padding: 6px 0; color: #1f2937;
+        }
+        .ai-input-wrapper textarea::placeholder { color: #94a3b8; }
+        
+        /* Send Button Animation */
+        .ai-btn-send {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--color-1); border: none; color: white;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            margin-bottom: 2px; flex-shrink: 0;
+        }
+        .ai-btn-send i { font-size: 1rem; transition: transform 0.3s; }
+        
+        .ai-btn-send:not(:disabled):hover {
+            transform: scale(1.1); box-shadow: 0 4px 12px rgba(0, 177, 79, 0.3);
+        }
+        .ai-btn-send:not(:disabled):active i {
+            transform: translate(24px, -24px); /* Hiệu ứng máy bay bay đi */
+            opacity: 0;
+        }
+        
+        .ai-btn-send:disabled {
+            background: #e2e8f0; color: #94a3b8; cursor: not-allowed; transform: scale(1); box-shadow: none;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 576px) {
+            .ai-chat-widget { bottom: 20px; right: 20px; }
+            .ai-chat-window {
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                width: 100%; height: 100%; border-radius: 0; z-index: 1070;
+            }
+        }
+    </style>
+
+    <div class="ai-chat-widget">
+        <div class="ai-fab-container">
+            <div class="ai-fab-glow"></div>
+            <button class="ai-chat-fab" id="aiChatFab" aria-label="Mở Trợ lý AI">
+                <i class="fa-solid fa-robot"></i>
+                <span class="ai-chat-badge" id="aiUnreadBadge">1</span>
+            </button>
+        </div>
+
+        <div class="ai-chat-window" id="aiChatWindow">
+            <div class="ai-chat-header">
+                <div class="ai-header-left">
+                    <div class="ai-avatar-wrapper">
+                        <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
+                        <div class="ai-online-dot"></div>
+                    </div>
+                    <div class="ai-header-title">
+                        <h5>FleetFlow AI Consultant</h5>
+                        <p>Luôn sẵn sàng hỗ trợ</p>
+                    </div>
+                </div>
+                <div class="ai-header-actions">
+                    <button id="aiMinBtn" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
+                    <button id="aiCloseBtn" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <div class="ai-chat-body" id="aiChatBody">
+                <div class="ai-msg-row ai">
+                    <div class="ai-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                    <div class="ai-msg-bubble">
+                        Xin chào! 👋 Tôi là Trợ lý AI của FleetFlow. Bạn cần tìm phương tiện di chuyển nào hôm nay?
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-chat-footer">
+                <div class="ai-quick-replies">
+                    <div class="ai-chip">Tư vấn xe gia đình</div>
+                    <div class="ai-chip">Xe 4 chỗ chở 8 người</div>
+                    <div class="ai-chip">Xe đi liên tỉnh</div>
+                </div>
+                
+                <div class="ai-input-wrapper">
+                    <textarea id="aiInputText" rows="1" placeholder="Nhắn tin cho AI..."></textarea>
+                    <button class="ai-btn-send" id="aiSendBtn" disabled>
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fab = document.getElementById('aiChatFab');
+            const windowEl = document.getElementById('aiChatWindow');
+            const closeBtn = document.getElementById('aiCloseBtn');
+            const minBtn = document.getElementById('aiMinBtn');
+            const body = document.getElementById('aiChatBody');
+            const input = document.getElementById('aiInputText');
+            const sendBtn = document.getElementById('aiSendBtn');
+            const badge = document.getElementById('aiUnreadBadge');
+            
+            // 1. Mở/Đóng cửa sổ Chat
+            fab.addEventListener('click', () => {
+                windowEl.classList.add('active');
+                badge.style.display = 'none'; 
+                // Tự động focus vào ô chat
+                setTimeout(() => input.focus(), 300);
+            });
+            
+            const closeChat = () => { windowEl.classList.remove('active'); };
+            closeBtn.addEventListener('click', closeChat);
+            minBtn.addEventListener('click', closeChat);
+            
+            // 2. Xử lý Input
+            input.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                sendBtn.disabled = this.value.trim() === '';
+            });
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); 
+                    sendMessage();
+                }
+            });
+            
+            sendBtn.addEventListener('click', () => {
+                // Khôi phục icon máy bay sau khi animation kết thúc
+                setTimeout(() => {
+                    const icon = sendBtn.querySelector('i');
+                    icon.style.transition = 'none';
+                    icon.style.transform = 'translate(-24px, 24px)';
+                    setTimeout(() => {
+                        icon.style.transition = 'transform 0.3s';
+                        icon.style.transform = 'translate(0, 0)';
+                        icon.style.opacity = '1';
+                    }, 50);
+                }, 300);
+                sendMessage();
+            });
+            
+            // 3. Quick Replies Click
+            document.querySelectorAll('.ai-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    input.value = chip.innerText;
+                    sendMessage();
+                });
+            });
+
+            // --- UI RENDER FUNCTIONS ---
+            function scrollToBottom() {
+                body.scrollTo({ top: body.scrollHeight, behavior: 'smooth' });
+            }
+
+            function appendUserMsg(text) {
+                const html = `<div class="ai-msg-row user"><div class="ai-msg-bubble">${text}</div></div>`;
+                body.insertAdjacentHTML('beforeend', html);
+                scrollToBottom();
+            }
+
+            function appendAIText(text) {
+                const html = `
+                    <div class="ai-msg-row ai">
+                        <div class="ai-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                        <div class="ai-msg-bubble">${text}</div>
+                    </div>`;
+                body.insertAdjacentHTML('beforeend', html);
+                scrollToBottom();
+            }
+
+            function appendAITyping() {
+                const id = 'typing-' + Date.now();
+                const html = `
+                    <div class="ai-msg-row ai" id="${id}">
+                        <div class="ai-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                        <div class="ai-msg-bubble" style="padding: 14px 16px;">
+                            <div class="ai-typing-dots"><span></span><span></span><span></span></div>
+                        </div>
+                    </div>`;
+                body.insertAdjacentHTML('beforeend', html);
+                scrollToBottom();
+                return id;
+            }
+
+            function removeTyping(id) {
+                const el = document.getElementById(id);
+                if(el) el.remove();
+            }
+
+            function appendAICarousel(cardsHtml) {
+                const html = `
+                    <div class="ai-msg-row ai">
+                        <div class="ai-msg-avatar"><i class="fa-solid fa-robot"></i></div>
+                        <div class="ai-carousel-wrapper">
+                            <div class="ai-carousel">${cardsHtml}</div>
+                        </div>
+                    </div>`;
+                body.insertAdjacentHTML('beforeend', html);
+                scrollToBottom();
+            }
+
+            // 4. Logic Xử lý 
+            function sendMessage() {
+                const text = input.value.trim();
+                if (!text) return;
+                
+                input.value = '';
+                input.style.height = 'auto';
+                sendBtn.disabled = true;
+                
+                appendUserMsg(text);
+                const typingId = appendAITyping();
+                
+                setTimeout(() => {
+                    removeTyping(typingId);
+                    const query = text.toLowerCase();
+                    
+                    if (query.includes('8 người') && query.includes('4 chỗ')) {
+                        appendAIText("Xin lỗi, hiện không có dòng xe 4 chỗ nào đáp ứng đủ không gian an toàn cho 8 người.");
+                        
+                        const typing2 = appendAITyping();
+                        setTimeout(() => {
+                            removeTyping(typing2);
+                            appendAIText("Tuy nhiên, để đảm bảo không gian thoải mái cho đại gia đình, tôi gợi ý cho bạn các dòng xe 16 chỗ sau đây:");
+                            appendAICarousel(`
+                                <div class="ai-v-card">
+                                    <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=600" class="ai-v-card-img" alt="Ford">
+                                    <div class="ai-v-card-body">
+                                        <h4 class="ai-v-card-title">Ford Transit 2023</h4>
+                                        <div class="ai-v-card-price">1.500K<span style="font-size:0.8rem;color:#64748b;font-weight:500;">/ngày</span></div>
+                                        <div class="ai-v-card-tags">
+                                            <span class="ai-v-card-tag">16 Chỗ</span>
+                                            <span class="ai-v-card-tag">Trần cao</span>
+                                        </div>
+                                        <button class="ai-v-card-btn" onclick="alert('Đã chọn Ford Transit!')">Đặt xe này</button>
+                                    </div>
+                                </div>
+                                <div class="ai-v-card">
+                                    <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fd?q=80&w=600" class="ai-v-card-img" alt="Hyundai">
+                                    <div class="ai-v-card-body">
+                                        <h4 class="ai-v-card-title">Hyundai Solati</h4>
+                                        <div class="ai-v-card-price">1.700K<span style="font-size:0.8rem;color:#64748b;font-weight:500;">/ngày</span></div>
+                                        <div class="ai-v-card-tags">
+                                            <span class="ai-v-card-tag">16 Chỗ</span>
+                                            <span class="ai-v-card-tag">Ghế da</span>
+                                        </div>
+                                        <button class="ai-v-card-btn" onclick="alert('Đã chọn Hyundai Solati!')">Đặt xe này</button>
+                                    </div>
+                                </div>
+                            `);
+                        }, 1200);
+                        
+                    } else {
+                        appendAIText("Chào bạn! Dựa trên yêu cầu của bạn, tôi xin gợi ý dòng xe này. Vừa tiết kiệm lại rất rộng rãi:");
+                        appendAICarousel(`
+                            <div class="ai-v-card">
+                                <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" class="ai-v-card-img" alt="Mazda 6">
+                                <div class="ai-v-card-body">
+                                    <h4 class="ai-v-card-title">Mazda 6 Premium</h4>
+                                    <div class="ai-v-card-price">850K<span style="font-size:0.8rem;color:#64748b;font-weight:500;">/ngày</span></div>
+                                    <div class="ai-v-card-tags">
+                                        <span class="ai-v-card-tag">5 Chỗ</span>
+                                        <span class="ai-v-card-tag">Sedan cao cấp</span>
+                                    </div>
+                                    <button class="ai-v-card-btn" onclick="alert('Đã chọn Mazda 6!')">Đặt xe này</button>
+                                </div>
+                            </div>
+                        `);
+                    }
+                }, 1500); 
+            }
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

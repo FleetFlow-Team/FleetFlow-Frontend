@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow - Quản lý tài khoản & eKYC</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    
+    <link rel="stylesheet" href="../style/pages/profile.css">
+    <link rel="stylesheet" href="../style/base.css">
+</head>
+<body>
+
+    <header>
+        <nav class="navbar custom-navbar sticky-top">
+            <div class="container h-100 position-relative d-flex justify-content-between align-items-center">
+                
+                <a class="navbar-brand brand-overflow" href="index.html">
+                    <img src="../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img">
+                </a>
+
+                <div class="navbar-center-links d-none d-lg-flex">
+                    <a href="index.html" class="nav-link-center">Trang chủ</a>
+                    <a href="findCar.html" class="nav-link-center">Đặt xe</a>
+                    <a href="#" class="nav-link-center">Chính sách</a>
+                </div>
+
+                <div class="user-profile">
+                    <div class="notification-bell me-3">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge">1</span>
+                    </div>
+                    
+                    <div class="d-none d-sm-block text-end">
+                        <div class="fw-bold fs-6 lh-1">Tiến Dũng</div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem">Khách hàng</div>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=1a1c1a&color=fff" alt="Avatar">
+                </div>
+                
+            </div>
+        </nav>
+    </header>
+
+    <main class="container my-5">
+        <div class="row g-4">
+            
+            <aside class="col-lg-3">
+                <div class="profile-sidebar">
+                    
+                    <div class="user-avatar-box">
+                        <div class="avatar-wrapper position-relative d-inline-block mb-2">
+                            <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" alt="Avatar" class="avatar-img" id="userAvatarImg">
+                            
+                            <label for="avatarInput" class="avatar-edit-btn position-absolute shadow-sm" title="Thay đổi ảnh đại diện">
+                                <i class="fa-solid fa-camera"></i>
+                            </label>
+                            
+                            <input type="file" id="avatarInput" class="d-none" accept="image/jpeg, image/png">
+                        </div>
+                        
+                        <h6 class="fw-bold mb-1">Tiến Dũng</h6>
+                        <p class="text-muted small mb-0">Khách hàng thành viên</p>
+                    </div>
+                    
+                    <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                        <button class="nav-link active" id="tab-profile" data-bs-toggle="pill" data-bs-target="#content-profile" type="button" role="tab">
+                            <i class="fa-regular fa-user"></i> Thông tin cá nhân
+                        </button>
+                        <button class="nav-link" id="tab-ekyc" data-bs-toggle="pill" data-bs-target="#content-ekyc" type="button" role="tab">
+                            <i class="fa-solid fa-shield-halved"></i> Xác thực eKYC
+                        </button>
+                        <button class="nav-link" id="tab-security" data-bs-toggle="pill" data-bs-target="#content-security" type="button" role="tab">
+                            <i class="fa-solid fa-lock"></i> Đổi mật khẩu
+                        </button>
+                        <hr class="my-2 border-secondary opacity-25">
+                        <button class="nav-link text-danger" onclick="alert('Đã đăng xuất!')">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                        </button>
+                    </div>
+
+                </div>
+            </aside>
+
+            <section class="col-lg-9">
+                <div class="profile-content tab-content" id="v-pills-tabContent">
+                    
+                    <div class="tab-pane fade show active" id="content-profile" role="tabpanel">
+                        <h4 class="section-title">Hồ sơ của tôi</h4>
+                        <form action="#" method="POST">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small">Họ và tên</label>
+                                    <input type="text" class="form-control" value="Trần Tiến Dũng" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small">Số điện thoại</label>
+                                    <input type="tel" class="form-control bg-light" value="0987654321" readonly title="Liên hệ CSKH để đổi SĐT">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small">Email liên hệ</label>
+                                    <input type="email" class="form-control" value="dungtt@example.com" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-medium small">Ngày sinh</label>
+                                    <input type="date" class="form-control" value="2005-01-01">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small">Địa chỉ hiện tại</label>
+                                    <input type="text" class="form-control" placeholder="Nhập địa chỉ nhận/trả xe thường xuyên...">
+                                </div>
+                                <div class="col-12 mt-4 text-end">
+                                    <button type="submit" class="btn-save">Lưu thay đổi</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="content-ekyc" role="tabpanel">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h4 class="section-title mb-0 border-0">Xác minh danh tính (eKYC)</h4>
+                            <span class="badge bg-warning text-dark px-3 py-2 rounded-pill">Chưa xác thực</span>
+                        </div>
+                        <p class="text-muted small mb-4">Để đảm bảo an toàn và đủ điều kiện thuê xe tự lái, vui lòng cung cấp hình ảnh rõ nét của các giấy tờ sau. Dữ liệu của bạn được mã hóa an toàn 256-bit.</p>
+                        
+                        <form action="#" method="POST" enctype="multipart/form-data">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-dark mb-2">1. CCCD / CMND (Mặt trước)</label>
+                                    <input type="file" id="idFront" class="d-none file-input" accept="image/jpeg, image/png">
+                                    <div class="upload-box" onclick="document.getElementById('idFront').click()">
+                                        <i class="fa-regular fa-id-card upload-icon"></i>
+                                        <div class="upload-text">Nhấn để tải ảnh mặt trước</div>
+                                        <img src="" alt="Preview" class="preview-img">
+                                        <button type="button" class="btn-remove-img" onclick="removeImage(event, 'idFront')"><i class="fa-solid fa-times"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-dark mb-2">2. CCCD / CMND (Mặt sau)</label>
+                                    <input type="file" id="idBack" class="d-none file-input" accept="image/jpeg, image/png">
+                                    <div class="upload-box" onclick="document.getElementById('idBack').click()">
+                                        <i class="fa-solid fa-address-card upload-icon"></i>
+                                        <div class="upload-text">Nhấn để tải ảnh mặt sau</div>
+                                        <img src="" alt="Preview" class="preview-img">
+                                        <button type="button" class="btn-remove-img" onclick="removeImage(event, 'idBack')"><i class="fa-solid fa-times"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <label class="form-label fw-bold small text-dark mb-2">3. Giấy phép lái xe (GPLX)</label>
+                                    <input type="file" id="drivingLicense" class="d-none file-input" accept="image/jpeg, image/png">
+                                    <div class="upload-box" onclick="document.getElementById('drivingLicense').click()">
+                                        <i class="fa-solid fa-car upload-icon"></i>
+                                        <div class="upload-text">Nhấn để tải ảnh Bằng lái xe (Tùy chọn nếu thuê xe có tài xế)</div>
+                                        <img src="" alt="Preview" class="preview-img">
+                                        <button type="button" class="btn-remove-img" onclick="removeImage(event, 'drivingLicense')"><i class="fa-solid fa-times"></i></button>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-12 mt-4 text-end">
+                                    <button type="submit" class="btn-save px-5">Gửi yêu cầu xác thực</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="tab-pane fade" id="content-security" role="tabpanel">
+                        <h4 class="section-title">Đổi mật khẩu</h4>
+                        <form action="#" method="POST">
+                            <div class="row g-3" style="max-width: 500px;">
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small">Mật khẩu hiện tại</label>
+                                    <input type="password" class="form-control" placeholder="••••••••" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small">Mật khẩu mới</label>
+                                    <input type="password" class="form-control" placeholder="Tối thiểu 6 ký tự" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-medium small">Xác nhận mật khẩu mới</label>
+                                    <input type="password" class="form-control" required>
+                                </div>
+                                <div class="col-12 mt-4">
+                                    <button type="submit" class="btn-save w-100">Cập nhật mật khẩu</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="js/profile.js"></script>
+</body>
+</html>

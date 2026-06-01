@@ -1,0 +1,90 @@
+/* =========================================
+   1. ROOT VARIABLES (HỆ MÀU CHUẨN)
+========================================= */
+:root {
+    --color-1: #00B14F; /* Màu chính: Xanh lá (Phù hợp cho nút nhấn, điểm nhấn) */
+    --color-2: #FFFFFF; /* Màu nền/text: Trắng */
+    --color-3: #FFDE59; /* Màu phụ: Vàng (Phù hợp cho hover, icon, cảnh báo) */
+    --color-dark: #1a1c1a;
+    
+    /* Gợi ý thêm vài biến để dễ quản lý hơn */
+    --color-bg: #f4f6f8;
+    --text-color: #333333;
+    --transition-speed: 0.3s; 
+}
+
+/* =========================================
+   2. GLOBAL RESET & TYPOGRAPHY
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif; /* Font chữ hiện đại */
+    color: var(--text-color);
+    background-color: var(--color-2);
+}
+
+/* Yêu cầu: Xóa gạch chân cho toàn bộ thẻ a */
+a {
+    text-decoration: none;
+    color: inherit; /* Kế thừa màu từ thẻ cha thay vì màu xanh dương mặc định */
+    transition: color var(--transition-speed) ease;
+}
+
+/* =========================================
+   3. STANDARD BUTTON (NÚT BẤM DÙNG CHUNG)
+========================================= */
+.btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-1);
+    color: var(--color-2);
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px; /* Bo góc nhẹ nhàng, hiện đại */
+    cursor: pointer;
+    transition: all var(--transition-speed) ease;
+}
+
+.btn-base:hover {
+    background-color: var(--color-3);
+    color: #333333; /* Đổi màu chữ tối lại để nổi bật trên nền vàng */
+    transform: translateY(-2px); /* Hiệu ứng nảy lên nhẹ khi hover */
+    box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
+}
+
+.btn-base:active {
+    transform: translateY(0);
+}
+
+/* =========================================
+   4. CONTAINERS (KHUNG CHỨA NỘI DUNG)
+========================================= */
+/* Container chuẩn có giới hạn chiều rộng, luôn canh giữa */
+.container-base {
+    width: 100%;
+    max-width: 1200px; /* Kích thước chuẩn cho màn hình Desktop */
+    margin: 0 auto;
+    padding: 0 15px; /* Giữ khoảng cách 2 bên trên mobile */
+}
+
+/* Container tràn viền 100% */
+.container-fluid-base {
+    width: 100%;
+    padding: 0 15px;
+}
+
+/* CSS cho thiết bị di động (Responsive nhỏ hơn 768px) */
+@media (max-width: 768px) {
+    .container-base {
+        max-width: 100%;
+        padding: 0 20px;
+    }
+}

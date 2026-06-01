@@ -1,0 +1,157 @@
+/* =========================================
+           HỆ MÀU & BIẾN CƠ SỞ
+        ========================================= */
+        :root {
+            --color-1: #00B14F; /* Màu xanh nền Navbar */
+            --color-primary: #00B14F;
+            --color-dark: #1a1c1a;
+            --color-bg: #f4f6f8;
+            --transition-speed: 0.3s;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--color-bg); 
+            overflow-x: hidden; 
+        }
+
+        /* =========================================
+           TOP NAVBAR (ÉP SÁT TUYỆT ĐỐI 2 MÉP TRÌNH DUYỆT)
+        ========================================= */
+        .custom-navbar {
+            background-color: var(--color-1);
+            height: 70px;
+            padding: 0 !important; /* Xóa lề navbar */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Triệt tiêu mọi giới hạn của container */
+        .custom-navbar .container-base {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Đẩy mạnh về 2 phía */
+            width: 100%;
+            max-width: 100% !important; /* Phá vỡ max-width có thể có trong base.css */
+            padding: 0 !important; /* Xóa sạch lề trái/phải */
+            margin: 0 !important;
+            height: 100%;
+            position: relative; /* Bắt buộc để căn giữa slogan absolute */
+        }
+
+        /* Xử lý Logo sát mép trái */
+        .brand-overflow {
+            position: relative;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 !important;
+            padding-left: 20px !important; /* Đẩy logo sát mép trái */
+            margin: 0 !important;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        .brand-overflow .logo-img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            padding: 0 !important; /* Bỏ khoảng lề trên/dưới/trái/phải của chính bức ảnh */
+            margin: 0 !important;
+        }
+
+        /* CSS cho dòng Slogan ở giữa */
+        .navbar-slogan {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); /* Kéo tâm của chữ vào chính giữa màn hình */
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.15rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            white-space: nowrap; /* Ngăn chữ bị rớt dòng */
+            pointer-events: none; /* Chống click nhầm vào chữ */
+        }
+
+        /* Khu vực thông tin Dispatcher & Chuông sát mép phải */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: white;
+            cursor: pointer;
+            padding-right: 50px !important; /* Ép sát mép phải theo code mẫu */
+            margin: 0 !important;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            background-color: #ffffff;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Chuông thông báo */
+        .notification-bell { color: white; position: relative; cursor: pointer; font-size: 1.3rem; margin-right: 8px; }
+        .notification-badge { position: absolute; top: -5px; right: -8px; background-color: #e53e3e; color: white; font-size: 0.65rem; font-weight: bold; padding: 2px 5px; border-radius: 50%; }
+
+        /* =========================================
+           SIDEBAR & TABS CƠ BẢN
+        ========================================= */
+        .wrapper { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); }
+        .sidebar { width: 260px; background-color: #fff; border-right: 1px solid #e2e8f0; position: fixed; top: 70px; bottom: 0; left: 0; padding: 20px 0; z-index: 1000; }
+        .sidebar-menu { list-style: none; padding: 0; margin: 0; }
+        .sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 12px 24px; color: #4a5568; text-decoration: none; font-weight: 500; border-left: 4px solid transparent; transition: 0.2s; }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(0, 177, 79, 0.05); color: var(--color-primary); border-left-color: var(--color-primary); }
+        .sidebar-menu i { font-size: 1.1rem; width: 24px; text-align: center; }
+        
+        .main-content { margin-left: 260px; padding: 30px; width: calc(100% - 260px); }
+        .tab-section { display: none; animation: fadeIn 0.3s; }
+        .tab-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* =========================================
+           UI COMPONENTS (BẢNG, NÚT, CARD)
+        ========================================= */
+        .stat-card { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #edf2f7; display: flex; align-items: center; justify-content: space-between; }
+        .stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .bg-icon-green { background-color: #e6fffa; color: var(--color-primary); }
+        .bg-icon-blue { background-color: #ebf8ff; color: #3182ce; }
+        .bg-icon-red { background-color: #fff5f5; color: #e53e3e; }
+
+        .table-custom { background: #fff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .table-custom th { background-color: #f8fafc; color: #4a5568; padding: 16px; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; }
+        .table-custom td { padding: 16px; vertical-align: middle; border-bottom: 1px solid #edf2f7; font-size: 0.95rem; }
+        
+        .btn-action { padding: 6px 14px; font-weight: 600; font-size: 0.85rem; border-radius: 6px; border: none; transition: 0.2s; }
+        .btn-approve { background-color: var(--color-primary); color: white; }
+        .btn-reject { background-color: #edf2f7; color: #4a5568; }
+        .btn-detail { background-color: #ebf8ff; color: #3182ce; }
+        .btn-freeze { background-color: #e53e3e; color: white; }
+
+        /* =========================================
+           GPS TRACKING UI (TAB 3)
+        ========================================= */
+        .map-layout { display: flex; gap: 20px; height: 600px; }
+        .map-view { flex: 1; background-color: #e2e8f0; border-radius: 12px; background-image: radial-gradient(#cbd5e0 1px, transparent 1px); background-size: 20px 20px; position: relative; overflow: hidden; border: 1px solid #cbd5e0; }
+        .map-pin { position: absolute; width: 40px; height: 40px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); font-size: 1.2rem; }
+        .map-pin.active { color: var(--color-primary); border: 2px solid var(--color-primary); }
+        .map-pin.lost { color: #e53e3e; border: 2px solid #e53e3e; animation: flashRed 1s infinite; }
+
+        .vehicle-list { width: 320px; background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .vehicle-list-header { padding: 16px; border-bottom: 1px solid #e2e8f0; font-weight: 700; background: #f8fafc; border-radius: 12px 12px 0 0; }
+        .vehicle-item { padding: 16px; border-bottom: 1px solid #edf2f7; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s; }
+        .vehicle-item:hover { background-color: #f8fafc; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .dot-green { background-color: var(--color-primary); box-shadow: 0 0 5px var(--color-primary); }
+        .dot-red { background-color: #e53e3e; box-shadow: 0 0 5px #e53e3e; }
+
+        /* =========================================
+           SOS ALERT & MODAL (TAB 4)
+        ========================================= */
+        .sos-alert { background-color: #fff5f5; border: 2px solid #e53e3e; border-radius: 12px; padding: 20px; animation: flashRed 1.5s infinite; }
+        @keyframes flashRed { 0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); } 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); } }

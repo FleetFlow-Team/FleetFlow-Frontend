@@ -1,0 +1,517 @@
+/* ==========================================================================
+   FLEETFLOW - FIND CAR PAGE STYLESHEET
+========================================================================== */
+
+/* =========================================
+   1. THIẾT LẬP LAYOUT CHUNG & NỀN TẢNG
+========================================= */
+.bg-light-custom {
+    background-color: #f4f6f4; /* Lớp nền xám nhạt ngả rêu dịu nhẹ */
+}
+
+/* =========================================
+   2. NAVBAR & LOGO TRÀN VIỀN
+========================================= */
+
+/* Định dạng tổng thể thanh điều hướng (Navbar) */
+.custom-navbar {
+  background-color: var(--color-1); /* Lấy màu xanh 00B14F từ base.css */
+  height: 70px; /* Fix cứng chiều cao navbar */
+  padding: 0 !important; /* Xóa toàn bộ khoảng không mặc định */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Định dạng lưới Container cơ sở dùng chung */
+.container-base {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Ép container của navbar căng tràn giới hạn bằng với container ở dưới */
+.custom-navbar .container-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Đẩy logo ra mép trái, các link ra mép phải */
+  padding: 0 15px; /* Đảm bảo padding-left khớp với cột col-lg-6 */
+}
+
+/* Xử lý Logo (Nằm gọn trong Navbar, không làm thõng xuống) */
+.brand-overflow {
+  position: relative; /* Trả logo về vị trí bình thường */
+  height: 70px; /* Chiều cao bằng chính xác chiều cao của .custom-navbar */
+  display: flex;
+  align-items: center;
+  padding: 0; /* Xóa khoảng trống để ảnh chạm sát viền trên dưới */
+  background-color: transparent; /* Xóa nền trắng dư thừa */
+  box-shadow: none; /* Xóa bóng đổ */
+}
+
+/* Định dạng hình ảnh Logo bên trong */
+.brand-overflow .logo-img {
+  height: 100%; /* Ảnh sẽ lấy chiều cao tối đa 70px của thẻ a */
+  width: auto; /* Tự động co giãn chiều ngang để ảnh không bị méo */
+  object-fit: contain; /* Ép hình ảnh hiển thị trọn vẹn, không bị cắt xén */
+  padding: 5px 0; /* Thêm một chút lề trên dưới cho ảnh đỡ sát viền quá */
+}
+
+/* Các link trên Navbar */
+.nav-link {
+  transition: opacity var(--transition-speed) ease;
+}
+
+.nav-link:hover {
+  opacity: 0.8;
+  color: var(--color-3) !important; /* Hover ra màu vàng FFDE59 */
+}
+
+/* Nút Đăng nhập riêng biệt trên Nav */
+/* =========================================
+   NÚT ĐĂNG NHẬP (SMOOTH & MODERN UI)
+========================================= */
+.btn-login {
+    background-color: var(--color-2);
+    color: var(--color-1);
+    border: none;
+    border-radius: 50px;
+    padding: 8px 24px; /* Tăng padding 2 bên một chút để nút cân đối hơn */
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    
+    /* 1. Dùng cubic-bezier thay vì ease-in-out để tạo độ nảy vật lý siêu mượt */
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    /* 2. Kích hoạt render bằng GPU (Phần cứng) giúp triệt tiêu hoàn toàn giật lag */
+    will-change: transform, box-shadow, background-color;
+}
+
+/* Đảm bảo chữ và icon luôn ăn theo màu của nút mẹ */
+.btn-login span, 
+.btn-login i {
+    color: inherit; 
+    /* Thêm transition riêng cho icon để làm hiệu ứng */
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+}
+
+/* Trạng thái Hover (Di chuột) */
+.btn-login:hover {
+    background-color: var(--color-3);
+    color: #333333;
+    transform: translateY(-3px); /* Nổi lên rõ hơn một chút */
+    /* Bóng đổ phân tán rộng và mềm hơn tạo cảm giác lơ lửng */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.08); 
+}
+
+/* Trạng thái Active (Khi bấm chuột vào nút) */
+.btn-login:active {
+    /* Ép nút lún thực sự xuống dưới vị trí ban đầu */
+    transform: translateY(1px); 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    /* Giảm thời gian transition xuống cực thấp để nút phản hồi ngay lập tức khi bấm */
+    transition-duration: 0.1s; 
+}
+
+/* Trạng thái Focus (Hỗ trợ người dùng dùng phím Tab - Tiêu chuẩn Corporate) */
+.btn-login:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.25); /* Quầng sáng bao quanh nút (Giả sử màu xanh FleetFlow) */
+}
+
+/* =========================================
+   3. CUSTOM DROPDOWN MENU & TRANSITION UNDERLINE
+========================================= */
+
+/* Định hình lại khung menu thả xuống */
+.custom-navbar .dropdown-menu {
+  border-radius: 8px;
+  padding: 8px 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Cấu hình chữ cho các option ở trạng thái bình thường */
+.custom-navbar .dropdown-item {
+  font-size: 0.95rem;
+  padding: 10px 20px;
+  background-color: transparent !important;
+  color: #333 !important; /* Màu chữ gốc mặc định */
+  position: relative; /* Bắt buộc phải có để làm điểm tựa cho đường gạch chạy */
+  display: inline-block;
+  width: 100%;
+  transition: color var(--transition-speed) ease;
+}
+
+/* Tạo đường gạch chân ẩn sẵn nằm dưới chữ */
+.custom-navbar .dropdown-item::after {
+  content: "";
+  position: absolute;
+  left: 20px; /* Thụt lề bằng đúng padding-left của dropdown-item */
+  bottom: 4px; /* Khoảng cách từ chân chữ xuống đường gạch */
+
+  /* ĐỘ LỚN: Thay đổi độ dày của đường gạch tại đây */
+  height: 3px; 
+
+  /* ĐỘ DÀI: Tính toán độ dài đường gạch bằng chiều ngang chữ (trừ đi 2 bên lề padding 20px * 2) */
+  width: calc(100% - 40px);
+
+  background-color: var(--color-3); /* Đường gạch màu vàng chuẩn */
+
+  /* HIỆU ỨNG: Thu nhỏ đường gạch về 0 và đặt tâm chuyển động ở bên trái */
+  transform: scaleX(0);
+  transform-origin: bottom left;
+  transition: transform var(--transition-speed) ease-in-out;
+}
+
+/* Hiệu ứng Hover: Chữ đổi màu xanh và đường gạch kích hoạt chạy ra */
+.custom-navbar .dropdown-item:hover {
+  font-weight: 700; /* Tăng độ đậm vừa phải để không bị lệch layout */
+}
+
+/* Khi hover vào item, đường gạch chân ::after sẽ phóng to lên kích thước đầy đủ (scaleX = 1) */
+.custom-navbar .dropdown-item:hover::after {
+  transform: scaleX(1);
+}
+
+/* Đường kẻ phân chia */
+.custom-navbar .dropdown-divider {
+  border-top: 1px solid rgba(0, 0, 0, 0.15) !important;
+  margin: 6px 0;
+}
+
+/* HIỆU ỨNG HOVER BUNG DROPDOWN (CHỈ DÀNH CHO DESKTOP) */
+@media (min-width: 992px) {
+    .nav-item.dropdown:hover .dropdown-menu {
+        display: block; /* Bật hiển thị menu khi hover vào thẻ li cha */
+        margin-top: 0; /* Đảm bảo menu nằm sát chân navbar, không bị hở */
+    }
+}
+
+/* =========================================
+   4. CỘT TRÁI - SIDEBAR FILTER (BỘ LỌC)
+========================================= */
+.filter-sidebar {
+    background-color: var(--color-2);
+    border-radius: 14px;
+    padding: 24px;
+    position: sticky;
+    top: 90px; /* Ghim bộ lọc cố định khi cuộn màn hình cuộn xuống */
+}
+
+.filter-title {
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    color: #a0aec0;
+}
+
+.filter-label {
+    font-size: 0.95rem;
+    color: #4a5568;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* Tùy chỉnh màu checkbox & radio đồng bộ xanh lá */
+.custom-checkbox:checked {
+    background-color: var(--color-1) !important;
+    border-color: var(--color-1) !important;
+}
+
+.filter-select {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-dark);
+}
+
+.filter-select:focus {
+    border-color: var(--color-1);
+    box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.15);
+}
+
+/* =========================================
+   5. CỘT PHẢI - SORT BAR & LIST XE GRID
+========================================= */
+.sort-bar {
+    background-color: var(--color-2);
+    border-radius: 12px;
+    padding: 16px 24px;
+}
+
+.sort-select {
+    cursor: pointer;
+    font-size: 0.95rem;
+    padding-right: 30px !important;
+}
+
+/* THẺ HIỂN THỊ XE (VEHICLE CARD - XOÁ BỎ CONTAINER CŨ, TỐI ƯU HOÀN TOÀN) */
+.vehicle-card {
+    background-color: var(--color-2);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    position: relative;
+    transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+
+.vehicle-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08) !important;
+}
+
+/* Tag nhãn giảm giá đè trên ảnh */
+.vehicle-badge-discount {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    background-color: #e53e3e; /* Đỏ đô nổi bật */
+    color: var(--color-2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    z-index: 10;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.vehicle-img-box {
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+    background-color: #edf2f7;
+}
+
+.vehicle-img-box .v-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.vehicle-card:hover .v-img {
+    transform: scale(1.06); /* Phóng nhẹ ảnh xe khi hover card */
+}
+
+.vehicle-detail-content {
+    padding: 20px;
+}
+
+.v-location {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.v-distance {
+    font-size: 0.85rem;
+}
+
+.v-title {
+    font-size: 1.15rem;
+    color: #1a202c;
+    margin-top: 4px;
+    line-clamp: 1;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Giá bán hiển thị */
+.price-container {
+    display: flex;
+    align-items: baseline;
+}
+
+.price-old {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.price-current {
+    font-size: 1.3rem;
+}
+
+.price-current .small-text {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #718096;
+}
+
+/* =========================================
+   6. CUSTOM PAGINATION (THANH PHÂN TRANG)
+========================================= */
+.custom-pagination .page-link {
+    color: #4a5568;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px !important; /* Phá vỡ viền dính liền của Bootstrap */
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    transition: all var(--transition-speed) ease;
+}
+
+.custom-pagination .page-link:hover {
+    background-color: rgba(0, 177, 79, 0.08); /* Nền xanh mờ */
+    color: var(--color-1);
+    border-color: var(--color-1);
+}
+
+.custom-pagination .page-item.active .page-link {
+    background-color: var(--color-1);
+    color: var(--color-2);
+    border-color: var(--color-1);
+    box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3) !important;
+}
+
+.custom-pagination .page-item.disabled .page-link {
+    color: #cbd5e0;
+    background-color: #f7fafc;
+    border-color: #edf2f7;
+}
+
+/* =========================================
+   7. FLOATING BUTTONS
+========================================= */
+.floating-contact-buttons {
+  position: fixed;
+  bottom: 40px;
+  right: 25px;
+  z-index: 999;
+}
+
+.social-icon-btn {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transition: transform var(--transition-speed) ease;
+  background-color: var(--color-2);
+}
+
+.social-icon-btn:hover {
+  transform: scale(1.5);
+}
+
+/* =========================================
+   8. FIX LỖI LAYOUT & TRÌNH BÀY FOOTER CHUẨN CORPORATE
+========================================= */
+.footer-corporate {
+    background-color: #989898; /* Thay var(--color-dark) bằng mã màu xám đậm này */
+    padding: 50px 0 30px 0;
+    color: rgba(255, 255, 255, 0.75); 
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Đảm bảo khung chứa nội dung thẳng hàng tuyệt đối với nội dung trên header */
+.footer-corporate .container-base {
+    width: 100%;
+}
+
+/* Định dạng các tiêu đề khối nội dung */
+.footer-title {
+    color: var(--color-2); /* Màu trắng nguyên bản */
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    letter-spacing: 0.5px;
+}
+
+/* Định dạng đoạn văn bản mô tả ngắn */
+.footer-text {
+    font-size: 0.9rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.55); /* Màu xám mờ vừa phải, không bị lóa mắt */
+}
+
+/* Cấu hình danh sách link liên kết */
+.footer-links a {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.6) !important;
+    transition: all var(--transition-speed) ease;
+    display: inline-block;
+}
+
+/* Hiệu ứng hover: Đổi sang xanh thương hiệu và lướt nhẹ sang phải */
+.footer-links a:hover {
+    color: var(--color-1) !important; /* Xanh lá thương hiệu #00B14F */
+    transform: translateX(4px); /* Hiệu ứng dịch chuyển nhẹ tạo cảm giác mượt mà */
+}
+
+/* Định dạng khu vực tổng đài */
+.footer-contact p {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.85);
+    display: flex;
+    align-items: center;
+}
+
+/* Icon đồng bộ với màu xanh lá chủ đạo */
+.footer-corporate .footer-contact i {
+    color: var(--color-1) !important;
+    font-size: 1rem;
+}
+
+.contact-time {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.45);
+    margin-left: 6px;
+}
+
+/* Định dạng đường kẻ phân tách (Divider) trên nền tối */
+.footer-divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important; /* Sử dụng độ mờ 10% để đường kẻ thanh lịch */
+    margin: 40px 0 25px 0;
+    opacity: 1;
+}
+
+/* Phần bản quyền dưới cùng */
+.footer-bottom {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.5px;
+}
+
+/* =========================================
+   9. RESPONSIVE MOBILE VIEW
+========================================= */
+@media (max-width: 991.98px) {
+    /* FOOTER RESPONSIVE */
+    .footer-corporate {
+        padding: 50px 0 20px 0;
+    }
+    .footer-title {
+        margin-bottom: 14px;
+        margin-top: 12px; /* Tạo khoảng hở khi các cột bị xếp chồng hàng dọc trên Mobile */
+    }
+    .footer-divider {
+        margin: 30px 0 20px 0;
+    }
+
+    /* FILTER SIDEBAR RESPONSIVE */
+    .filter-sidebar {
+        position: relative;
+        top: 0;
+        margin-bottom: 20px;
+    }
+    
+    /* NAVBAR RESPONSIVE */
+    .custom-navbar .collapse.navbar-collapse {
+        background-color: var(--color-dark);
+        padding: 20px;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+    }
+}

@@ -1,0 +1,821 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FleetFlow - Master Admin Workspace</title>
+
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../style/base.css" />
+    
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel="stylesheet" href="../style/pages/admin.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar custom-navbar fixed-top">
+        <div class="container-base h-100 position-relative">
+          <a class="navbar-brand brand-overflow" href="#">
+            <img
+              src="../assets/img/logo1.jpg"
+              alt="FleetFlow Logo"
+              class="logo-img"
+            />
+          </a>
+
+          <div class="navbar-slogan d-none d-md-block">
+            Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng
+            <span class="text-warning mx-1">•</span> An tâm
+          </div>
+
+          <div class="user-profile">
+            <div class="d-none d-sm-block text-end">
+              <div class="fw-bold fs-6 lh-1">Trần Quản Trị</div>
+              <div class="text-white-50 small" ../style="font-size: 0.75rem">
+                System Administrator
+              </div>
+            </div>
+            <img
+              src="https://ui-avatars.com/api/?name=System+Admin&background=1a1c1a&color=fff"
+              alt="Admin"
+            />
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <div class="wrapper">
+      <aside class="sidebar shadow-sm">
+        <ul class="sidebar-menu">
+          <li>
+            <a
+              href="#"
+              class="active"
+              onclick="switchTab('tab-dashboard', this)"
+              ><i class="fa-solid fa-chart-pie"></i> Tổng quan (Dashboard)</a
+            >
+          </li>
+
+          <div class="menu-header">Quản lý Tài sản & Nhân sự</div>
+          <li>
+            <a href="#" onclick="switchTab('tab-fleet', this)"
+              ><i class="fa-solid fa-car"></i> Quản lý Vòng đời Xe</a
+            >
+          </li>
+          <li>
+            <a href="#" onclick="switchTab('tab-drivers', this)"
+              ><i class="fa-solid fa-id-card-clip"></i> Duyệt Hồ sơ Tài xế
+              <span
+                class="badge bg-warning text-dark ms-auto rounded-pill"
+                id="driverBadge"
+                >3</span
+              ></a
+            >
+          </li>
+
+          <div class="menu-header">Tài chính & Tiếp thị</div>
+          <li>
+            <a href="#" onclick="switchTab('tab-pricing', this)"
+              ><i class="fa-solid fa-file-invoice-dollar"></i> Giá cước &
+              Voucher</a
+            >
+          </li>
+          <li>
+            <a href="#" onclick="switchTab('tab-ai-marketing', this)"
+              ><i class="fa-solid fa-robot"></i> Trợ lý AI & Marketing</a
+            >
+          </li>
+
+          <div class="menu-header">Hệ thống & Phân quyền</div>
+          <li>
+            <a href="#" onclick="switchTab('tab-users', this)"
+              ><i class="fa-solid fa-users-gear"></i> Tài khoản & RBAC</a
+            >
+          </li>
+          <li>
+            <a href="#" onclick="switchTab('tab-reports', this)"
+              ><i class="fa-solid fa-star"></i> Báo cáo Chất lượng</a
+            >
+          </li>
+          <li>
+            <a href="#" onclick="switchTab('tab-audit', this)"
+              ><i class="fa-solid fa-server"></i> Audit Log</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <main class="main-content">
+        <section id="tab-dashboard" class="tab-section active">
+          <h4 class="fw-bold mb-4 text-dark">Tổng quan Hệ thống</h4>
+          <div class="row g-4 mb-4">
+            <div class="col-md-3">
+              <div class="stat-card border-success border-start border-4">
+                <div>
+                  <p class="text-muted small fw-bold text-uppercase mb-1">
+                    Doanh thu tháng
+                  </p>
+                  <h4 class="fw-bold m-0 text-dark">1.2 Tỷ</h4>
+                </div>
+                <div class="stat-icon bg-icon-primary">
+                  <i class="fa-solid fa-vault"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stat-card border-info border-start border-4">
+                <div>
+                  <p class="text-muted small fw-bold text-uppercase mb-1">
+                    Xe đang vận hành
+                  </p>
+                  <h4 class="fw-bold m-0 text-dark">128/150</h4>
+                </div>
+                <div class="stat-icon bg-icon-info">
+                  <i class="fa-solid fa-car-rear"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="stat-card border-warning border-start border-4">
+                <div>
+                  <p class="text-muted small fw-bold text-uppercase mb-1">
+                    Hồ sơ chờ duyệt
+                  </p>
+                  <h4 class="fw-bold m-0 text-dark">03</h4>
+                </div>
+                <div class="stat-icon bg-icon-warning">
+                  <i class="fa-solid fa-user-clock"></i>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div
+                class="stat-card border-secondary border-start border-4"
+                ../style="border-color: #805ad5 !important"
+              >
+                <div>
+                  <p class="text-muted small fw-bold text-uppercase mb-1">
+                    Chiến dịch Email
+                  </p>
+                  <h4 class="fw-bold m-0 text-dark">02 Active</h4>
+                </div>
+                <div class="stat-icon bg-icon-purple">
+                  <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-fleet" class="tab-section">
+          <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+              <h4 class="fw-bold mb-1 text-dark">
+                Quản lý Vòng đời Xe (Fleet Lifecycle)
+              </h4>
+              <p class="text-muted small m-0">
+                Kiểm soát trạng thái và hạn đăng kiểm. Thêm phương tiện mới vào
+                hệ thống.
+              </p>
+            </div>
+            <button
+              class="btn-action btn-primary-custom"
+              data-bs-toggle="modal"
+              data-bs-target="#addVehicleModal"
+            >
+              <i class="fa-solid fa-plus me-1"></i> Khởi tạo xe mới
+            </button>
+          </div>
+
+          <div class="table-responsive table-custom">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Biển số & Thông tin</th>
+                  <th>Giấy tờ pháp lý</th>
+                  <th>Nhãn AI (AI Tags)</th>
+                  <th>Trạng thái (Vòng đời)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="fw-bold text-dark">51H-123.45</div>
+                    <div class="small text-muted">VinFast VF8 Plus | 5 Chỗ</div>
+                    <div class="small text-muted">VIN: VF8XXXXXXXXXX</div>
+                  </td>
+                  <td>
+                    <div class="small text-success fw-medium">
+                      <i class="fa-solid fa-check me-1"></i> Đăng kiểm: Còn 150
+                      ngày
+                    </div>
+                    <div class="small text-success fw-medium">
+                      <i class="fa-solid fa-check me-1"></i> Bảo hiểm: Còn 200
+                      ngày
+                    </div>
+                  </td>
+                  <td>
+                    <span class="tag-badge">Điện</span>
+                    <span class="tag-badge">Cốp rộng</span>
+                  </td>
+                  <td>
+                    <select
+                      class="form-select form-select-sm d-inline-block w-auto fw-medium text-success"
+                      onchange="handleFleetStatus(this, '51H-123.45')"
+                    >
+                      <option value="ready" selected>Sẵn sàng</option>
+                      <option value="maintenance">Đang bảo dưỡng</option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="fw-bold text-dark">51G-999.88</div>
+                    <div class="small text-muted">Toyota Fortuner | 7 Chỗ</div>
+                    <div class="small text-muted">VIN: TOYXXXXXXXXXX</div>
+                  </td>
+                  <td>
+                    <div class="small text-danger fw-bold">
+                      <i class="fa-solid fa-xmark me-1"></i> Đăng kiểm: Hết hạn
+                    </div>
+                    <div class="small text-success fw-medium">
+                      <i class="fa-solid fa-check me-1"></i> Bảo hiểm: Còn 45
+                      ngày
+                    </div>
+                  </td>
+                  <td>
+                    <span class="tag-badge">Xăng</span>
+                    <span class="tag-badge">Gầm cao</span>
+                  </td>
+                  <td>
+                    <span class="badge bg-danger fs-6 px-3"
+                      ><i class="fa-solid fa-lock me-1"></i> Khóa tự động</span
+                    >
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-drivers" class="tab-section">
+          <h4 class="fw-bold mb-1 text-dark">Kiểm duyệt Hồ sơ Tài xế</h4>
+          <p class="text-muted small mb-4">
+            Thẩm định giấy tờ hành nghề định danh (eKYC) trước khi kích hoạt
+            quyền nhận chuyến.
+          </p>
+
+          <div class="table-responsive table-custom">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Họ & Tên</th>
+                  <th>Liên hệ</th>
+                  <th>Tài liệu eKYC Upload</th>
+                  <th>Ngày nộp</th>
+                  <th class="text-end">Hành động</th>
+                </tr>
+              </thead>
+              <tbody id="driverTableBody">
+                <tr id="row-drv1">
+                  <td class="fw-bold text-dark">Nguyễn Trọng A</td>
+                  <td>
+                    <div class="small">0988 123 456</div>
+                    <div class="small text-muted">nguyena@gmail.com</div>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-outline-secondary"
+                      onclick="
+                        alert(
+                          'Đã tải bộ tài liệu: CCCD, GPLX B2 từ Cloudinary bảo mật.',
+                        )
+                      "
+                    >
+                      <i class="fa-solid fa-folder-open me-1"></i> Xem 3 Tệp
+                    </button>
+                  </td>
+                  <td class="small">10:30 | 31/05/2026</td>
+                  <td class="text-end">
+                    <button
+                      class="btn-action btn-primary-custom"
+                      onclick="approveDriver('row-drv1', 'Nguyễn Trọng A')"
+                    >
+                      Phê duyệt
+                    </button>
+                    <button
+                      class="btn-action btn-danger-custom ms-1"
+                      onclick="alert('Đã gửi email yêu cầu nộp lại tài liệu.')"
+                    >
+                      Yêu cầu nộp lại
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-pricing" class="tab-section">
+          <h4 class="fw-bold mb-4 text-dark">Cấu hình Định giá & Khuyến mãi</h4>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="config-card">
+                <h5 class="config-card-title">
+                  <i class="fa-solid fa-sliders me-2 text-primary"></i>Tham số
+                  Giá & Phạt
+                </h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label small fw-medium"
+                      >Đơn giá cơ sở (VNĐ/km)</label
+                    >
+                    <input type="number" class="form-control" value="12000" />
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label small fw-medium"
+                      >Phí phạt hủy trễ (< 6 giờ)</label
+                    >
+                    <div class="input-group">
+                      <input type="number" class="form-control" value="50" />
+                      <span class="input-group-text">%</span>
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <label class="form-label small fw-medium"
+                      >Hệ số Lễ/Tết (Tăng giá động)</label
+                    >
+                    <div class="input-group">
+                      <input
+                        type="number"
+                        step="0.1"
+                        class="form-control"
+                        value="1.1"
+                      />
+                      <span class="input-group-text">x (Tăng 10%)</span>
+                    </div>
+                  </div>
+                  <div class="col-12 mt-3 text-end">
+                    <button
+                      class="btn-action btn-primary-custom"
+                      onclick="logAudit('Cập nhật hệ số giá cơ sở')"
+                    >
+                      Lưu Cấu Hình
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="config-card">
+                <h5 class="config-card-title">
+                  <i class="fa-solid fa-ticket me-2 text-warning"></i>Khởi tạo
+                  Voucher
+                </h5>
+                <form
+                  action="#"
+                  onsubmit="
+                    event.preventDefault();
+                    logAudit('Khởi tạo Voucher mới: SUMMER26');
+                    alert('Đã tạo mã thành công!');
+                  "
+                >
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <label class="form-label small fw-medium">Mã code</label>
+                      <input
+                        type="text"
+                        class="form-control text-uppercase"
+                        placeholder="VD: SUMMER26"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-medium"
+                        >Số tiền giảm (VNĐ)</label
+                      >
+                      <input
+                        type="number"
+                        class="form-control"
+                        placeholder="100000"
+                        required
+                      />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-medium"
+                        >Ngày hết hạn</label
+                      >
+                      <input type="date" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                      <label class="form-label small fw-medium"
+                        >Áp dụng cho dòng xe</label
+                      >
+                      <select class="form-select">
+                        <option>Tất cả</option>
+                        <option>Chỉ 4-5 Chỗ</option>
+                        <option>Chỉ 7 Chỗ</option>
+                      </select>
+                    </div>
+                    <div class="col-12 mt-3 text-end">
+                      <button
+                        type="submit"
+                        class="btn-action btn-outline-custom"
+                      >
+                        Tạo Voucher
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-ai-marketing" class="tab-section">
+          <h4 class="fw-bold mb-4 text-dark">Trợ lý AI & Chiến dịch Email</h4>
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <div class="config-card">
+                <h5 class="config-card-title">
+                  <i class="fa-solid fa-brain me-2 text-info"></i>Dữ liệu Nhãn
+                  (AI Tags)
+                </h5>
+                <p class="small text-muted mb-3">
+                  Tạo kho từ khóa để Trợ lý AI (Gemini) phân tích ngôn ngữ tự
+                  nhiên gợi ý xe.
+                </p>
+
+                <div class="mb-3 p-3 bg-light rounded border">
+                  <span class="tag-badge">Cốp rộng</span>
+                  <span class="tag-badge">Gầm cao</span>
+                  <span class="tag-badge">Êm ái</span>
+                  <span class="tag-badge">Tiết kiệm xăng</span>
+                  <span class="tag-badge">Sang trọng</span>
+                </div>
+
+                <div class="input-group mb-3">
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="Thêm nhãn mới (VD: Ghế massage)"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="logAudit('Thêm nhãn AI mới')"
+                  >
+                    Thêm
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="config-card">
+                <h5 class="config-card-title">
+                  <i
+                    class="fa-solid fa-envelope-open-text me-2"
+                    ../style="color: #805ad5"
+                  ></i
+                  >Chiến dịch Email Tự động
+                </h5>
+                <div class="table-responsive">
+                  <table class="table table-sm align-middle">
+                    <thead>
+                      <tr>
+                        <th>Chiến dịch</th>
+                        <th>Điều kiện kích hoạt</th>
+                        <th>Trạng thái</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td class="fw-medium small">Re-engagement 30 Ngày</td>
+                        <td class="small text-muted">
+                          Khách chưa đặt xe > 30 ngày. Gửi mã -10%.
+                        </td>
+                        <td>
+                          <div class="form-check form-switch">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              checked
+                              onchange="
+                                logAudit(
+                                  'Thay đổi trạng thái chiến dịch Email 30 ngày',
+                                )
+                              "
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td class="fw-medium small">Welcome New User</td>
+                        <td class="small text-muted">
+                          Gửi ngay sau khi eKYC thành công.
+                        </td>
+                        <td>
+                          <div class="form-check form-switch">
+                            <input
+                              class="form-check-input"
+                              type="checkbox"
+                              checked
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-users" class="tab-section">
+          <h4 class="fw-bold mb-4 text-dark">
+            Quản trị Người dùng & Phân quyền
+          </h4>
+          <div class="table-responsive table-custom">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tài khoản</th>
+                  <th>Vai trò (Role)</th>
+                  <th>Trạng thái</th>
+                  <th class="text-end">Hành động</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="fw-medium text-muted">#USR-001</td>
+                  <td>
+                    <div class="fw-bold">Nguyễn Điều Phối</div>
+                    <div class="small text-muted">dieuphoi@fleetflow.vn</div>
+                  </td>
+                  <td>
+                    <span class="badge bg-info text-dark">Dispatcher</span>
+                  </td>
+                  <td><span class="badge bg-success">Active</span></td>
+                  <td class="text-end">
+                    <button
+                      class="btn-action btn-danger-custom"
+                      onclick="logAudit('Khóa tài khoản USR-001')"
+                    >
+                      <i class="fa-solid fa-lock"></i> Khóa
+                    </button>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="fw-medium text-muted">#USR-882</td>
+                  <td>
+                    <div class="fw-bold">Trần Khách Hàng</div>
+                    <div class="small text-muted">0901234567</div>
+                  </td>
+                  <td><span class="badge bg-secondary">Customer</span></td>
+                  <td><span class="badge bg-danger">Banned</span></td>
+                  <td class="text-end">
+                    <button
+                      class="btn-action btn-outline-custom"
+                      onclick="logAudit('Mở khóa tài khoản USR-882')"
+                    >
+                      <i class="fa-solid fa-unlock"></i> Mở khóa
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="tab-reports" class="tab-section">
+          <h4 class="fw-bold mb-4 text-dark">Báo cáo Chất lượng Dịch vụ</h4>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="config-card text-center py-5">
+                <h1 class="display-3 fw-bold text-warning mb-0">
+                  4.8 <i class="fa-solid fa-star fs-2"></i>
+                </h1>
+                <p class="text-muted mt-2">
+                  Điểm đánh giá trung bình hệ thống (Tháng này)
+                </p>
+                <button class="btn-action btn-outline-custom mt-3">
+                  <i class="fa-solid fa-download me-1"></i> Xuất File Excel
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="config-card">
+                <h6 class="fw-bold text-dark mb-3">
+                  Tài xế có điểm dưới 4.0 (Cần Review)
+                </h6>
+                <div class="alert alert-danger small py-2">
+                  <i class="fa-solid fa-triangle-exclamation me-2"></i> Trần Văn
+                  B (51G-987.65) - Điểm: 3.8/5
+                </div>
+                <p class="small text-muted mt-3 mb-0">
+                  Hệ thống tự động rà soát vào mùng 1 hàng tháng để cảnh báo tài
+                  xế vi phạm chất lượng dịch vụ.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-audit" class="tab-section">
+          <div class="d-flex justify-content-between align-items-end mb-4">
+            <div>
+              <h4 class="fw-bold mb-1 text-dark">
+                Nhật ký Hệ thống (Audit Log)
+              </h4>
+              <p class="text-muted small m-0">
+                Ghi vết mọi hành động can thiệp dữ liệu quản trị.
+              </p>
+            </div>
+          </div>
+          <div class="table-responsive table-custom">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Thời gian</th>
+                  <th>User ID</th>
+                  <th>IP Truy cập</th>
+                  <th>Hành động (Action)</th>
+                </tr>
+              </thead>
+              <tbody id="auditLogBody">
+                <tr>
+                  <td class="small text-muted">2026-05-31 12:05:10</td>
+                  <td class="fw-medium">AD01 (Admin)</td>
+                  <td class="small">192.168.1.5</td>
+                  <td class="log-audit-text">
+                    ACTION: Đăng nhập thành công vào hệ thống.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal fade" id="addVehicleModal" tabindex="-1">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 rounded-4 shadow">
+          <div class="modal-header border-bottom-0 pb-0">
+            <h5 class="fw-bold text-dark mb-0">
+              <i class="fa-solid fa-car me-2 text-primary"></i>Khởi tạo Hồ sơ
+              Phương tiện mới
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body pt-4">
+            <form
+              id="addVehicleForm"
+              onsubmit="
+                event.preventDefault();
+                submitNewVehicle();
+              "
+            >
+              <div class="row g-3">
+                <div class="col-md-4">
+                  <label class="form-label small fw-medium"
+                    >Biển kiểm soát</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control text-uppercase"
+                    placeholder="51H-123.45"
+                    required
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-medium"
+                    >Số khung (VIN)</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control text-uppercase"
+                    required
+                  />
+                </div>
+                <div class="col-md-4">
+                  <label class="form-label small fw-medium">Số máy</label>
+                  <input
+                    type="text"
+                    class="form-control text-uppercase"
+                    required
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-medium"
+                    >Thương hiệu & Dòng xe</label
+                  >
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="VD: VinFast VF8"
+                    required
+                  />
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label small fw-medium">Số chỗ ngồi</label>
+                  <select class="form-select">
+                    <option>4-5 Chỗ (Sedan/SUV)</option>
+                    <option>7 Chỗ (SUV/MPV)</option>
+                    <option>16 Chỗ (Van)</option>
+                  </select>
+                </div>
+
+                <div class="col-12 mt-4 border-top pt-3">
+                  <label class="form-label fw-bold small text-dark mb-3"
+                    >Tải lên Giấy tờ pháp lý (Bắt buộc)</label
+                  >
+                  <div class="row g-3">
+                    <div class="col-md-4">
+                      <div
+                        class="upload-area"
+                        onclick="document.getElementById('upReg').click()"
+                      >
+                        <i
+                          class="fa-solid fa-file-invoice fs-3 text-secondary mb-2"
+                        ></i>
+                        <div class="small fw-medium">Giấy đăng ký xe</div>
+                        <input type="file" id="upReg" class="d-none" required />
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div
+                        class="upload-area"
+                        onclick="document.getElementById('upInsp').click()"
+                      >
+                        <i
+                          class="fa-solid fa-clipboard-check fs-3 text-secondary mb-2"
+                        ></i>
+                        <div class="small fw-medium">Giấy Đăng kiểm</div>
+                        <input
+                          type="file"
+                          id="upInsp"
+                          class="d-none"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div
+                        class="upload-area"
+                        onclick="document.getElementById('upIns').click()"
+                      >
+                        <i
+                          class="fa-solid fa-shield-halved fs-3 text-secondary mb-2"
+                        ></i>
+                        <div class="small fw-medium">Bảo hiểm TNDS</div>
+                        <input type="file" id="upIns" class="d-none" required />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mt-4 text-end">
+                <button
+                  type="button"
+                  class="btn btn-light me-2"
+                  data-bs-dismiss="modal"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  class="btn-action btn-primary-custom px-4"
+                >
+                  Tạo hồ sơ xe
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>
