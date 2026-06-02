@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow - Đặt chuyến & Lộ trình</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <link rel="stylesheet" href="assets/css/base.css" />
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+
+    <style>
+        /* =========================================
+           1. TOP NAVBAR (ĐỒNG BỘ 100% TỪ TRIP-HISTORY)
+        ========================================= */
+        .custom-navbar {
+            background-color: var(--color-1, #00B14F);
+            height: 70px; padding: 0 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative; z-index: 1050;
+        }
+        .custom-navbar .container-base {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; max-width: 100% !important; margin: 0; padding: 0 30px !important; height: 100%; position: relative;
+        }
+        .brand-overflow { height: 70px; display: flex; align-items: center; text-decoration: none; padding-left: 0 !important; margin-left: 0 !important;}
+        .brand-overflow .logo-img { height: 100%; width: auto; object-fit: contain; padding: 5px 0; filter: brightness(0) invert(1); }
+        
+        .navbar-center-links { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 35px; }
+        .nav-link-center {
+            color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; font-size: 1.05rem;
+            text-decoration: none; position: relative; padding: 6px 0; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important; display: inline-block; transform-origin: center center;
+        }
+        .nav-link-center:hover, .nav-link-center.active { color: var(--color-2, #FFFFFF) !important; transform: scale(1.05); text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .nav-link-center::before {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+            background-color: var(--color-3, #FFDE59); transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link-center:hover::before, .nav-link-center.active::before { width: 100%; }
+
+        .nav-right-actions { display: flex; align-items: center; padding-right: 0 !important; margin-right: 0 !important;}
+        
+        /* Profile Dropdown Đồng bộ */
+        .user-profile { display: flex; align-items: center; color: white; cursor: pointer; padding: 4px 8px; border-radius: 50px; transition: background-color 0.3s; }
+        .user-profile img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); object-fit: cover; margin-left: 12px; transition: transform 0.3s ease, border-color 0.3s;}
+        .user-profile:hover img { transform: scale(1.1); border-color: var(--color-3, #FFDE59); }
+
+        .profile-dropdown-menu {
+            border-radius: 12px; padding: 8px 0; margin-top: 12px !important;
+            border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.1); min-width: 220px;
+        }
+        .profile-dropdown-menu .dropdown-item { padding: 10px 20px; font-size: 0.95rem; font-weight: 500; color: var(--color-dark); transition: all 0.2s; }
+        .profile-dropdown-menu .dropdown-item:hover { background-color: var(--color-bg, #f4f6f8); color: var(--color-1, #00B14F); transform: translateX(4px); }
+
+        /* =========================================
+           2. BỐ CỤC ĐẶT XE (MAP & BOOKING PANEL)
+        ========================================= */
+        body { overflow: hidden; } 
+        
+        .booking-layout {
+            display: flex; height: calc(100vh - 70px); width: 100%; position: relative; background-color: var(--color-bg, #f4f6f8);
+        }
+
+        /* KHU VỰC BẢN ĐỒ */
+        .map-container {
+            flex: 1; position: relative;
+            background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000') center/cover no-repeat; z-index: 1;
+        }
+        .map-overlay-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.3); backdrop-filter: blur(2px);
+        }
+
+        /* KHU VỰC ĐIỀU KHIỂN */
+        .booking-panel {
+            width: 420px; background: var(--color-2, #FFFFFF); box-shadow: -8px 0 30px rgba(0,0,0,0.05); z-index: 10;
+            display: flex; flex-direction: column; position: relative;
+        }
+
+        .panel-header { padding: 24px 30px 16px 30px; border-bottom: 1px solid #edf2f7; }
+        .panel-header h2 { font-size: 1.4rem; font-weight: 800; color: var(--color-dark, #1a1c1a); margin: 0; letter-spacing: -0.5px;}
+
+        .panel-body { padding: 24px 30px; flex: 1; overflow-y: auto; }
+        .panel-body::-webkit-scrollbar { width: 5px; }
+        .panel-body::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .panel-footer {
+            padding: 20px 30px 30px 30px; background: white; border-top: 1px solid #edf2f7; box-shadow: 0 -4px 15px rgba(0,0,0,0.02);
+        }
+
+        /* =========================================
+           3. UI COMPONENTS (INPUTS & BUTTONS)
+        ========================================= */
+        .route-inputs-wrapper { position: relative; margin-bottom: 30px; padding-left: 28px; }
+        .route-inputs-wrapper::before {
+            content: ''; position: absolute; left: 7px; top: 24px; bottom: 24px;
+            width: 2px; background-image: linear-gradient(to bottom, #cbd5e1 50%, transparent 50%); background-size: 2px 8px;
+        }
+        .location-dot {
+            position: absolute; left: 0; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white;
+            box-shadow: 0 0 0 2px var(--color-1, #00B14F); background: var(--color-1, #00B14F); z-index: 2;
+        }
+        .dot-pickup { top: 16px; }
+        .dot-dropoff { bottom: 16px; background: #e53e3e; box-shadow: 0 0 0 2px #e53e3e; }
+
+        .form-floating > .form-control {
+            border: none; border-bottom: 1px solid #cbd5e1; border-radius: 0; padding-left: 10px; padding-right: 10px;
+            background: transparent; font-weight: 600; color: #1e293b; box-shadow: none !important;
+        }
+        .form-floating > .form-control:focus { border-bottom-color: var(--color-1, #00B14F); border-bottom-width: 2px;}
+        .form-floating > label { padding-left: 10px; color: #94a3b8; font-weight: 500; }
+
+        .btn-swap-location {
+            position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 34px; height: 34px;
+            border-radius: 50%; border: 1px solid #e2e8f0; background: white; display: flex; align-items: center; justify-content: center;
+            color: #64748b; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .btn-swap-location:hover { color: var(--color-1, #00B14F); border-color: var(--color-1, #00B14F); transform: translateY(-50%) rotate(180deg); }
+
+        .btn-booking-submit {
+            width: 100%; padding: 18px; border-radius: 12px; background: var(--color-1, #00B14F); color: white;
+            font-size: 1.1rem; font-weight: 700; border: none; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-booking-submit:hover:not(:disabled) { background: #009640; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 177, 79, 0.25); }
+        .btn-booking-submit:disabled { background: #cbd5e1; color: #f8fafc; cursor: not-allowed; }
+
+        .form-control.is-invalid { border-bottom-color: #e53e3e !important; }
+        .invalid-feedback-inline { display: none; font-size: 0.82rem; color: #e53e3e; font-weight: 500; margin-top: 6px; }
+        .invalid-feedback-inline.d-block { display: block; animation: fadeIn 0.3s ease; }
+        
+        .distance-badge {
+            display: inline-block; padding: 6px 12px; background: #f1f5f9; border-radius: 6px;
+            font-size: 0.85rem; font-weight: 600; color: #475569; margin-top: 15px; border: 1px solid #e2e8f0;
+        }
+
+        .autocomplete-dropdown {
+            position: absolute; top: 100%; left: 10px; width: calc(100% - 10px); background: white; border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; z-index: 20; display: none; overflow: hidden; animation: slideDown 0.2s ease;
+        }
+        .autocomplete-item { padding: 12px 16px; border-bottom: 1px solid #f1f5f9; cursor: pointer; display: flex; align-items: center; gap: 12px;}
+        .autocomplete-item:last-child { border-bottom: none; }
+        .autocomplete-item:hover { background: #f8fafc; }
+        .autocomplete-item i { color: #94a3b8; }
+        .autocomplete-main-text { font-weight: 600; color: #1e293b; display: block;}
+        .autocomplete-sub-text { font-size: 0.8rem; color: #64748b; }
+
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* =========================================
+           4. RESPONSIVE MOBILE (BOTTOM SHEET)
+        ========================================= */
+        @media (max-width: 991px) {
+            .booking-layout { display: block; }
+            .map-container { height: 100%; width: 100%; position: absolute; top: 0; left: 0; }
+            
+            .booking-panel {
+                position: absolute; bottom: 0; left: 0; width: 100%; height: auto; max-height: 85vh;
+                background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+                border-radius: 28px 28px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+            }
+            .panel-header { padding: 24px 24px 16px 24px; text-align: center; }
+            .panel-header::before { content: ''; display: block; width: 40px; height: 5px; background: #cbd5e1; border-radius: 5px; margin: 0 auto 16px auto; }
+            .panel-body { padding: 20px 24px; }
+            .panel-footer { padding: 15px 24px 30px 24px; background: transparent; border-top: none; box-shadow: none;}
+            .floating-contact-buttons { bottom: auto; top: 90px; left: 15px; }
+        }
+
+        /* Toasts */
+        .toast-system-container { z-index: 9999; }
+        .toast-premium-error { background-color: #ef4444 !important; color: white !important; border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25); }
+        .toast-premium-warning { background-color: #f59e0b !important; color: white !important; border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.25); }
+
+        /* Floating Contact Buttons (Optimized GPU) */
+        .floating-contact-buttons { position: fixed; bottom: 40px; left: 30px; z-index: 1050; }
+        .social-icon-btn { 
+            width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: #ffffff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); will-change: transform, box-shadow; -webkit-backface-visibility: hidden; backface-visibility: hidden; transform: translateZ(0); 
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); text-decoration: none;
+        }
+        .social-icon-btn img { border-radius: 50%; object-fit: cover; width: 34px; height: 34px; transition: transform 0.3s ease; }
+        .social-icon-btn:hover { transform: translateY(-6px) scale(1.5); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); }
+        .social-icon-btn:hover img { transform: scale(1.05); }
+        .social-icon-btn:active { transform: translateY(0) scale(0.95); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); transition-duration: 0.1s; }
+        @media (max-width: 576px) { .social-icon-btn { width: 45px; height: 45px; } .social-icon-btn img { width: 30px; height: 30px; } }
+    </style>
+</head>
+<body>
+
+    <header class="custom-navbar">
+        <div class="container-base">
+            <a class="navbar-brand brand-overflow" href="index.html">
+                <img src="assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img">
+            </a>
+            <div class="navbar-center-links d-none d-lg-flex">
+                <a href="index.html" class="nav-link-center">Trang chủ</a>
+                <a href="findCar.html" class="nav-link-center active">Đặt xe</a>
+                <a href="trip-history.html" class="nav-link-center">Chuyến đi</a>
+            </div>
+            <div class="nav-right-actions">
+                <div class="user-profile dropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Tùy chọn tài khoản">
+                    <div class="d-none d-sm-block text-end">
+                        <div class="fw-bold fs-6 lh-1 text-white">TienthDung</div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem; margin-top: 4px;">Hành khách hạng Vàng</div>
+                    </div>
+                    <img src="https://ui-avatars.com/api/?name=TienthDung&background=FFDE59&color=1a1c1a&bold=true" alt="Customer Avatar">
+                    
+                    <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fa-regular fa-id-badge me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-wallet me-2 text-muted"></i> Ví FleetFlow</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger fw-bold" href="login.html"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Đăng xuất</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="booking-layout">
+        
+        <section class="map-container">
+            <div class="map-overlay-layer"></div>
+            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:2; pointer-events:none;">
+                <i class="fa-solid fa-map-location-dot fs-1 text-secondary opacity-50 mb-2"></i>
+                <h5 class="fw-bold text-secondary opacity-50">Khu vực Render Google Maps API</h5>
+            </div>
+        </section>
+
+        <aside class="booking-panel shadow-lg">
+            <div class="panel-header">
+                <h2>Thiết lập lộ trình</h2>
+            </div>
+            
+            <div class="panel-body">
+                <div class="route-inputs-wrapper">
+                    <div class="location-dot dot-pickup"></div>
+                    <div class="location-dot dot-dropoff"></div>
+                    
+                    <button class="btn-swap-location" onclick="swapLocations()" title="Đảo chiều">
+                        <i class="fa-solid fa-arrow-down-up-across-line"></i>
+                    </button>
+
+                    <div class="form-floating mb-4 position-relative">
+                        <input type="text" class="form-control" id="inputPickup" placeholder="Điểm đón" value="KĐT Vinhomes Central Park, Q1" oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()">
+                        <label for="inputPickup">Đón tại</label>
+                        <div class="autocomplete-dropdown" id="pickupDropdown">
+                            <div class="autocomplete-item" onclick="selectLocation('inputPickup', 'KĐT Vinhomes Central Park, Q1', 'pickupDropdown')">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div><span class="autocomplete-main-text">KĐT Vinhomes Central Park</span><span class="autocomplete-sub-text">Phường 22, Quận Bình Thạnh, HCM</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="inputDropoff" placeholder="Điểm trả" oninput="showMockAutocomplete('dropoffDropdown')" onchange="triggerMapCalculation()">
+                        <label for="inputDropoff">Đến đâu?</label>
+                        <div class="autocomplete-dropdown" id="dropoffDropdown">
+                            <div class="autocomplete-item" onclick="selectLocation('inputDropoff', 'Bãi Sau Vũng Tàu', 'dropoffDropdown')">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div><span class="autocomplete-main-text">Bãi Sau Vũng Tàu</span><span class="autocomplete-sub-text">Đường Thùy Vân, TP. Vũng Tàu</span></div>
+                            </div>
+                            <div class="autocomplete-item" onclick="selectLocation('inputDropoff', 'Chợ Bến Thành, Q1', 'dropoffDropdown')">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div><span class="autocomplete-main-text">Chợ Bến Thành</span><span class="autocomplete-sub-text">Phường Bến Thành, Quận 1, HCM</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="distance-badge" id="lblDistanceDisplay">
+                    <i class="fa-solid fa-route me-1 text-primary"></i> Quãng đường: <span id="distValue">--</span> km
+                </div>
+
+                <h6 class="fw-bold mt-5 mb-3 text-dark">Thời gian khởi hành dự kiến</h6>
+                <div class="form-floating">
+                    <input type="datetime-local" class="form-control" id="inputDepartureTime" onchange="validateDepartureTime()">
+                    <label for="inputDepartureTime"><i class="fa-regular fa-clock me-1"></i> Chọn giờ đi</label>
+                </div>
+                <div class="invalid-feedback-inline" id="timeErrorMsg">
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng đặt xe trước giờ khởi hành tối thiểu 120 phút.
+                </div>
+            </div>
+
+            <div class="panel-footer">
+                <button class="btn-booking-submit" id="btnContinue" onclick="simulateBookingSubmit()" disabled>
+                    Chốt lộ trình
+                </button>
+            </div>
+        </aside>
+
+    </main>
+
+    <aside class="floating-contact-buttons d-flex flex-column gap-3">
+        <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
+            <img src="../assets/img/zalo.jpg" alt="Zalo">
+        </a>
+        <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #9D32FA;" title="Chat Messenger">
+            <img src="../assets/img/messenger.jpg" alt="Messenger">
+        </a>
+        <a href="tel:1900xxxx" class="social-icon-btn" style="border: 2px solid var(--color-1);" title="Gọi hotline">
+            <img src="../assets/img/calling.jpg" alt="Phone">
+        </a>
+    </aside>
+
+    <div class="toast-container toast-system-container position-fixed top-0 end-0 p-3">
+        <div id="distanceErrorToast" class="toast align-items-center toast-premium-warning" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="d-flex">
+                <div class="toast-body py-3 fw-medium">
+                    <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> Quãng đường không đạt mức tối thiểu 20km. Vui lòng đặt lại lộ trình.
+                </div>
+                <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+
+        <div id="systemErrorToast" class="toast align-items-center toast-premium-error" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="4000">
+            <div class="d-flex">
+                <div class="toast-body py-3">
+                    <i class="fa-solid fa-circle-xmark me-2 fs-5"></i> <strong>Update failed</strong>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // State quản lý Validation
+        let isDistanceValid = false;
+        let isTimeValid = false;
+
+        // Elements
+        const inputPickup = document.getElementById('inputPickup');
+        const inputDropoff = document.getElementById('inputDropoff');
+        const inputTime = document.getElementById('inputDepartureTime');
+        const btnContinue = document.getElementById('btnContinue');
+        const timeErrorMsg = document.getElementById('timeErrorMsg');
+
+        // Khởi tạo Toasts Bootstrap
+        let toastDistance, toastSystemError;
+        document.addEventListener("DOMContentLoaded", () => {
+            toastDistance = new bootstrap.Toast(document.getElementById('distanceErrorToast'));
+            toastSystemError = new bootstrap.Toast(document.getElementById('systemErrorToast'));
+            
+            const now = new Date();
+            const localISOTime = (new Date(now.getTime() - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+            inputTime.min = localISOTime;
+        });
+
+        function swapLocations() {
+            const temp = inputPickup.value;
+            inputPickup.value = inputDropoff.value;
+            inputDropoff.value = temp;
+            triggerMapCalculation();
+        }
+
+        function showMockAutocomplete(dropdownId) {
+            document.getElementById(dropdownId).style.display = 'block';
+        }
+        function selectLocation(inputId, textValue, dropdownId) {
+            document.getElementById(inputId).value = textValue;
+            document.getElementById(dropdownId).style.display = 'none';
+            triggerMapCalculation();
+        }
+        document.addEventListener('click', function(e) {
+            if(!e.target.closest('.form-floating')) {
+                document.getElementById('pickupDropdown').style.display = 'none';
+                document.getElementById('dropoffDropdown').style.display = 'none';
+            }
+        });
+
+        function triggerMapCalculation() {
+            const pickup = inputPickup.value.toLowerCase();
+            const dropoff = inputDropoff.value.toLowerCase();
+            if(!pickup || !dropoff) return;
+
+            let simulatedDistanceKm = 0;
+            
+            if (dropoff.includes('vũng tàu')) {
+                simulatedDistanceKm = 105; 
+            } else if (dropoff.includes('quận 1') || dropoff.includes('chợ bến thành')) {
+                simulatedDistanceKm = 5; 
+            } else {
+                simulatedDistanceKm = 25; 
+            }
+
+            document.getElementById('distValue').innerText = simulatedDistanceKm;
+
+            if (simulatedDistanceKm <= 20) {
+                isDistanceValid = false;
+                toastDistance.show(); 
+            } else {
+                isDistanceValid = true;
+            }
+            
+            checkFormValidity();
+        }
+
+        function validateDepartureTime() {
+            if(!inputTime.value) {
+                isTimeValid = false;
+                checkFormValidity();
+                return;
+            }
+
+            const selectedMs = new Date(inputTime.value).getTime();
+            const currentMs = new Date().getTime(); 
+            
+            const diffMinutes = (selectedMs - currentMs) / (1000 * 60);
+
+            if (diffMinutes < 120) {
+                inputTime.classList.add('is-invalid');
+                timeErrorMsg.classList.add('d-block');
+                isTimeValid = false;
+            } else {
+                inputTime.classList.remove('is-invalid');
+                timeErrorMsg.classList.remove('d-block');
+                isTimeValid = true;
+            }
+            
+            checkFormValidity();
+        }
+
+        function checkFormValidity() {
+            btnContinue.disabled = !(isDistanceValid && isTimeValid);
+        }
+
+        function simulateBookingSubmit() {
+            const originalText = btnContinue.innerHTML;
+            btnContinue.disabled = true;
+            btnContinue.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải dữ liệu...';
+
+            setTimeout(() => {
+                btnContinue.innerHTML = originalText;
+                btnContinue.disabled = false;
+                toastSystemError.show(); // Hiển thị Global Error Toast (Update failed)
+            }, 1500);
+        }
+
+        triggerMapCalculation();
+
+    </script>
+</body>
+</html>
