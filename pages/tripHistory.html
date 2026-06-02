@@ -3,436 +3,784 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lịch sử chuyến đi - FleetFlow</title>
+    <meta name="description" content="FleetFlow - Quản lý lộ trình và lịch sử di chuyển thông minh của bạn.">
+    <title>FleetFlow - Lịch Sử & Chi Tiết Chuyến Đi</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <link rel="stylesheet" href="assets/css/base.css" />
 
     <style>
         /* =========================================
-           HỆ MÀU & BIẾN CƠ SỞ
+           TÙY BIẾN SÂU TOP NAVBAR (ĐỒNG BỘ HIỆU ỨNG TRƯỢT CHẬM)
         ========================================= */
-        :root {
-            --color-1: #00B14F; 
-            --color-dark: #1a1c1a;
-            --color-bg: #f4f6f8;
-            --border-color: #e2e8f0;
-            --text-muted: #64748b;
+        .custom-navbar {
+            background-color: var(--color-1, #00B14F);
+            height: 70px;
+            padding: 0 !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1050;
+        }
+        
+        /* Ép khung chứa của Navbar căng tràn 100% màn hình */
+        .custom-navbar .container-base {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 100% !important; /* Phá vỡ giới hạn 1200px */
+            margin: 0;
+            padding: 0 30px !important; /* Khoảng cách lề với 2 mép màn hình (có thể tăng giảm tùy ý) */
+            height: 100%;
+            position: relative;
         }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-dark);
+        /* Đảm bảo vùng chứa logo ép sát mép trái */
+        .brand-overflow { 
+            height: 70px; 
+            display: flex; 
+            align-items: center; 
+            text-decoration: none;
+            padding-left: 0 !important;
+            margin-left: 0 !important;
         }
 
-        /* Navbar giả định */
-        .custom-navbar { background-color: var(--color-1); height: 70px; display: flex; align-items: center; padding: 0 20px;}
-        .custom-navbar h4 { color: white; margin: 0; font-weight: 700; }
+        /* Đảm bảo vùng chứa profile ép sát mép phải */
+        .nav-right-actions { 
+            display: flex; 
+            align-items: center; 
+            padding-right: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .brand-overflow { height: 70px; display: flex; align-items: center; text-decoration: none; }
+        .brand-overflow .logo-img { height: 100%; width: auto; object-fit: contain; padding: 5px 0; }
+
+        .navbar-center-links {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            display: flex; gap: 35px;
+        }
+
+        /* Hover Text phóng to nhẹ & Line vàng trượt chậm chân chữ */
+        .nav-link-center {
+            color: rgba(255, 255, 255, 0.9) !important;
+            font-weight: 500;
+            font-size: 1.05rem;
+            text-decoration: none;
+            position: relative;
+            padding: 6px 0;
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important;
+            transform-origin: center center;
+            display: inline-block;
+        }
+        .nav-link-center:hover, .nav-link-center.active {
+            color: var(--color-2, #FFFFFF) !important;
+            transform: scale(1.05);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+        .nav-link-center::before {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 2px;
+            background-color: var(--color-3, #FFDE59);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link-center:hover::before, .nav-link-center.active::before {
+            width: 100%;
+        }
+
+        .nav-right-actions { display: flex; align-items: center; }
 
         /* =========================================
-           1. BOOKING HISTORY PAGE (TABS & LIST)
+           3D ELEVATED TRIP CARDS & TABS HOVER
         ========================================= */
-        .page-container { max-width: 800px; margin: 0 auto; padding: 30px 15px; }
-        
-        /* Sliding Tabs */
-        .trip-tabs {
-            display: flex; overflow-x: auto; gap: 20px; border-bottom: 2px solid var(--border-color);
-            margin-bottom: 24px; padding-bottom: 10px;
+        .main-dashboard {
+            background-color: var(--color-bg, #f4f6f8);
+            min-height: calc(100vh - 70px);
+            padding: 40px 0;
         }
-        .trip-tabs::-webkit-scrollbar { display: none; }
-        .trip-tab {
-            font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap;
-            position: relative; padding-bottom: 10px; transition: color 0.3s;
-        }
-        .trip-tab.active { color: var(--color-1); }
-        .trip-tab.active::after {
-            content: ''; position: absolute; bottom: -12px; left: 0; width: 100%; height: 3px;
-            background-color: var(--color-1); border-radius: 3px 3px 0 0;
-            animation: slideIn 0.3s ease;
-        }
-        @keyframes slideIn { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
-        /* Trip Card (Elevated Card) */
-        .trip-card {
-            background: white; border-radius: 12px; padding: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 16px;
-            border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s;
+        .dashboard-card-wrapper {
+            background: var(--color-2, #FFFFFF);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        /* Sliding Tab Indicator Design */
+        .sliding-tabs-container {
+            position: relative;
+            border-bottom: 2px solid var(--border-color, #e2e8f0);
+            margin-bottom: 35px;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+        }
+        .sliding-tabs-container::-webkit-scrollbar { display: none; }
+
+        .tab-pill {
+            padding: 10px 24px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-muted, #64748b);
+            border: none;
+            background: transparent;
+            position: relative;
+            transition: color 0.3s ease;
             cursor: pointer;
         }
-        .trip-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
-        
-        /* TripStatusBadge */
-        .status-badge {
-            padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+        .tab-pill.active {
+            color: var(--color-1, #00B14F);
         }
-        .status-pending { background: #fff3cd; color: #b47d00; border: 1px solid #ffe69c; }
-        .status-active { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
-        .status-completed { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .status-cancelled { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .tab-pill::after {
+            content: '';
+            position: absolute;
+            bottom: -2px; left: 0;
+            width: 0; height: 3px;
+            background-color: var(--color-1, #00B14F);
+            border-radius: 3px 3px 0 0;
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tab-pill.active::after { width: 100%; }
 
-        .route-text { font-size: 1.1rem; font-weight: 700; margin: 12px 0; color: #1e293b; }
-        .car-info { font-size: 0.9rem; color: var(--text-muted); display: flex; align-items: center; gap: 8px; }
+        /* Rich Card Design (Hiệu ứng viền phát sáng hoành tráng) */
+        .trip-item-card {
+            background: var(--color-2, #FFFFFF);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            display: block;
+            color: inherit;
+            text-decoration: none;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
+        }
+        /* Hiệu ứng hào quang phát quang biên cạnh card */
+        .trip-item-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background-color: #cbd5e1;
+            transition: width 0.3s ease;
+        }
+        .trip-item-card.status-pending-card::before { background-color: #FFDE59; }
+        .trip-item-card.status-active-card::before { background-color: #3182ce; }
+        .trip-item-card.status-completed-card::before { background-color: #00B14F; }
+        .trip-item-card.status-cancelled-card::before { background-color: #e53e3e; }
+
+        .trip-item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.07);
+            border-color: transparent;
+        }
+        .trip-item-card:hover::before {
+            width: 6px;
+        }
+
+        /* Status Badge Component */
+        .trip-status-badge {
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-block;
+        }
+        .badge-pending { background: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+        .badge-active { background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; }
+        .badge-completed { background: #f0fdf4; color: #166534; border: 1px solid #dcfce7; }
+        .badge-cancelled { background: #fdf2f2; color: #991b1b; border: 1px solid #fee2e2; }
+
+        .location-flow {
+            font-size: 1.25rem; font-weight: 700; color: var(--color-dark, #1a1c1a); margin: 16px 0;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .card-meta { font-size: 0.9rem; color: var(--text-muted, #64748b); display: flex; gap: 20px; }
+
+        /* Empty State */
+        .empty-state-box { text-align: center; padding: 60px 0; display: none; }
+        .empty-state-box i { font-size: 4.5rem; color: #cbd5e1; margin-bottom: 20px; }
 
         /* =========================================
-           2. TRIP DETAILS PAGE
+           TRANG CHI TIẾT CHUYẾN ĐI (TRIP DETAILS)
         ========================================= */
-        .details-view { display: none; }
-        .details-header { display: flex; align-items: center; gap: 15px; margin-bottom: 24px; cursor: pointer; color: var(--text-muted); font-weight: 600; }
-        .details-header:hover { color: var(--color-dark); }
+        .view-section { display: none; animation: viewFadeIn 0.5s ease forwards; }
+        .view-section.view-active { display: block; }
         
-        /* Mini Map Mockup */
-        .mini-map {
-            width: 100%; height: 200px; background: #e2e8f0; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
-            color: #94a3b8; font-weight: 600; font-style: italic; border: 1px solid var(--border-color);
+        @keyframes viewFadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Lộ trình (Vertical Stepper) */
-        .route-timeline { position: relative; padding-left: 20px; border-left: 2px dashed #cbd5e1; margin-left: 10px; margin-bottom: 30px; }
-        .timeline-item { position: relative; margin-bottom: 24px; }
-        .timeline-item:last-child { margin-bottom: 0; }
-        .timeline-item::before {
-            content: ''; position: absolute; left: -27px; top: 2px; width: 12px; height: 12px;
-            border-radius: 50%; border: 2px solid white; box-shadow: 0 0 0 2px var(--color-1); background: var(--color-1);
+        .btn-return-back {
+            display: inline-flex; align-items: center; gap: 8px; color: var(--color-1);
+            font-weight: 600; cursor: pointer; margin-bottom: 25px; transition: transform 0.2s;
         }
-        .timeline-item.destination::before { background: #e53e3e; box-shadow: 0 0 0 2px #e53e3e; }
-        .timeline-time { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px; }
-        .timeline-address { font-size: 1rem; font-weight: 600; color: var(--color-dark); }
+        .btn-return-back:hover { transform: translateX(-4px); }
 
-        /* Driver Info */
-        .driver-card {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 16px; background: white; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 24px;
+        /* Mini MapViewer UI */
+        .map-viewer-container {
+            width: 100%; height: 240px; background: #e2e8f0; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 30px;
+            color: #94a3b8; font-weight: 600; font-style: italic; border: 1px solid #edf2f7;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05); position: relative;
         }
-        .driver-info { display: flex; align-items: center; gap: 16px; }
-        .driver-avatar { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-        .btn-call { width: 40px; height: 40px; border-radius: 50%; background: #ebf8ff; color: #3182ce; display: flex; align-items: center; justify-content: center; border: none; text-decoration: none; transition: 0.2s;}
-        .btn-call:hover { background: #3182ce; color: white; }
 
-        /* Invoice Breakdown */
-        .invoice-card { background: white; border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); margin-bottom: 30px; }
-        .invoice-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: #475569; }
-        .invoice-total { display: flex; justify-content: space-between; border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 16px; font-size: 1.15rem; font-weight: 800; color: var(--color-dark); }
+        /* Vertical Route Timeline Stepper */
+        .vertical-timeline {
+            position: relative; padding-left: 24px; border-left: 2px dashed #cbd5e1;
+            margin-left: 12px; margin-bottom: 35px;
+        }
+        .timeline-node { position: relative; margin-bottom: 30px; }
+        .timeline-node:last-child { margin-bottom: 0; }
+        .timeline-node::before {
+            content: ''; position: absolute; left: -31px; top: 4px; width: 14px; height: 14px;
+            border-radius: 50%; border: 2px solid white; background: var(--color-1);
+            box-shadow: 0 0 0 2px var(--color-1);
+        }
+        .timeline-node.node-destination::before { background: #e53e3e; box-shadow: 0 0 0 2px #e53e3e; }
+        
+        .node-meta { font-size: 0.82rem; color: var(--text-muted); font-weight: 500; margin-bottom: 4px; }
+        .node-location { font-size: 1.05rem; font-weight: 700; color: #1e293b; }
 
-        /* Action Area */
-        .action-area { display: flex; gap: 16px; }
-        .btn-action { flex: 1; padding: 14px; border-radius: 10px; font-weight: 600; border: none; transition: 0.2s; }
-        .btn-action.btn-danger-soft { background: #fff5f5; color: #e53e3e; border: 1px solid #fed7d7; }
-        .btn-action.btn-danger-soft:hover { background: #fed7d7; }
-        .btn-action.btn-primary-solid { background: var(--color-1); color: white; }
-        .btn-action.btn-primary-solid:hover { background: #009640; }
+        /* Driver & Vehicle Dynamic Specs */
+        .panel-card {
+            background: var(--color-2); padding: 20px; border-radius: 16px;
+            border: 1px solid var(--border-color); margin-bottom: 24px;
+        }
+        .driver-profile { display: flex; align-items: center; justify-content: space-between; }
+        .driver-meta-box { display: flex; align-items: center; gap: 16px; }
+        .driver-avatar-img { width: 54px; height: 54px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        
+        .btn-call-trigger {
+            width: 44px; height: 44px; border-radius: 50%; background: #f0fdf4; color: var(--color-1);
+            display: flex; align-items: center; justify-content: center; border: none; transition: all 0.2s;
+        }
+        .btn-call-trigger:hover { background: var(--color-1); color: white; transform: scale(1.05); }
 
-        /* Khóa đánh giá (BR-25) */
-        .btn-action.locked {
-            opacity: 0.5; pointer-events: none; background: #e2e8f0; color: #94a3b8; border-color: #cbd5e1;
+        /* Invoice Breakdown Row */
+        .billing-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 0.98rem; color: #475569; }
+        .billing-total-row {
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px solid var(--border-color); margin-top: 18px; padding-top: 18px;
+            font-size: 1.25rem; font-weight: 800; color: var(--color-dark);
+        }
+
+        /* Action Footer Buttons Grid */
+        .action-flex-grid { display: flex; gap: 16px; margin-top: 35px; }
+        .btn-control-action { flex: 1; padding: 15px; border-radius: 12px; font-weight: 700; border: none; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.95rem; }
+        .btn-control-action.btn-cancel-action { background: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; }
+        .btn-control-action.btn-cancel-action:hover { background: #fee2e2; transform: translateY(-2px); }
+        .btn-control-action.btn-rate-action { background: var(--color-1); color: white; }
+        .btn-control-action.btn-rate-action:hover { background: #009640; transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0, 177, 79, 0.2); }
+        
+        /* Locked State Tooltip Base */
+        .btn-control-action.action-locked {
+            background: #f1f5f9; color: #94a3b8; border: 1px solid #e2e8f0; cursor: not-allowed; opacity: 0.65; transform: none !important; box-shadow: none !important;
         }
 
         /* =========================================
-           3. MODALS & INTERACTIVE STARS
+           MODALS INTERACTION & RATING STARS
         ========================================= */
-        .modal-content { border-radius: 16px; border: none; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
-        .modal-backdrop { backdrop-filter: blur(4px); } /* Làm mờ nền */
-        
-        .penalty-warning { background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; border-left: 4px solid #ffeeba; font-size: 0.9rem; margin-bottom: 16px;}
-        
-        /* Interactive Star Rating */
-        .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 8px; margin: 20px 0; }
-        .star-rating input { display: none; }
-        .star-rating label { font-size: 2.5rem; color: #cbd5e1; cursor: pointer; transition: 0.2s; }
-        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input:checked ~ label { color: #f59e0b; }
+        .modal-content-premium { border-radius: 24px; border: none; box-shadow: 0 20px 50px rgba(0,0,0,0.15); overflow: hidden; }
+        .modal-blur-bg { backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+        .modal-title-bold { font-weight: 800; color: #0f172a; }
+        .alert-penalty-panel { background: #fffbeb; color: #b45309; padding: 16px; border-radius: 12px; border-left: 4px solid var(--color-3); font-size: 0.95rem; line-height: 1.5; }
+
+        /* SVG Interactive Star System */
+        .star-rating-engine { display: flex; flex-direction: row-reverse; justify-content: center; gap: 12px; margin: 25px 0; }
+        .star-rating-engine input { display: none; }
+        .star-rating-engine label { font-size: 2.8rem; color: #e2e8f0; cursor: pointer; transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), color 0.2s; }
+        .star-rating-engine label:hover,
+        .star-rating-engine label:hover ~ label,
+        .star-rating-engine input:checked ~ label { color: var(--color-3); transform: scale(1.1); text-shadow: 0 0 15px rgba(255, 222, 89, 0.4); }
 
         /* =========================================
-           4. GLOBAL TOAST (ERROR HANDLING)
+           GLOBAL SYSTEM ERROR TOAST
         ========================================= */
-        .toast-container { z-index: 1060; }
-        .toast-error { background-color: #e53e3e !important; color: white !important; border: none; font-weight: 500;}
+        .toast-system-container { z-index: 1100; }
+        .toast-premium-error {
+            background-color: #ef4444 !important; color: white !important; border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.25);
+        }
+
+        /* =========================================
+           USER PROFILE (CUSTOMER NAVBAR)
+        ========================================= */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 50px;
+            transition: background-color 0.3s ease;
+        }
+
+        .user-profile img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            object-fit: cover;
+            margin-left: 12px;
+            transition: transform 0.3s ease, border-color 0.3s;
+        }
+
+        .user-profile:hover img {
+            transform: scale(1.3);
+            border-color: var(--color-3, #FFDE59);
+        }
+
+        /* Profile Dropdown Menu */
+        .profile-dropdown-menu {
+            border-radius: 12px;
+            padding: 8px 0;
+            margin-top: 12px !important;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            min-width: 220px;
+        }
+
+        .profile-dropdown-menu .dropdown-item {
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--color-dark);
+            transition: all 0.2s;
+        }
+
+        .profile-dropdown-menu .dropdown-item:hover {
+            background-color: var(--color-bg);
+            color: var(--color-1);
+            transform: translateX(4px);
+        }
     </style>
 </head>
 <body>
 
-    <nav class="custom-navbar">
-        <a href="#" class="text-white text-decoration-none d-flex align-items-center gap-2">
-            <i class="fa-solid fa-car-side fs-4"></i>
-            <h4>FleetFlow</h4>
-        </a>
-    </nav>
-
-    <main class="page-container">
-        
-        <section id="historyView">
-            <h2 class="fw-bold mb-4">Chuyến đi của tôi</h2>
+    <header class="custom-navbar">
+        <div class="container-base">
+            <a class="navbar-brand brand-overflow" href="index.html">
+                <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img">
+            </a>
             
-            <div class="trip-tabs">
-                <div class="trip-tab active">Tất cả</div>
-                <div class="trip-tab">Đang chờ</div>
-                <div class="trip-tab">Hoàn thành</div>
-                <div class="trip-tab">Đã hủy</div>
+            <div class="navbar-center-links d-none d-lg-flex">
+                <a href="index.html" class="nav-link-center">Trang chủ</a>
+                <a href="findCar.html" class="nav-link-center">Đặt xe</a>
+                <a href="trip-history.html" class="nav-link-center active">Chuyến đi</a>
             </div>
-
-            <article class="trip-card" onclick="openDetails('pending')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted font-monospace small"><i class="fa-regular fa-clock me-1"></i> 14:00 - 15/08/2026</span>
-                    <span class="status-badge status-pending">Đang chờ</span>
-                </div>
-                <div class="route-text">Quận 1, HCM <i class="fa-solid fa-arrow-right mx-2 text-muted"></i> Vũng Tàu</div>
-                <div class="d-flex justify-content-between align-items-end mt-3">
-                    <div class="car-info">
-                        <i class="fa-solid fa-car"></i> VinFast VF8 Plus
+            
+            <div class="nav-right-actions">
+                <div class="user-profile dropdown" data-bs-toggle="dropdown" aria-expanded="false" title="Tùy chọn tài khoản">
+                    <div class="d-none d-sm-block text-end">
+                        <div class="fw-bold fs-6 lh-1 text-white">TienthDung</div>
+                        <div class="text-white-50 small" style="font-size: 0.75rem; margin-top: 4px;">
+                            Hành khách hạng Vàng
+                        </div>
                     </div>
-                    <div class="fw-bold text-success fs-5">1.100.000 đ</div>
+                    <img src="https://ui-avatars.com/api/?name=TienthDung&background=FFDE59&color=1a1c1a&bold=true" alt="Customer Avatar">
+                    
+                    <ul class="dropdown-menu dropdown-menu-end profile-dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fa-regular fa-id-badge me-2 text-muted"></i> Hồ sơ cá nhân</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fa-solid fa-wallet me-2 text-muted"></i> Ví FleetFlow</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-danger fw-bold" href="login.html"><i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Đăng xuất</a></li>
+                    </ul>
                 </div>
-            </article>
+            </div>
+        </div>
+    </header>
 
-            <article class="trip-card" onclick="openDetails('completed')">
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-muted font-monospace small"><i class="fa-regular fa-clock me-1"></i> 08:00 - 01/08/2026</span>
-                    <span class="status-badge status-completed">Hoàn thành</span>
-                </div>
-                <div class="route-text">Sân bay Tân Sơn Nhất <i class="fa-solid fa-arrow-right mx-2 text-muted"></i> Bình Thạnh</div>
-                <div class="d-flex justify-content-between align-items-end mt-3">
-                    <div class="car-info">
-                        <i class="fa-solid fa-car"></i> Mazda 6 Premium
+    <main class="main-dashboard">
+        <div class="container-base">
+            <div class="dashboard-card-wrapper">
+                
+                <section id="historyViewSection" class="view-section view-active">
+                    <h3 class="fw-bold mb-4" style="letter-spacing: -0.5px;">Quản lý chuyến đi</h3>
+                    
+                    <div class="sliding-tabs-container">
+                        <button class="tab-pill active" onclick="filterTrips('all', this)">Tất cả</button>
+                        <button class="tab-pill" onclick="filterTrips('pending', this)">Đang chờ</button>
+                        <button class="tab-pill" onclick="filterTrips('active', this)">Đang chạy</button>
+                        <button class="tab-pill" onclick="filterTrips('completed', this)">Hoàn thành</button>
                     </div>
-                    <div class="fw-bold text-success fs-5">450.000 đ</div>
-                </div>
-            </article>
 
-        </section>
-
-        <section id="detailsView" class="details-view">
-            <div class="details-header" onclick="closeDetails()">
-                <i class="fa-solid fa-arrow-left"></i> Quay lại lịch sử
-            </div>
-
-            <div class="mini-map">
-                <i class="fa-solid fa-map-location-dot me-2"></i> Google Maps API / Lộ trình GPS
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold m-0" id="detailTitle">Chi tiết chuyến đi</h3>
-                <span class="status-badge" id="detailBadge">STATUS</span>
-            </div>
-
-            <div class="route-timeline">
-                <div class="timeline-item origin">
-                    <div class="timeline-time">Đón khách (Dự kiến: <span id="dtPickupTime">14:00 - 15/08</span>)</div>
-                    <div class="timeline-address" id="dtPickupAdd">KĐT Vinhomes Central Park, Quận 1, HCM</div>
-                </div>
-                <div class="timeline-item destination">
-                    <div class="timeline-time">Trả khách</div>
-                    <div class="timeline-address" id="dtDropoffAdd">Bãi sau Vũng Tàu</div>
-                </div>
-            </div>
-
-            <div class="driver-card">
-                <div class="driver-info">
-                    <img src="https://i.pravatar.cc/150?img=11" alt="Driver" class="driver-avatar">
-                    <div>
-                        <h6 class="fw-bold m-0">Nguyễn Văn A <i class="fa-solid fa-circle-check text-primary ms-1" title="Đã xác thực"></i></h6>
-                        <span class="text-muted small">51H-123.45 • VinFast VF8</span>
+                    <div class="empty-state-box" id="emptyState">
+                        <i class="fa-regular fa-folder-open d-block"></i>
+                        <h5 class="fw-bold text-secondary">Không tìm thấy chuyến đi nào</h5>
+                        <p class="text-muted small">Hãy đặt chuyến đi đầu tiên của bạn cùng FleetFlow ngay nhé!</p>
+                        <a href="findCar.html" class="btn-base mt-3">Đặt xe ngay</a>
                     </div>
-                </div>
-                <a href="tel:0901234567" class="btn-call"><i class="fa-solid fa-phone"></i></a>
+
+                    <div id="tripListContainer">
+                        </div>
+                </section>
+
+                <section id="detailsViewSection" class="view-section">
+                    <div class="btn-return-back" onclick="navigateBackToHistory()">
+                        <i class="fa-solid fa-chevron-left"></i> Trở lại danh sách
+                    </div>
+
+                    <div class="map-viewer-container">
+                        <i class="fa-solid fa-location-crosshairs me-2 fs-5 text-success"></i> Hệ thống Web-GPS FleetFlow thời gian thực
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="fw-bold m-0" style="letter-spacing: -0.5px;">Chi tiết lộ trình</h4>
+                        <div id="detailBadgeContainer"></div>
+                    </div>
+
+                    <div class="vertical-timeline">
+                        <div class="timeline-node">
+                            <div class="node-meta">Điểm đón khách (<span id="lblDepartureTime">--:--</span>)</div>
+                            <div class="node-location" id="lblPickupAddress">--</div>
+                        </div>
+                        <div class="timeline-node node-destination">
+                            <div class="node-meta">Điểm trả khách hành trình</div>
+                            <div class="node-location" id="lblDropoffAddress">--</div>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <div class="driver-profile">
+                            <div class="driver-meta-box">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" alt="Driver Avatar" class="driver-avatar-img">
+                                <div>
+                                    <h6 class="fw-bold m-0" id="lblDriverName">--</h6>
+                                    <span class="text-muted small" id="lblCarSpecs">--</span>
+                                </div>
+                            </div>
+                            <a href="tel:19005335" class="btn-call-trigger"><i class="fa-solid fa-phone-flip"></i></a>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <h6 class="fw-bold mb-3 text-uppercase small text-muted" style="letter-spacing: 0.5px;">Bóc tách chi phí hóa đơn</h6>
+                        <div class="billing-row"><span>Cước phí cơ bản hành trình</span><span id="lblBasePrice">0 đ</span></div>
+                        <div class="billing-row"><span>Phụ phí lễ / Cuối tuần (10%)</span><span id="lblSurcharge">0 đ</span></div>
+                        <div class="billing-row text-success fw-semibold"><span>Mã giảm giá đã áp dụng</span><span id="lblDiscount">- 0 đ</span></div>
+                        <div class="billing-total-row">
+                            <span class="label">Tổng chi phí chuyến đi</span>
+                            <span class="amount" id="lblTotalAmount">0 đ</span>
+                        </div>
+                    </div>
+
+                    <div class="action-flex-grid" id="detailActionGrid">
+                        </div>
+                </section>
+
             </div>
-
-            <div class="invoice-card">
-                <h6 class="fw-bold mb-3">Tóm tắt chi phí</h6>
-                <div class="invoice-row"><span>Cước cơ bản</span><span>1.000.000 đ</span></div>
-                <div class="invoice-row"><span>Phụ phí</span><span>100.000 đ</span></div>
-                <div class="invoice-total"><span>Tổng thanh toán</span><span class="text-success">1.100.000 đ</span></div>
-            </div>
-
-            <div class="action-area" id="actionArea">
-                </div>
-
-        </section>
+        </div>
     </main>
 
-    <div class="modal fade" id="cancelTripModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade modal-blur-bg" id="cancelTripModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Xác nhận hủy chuyến</h5>
+            <div class="modal-content modal-content-premium">
+                <div class="modal-header border-0 pb-0 px-4 pt-4">
+                    <h5 class="modal-title modal-title-bold"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Xác nhận hủy chuyến</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p class="text-muted mb-3">Bạn chắc chắn muốn hủy chuyến đi này chứ? Vui lòng kiểm tra kỹ chính sách phạt hủy chuyến bên dưới.</p>
+                <div class="modal-body px-4">
+                    <p class="text-muted small">Quyết định hủy chuyến đi này sẽ được ghi nhận vào hệ thống điều phối Open Job. Hãy kiểm tra mức phí phạt lũy tiến của bạn:</p>
                     
-                    <div class="penalty-warning" id="penaltyWarningMsg">
-                        Đang tính toán mức phí phạt...
+                    <div class="alert-penalty-panel" id="penaltyWarningMessage">
+                        Đang tính toán mức phạt thực tế...
                     </div>
 
-                    <div class="form-group mt-3">
-                        <label class="form-label fw-medium small text-muted">Lý do hủy chuyến (Tùy chọn)</label>
-                        <textarea class="form-control" rows="3" placeholder="Nhập lý do của bạn..."></textarea>
+                    <div class="mt-3">
+                        <label class="form-label small fw-bold text-muted">Lý do hủy chuyến (Tùy chọn)</label>
+                        <textarea class="form-control rounded-3" rows="3" placeholder="Lý do của bạn giúp chúng tôi cải tiến dịch vụ..."></textarea>
                     </div>
                 </div>
-                <div class="modal-footer border-0 pt-0">
-                    <button type="button" class="btn btn-light fw-medium" data-bs-dismiss="modal">Giữ lại chuyến</button>
-                    <button type="button" class="btn btn-danger fw-bold" id="btnConfirmCancel" onclick="simulateApiError('btnConfirmCancel')">Xác nhận hủy</button>
+                <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                    <button type="button" class="btn btn-light fw-semibold px-4 py-2 rounded-3" data-bs-dismiss="modal">Giữ chuyến xe</button>
+                    <button type="button" class="btn btn-danger fw-bold px-4 py-2 rounded-3" id="btnConfirmCancelTrip" onclick="executeSubmitAction('cancel')">Xác nhận hủy</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade" id="ratingModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade modal-blur-bg" id="ratingModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header border-0 pb-0 justify-content-center">
-                    <h5 class="modal-title fw-bold mt-2">Đánh giá chuyến đi</h5>
-                    <button type="button" class="btn-close position-absolute end-0 top-0 mt-3 me-3" data-bs-dismiss="modal"></button>
+            <div class="modal-content modal-content-premium">
+                <div class="modal-header border-0 pb-0 px-4 pt-4 justify-content-center position-relative">
+                    <h5 class="modal-title modal-title-bold">Đánh giá dịch vụ</h5>
+                    <button type="button" class="btn-close position-absolute end-0 top-0 mt-4 me-4" data-bs-dismiss="modal"></button>
                 </div>
-                <div class="modal-body text-center">
-                    <img src="https://i.pravatar.cc/150?img=11" alt="Driver" class="driver-avatar mb-2" style="width: 70px; height: 70px;">
-                    <h6 class="fw-bold">Nguyễn Văn A</h6>
-                    <p class="text-muted small">Lái xe an toàn, lịch sự chứ?</p>
-
-                    <div class="star-rating">
-                        <input type="radio" id="star5" name="rating" value="5" /><label for="star5"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="star4" name="rating" value="4" /><label for="star4"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="star3" name="rating" value="3" /><label for="star3"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="star2" name="rating" value="2" /><label for="star2"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="star1" name="rating" value="1" /><label for="star1"><i class="fa-solid fa-star"></i></label>
+                <div class="modal-body text-center px-4">
+                    <p class="text-muted small">Hãy giúp FleetFlow nâng cao chất lượng chuyến đi bằng cách để lại đánh giá của bạn nhé!</p>
+                    
+                    <div class="star-rating-engine">
+                        <input type="radio" id="st5" name="stars" value="5" /><label for="st5"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="st4" name="stars" value="4" /><label for="st4"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="st3" name="stars" value="3" /><label for="st3"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="st2" name="stars" value="2" /><label for="st2"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="st1" name="stars" value="1" /><label for="st1"><i class="fa-solid fa-star"></i></label>
                     </div>
 
-                    <textarea class="form-control" rows="3" placeholder="Chia sẻ thêm trải nghiệm của bạn (Tùy chọn)"></textarea>
+                    <textarea class="form-control rounded-3 mt-3" rows="3" placeholder="Nhận xét chi tiết về tài xế hoặc phương tiện..."></textarea>
                 </div>
-                <div class="modal-footer border-0 w-100">
-                    <button type="button" class="btn btn-primary w-100 fw-bold py-2" id="btnSubmitRating" onclick="simulateApiError('btnSubmitRating')" style="background-color: var(--color-1); border:none;">Gửi đánh giá</button>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn btn-action btn-rate-action m-0" id="btnSubmitRatingForm" onclick="executeSubmitAction('rate')">Gửi đánh giá ngay</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="errorToast" class="toast align-items-center toast-error" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="toast-container toast-system-container position-fixed top-0 end-0 p-3">
+        <div id="systemErrorToast" class="toast align-items-center toast-premium-error" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
-                <div class="toast-body">
-                    <i class="fa-solid fa-circle-exclamation me-2"></i> Update failed
+                <div class="toast-body py-3">
+                    <i class="fa-solid fa-circle-exclamation me-2 fs-5"></i> <strong>Update failed</strong>
                 </div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // DOM Elements
-        const viewHistory = document.getElementById('historyView');
-        const viewDetails = document.getElementById('detailsView');
-        const actionArea = document.getElementById('actionArea');
-        
-        // Modal Instances
-        let cancelModal, ratingModal;
+        // --- NGUỒN DỮ LIỆU CHUYẾN ĐI CHUẨN MÔ PHỎNG (MỐC THỜI GIAN THỰC TẾ) ---
+        // Giờ hiện tại của hệ thống được giả định: 02/06/2026 lúc 22:01
+        const CURRENT_MOCK_TIME = new Date("2026-06-02T22:01:00").getTime();
+
+        const globalTripData = [
+            {
+                id: "TRIP-8821",
+                status: "pending",
+                departureTime: new Date("2026-06-03T01:30:00").getTime(), // Cách giờ hiện tại ~3.5 tiếng (BR-12 Phạt 50%)
+                pickup: "KĐT Vinhomes Central Park, Quận 1, HCMC",
+                dropoff: "Bãi Sau, Vũng Tàu",
+                car: "VinFast VF8 Plus 2023",
+                driver: "Trần Thanh Tùng",
+                basePrice: 1000000,
+                surcharge: 100000,
+                discount: 100000,
+                total: 1000000
+            },
+            {
+                id: "TRIP-4492",
+                status: "active",
+                departureTime: new Date("2026-06-02T21:00:00").getTime(),
+                pickup: "FPT University, Khu Công Nghệ Cao, Q9, HCMC",
+                dropoff: "Sân bay Tân Sơn Nhất",
+                car: "Mazda 6 Premium",
+                driver: "Nguyễn Hoàng Nam",
+                basePrice: 400000,
+                surcharge: 0,
+                discount: 0,
+                total: 400000
+            },
+            {
+                id: "TRIP-3011",
+                status: "completed",
+                departureTime: new Date("2026-05-30T08:00:00").getTime(),
+                completedAt: new Date("2026-05-30T11:00:00").getTime(), // Hoàn thành cách đây ~ 3 ngày (< 168 giờ -> Cho Đánh Giá)
+                pickup: "Quận 7, HCMC",
+                dropoff: "Chợ Đà Lạt, Lâm Đồng",
+                car: "Honda CR-V Turbo",
+                driver: "Phạm Minh Quốc",
+                basePrice: 3200000,
+                surcharge: 300000,
+                discount: 200000,
+                total: 3300000
+            },
+            {
+                id: "TRIP-1029",
+                status: "completed",
+                departureTime: new Date("2026-05-10T07:00:00").getTime(),
+                completedAt: new Date("2026-05-10T15:00:00").getTime(), // Đã quá 7 ngày (BR-25 -> Khóa Đánh Giá)
+                pickup: "Bình Thạnh, HCMC",
+                dropoff: "Thành phố Cần Thơ",
+                car: "Toyota Fortuner 2022",
+                driver: "Lê Văn Tám",
+                basePrice: 1800000,
+                surcharge: 0,
+                discount: 100000,
+                total: 1700000
+            }
+        ];
+
+        let selectedTripId = null;
+        let cModalInstance, rModalInstance;
+
         document.addEventListener("DOMContentLoaded", () => {
-            cancelModal = new bootstrap.Modal(document.getElementById('cancelTripModal'));
-            ratingModal = new bootstrap.Modal(document.getElementById('ratingModal'));
-            
-            // Init Tooltips (cho tính năng Khóa Đánh giá BR-25)
-            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+            cModalInstance = new bootstrap.Modal(document.getElementById('cancelTripModal'));
+            rModalInstance = new bootstrap.Modal(document.getElementById('ratingModal'));
+            renderTripList('all');
         });
 
-        // 1. Điều hướng: Chuyển đổi giữa List và Detail
-        function openDetails(state) {
-            viewHistory.style.display = 'none';
-            viewDetails.style.display = 'block';
+        // --- HÀM RENDER DANH SÁCH CHUYẾN ĐI THEO TAB ---
+        function renderTripList(filterMode) {
+            const container = document.getElementById('tripListContainer');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
 
-            // Reset Action Area
-            actionArea.innerHTML = '';
+            const filtered = globalTripData.filter(t => filterMode === 'all' || t.status === filterMode);
 
-            // Render Dynamic UI dựa trên Trạng thái chuyến đi
-            if (state === 'pending') {
-                document.getElementById('detailBadge').className = 'status-badge status-pending';
-                document.getElementById('detailBadge').innerText = 'Đang chờ';
-                
-                // Nút Hủy
-                actionArea.innerHTML = `
-                    <button class="btn-action btn-danger-soft" onclick="openCancelModal()">
-                        Hủy chuyến đi
-                    </button>
+            if (filtered.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            emptyState.style.display = 'none';
+
+            filtered.forEach(trip => {
+                let statusText = '', badgeClass = '';
+                if(trip.status === 'pending') { statusText = 'Đang chờ'; badgeClass = 'badge-pending'; }
+                if(trip.status === 'active') { statusText = 'Đang chạy'; badgeClass = 'badge-active'; }
+                if(trip.status === 'completed') { statusText = 'Hoàn thành'; badgeClass = 'badge-completed'; }
+                if(trip.status === 'cancelled') { statusText = 'Đã hủy'; badgeClass = 'badge-cancelled'; }
+
+                const formattedDate = new Date(trip.departureTime).toLocaleString('vi-VN', {hour: '2-digit', minute:'2-digit', day:'2-digit', month:'2-digit'});
+
+                const cardHtml = `
+                    <article class="trip-item-card status-${trip.status}-card" onclick="viewTripDetails('${trip.id}')">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted font-monospace small"><i class="fa-regular fa-clock me-1"></i> ${formattedDate}</span>
+                            <span class="trip-status-badge ${badgeClass}">${statusText}</span>
+                        </div>
+                        <div class="location-flow">
+                            ${trip.pickup.split(',')[0]} <i class="fa-solid fa-arrow-right text-muted fs-6 mx-1"></i> ${trip.dropoff.split(',')[0]}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-end">
+                            <div class="card-meta">
+                                <span><i class="fa-solid fa-car me-1"></i> ${trip.car}</span>
+                                <span><i class="fa-solid fa-user-tie me-1"></i> TX: ${trip.driver}</span>
+                            </div>
+                            <div class="fw-bold text-success fs-5">${new Intl.NumberFormat('vi-VN').format(trip.total)} đ</div>
+                        </div>
+                    </article>
                 `;
-            } else if (state === 'completed') {
-                document.getElementById('detailBadge').className = 'status-badge status-completed';
-                document.getElementById('detailBadge').innerText = 'Hoàn thành';
-
-                // BR-25: Kiểm tra Khóa Đánh giá (Giả lập chuyến đi đã kết thúc 10 ngày trước = > 168 giờ)
-                const isLocked = true; // Set true để demo tooltip khóa
-                
-                if(isLocked) {
-                    actionArea.innerHTML = `
-                        <span class="d-inline-block w-100" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top" title="Thời gian cho phép đánh giá chuyến đi này đã kết thúc.">
-                            <button class="btn-action btn-primary-solid locked w-100" type="button" disabled>
-                                Đánh giá chuyến đi
-                            </button>
-                        </span>
-                    `;
-                    // Kích hoạt lại Tooltip cho element mới tạo
-                    new bootstrap.Tooltip(actionArea.querySelector('[data-bs-toggle="tooltip"]'));
-                } else {
-                    actionArea.innerHTML = `
-                        <button class="btn-action btn-primary-solid" onclick="ratingModal.show()">
-                            Đánh giá chuyến đi
-                        </button>
-                    `;
-                }
-            }
+                container.insertAdjacentHTML('beforeend', cardHtml);
+            });
         }
 
-        function closeDetails() {
-            viewDetails.style.display = 'none';
-            viewHistory.style.display = 'block';
+        function filterTrips(status, buttonElement) {
+            document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+            renderTripList(status);
         }
 
-        // 2. Logic Phạt Hủy Chuyến (BR-12)
-        function openCancelModal() {
-            // Giả lập logic lấy thời gian: Chuyến đi 14:00 chiều nay, hiện tại là 10:00 (cách 4 tiếng)
-            const hoursDifference = 4; 
-            const penaltyMsgBox = document.getElementById('penaltyWarningMsg');
+        // --- HÀM XEM CHI TIẾT CHUYẾN ĐI ---
+        function viewTripDetails(tripId) {
+            selectedTripId = tripId;
+            const trip = globalTripData.find(t => t.id === tripId);
+            if (!trip) return;
 
-            if (hoursDifference < 6) {
-                // Sát giờ: Phạt 50%
-                penaltyMsgBox.innerHTML = `<strong>Cảnh báo:</strong> Bạn sẽ bị trừ <strong class="text-danger fs-6">50% phí phạt (Tương đương 165.000 VNĐ)</strong> do hủy chuyến quá sát giờ (Dưới 6 tiếng).`;
-            } else if (hoursDifference >= 6 && hoursDifference <= 12) {
-                // Vừa: Phạt 30%
-                penaltyMsgBox.innerHTML = `<strong>Cảnh báo:</strong> Bạn sẽ bị trừ <strong class="text-danger fs-6">30% phí phạt</strong> do hủy chuyến dưới 12 tiếng.`;
-            } else {
-                // Khá xa: Không phạt
-                penaltyMsgBox.innerHTML = `Trạng thái an toàn: Bạn có thể hủy chuyến này hoàn toàn miễn phí.`;
-                penaltyMsgBox.className = 'penalty-warning bg-success bg-opacity-10 text-success border-success';
-            }
+            // Chuyển view
+            document.getElementById('historyViewSection').classList.remove('view-active');
+            document.getElementById('detailsViewSection').classList.add('view-active');
 
-            cancelModal.show();
-        }
-
-        // 3. Xử lý Lỗi Toàn cục (Global Error Handling) - Trả về "Update failed"
-        function simulateApiError(buttonId) {
-            const btn = document.getElementById(buttonId);
-            const originalText = btn.innerHTML;
+            // Điền thông tin văn bản
+            document.getElementById('lblDepartureTime').innerText = new Date(trip.departureTime).toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'}) + ' - ' + new Date(trip.departureTime).toLocaleDateString('vi-VN');
+            document.getElementById('lblPickupAddress').innerText = trip.pickup;
+            document.getElementById('lblDropoffAddress').innerText = trip.dropoff;
+            document.getElementById('lblDriverName').innerText = trip.driver;
+            document.getElementById('lblCarSpecs').innerText = trip.car;
             
-            // Trạng thái Loading
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+            document.getElementById('lblBasePrice').innerText = new Intl.NumberFormat('vi-VN').format(trip.basePrice) + ' đ';
+            document.getElementById('lblSurcharge').innerText = new Intl.NumberFormat('vi-VN').format(trip.surcharge) + ' đ';
+            document.getElementById('lblDiscount').innerText = `- ${new Intl.NumberFormat('vi-VN').format(trip.discount)} đ`;
+            document.getElementById('lblTotalAmount').innerText = new Intl.NumberFormat('vi-VN').format(trip.total) + ' đ';
+
+            // Cấu hình Badge Trạng thái
+            const badgeContainer = document.getElementById('detailBadgeContainer');
+            if(trip.status === 'pending') badgeContainer.innerHTML = '<span class="trip-status-badge badge-pending">Đang chờ</span>';
+            if(trip.status === 'active') badgeContainer.innerHTML = '<span class="trip-status-badge badge-active">Đang chạy</span>';
+            if(trip.status === 'completed') badgeContainer.innerHTML = '<span class="trip-status-badge badge-completed">Hoàn thành</span>';
+            if(trip.status === 'cancelled') badgeContainer.innerHTML = '<span class="trip-status-badge badge-cancelled">Đã hủy</span>';
+
+            // Cấu hình Khu vực nút hành động thông minh
+            const actionGrid = document.getElementById('detailActionGrid');
+            actionGrid.innerHTML = '';
+
+            if (trip.status === 'pending') {
+                actionGrid.innerHTML = `<button class="btn-control-action btn-cancel-action" onclick="triggerCancellationLogic()">Hủy chuyến đi</button>`;
+            } else if (trip.status === 'completed') {
+                // BR-25: Kiểm tra điều kiện khóa đánh giá sau 168 giờ (7 ngày)
+                const hoursSinceCompletion = (CURRENT_MOCK_TIME - trip.completedAt) / (1000 * 60 * 60);
+
+                if (hoursSinceCompletion > 168) {
+                    // Quá hạn -> Khóa nút, bọc tooltip hiển thị MSG15
+                    actionGrid.innerHTML = `
+                        <div class="w-100" tabindex="0" data-bs-toggle="tooltip" data-bs-placement="top" title="Thời gian cho phép đánh giá chuyến đi này đã kết thúc.">
+                            <button class="btn-control-action action-locked w-100" disabled>Đánh giá chuyến đi (Đã khóa)</button>
+                        </div>
+                    `;
+                    // Kích hoạt bootstrap tooltip
+                    new bootstrap.Tooltip(actionGrid.querySelector('[data-bs-toggle="tooltip"]'));
+                } else {
+                    // Hợp lệ -> Cho phép đánh giá
+                    actionGrid.innerHTML = `<button class="btn-control-action btn-rate-action" onclick="rModalInstance.show()">Đánh giá chuyến đi</button>`;
+                }
+            } else {
+                actionGrid.innerHTML = `<button class="btn-control-action action-locked w-100" disabled>Không có hành động khả dụng</button>`;
+            }
+        }
+
+        function navigateBackToHistory() {
+            document.getElementById('detailsViewSection').classList.remove('view-active');
+            document.getElementById('historyViewSection').classList.add('view-active');
+        }
+
+        // --- LOGIC PHẠT HỦY CHUYẾN LŨY TIẾN (BR-12) ---
+        function triggerCancellationLogic() {
+            const trip = globalTripData.find(t => t.id === selectedTripId);
+            const warningBox = document.getElementById('penaltyWarningMessage');
+            
+            // Tính độ chênh lệch thời gian giữa giờ khởi hành và giờ hiện tại
+            const diffHours = (trip.departureTime - CURRENT_MOCK_TIME) / (1000 * 60 * 60);
+
+            if (diffHours < 6) {
+                // Dưới 6 tiếng phạt 50% (MSG12)
+                warningBox.innerHTML = `<i class="fa-solid fa-circle-exclamation me-1"></i> <strong>Cảnh báo nghiêm trọng:</strong> Do thời gian khởi hành chỉ còn ít hơn 6 tiếng, bạn sẽ bị phạt <span class="fw-bold text-decoration-underline">50% chi phí đặt cọc</span> (Tương đương trừ ${(trip.total * 0.3 * 0.5).toLocaleString('vi-VN')} đ).`;
+            } else if (diffHours >= 6 && diffHours <= 12) {
+                // Từ 6 đến 12 tiếng phạt 30%
+                warningBox.innerHTML = `<i class="fa-solid fa-circle-exclamation me-1"></i> <strong>Cảnh báo:</strong> Thời gian tới giờ khởi hành còn dưới 12 tiếng. Bạn sẽ bị áp dụng mức phạt <span class="fw-bold">30% phí đặt cọc</span>.`;
+            } else {
+                // Trên 12 tiếng miễn phí
+                warningBox.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Chuyến đi này đủ điều kiện <strong>Hủy hoàn toàn miễn phí</strong>. Số tiền cọc sẽ hoàn lại ví MoMo của bạn trong 24 giờ.`;
+            }
+            cModalInstance.show();
+        }
+
+        // --- XỬ LÝ NGOẠI LỆ & GIẢ LẬP LỖI MẠNG (TOAST "Update failed") ---
+        function executeSubmitAction(type) {
+            const targetBtnId = type === 'cancel' ? 'btnConfirmCancelTrip' : 'btnSubmitRatingForm';
+            const btn = document.getElementById(targetBtnId);
+            const originalText = btn.innerHTML;
+
+            // Đưa nút vào trạng thái Loading & Khóa click liên tiếp
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
             btn.disabled = true;
 
-            // Giả lập API gọi lên server thất bại sau 1.5s
+            // Giả lập kết nối mạng gặp lỗi phản hồi từ hệ thống (1.2 giây)
             setTimeout(() => {
-                // Khôi phục nút
+                // Trả trạng thái ban đầu cho nút
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                
-                // Đóng Modal hiện tại
-                if(buttonId === 'btnConfirmCancel') cancelModal.hide();
-                if(buttonId === 'btnSubmitRating') ratingModal.hide();
 
-                // Hiển thị Toast lỗi tuyệt đối tuân thủ text "Update failed"
-                const toastEl = document.getElementById('errorToast');
-                const toast = new bootstrap.Toast(toastEl);
+                // Ẩn modal đang thao tác
+                if (type === 'cancel') cModalInstance.hide();
+                if (type === 'rate') rModalInstance.hide();
+
+                // Gửi thông báo Toast lỗi tuyệt đối chuẩn chỉnh ngữ pháp "Update failed"
+                const errorToastEl = document.getElementById('systemErrorToast');
+                const toast = new bootstrap.Toast(errorToastEl, { delay: 4000 });
                 toast.show();
-            }, 1500);
+            }, 1200);
         }
     </script>
 </body>
