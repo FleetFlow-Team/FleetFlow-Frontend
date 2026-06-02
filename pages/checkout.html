@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán - FleetFlow</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel="stylesheet" href="../style/base.css" />
+
+    <style>
+        /* =========================================
+           HỆ MÀU & BIẾN CƠ SỞ
+        ========================================= */
+        /* :root {
+            --color-1: #00B14F; /* Xanh FleetFlow */
+            --color-dark: #1a1c1a;
+            --color-bg-left: #ffffff;
+            --color-bg-right: #f8fafc; /* Xám nhạt phân tách không gian */
+            --border-color: #e2e8f0;
+            --text-muted: #64748b;
+            --error-color: #e53e3e;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--color-dark);
+            background-color: var(--color-bg-left);
+            margin: 0;
+            overflow-x: hidden;
+        } 
+        /* =========================================
+           1. ENCLOSED CHECKOUT HEADER
+        ========================================= */
+        .checkout-header {
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--color-1);
+            position: absolute;
+            top: 0; left: 0; width: 100%;
+            z-index: 10;
+        }
+        .checkout-header .logo { height: 32px; }
+        .checkout-header .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .checkout-header .back-link:hover { color: var(--color-dark); }
+
+        /* =========================================
+           2. SPLIT-SCREEN LAYOUT
+        ========================================= */
+        .split-layout { 
+            display: flex; 
+            flex-wrap: wrap; 
+            min-height: 100vh; 
+        }
+        
+        /* CỘT TRÁI (Form thao tác) */
+        .left-col {
+            flex: 0 0 100%; max-width: 100%;
+            padding: 100px 20px 60px 20px;
+            background-color: var(--color-bg-left);
+        }
+        
+        /* CỘT PHẢI (Tóm tắt đơn hàng) */
+        .right-col {
+            flex: 0 0 100%; max-width: 100%;
+            background-color: var(--color-bg-right);
+            padding: 100px 20px 60px 20px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        @media (min-width: 992px) {
+            .left-col { flex: 0 0 55%; max-width: 55%; padding: 100px 8% 60px 10%; }
+            .right-col { flex: 0 0 45%; max-width: 45%; padding: 100px 10% 60px 6%; border-top: none; border-left: 1px solid var(--border-color); }
+        }
+
+        /* =========================================
+           3. UI COMPONENTS (Form, Floating Label)
+        ========================================= */
+        .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 24px; margin-top: 40px; color: #0f172a;}
+        .section-title:first-child { margin-top: 0; }
+
+        /* Floating Labels theo chuẩn Material/Apple */
+        .form-floating > .form-control { 
+            border-radius: 8px; 
+            border: 1px solid #cbd5e1; 
+            box-shadow: none; 
+            font-weight: 500;
+        }
+        .form-floating > .form-control:focus { 
+            border-color: var(--color-1); 
+            box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.1); 
+        }
+        .form-floating > label { color: #94a3b8; }
+        
+        /* Trạng thái Lỗi Real-time */
+        .form-control.is-invalid { border-color: var(--error-color); background-image: none; }
+        .form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1); }
+        .invalid-feedback { font-size: 0.85rem; font-weight: 500; color: var(--error-color); margin-top: 4px;}
+
+        /* Payment Radio Cards (Thẻ chọn phương thức) */
+        .payment-options { display: flex; flex-direction: column; gap: 12px; }
+        .payment-card {
+            border: 1px solid #cbd5e1; border-radius: 10px;
+            padding: 16px 20px; cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: space-between;
+            background: white; margin: 0;
+        }
+        .payment-card:hover { border-color: #94a3b8; }
+        .payment-card.active { 
+            border-color: var(--color-1); 
+            background-color: rgba(0, 177, 79, 0.03); 
+            box-shadow: 0 0 0 1px var(--color-1); 
+        }
+        .pay-logo { height: 24px; object-fit: contain; }
+        
+        /* Custom Radio Button */
+        .custom-radio {
+            width: 20px; height: 20px; border: 2px solid #cbd5e1; border-radius: 50%;
+            margin-right: 12px; position: relative; display: inline-block;
+            transition: all 0.2s;
+        }
+        .payment-card.active .custom-radio { border-color: var(--color-1); }
+        .payment-card.active .custom-radio::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background-color: var(--color-1); border-radius: 50%;
+        }
+
+        /* =========================================
+           4. ORDER SUMMARY & VOUCHER
+        ========================================= */
+        .sticky-summary { position: sticky; top: 40px; }
+        
+        /* Thông tin xe */
+        .summary-car { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+        .summary-car img { width: 90px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border-color); }
+        
+        /* Bóc tách hóa đơn (Invoice Breakdown) */
+        .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.95rem; color: #475569; align-items: center;}
+        .breakdown-row.discount { color: var(--color-1); display: none; /* Ẩn mặc định */ }
+        .breakdown-total { 
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); 
+        }
+        .breakdown-total .label { font-size: 1.1rem; font-weight: 600; color: var(--color-dark); }
+        .breakdown-total .amount { font-size: 1.5rem; font-weight: 800; color: var(--color-dark); }
+        
+        /* Nút Submit CTA */
+        .btn-submit {
+            width: 100%; padding: 18px; border-radius: 10px; background-color: var(--color-1);
+            color: white; font-size: 1.1rem; font-weight: 700; border: none;
+            transition: all 0.3s; display: flex; align-items: center; justify-content: center;
+            margin-top: 24px; box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
+        }
+        .btn-submit:hover:not(:disabled) { background-color: #009640; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 177, 79, 0.3); }
+        .btn-submit:disabled { background-color: #94a3b8; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* Khung nhập Voucher */
+        .voucher-box { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+        .voucher-input-group { display: flex; gap: 10px; }
+        .voucher-input-group .form-control { border-radius: 8px; text-transform: uppercase; }
+        .btn-apply { background: #e2e8f0; color: #475569; border: none; border-radius: 8px; padding: 0 20px; font-weight: 600; transition: 0.2s;}
+        .btn-apply:hover { background: #cbd5e1; }
+        .voucher-msg { font-size: 0.85rem; font-weight: 500; margin-top: 8px; display: none; }
+        .voucher-msg.success { color: var(--color-1); display: block; }
+        .voucher-msg.error { color: var(--error-color); display: block; }
+
+        /* Trust Note & Badges */
+        .note-text { font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 16px;}
+        .trust-badges { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 16px; color: #94a3b8; font-size: 0.85rem;}
+        
+    </style>
+</head>
+<body>
+
+    <header class="checkout-header">
+        <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" class="logo">
+        <a href="javascript:history.back()" class="back-link"><i class="fa-solid fa-arrow-left"></i> Quay lại</a>
+    </header>
+
+    <main class="split-layout">
+        
+        <div class="left-col">
+            
+            <h2 class="section-title">Thông tin liên lạc</h2>
+            <div class="row g-3 mb-5">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="email" class="form-control" id="emailInput" placeholder="Email" onblur="validateEmail()">
+                        <label>Email (Nhận hóa đơn điện tử)</label>
+                        <div class="invalid-feedback" id="emailError">Vui lòng nhập định dạng email hợp lệ.</div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="tel" class="form-control" id="phoneInput" placeholder="Số điện thoại" inputmode="numeric" onblur="validatePhone()">
+                        <label>Số điện thoại tài xế liên hệ</label>
+                        <div class="invalid-feedback" id="phoneError">Số điện thoại phải từ 10 chữ số.</div>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title">Thông tin hành khách</h2>
+            <div class="row g-3 mb-5">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="firstName" placeholder="Tên">
+                        <label>Tên</label>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="lastName" placeholder="Họ">
+                        <label>Họ</label>
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="section-title"><i class="fa-solid fa-lock text-success me-2 fs-5"></i> Phương thức thanh toán (Cọc 30%)</h2>
+            <div class="payment-options">
+                <label class="payment-card active" onclick="selectPayment(this)">
+                    <div class="d-flex align-items-center">
+                        <div class="custom-radio"></div>
+                        <span class="fw-semibold text-dark">Ví điện tử MoMo</span>
+                    </div>
+                    <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" class="pay-logo">
+                </label>
+                
+                <label class="payment-card" onclick="selectPayment(this)">
+                    <div class="d-flex align-items-center">
+                        <div class="custom-radio"></div>
+                        <span class="fw-semibold text-dark">Tiền mặt (Giao cho tài xế)</span>
+                    </div>
+                    <i class="fa-solid fa-money-bill-wave text-success fs-4"></i>
+                </label>
+            </div>
+
+        </div>
+
+        <div class="right-col">
+            <div class="sticky-summary">
+                
+                <div class="summary-car">
+                    <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=300" alt="VinFast VF8">
+                    <div>
+                        <h6 class="fw-bold mb-1 text-dark">VinFast VF8 Plus 2023</h6>
+                        <div class="text-muted small">Tuyến: Quận 1, HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</div>
+                        <div class="text-muted small mt-1">Khởi hành: 14:00 - Chủ Nhật, 15/08</div>
+                    </div>
+                </div>
+
+                <div class="voucher-box">
+                    <div class="voucher-input-group">
+                        <div class="form-floating flex-grow-1">
+                            <input type="text" class="form-control" id="voucherCode" placeholder="Mã giảm giá">
+                            <label>Nhập mã giảm giá</label>
+                        </div>
+                        <button class="btn-apply" id="btnApplyVoucher" onclick="applyVoucher()">Áp dụng</button>
+                    </div>
+                    <div id="voucherMsg" class="voucher-msg"></div>
+                </div>
+
+                <div class="breakdown-list">
+                    <div class="breakdown-row">
+                        <span>Giá cơ bản (110 km)</span>
+                        <span class="fw-medium text-dark" id="basePrice">1.000.000 đ</span>
+                    </div>
+                    
+                    <div class="breakdown-row">
+                        <span>Phụ phí cuối tuần (10%) <i class="fa-regular fa-circle-question ms-1" title="Áp dụng cho Thứ 7, Chủ Nhật"></i></span>
+                        <span class="fw-medium text-dark" id="surcharge">100.000 đ</span>
+                    </div>
+
+                    <div class="breakdown-row discount" id="discountRow">
+                        <span><i class="fa-solid fa-tag me-1"></i> Mã giảm giá (<span id="discountName"></span>)</span>
+                        <span class="fw-bold">- <span id="discountAmount">0</span> đ</span>
+                    </div>
+                </div>
+                
+                <div class="breakdown-total">
+                    <span class="label">Tổng cộng</span>
+                    <span class="amount" id="totalAmount">1.100.000 đ</span>
+                </div>
+
+                <div class="note-text mt-3">
+                    <i class="fa-solid fa-circle-info me-1"></i> Giá chưa bao gồm phụ phí phát sinh dọc đường (BOT, phà).
+                </div>
+
+                <button class="btn-submit" id="btnSubmitCheckout" onclick="processCheckout()">
+                    Thanh toán cọc 330.000 đ
+                </button>
+
+                <div class="trust-badges">
+                    <i class="fa-solid fa-shield-halved"></i> Mọi thông tin được mã hóa SSL 256-bit an toàn.
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // --- 1. STATE & BIẾN CƠ SỞ ---
+        const invoiceState = {
+            base: 1000000,
+            surcharge: 100000, // Giả lập dính ngày cuối tuần (+10%)
+            discount: 0,
+            total: 1100000,
+            depositRatio: 0.3 // Cọc 30%
+        };
+
+        const formState = { emailValid: false, phoneValid: false };
+
+        // DOM Elements
+        const elTotal = document.getElementById('totalAmount');
+        const elBtnSubmit = document.getElementById('btnSubmitCheckout');
+        const elDiscountRow = document.getElementById('discountRow');
+        const elDiscountAmount = document.getElementById('discountAmount');
+        const elVoucherMsg = document.getElementById('voucherMsg');
+        const inputVoucher = document.getElementById('voucherCode');
+
+        // Hàm format tiền tệ (VNĐ)
+        const formatVND = (num) => new Intl.NumberFormat('vi-VN').format(num) + ' đ';
+
+        // --- 2. LOGIC VOUCHER (BR-13) ---
+        function applyVoucher() {
+            const code = inputVoucher.value.trim().toUpperCase();
+            
+            if (code === '') return;
+
+            // Giả lập API check Voucher
+            if (code === 'SUMMER26') {
+                // Hợp lệ: Giảm 100k
+                invoiceState.discount = 100000;
+                
+                // Cập nhật UI
+                elVoucherMsg.className = 'voucher-msg success';
+                elVoucherMsg.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Áp dụng mã thành công!';
+                document.getElementById('discountName').innerText = code;
+                elDiscountAmount.innerText = formatVND(invoiceState.discount).replace(' đ','');
+                elDiscountRow.style.display = 'flex';
+                
+            } else {
+                // Không hợp lệ
+                invoiceState.discount = 0;
+                
+                // Cập nhật UI
+                elVoucherMsg.className = 'voucher-msg error';
+                elVoucherMsg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã giảm giá không hợp lệ hoặc đã hết hạn.';
+                elDiscountRow.style.display = 'none';
+            }
+
+            updateTotal();
+        }
+
+        // Tính lại tổng tiền và cập nhật Micro-copy trên nút
+        function updateTotal() {
+            invoiceState.total = invoiceState.base + invoiceState.surcharge - invoiceState.discount;
+            const deposit = invoiceState.total * invoiceState.depositRatio;
+            
+            elTotal.innerText = formatVND(invoiceState.total);
+            // Thay đổi text nút bấm theo số tiền cọc thực tế
+            elBtnSubmit.innerText = `Thanh toán cọc ${formatVND(deposit)}`;
+        }
+
+        // --- 3. REAL-TIME VALIDATION ---
+        function validateEmail() {
+            const el = document.getElementById('emailInput');
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            
+            if (!regex.test(el.value)) {
+                el.classList.add('is-invalid');
+                formState.emailValid = false;
+            } else {
+                el.classList.remove('is-invalid');
+                formState.emailValid = true;
+            }
+            checkFormReady();
+        }
+
+        function validatePhone() {
+            const el = document.getElementById('phoneInput');
+            // Check chỉ chứa số và độ dài từ 10-11
+            const regex = /^[0-9]{10,11}$/;
+            
+            if (!regex.test(el.value)) {
+                el.classList.add('is-invalid');
+                formState.phoneValid = false;
+            } else {
+                el.classList.remove('is-invalid');
+                formState.phoneValid = true;
+            }
+            checkFormReady();
+        }
+
+        // Bật/tắt nút submit dựa trên valid state
+        function checkFormReady() {
+            const isReady = formState.emailValid && formState.phoneValid;
+            // Ở ứng dụng thực tế sẽ chặn disabled, nhưng ở đây demo nên tạm bỏ qua để dễ test nút bấm
+            // elBtnSubmit.disabled = !isReady; 
+        }
+
+        // --- 4. TƯƠNG TÁC UI KHÁC ---
+        function selectPayment(element) {
+            document.querySelectorAll('.payment-card').forEach(card => card.classList.remove('active'));
+            element.classList.add('active');
+            element.querySelector('input').checked = true;
+        }
+
+        // Xử lý Checkout (Chống Double Click & Loading Spinner)
+        function processCheckout() {
+            // Validate lần cuối
+            if(!formState.emailValid || !formState.phoneValid) {
+                alert("Vui lòng điền đúng Email và Số điện thoại trước khi thanh toán.");
+                return;
+            }
+
+            // Đổi trạng thái nút
+            elBtnSubmit.disabled = true;
+            elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý giao dịch...';
+
+            // Giả lập gọi API thanh toán (2s)
+            setTimeout(() => {
+                alert('Thanh toán thành công! Chuẩn bị chuyển hướng đến trang theo dõi chuyến đi.');
+                window.location.href = 'index.html'; // Chuyển hướng
+            }, 2000);
+        }
+
+        // Chạy lúc khởi tạo
+        updateTotal();
+
+    </script>
+</body>
+</html>
