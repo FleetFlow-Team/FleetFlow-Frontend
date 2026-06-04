@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
     <link rel="stylesheet" href="../style/base.css" />
-    <link rel="icon" type="image/jpeg" href="../assets/img/logo1.jpg">
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
 
     <style>
         /* =========================================
@@ -63,7 +63,22 @@
         body { overflow: hidden; } 
         
         .booking-layout {
-            display: flex; height: calc(100vh - 70px); width: 100%; position: relative; background-color: var(--color-bg, #f4f6f8);
+            display: flex; 
+            flex-direction: row-reverse; /* THÊM DÒNG NÀY: Đảo ngược vị trí Map và Panel */
+            height: calc(100vh - 70px); 
+            width: 100%; 
+            position: relative; 
+            background-color: var(--color-bg, #f4f6f8);
+        }
+
+        .booking-panel {
+            width: 420px; 
+            background: var(--color-2, #FFFFFF); 
+            box-shadow: 8px 0 30px rgba(0,0,0,0.05); /* SỬA DÒNG NÀY: Đổi -8px thành 8px để bóng đổ hắt sang phải */
+            z-index: 10;
+            display: flex; 
+            flex-direction: column; 
+            position: relative;
         }
 
         /* KHU VỰC BẢN ĐỒ */
@@ -75,13 +90,6 @@
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(255,255,255,0.3); backdrop-filter: blur(2px);
         }
-
-        /* KHU VỰC ĐIỀU KHIỂN */
-        .booking-panel {
-            width: 420px; background: var(--color-2, #FFFFFF); box-shadow: -8px 0 30px rgba(0,0,0,0.05); z-index: 10;
-            display: flex; flex-direction: column; position: relative;
-        }
-
         .panel-header { padding: 24px 30px 16px 30px; border-bottom: 1px solid #edf2f7; }
         .panel-header h2 { font-size: 1.4rem; font-weight: 800; color: var(--color-dark, #1a1c1a); margin: 0; letter-spacing: -0.5px;}
 
@@ -169,7 +177,7 @@
             .panel-header::before { content: ''; display: block; width: 40px; height: 5px; background: #cbd5e1; border-radius: 5px; margin: 0 auto 16px auto; }
             .panel-body { padding: 20px 24px; }
             .panel-footer { padding: 15px 24px 30px 24px; background: transparent; border-top: none; box-shadow: none;}
-            .floating-contact-buttons { bottom: auto; top: 90px; left: 15px; }
+            .floating-contact-buttons { bottom: auto; top: 90px; right: 30px; z-index: 1050; }
         }
 
         /* Toasts */
@@ -178,7 +186,7 @@
         .toast-premium-warning { background-color: #f59e0b !important; color: white !important; border: none; border-radius: 12px; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.25); }
 
         /* Floating Contact Buttons (Optimized GPU) */
-        .floating-contact-buttons { position: fixed; bottom: 40px; left: 30px; z-index: 1050; }
+        .floating-contact-buttons { position: fixed; bottom: 40px; right: 30px; z-index: 1050; }
         .social-icon-btn { 
             width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background-color: #ffffff;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); will-change: transform, box-shadow; -webkit-backface-visibility: hidden; backface-visibility: hidden; transform: translateZ(0); 
@@ -251,6 +259,7 @@
         </section>
 
         <aside class="booking-panel shadow-lg">
+            
             <div class="panel-header">
                 <h2>Thiết lập lộ trình</h2>
             </div>
@@ -311,10 +320,7 @@
                 </button>
             </div>
         </aside>
-
-    </main>
-
-    <aside class="floating-contact-buttons d-flex flex-column gap-3">
+<aside class="floating-contact-buttons d-flex flex-column gap-3">
         <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
             <img src="../assets/img/zalo.jpg" alt="Zalo" style="width: 35px; height: 35px;">
         </a>
@@ -325,6 +331,9 @@
             <img src="../assets/img/calling.jpg" alt="Phone" style="width: 35px; height: 35px;">
         </a>
     </aside>
+    </main>
+
+    
 
     <div class="toast-container toast-system-container position-fixed top-0 end-0 p-3">
         <div id="distanceErrorToast" class="toast align-items-center toast-premium-warning" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
