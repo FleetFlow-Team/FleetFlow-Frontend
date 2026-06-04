@@ -16,21 +16,11 @@
       /* =========================================
            HỆ MÀU & BIẾN CƠ SỞ
         ========================================= */
-      :root {
-        --color-1: #00b14f;
-        --color-dark: #1a1c1a;
-        --color-text: #333333;
-        --color-text-muted: #666666;
-        --color-bg: #f4f6f8;
-        --color-2: #ffffff;
-        --color-3: #f0fdf4;
-        --transition-speed: 0.3s;
-      }
 
       body {
         font-family: "Inter", sans-serif;
         background-color: var(--color-bg);
-        color: var(--color-text);
+        color: var(--text-color);
         line-height: 1.7;
         overflow-x: hidden;
       }
@@ -87,44 +77,55 @@
         gap: 16px;
       }
 
-      /* Nút Đăng nhập */
       .btn-login {
-        background-color: var(--color-2);
-        color: var(--color-1);
-        border: none;
-        border-radius: 50px;
-        padding: 8px 24px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        text-decoration: none;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        will-change: transform, box-shadow, background-color;
-      }
+            background-color: var(--color-2);
+            color: var(--color-1);
+            border: none;
+            border-radius: 50px;
+            padding: 8px 24px; /* Tăng padding 2 bên một chút để nút cân đối hơn */
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            
+            /* 1. Dùng cubic-bezier thay vì ease-in-out để tạo độ nảy vật lý siêu mượt */
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* 2. Kích hoạt render bằng GPU (Phần cứng) giúp triệt tiêu hoàn toàn giật lag */
+            will-change: transform, box-shadow, background-color;
+        }
 
-      .btn-login span,
-      .btn-login i {
-        color: inherit;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      }
+        /* Đảm bảo chữ và icon luôn ăn theo màu của nút mẹ */
+        .btn-login span, 
+        .btn-login i {
+            color: inherit; 
+            /* Thêm transition riêng cho icon để làm hiệu ứng */
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
 
-      .btn-login:hover {
-        background-color: var(--color-3);
-        color: #333333;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.08);
-      }
+        /* Trạng thái Hover (Di chuột) */
+        .btn-login:hover {
+            background-color: var(--color-3);
+            color: #333333;
+            transform: translateY(-3px); /* Nổi lên rõ hơn một chút */
+            /* Bóng đổ phân tán rộng và mềm hơn tạo cảm giác lơ lửng */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.08); 
+        }
 
-      .btn-login:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-        transition-duration: 0.1s;
-      }
+        /* Trạng thái Active (Khi bấm chuột vào nút) */
+        .btn-login:active {
+            /* Ép nút lún thực sự xuống dưới vị trí ban đầu */
+            transform: translateY(1px); 
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            /* Giảm thời gian transition xuống cực thấp để nút phản hồi ngay lập tức khi bấm */
+            transition-duration: 0.1s; 
+        }
 
-      .btn-login:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.25);
-      }
+        /* Trạng thái Focus (Hỗ trợ người dùng dùng phím Tab - Tiêu chuẩn Corporate) */
+        .btn-login:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.25); /* Quầng sáng bao quanh nút (Giả sử màu xanh FleetFlow) */
+        }
 
       /* =========================================
            HERO BANNER

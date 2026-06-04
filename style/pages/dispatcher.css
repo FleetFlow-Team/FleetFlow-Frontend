@@ -61,18 +61,21 @@
 
         /* CSS cho dòng Slogan ở giữa */
         .navbar-slogan {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%); /* Kéo tâm của chữ vào chính giữa màn hình */
-            color: rgba(255, 255, 255, 0.95);
-            font-size: 1.15rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            white-space: nowrap; /* Ngăn chữ bị rớt dòng */
-            pointer-events: none; /* Chống click nhầm vào chữ */
-        }
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Kéo tâm của chữ vào chính giữa màn hình */
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap; /* Ngăn chữ bị rớt dòng */
+  pointer-events: none; /* Chống click nhầm vào chữ làm mất focus của các nút bên dưới */
+}
 
         /* Khu vực thông tin Dispatcher & Chuông sát mép phải */
         .user-profile {
