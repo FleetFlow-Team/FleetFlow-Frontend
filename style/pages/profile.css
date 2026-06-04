@@ -67,23 +67,30 @@ body {
   display: block;
 }
 
-.notification-bell {
-  color: white;
-  position: relative;
-  cursor: pointer;
-  font-size: 1.2rem;
-}
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #e53e3e;
-  color: white;
-  font-size: 0.65rem;
-  font-weight: bold;
-  padding: 2px 5px;
-  border-radius: 50%;
-}
+      .notification-bell {
+        color: white;
+        position: relative;
+        cursor: pointer;
+        font-size: 1.3rem;
+        margin-right: 8px;
+      }
+      .notification-badge {
+        position: absolute;
+        top: -5px;
+        right: -8px;
+        background-color: #e27a7a;
+        color: white;
+        font-size: 0.65rem;
+        font-weight: bold;
+        padding: 1px 6px;
+        border-radius: 50%;
+      }
+
+      .notification-bell i:hover {
+        color: #e27a7a;
+        transform: scale(1.5);
+        transition: transform 0.3s ease;
+      }
 /* =========================================
            CỘT TRÁI: SIDEBAR & AVATAR
         ========================================= */
