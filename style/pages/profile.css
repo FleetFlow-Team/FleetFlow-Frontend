@@ -34,32 +34,19 @@ body {
 }
 
 /* 2. Menu Links nằm chính giữa */
-.navbar-center-links {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(
-    -50%,
-    -50%
-  ); /* Kéo tâm của khối vào đúng giữa màn hình */
-  display: flex;
-  gap: 32px;
-}
+.navbar-center-links { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 35px; }
+        .nav-link-center {
+            color: rgba(255, 255, 255, 0.9) !important; font-weight: 500; font-size: 1.05rem;
+            text-decoration: none; position: relative; padding: 6px 0; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1) !important; display: inline-block; transform-origin: center center;
+        }
+        .nav-link-center:hover, .nav-link-center.active { color: var(--color-2, #FFFFFF) !important; transform: scale(1.2); text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .nav-link-center::before {
+            content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
+            background-color: var(--color-3, #FFDE59); transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link-center:hover::before, .nav-link-center.active::before { width: 100%; }
 
-.nav-link-center {
-  color: rgba(255, 255, 255, 0.85);
-  font-weight: 500;
-  font-size: 1rem;
-  text-decoration: none;
-  transition: all 0.2s ease;
-  padding: 5px 0;
-  position: relative;
-}
-
-.nav-link-center:hover {
-  color: #ffffff;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
-}
+        .nav-right-actions { display: flex; align-items: center; padding-right: 0 !important; margin-right: 0 !important;}
 
 /* 3. Profile Khách hàng */
 .user-profile {
