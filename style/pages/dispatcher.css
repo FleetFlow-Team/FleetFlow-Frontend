@@ -155,3 +155,114 @@
         ========================================= */
         .sos-alert { background-color: #fff5f5; border: 2px solid #e53e3e; border-radius: 12px; padding: 20px; animation: flashRed 1.5s infinite; }
         @keyframes flashRed { 0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); } 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); } }
+        /* =========================================
+           USER PROFILE DROPDOWN & HOVER EFFECTS
+        ========================================= */
+        /* Cụm trigger Profile */
+        .user-profile-dropdown {
+            position: relative;
+            padding: 10px 0; /* Tạo vùng đệm màng ảo để khi di chuột xuống menu không bị mất hover */
+        }
+
+        .user-profile-trigger {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-profile-trigger:hover {
+            opacity: 0.8;
+        }
+
+        .avatar-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.8);
+            object-fit: cover;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
+        }
+
+        /* Xoay mũi tên khi hover vào cụm Profile */
+        .transition-icon {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .user-profile-dropdown:hover .transition-icon {
+            transform: rotate(-180deg);
+        }
+
+        .user-profile-dropdown:hover .avatar-img {
+            transform: scale(1.1);
+            border-color: var(--color-3); /* Viền sáng màu vàng khi hover */
+        }
+
+        /* Bảng Dropdown Menu Hiện Đại */
+        .dropdown-menu-modern {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 240px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            /* Trạng thái ẩn mặc định */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(15px); /* Đẩy xuống một chút */
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1060;
+            overflow: hidden;
+        }
+
+        /* Khi hover vào cha thì hiện menu con lên */
+        .user-profile-dropdown:hover .dropdown-menu-modern {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-divider-custom {
+            margin: 0;
+            border-color: #edf2f7;
+            opacity: 1;
+        }
+
+        /* Các thẻ Link bên trong Dropdown */
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .dropdown-item-custom i {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            transition: color 0.2s ease;
+        }
+
+        /* Hiệu ứng khi lướt qua từng Item */
+        .dropdown-item-custom:hover {
+            background-color: #f8fafc;
+            color: var(--color-1);
+            padding-left: 28px; /* Trượt nhẹ chữ sang phải tạo cảm giác động */
+        }
+
+        .dropdown-item-custom:hover i {
+            color: var(--color-1);
+        }
+
+        /* Hiệu ứng riêng cho nút Đăng xuất (Màu đỏ) */
+        .logout-item:hover {
+            background-color: #fff5f5 !important;
+            color: #e53e3e !important;
+        }
+        .logout-item:hover i {
+            color: #e53e3e !important;
+        }
