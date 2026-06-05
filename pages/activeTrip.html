@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FleetFlow - Hành trình hiện tại</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <style>
+        /* =========================================
+           1. HỆ MÀU CƠ SỞ & RESET
+        ========================================= */
+        :root {
+            --color-1: #00B14F; /* Xanh FleetFlow */
+            --color-dark: #1a1c1a;
+            --color-bg: #f8fafc;
+            --color-2: #FFFFFF;
+            --color-3: #FFDE59;
+            --blue: #2563EB;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --header-height: 70px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-dark);
+            margin: 0;
+            overflow: hidden; /* Mặc định trên PC không cuộn toàn trang */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* =========================================
+           2. NAVBAR TRỰC QUAN
+        ========================================= */
+        .custom-navbar {
+            background-color: var(--color-2);
+            height: var(--header-height);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            z-index: 1050; position: relative;
+        }
+        
+        .trip-status-header {
+            font-weight: 800; font-size: 1.25rem; color: var(--color-1);
+            text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px;
+        }
+        
+        .pulse-live {
+            width: 14px; height: 14px; background: var(--color-1); border-radius: 50%;
+            position: relative;
+        }
+        .pulse-live::after {
+            content: ''; position: absolute; inset: -4px; border-radius: 50%;
+            border: 2px solid var(--color-1); animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(2.5); opacity: 0; }
+        }
+
+        .btn-back {
+            font-weight: 700; color: #64748b; background: white; border: 1px solid #e2e8f0;
+            padding: 8px 16px; border-radius: 10px; transition: all 0.3s ease; text-decoration: none;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .btn-back:hover { background: #f1f5f9; color: var(--color-dark); transform: translateX(-3px); }
+
+        /* =========================================
+           3. RESPONSIVE GRID LAYOUT
+        ========================================= */
+        .active-trip-container {
+            display: grid;
+            grid-template-columns: 70% 30%; /* Mặc định PC */
+            height: calc(100vh - var(--header-height));
+            width: 100vw;
+            transition: all 0.4s ease;
+        }
+
+        /* KHU VỰC BẢN ĐỒ */
+        .map-section {
+            position: relative; overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000') center/cover no-repeat;
+            border-right: 1px solid #e2e8f0;
+        }
+        
+        .map-overlay {
+            position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.4) 100%);
+            backdrop-filter: blur(1px);
+        }
+
+        /* Hover Effect cho Marker Bản đồ */
+        .map-vehicle-marker {
+            width: 80px; opacity: 0.9; transition: transform 0.3s; cursor: pointer; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.2));
+        }
+        .map-vehicle-marker:hover { transform: scale(1.15) translateY(-5px); opacity: 1; }
+
+        .btn-recenter {
+            position: absolute; top: 20px; right: 20px; z-index: 5;
+            width: 50px; height: 50px; background: white; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 1px solid #f1f5f9; font-size: 1.3rem;
+            color: #64748b; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .btn-recenter:hover { color: var(--blue); transform: scale(1.1); box-shadow: 0 12px 25px rgba(37, 99, 235, 0.2); }
+
+        /* KHU VỰC SIDEBAR */
+        .control-sidebar {
+            background-color: var(--color-2);
+            padding: 24px;
+            overflow-y: auto;
+            display: flex; flex-direction: column; gap: 20px;
+            position: relative; z-index: 10;
+            box-shadow: -10px 0 30px rgba(0,0,0,0.02);
+        }
+
+        /* Drag Handle cho Mobile */
+        .mobile-drag-handle { display: none; width: 40px; height: 5px; background: #cbd5e1; border-radius: 5px; margin: 0 auto 15px auto; }
+
+        /* =========================================
+           4. THẺ UI (CARDS) & HIỆU ỨNG HOVER TƯƠNG TÁC
+        ========================================= */
+        .trip-card {
+            background: var(--color-2); border-radius: 16px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+        }
+        .trip-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0,0,0,0.05); border-color: #e2e8f0; }
+
+        /* Customer Info */
+        .customer-info { display: flex; align-items: center; gap: 16px; }
+        .customer-avatar { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid #f1f5f9; transition: 0.3s; }
+        .trip-card:hover .customer-avatar { border-color: var(--color-1); transform: scale(1.05); }
+        
+        .contact-actions { display: flex; gap: 12px; margin-top: 16px; }
+        .btn-contact {
+            flex: 1; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.95rem;
+            border: none; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+        }
+        .btn-call { background: #E0F2FE; color: var(--blue); }
+        .btn-call:hover { background: #bae6fd; transform: translateY(-2px); }
+        .btn-msg { background: #F1F5F9; color: #475569; }
+        .btn-msg:hover { background: #e2e8f0; transform: translateY(-2px); }
+
+        .privacy-mask {
+            display: none; text-align: center; color: var(--color-1); font-weight: 600;
+            padding: 24px 0; background: #ECFDF5; border-radius: 16px; border: 1px dashed #A7F3D0;
+            animation: fadeIn 0.5s ease;
+        }
+
+        /* Metrics */
+        .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .metric-box { 
+            background: #F8FAFC; padding: 20px; border-radius: 16px; text-align: center; 
+            border: 1px solid #e2e8f0; transition: all 0.3s; cursor: default;
+        }
+        .metric-box:hover { background: #ffffff; border-color: var(--color-1); box-shadow: 0 8px 20px rgba(0,177,79,0.08); transform: translateY(-3px); }
+        .metric-value { font-size: 2rem; font-weight: 800; color: var(--color-dark); margin: 4px 0; line-height: 1; }
+        .metric-label { font-size: 0.8rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;}
+
+        /* Route Stepper */
+        .route-stepper { position: relative; padding-left: 28px; }
+        .route-stepper::before { content: ''; position: absolute; left: 9px; top: 12px; bottom: 12px; width: 2px; border-left: 2px dashed #cbd5e1; }
+        .step-point { position: relative; font-size: 1.05rem; font-weight: 800; color: #0f172a; margin-bottom: 28px; line-height: 1.4; transition: 0.3s;}
+        .step-point:last-child { margin-bottom: 0; }
+        .step-point:hover { transform: translateX(5px); }
+        
+        .step-point::before { content: ''; position: absolute; left: -28px; top: 4px; width: 16px; height: 16px; border-radius: 50%; background: #FFF; border: 4px solid; z-index: 2; box-shadow: 0 0 0 4px white;}
+        .step-pickup::before { border-color: var(--color-1); }
+        .step-dropoff::before { border-color: var(--danger); }
+        .step-address { font-size: 0.85rem; font-weight: 600; color: #64748b; display: block; margin-top: 6px;}
+
+        /* =========================================
+           5. NÚT HÀNH ĐỘNG VỚI HIỆU ỨNG ÁNH SÁNG
+        ========================================= */
+        .btn-primary-action {
+            width: 100%; padding: 20px; border-radius: 16px; font-weight: 800; font-size: 1.15rem;
+            color: white; border: none; text-transform: uppercase; letter-spacing: 1px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); background: var(--color-1); 
+            box-shadow: 0 8px 25px rgba(0, 177, 79, 0.3); display: flex; align-items: center; justify-content: center; gap: 10px;
+            position: relative; overflow: hidden;
+        }
+        /* Hiệu ứng quét sáng bóng */
+        .btn-primary-action::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg); transition: all 0.5s ease;
+        }
+        .btn-primary-action:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(0, 177, 79, 0.4); }
+        .btn-primary-action:hover::after { left: 200%; transition: all 0.7s ease; }
+        .btn-primary-action:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2); }
+
+        .btn-primary-action.active-state { background: var(--blue); box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3); }
+        .btn-primary-action.active-state:hover { box-shadow: 0 12px 30px rgba(37, 99, 235, 0.4); }
+        
+        .btn-outline-action {
+            width: 100%; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 1rem;
+            color: #475569; background: white; border: 2px solid #e2e8f0; margin-top: 16px;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-outline-action:hover { border-color: var(--color-1); color: var(--color-1); background: #f0fdf4; transform: translateY(-2px);}
+
+        .btn-disabled { opacity: 0.6; cursor: not-allowed !important; pointer-events: none; }
+
+        /* =========================================
+           6. CẢNH BÁO BẢN ĐỒ & MẠNG
+        ========================================= */
+        .gps-alert-overlay {
+            position: absolute; inset: 0; background: rgba(15, 23, 42, 0.95); z-index: 10;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; text-align: center; padding: 30px; backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease;
+        }
+        .gps-alert-overlay i { font-size: 6rem; color: var(--danger); margin-bottom: 24px; filter: drop-shadow(0 0 20px rgba(239, 68, 68, 0.4));}
+        
+        .network-banner {
+            background-color: #FEF3C7; color: #B45309; border: 1px solid #FDE68A;
+            padding: 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem;
+            display: none; align-items: center; justify-content: center; gap: 10px;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1); animation: slideDown 0.3s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        /* Toasts */
+        .toast-system-container { z-index: 9999; }
+        .toast-premium-error { background-color: var(--danger) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3); }
+
+        /* =========================================
+           7. MEDIA QUERIES (RESPONSIVE CHUYÊN SÂU)
+        ========================================= */
+        /* Màn hình Tablet/iPad ngang (1024px trở xuống) */
+        @media (max-width: 1024px) {
+            .active-trip-container { grid-template-columns: 60% 40%; }
+            .btn-primary-action { font-size: 1rem; padding: 16px;}
+        }
+
+        /* Màn hình Điện thoại / Tablet dọc (768px trở xuống) */
+        @media (max-width: 768px) {
+            body { overflow: auto; } /* Cho phép cuộn trên mobile */
+            
+            .active-trip-container {
+                display: flex; flex-direction: column; height: auto;
+            }
+            .map-section {
+                height: 45vh; flex-shrink: 0; border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            .control-sidebar {
+                height: auto; overflow: visible; padding: 24px 20px 40px 20px;
+                border-radius: 24px 24px 0 0; margin-top: -20px; /* Đẩy Sidebar đè lên map một chút */
+                background: white; box-shadow: 0 -10px 30px rgba(0,0,0,0.08);
+            }
+            .mobile-drag-handle { display: block; }
+            .metrics-grid { gap: 10px; }
+            .metric-box { padding: 12px; }
+            .metric-value { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="custom-navbar">
+        <div class="trip-status-header">
+            <div class="pulse-live" id="liveIndicator"></div>
+            <span id="tripStatusText">Đang Đợi Đón Khách</span>
+        </div>
+        <div class="fw-bold text-dark fs-5 d-none d-sm-block">#BK-1029</div>
+        <a href="#" class="btn-back"><i class="fa-solid fa-arrow-left"></i> <span class="d-none d-sm-inline">Bảng điều khiển</span></a>
+    </header>
+
+    <main class="active-trip-container">
+        
+        <section class="map-section">
+            <div class="map-overlay"></div>
+            
+            <button class="btn-recenter" title="Định tâm xe"><i class="fa-solid fa-location-crosshairs"></i></button>
+
+            <div class="gps-alert-overlay" id="gpsDeniedAlert" style="display: none;">
+                <i class="fa-solid fa-satellite-dish fa-fade"></i>
+                <h2 class="fw-bold mb-3">Chưa cấp quyền Vị trí (GPS)</h2>
+                <p class="fs-6 text-white-50 mb-4" style="max-width: 500px;">Hệ thống yêu cầu quyền truy cập Location để đo lường khoảng cách và cung cấp dữ liệu an toàn chuyến đi. Vui lòng cho phép trình duyệt truy cập vị trí.</p>
+                <button class="btn btn-light btn-lg fw-bold px-5 py-3 rounded-4 shadow" onclick="mockAllowGPS()">Kích hoạt GPS Ngay</button>
+            </div>
+            
+            <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 2;">
+                <img src="https://cdn-icons-png.flaticon.com/512/3203/3203061.png" class="map-vehicle-marker" alt="Car">
+            </div>
+        </section>
+
+        <aside class="control-sidebar">
+            <div class="mobile-drag-handle"></div>
+            
+            <div class="network-banner" id="networkBanner">
+                <i class="fa-solid fa-wifi fa-fade"></i> Mạng yếu. Dữ liệu đang được lưu tạm...
+            </div>
+
+            <div class="trip-card" id="customerInfoCard">
+                <div class="customer-info">
+                    <img src="https://ui-avatars.com/api/?name=Van+Khach&background=e2e8f0&color=1a1c1a" alt="Customer" class="customer-avatar">
+                    <div>
+                        <div class="fw-bold fs-5 text-dark">Lê Văn Khách</div>
+                        <div class="fw-semibold text-muted mt-1"><i class="fa-solid fa-phone me-1 text-primary"></i> 0909 888 999</div>
+                    </div>
+                </div>
+                <div class="contact-actions">
+                    <button class="btn-contact btn-call"><i class="fa-solid fa-phone-volume"></i> Gọi điện</button>
+                    <button class="btn-contact btn-msg"><i class="fa-solid fa-comment-dots"></i> Nhắn tin</button>
+                </div>
+            </div>
+            <div class="privacy-mask shadow-sm" id="privacyMask">
+                <i class="fa-solid fa-shield-check fs-1 mb-3 d-block"></i>
+                <div class="fs-5">Dữ liệu khách hàng đã được bảo mật.</div>
+            </div>
+
+            <div class="trip-card">
+                <div class="metrics-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Dự kiến đến</div>
+                        <div class="metric-value text-primary" id="etaTime">1h 45m</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Khoảng cách</div>
+                        <div class="metric-value">85 <span class="fs-5 text-muted">km</span></div>
+                    </div>
+                </div>
+                
+                <div class="route-stepper mt-4">
+                    <div class="step-point step-pickup">
+                        Đại học FPT, Khu Công Nghệ Cao
+                        <span class="step-address">Đường D1, P.Long Thạnh Mỹ, TP.Thủ Đức</span>
+                    </div>
+                    <div class="step-point step-dropoff">
+                        Sân bay Tân Sơn Nhất (Quốc Nội)
+                        <span class="step-address">Đường Trường Sơn, P.2, Q.Tân Bình</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-auto pt-2">
+                <button class="btn-primary-action btn-disabled" id="btnMainAction" onclick="openConfirmModal()">
+                    BẮT ĐẦU CHUYẾN ĐI <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+                <button class="btn-outline-action" onclick="openSurchargeModal()" id="btnSurcharge">
+                    <i class="fa-solid fa-receipt me-2"></i> Khai báo Phụ phí (BOT/Phà)
+                </button>
+            </div>
+
+        </aside>
+    </main>
+
+    <div class="modal fade" id="confirmModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <i class="fa-solid fa-circle-question text-warning mb-4" style="font-size: 5rem; filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.3));"></i>
+                    <h4 class="fw-bold text-dark mb-2" id="confirmTitle">Bắt đầu chuyến đi?</h4>
+                    <p class="text-muted mb-4" id="confirmDesc" style="font-size: 1.05rem;">Bạn xác nhận khách hàng đã lên xe và đã sẵn sàng khởi hành lộ trình?</p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light fw-bold w-50 py-3 rounded-4" data-bs-dismiss="modal">Hủy bỏ</button>
+                        <button class="btn btn-success fw-bold w-50 py-3 rounded-4" id="btnExecuteAction" onclick="executeMainAction()" style="background-color: var(--color-1); border: none; box-shadow: 0 4px 15px rgba(0,177,79,0.3);">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="surchargeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="fw-bold text-dark fs-4"><i class="fa-solid fa-file-invoice-dollar text-primary me-2"></i> Khai báo Phụ phí</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted">Số tiền phát sinh (VNĐ)</label>
+                        <input type="number" class="form-control form-control-lg fw-bold text-primary" placeholder="Ví dụ: 35000" style="font-size: 1.5rem; height: 60px;">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted">Hình ảnh Biên lai chứng minh</label>
+                        <div class="border rounded-4 p-4 text-center bg-light" style="border: 2px dashed #cbd5e1 !important; cursor: pointer; transition: 0.3s;" onmouseover="this.style.borderColor='var(--color-1)'" onmouseout="this.style.borderColor='#cbd5e1'">
+                            <i class="fa-solid fa-camera fs-1 text-secondary mb-3"></i>
+                            <div class="fw-bold text-secondary">Bấm để tải ảnh lên</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary w-100 fw-bold py-3 fs-6 rounded-4 shadow-sm" id="btnSubmitSurcharge" onclick="submitSurcharge()" style="background-color: var(--color-1); border: none;">Gửi Yêu Cầu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container toast-system-container position-fixed top-0 start-50 translate-middle-x p-3" style="width: 100%; max-width: 400px; margin-top: 20px;">
+        <div id="systemErrorToast" class="toast align-items-center toast-premium-error w-100" role="alert">
+            <div class="d-flex">
+                <div class="toast-body py-3 fw-bold fs-6">
+                    <i class="fa-solid fa-circle-xmark me-2 fs-5"></i> Update failed
+                </div>
+                <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==========================================
+        // QUẢN LÝ STATE TRẢI NGHIỆM TÀI XẾ (TienthDung)
+        // ==========================================
+        let tripStatus = 'pending'; // pending -> active -> completed
+        let isGpsAllowed = false;
+        let gpsPingInterval = null;
+        let offlineQueue = []; 
+
+        const btnMain = document.getElementById('btnMainAction');
+        const statusText = document.getElementById('tripStatusText');
+        const liveIndicator = document.getElementById('liveIndicator');
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        const surchargeModal = new bootstrap.Modal(document.getElementById('surchargeModal'));
+        const toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            checkGPSPermission();
+            setupNetworkListeners();
+        });
+
+        // BR-10: Cấp quyền Vị trí
+        function checkGPSPermission() {
+            if (!isGpsAllowed) {
+                document.getElementById('gpsDeniedAlert').style.display = 'flex';
+                btnMain.classList.add('btn-disabled'); 
+            }
+        }
+
+        function mockAllowGPS() {
+            isGpsAllowed = true;
+            document.getElementById('gpsDeniedAlert').style.display = 'none';
+            btnMain.classList.remove('btn-disabled');
+        }
+
+        // ==========================================
+        // LOGIC CHUYẾN ĐI (BẮT ĐẦU / HOÀN THÀNH)
+        // ==========================================
+        function openConfirmModal() {
+            const title = document.getElementById('confirmTitle');
+            const desc = document.getElementById('confirmDesc');
+
+            if (tripStatus === 'pending') {
+                title.innerText = "Bắt đầu chuyến đi?";
+                desc.innerText = "Xác nhận khách hàng đã lên xe và sẵn sàng khởi hành?";
+            } else if (tripStatus === 'active') {
+                title.innerText = "Hoàn thành chuyến đi?";
+                desc.innerText = "Xác nhận đã trả khách an toàn tại điểm đến?";
+            }
+            confirmModal.show();
+        }
+
+        function executeMainAction() {
+            const btnExec = document.getElementById('btnExecuteAction');
+            const originalText = btnExec.innerText;
+            btnExec.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+            btnExec.disabled = true;
+
+            setTimeout(() => {
+                btnExec.innerHTML = originalText;
+                btnExec.disabled = false;
+                confirmModal.hide();
+
+                if (tripStatus === 'pending') {
+                    // -> ACTIVE
+                    tripStatus = 'active';
+                    btnMain.innerHTML = 'HOÀN THÀNH CHUYẾN ĐI <i class="fa-solid fa-flag-checkered ms-2"></i>';
+                    btnMain.classList.add('active-state');
+                    statusText.innerText = "Đang Di Chuyển";
+                    liveIndicator.style.background = "var(--blue)";
+                    
+                    startGpsPing();
+
+                } else if (tripStatus === 'active') {
+                    // -> COMPLETED (Đã test lỗi ở hàm Surcharge, ở đây test thành công)
+                    tripStatus = 'completed';
+                    btnMain.style.display = 'none';
+                    document.getElementById('btnSurcharge').style.display = 'none';
+                    statusText.innerText = "Đã Hoàn Thành";
+                    liveIndicator.style.background = "#9CA3AF";
+                    liveIndicator.style.animation = "none";
+                    
+                    clearInterval(gpsPingInterval);
+
+                    // BR-17: Ẩn thông tin khách hàng
+                    document.getElementById('customerInfoCard').style.display = 'none';
+                    document.getElementById('privacyMask').style.display = 'block';
+                }
+            }, 1000);
+        }
+
+        // ==========================================
+        // BR-10: PING GPS & XỬ LÝ OFFLINE
+        // ==========================================
+        function startGpsPing() {
+            console.log("Hệ thống: Đã kích hoạt API gửi tọa độ GPS");
+            gpsPingInterval = setInterval(() => {
+                const payload = { bookingId: "BK-1029", lat: 10.8411, lng: 106.8098, time: Date.now() };
+
+                if (!navigator.onLine) {
+                    offlineQueue.push(payload);
+                    console.log("Rớt mạng -> Queue size: " + offlineQueue.length);
+                } else {
+                    if (offlineQueue.length > 0) {
+                        console.log(`Đã gửi đồng bộ ${offlineQueue.length} tọa độ cũ.`);
+                        offlineQueue = [];
+                    }
+                    console.log("Ping GPS OK: ", payload);
+                }
+            }, 5000); // Rút ngắn để log
+        }
+
+        function setupNetworkListeners() {
+            window.addEventListener('offline', () => { document.getElementById('networkBanner').style.display = 'flex'; });
+            window.addEventListener('online', () => { document.getElementById('networkBanner').style.display = 'none'; });
+        }
+
+        // ==========================================
+        // LỖI HỆ THỐNG GLOBAL (Update failed)
+        // ==========================================
+        function openSurchargeModal() { surchargeModal.show(); }
+
+        function submitSurcharge() {
+            const btn = document.getElementById('btnSubmitSurcharge');
+            const originalText = btn.innerText;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tải lên...';
+            btn.disabled = true;
+
+            // Buộc xảy ra lỗi để kiểm thử quy tắc "Update failed"
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                surchargeModal.hide();
+                toastError.show();
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
