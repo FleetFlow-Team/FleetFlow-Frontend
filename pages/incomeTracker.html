@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FleetFlow - Lịch sử Thu nhập</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../style/base.css" />
+    <link rel="icon" type="image/jpeg" href="../assets/img/logo1.jpg">
+
+    <style>
+        /* =========================================
+           1. HỆ MÀU & NỀN TẢNG
+        ========================================= */
+        :root {
+            --color-1: #00B14F; 
+            --color-1-dark: #009640;
+            --color-dark: #0f172a;
+            --color-bg: #f8fafc;
+            --color-2: #FFFFFF;
+            --blue: #2563EB;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-dark);
+            margin: 0; overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* =========================================
+           2. ANIMATIONS & TRANSITIONS ĐỈNH CAO
+        ========================================= */
+        .animate-fade-up {
+            opacity: 0; transform: translateY(20px);
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        .delay-4 { animation-delay: 0.4s; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =========================================
+           3. ĐỒNG BỘ NAVBAR & SIDEBAR
+        ========================================= */
+        .custom-navbar {
+            background-color: var(--color-2); height: 70px; padding: 0 24px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05); z-index: 1050; position: fixed; top: 0; left: 0; width: 100%;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        
+        .brand-logo { font-weight: 800; font-size: 1.25rem; color: var(--color-1); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px; text-decoration: none;}
+        .brand-logo img { height: 35px; filter: brightness(0) invert(1);}
+
+        .user-avatar { width: 42px; height: 42px; border-radius: 50%; border: 2px solid #e2e8f0; object-fit: cover; transition: 0.3s; cursor: pointer; }
+        .user-avatar:hover { border-color: var(--color-1); transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,177,79,0.2);}
+
+        .app-wrapper { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); }
+
+        /* Sidebar PC */
+        .desktop-sidebar {
+            width: 280px; background: white; border-right: 1px solid #e2e8f0; position: fixed;
+            top: 70px; bottom: 0; left: 0; padding: 24px 0; z-index: 1000;
+        }
+        .sidebar-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;}
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: #475569;
+            text-decoration: none; font-weight: 600; font-size: 0.95rem; border-left: 4px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .sidebar-menu a i { font-size: 1.2rem; width: 24px; text-align: center; transition: 0.3s;}
+        .sidebar-menu a:hover { background: #f1f5f9; color: var(--color-dark); transform: translateX(5px); }
+        .sidebar-menu a.active { background: rgba(0, 177, 79, 0.08); color: var(--color-1); border-left-color: var(--color-1); }
+        .sidebar-menu a.active i { transform: scale(1.2); }
+
+        /* Bottom Nav Mobile */
+        .bottom-nav {
+            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(0, 0, 0, 0.05); justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
+        }
+        .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 0.75rem; font-weight: 700; text-decoration: none; transition: all 0.3s; flex: 1; position: relative;}
+        .bottom-nav .nav-item i { font-size: 1.4rem; transition: transform 0.3s; }
+        .bottom-nav .nav-item:hover, .bottom-nav .nav-item.active { color: var(--color-1); }
+        .bottom-nav .nav-item.active i { transform: translateY(-4px) scale(1.1); }
+        .bottom-nav .nav-item.active::after { content: ''; position: absolute; bottom: -8px; width: 6px; height: 6px; background: var(--color-1); border-radius: 50%; }
+
+        /* =========================================
+           4. MAIN CONTENT & COMPONENTS
+        ========================================= */
+        .main-content {
+            flex: 1; margin-left: 280px; padding: 32px; max-width: 1400px;
+        }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 16px;}
+        .page-title { font-size: 1.6rem; font-weight: 800; color: var(--color-dark); letter-spacing: -0.5px; margin: 0;}
+        
+        /* Select Box (Date Picker) Cao cấp */
+        .filter-wrapper { position: relative; }
+        .filter-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--color-1); font-size: 1.1rem; pointer-events: none;}
+        .date-picker { 
+            padding: 12px 16px 12px 42px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; 
+            font-weight: 700; font-size: 0.95rem; color: var(--color-dark); outline: none; cursor: pointer; 
+            transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); appearance: none; padding-right: 40px;
+        }
+        .filter-wrapper::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 0.8rem;}
+        .date-picker:hover, .date-picker:focus { border-color: var(--color-1); box-shadow: 0 4px 15px rgba(0,177,79,0.1); }
+
+        /* Khối Cards Tổng quan */
+        .grid-3-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px; }
+
+        .stat-card {
+            background: white; border-radius: 20px; padding: 24px; border: 1px solid rgba(0,0,0,0.03); 
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); position: relative; overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); border-color: #e2e8f0;}
+        
+        /* Hero Card (Thu nhập ròng) */
+        .card-hero {
+            background: linear-gradient(135deg, var(--color-1) 0%, var(--color-1-dark) 100%);
+            color: white; border: none; box-shadow: 0 10px 30px rgba(0, 177, 79, 0.25);
+        }
+        .card-hero:hover { box-shadow: 0 15px 40px rgba(0, 177, 79, 0.35); }
+        .card-hero::after {
+            content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px;
+            background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(20px);
+        }
+        
+        .card-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; position: relative; z-index: 2;}
+        .card-label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-hero .card-label { color: rgba(255,255,255,0.9); }
+        
+        .card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #f1f5f9; color: var(--blue);}
+        .card-hero .card-icon { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(5px);}
+        .icon-warning { color: var(--warning); background: #fef3c7; }
+
+        .card-value { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 12px; position: relative; z-index: 2;}
+        
+        .trend-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+        .trend-up { background: #dcfce7; color: #166534; }
+        .card-hero .trend-up { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(5px);}
+        .trend-down { background: #fee2e2; color: #991b1b; }
+
+        /* Biểu đồ */
+        .chart-container { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 32px; border: 1px solid rgba(0,0,0,0.03);}
+
+        /* =========================================
+           5. DATA TABLE (PC) & LIST CARDS (MOBILE)
+        ========================================= */
+        .data-section { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); overflow: hidden; }
+        
+        .table-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;}
+        .table-title { font-size: 1.25rem; font-weight: 800; color: var(--color-dark); margin: 0;}
+        
+        .btn-export {
+            padding: 12px 20px; background: white; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #475569; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; gap: 8px; font-size: 0.95rem;
+        }
+        .btn-export:hover { border-color: var(--color-1); color: var(--color-1); background: #f0fdf4; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,177,79,0.1);}
+        .btn-export:active { transform: scale(0.97); }
+
+        /* Table Desktop */
+        .desktop-table-wrapper { overflow-x: auto; }
+        .custom-table { width: 100%; border-collapse: collapse; min-width: 1000px;}
+        .custom-table th { background: #f8fafc; padding: 18px 24px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0;}
+        .custom-table td { padding: 20px 24px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; transition: all 0.2s;}
+        .custom-table tbody tr { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .custom-table tbody tr:hover { transform: scale(1.005); box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; position: relative; z-index: 10; border-radius: 12px;}
+        .custom-table tbody tr:hover td { background: transparent; border-bottom-color: transparent;}
+        
+        .trx-code { font-weight: 800; color: var(--color-dark); display: block; margin-bottom: 4px; font-size: 1.05rem;}
+        .trx-time { font-size: 0.85rem; color: var(--text-muted); font-weight: 600;}
+        
+        .ref-link { color: var(--blue); font-weight: 700; text-decoration: none; padding: 4px 8px; background: #eff6ff; border-radius: 6px; transition: 0.2s;}
+        .ref-link:hover { background: var(--blue); color: white; }
+        
+        .amt-gross { font-weight: 700; color: #475569; }
+        .amt-com { font-weight: 700; color: var(--danger); background: #fef2f2; padding: 4px 8px; border-radius: 6px; display: inline-block;}
+        .amt-net { font-weight: 800; color: var(--color-1); font-size: 1.15rem;}
+
+        .type-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;}
+        .badge-trip { background: #E0F2FE; color: #0369A1; }
+        .badge-comp { background: #FEF3C7; color: #B45309; }
+
+        /* Mobile Cards List (Ẩn trên PC) */
+        .mobile-trx-list { display: none; padding: 16px; flex-direction: column; gap: 16px; background: #f8fafc;}
+        .trx-mobile-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;}
+        .trx-mob-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0;}
+        
+        /* Phân trang */
+        .pagination-container { display: flex; justify-content: flex-end; padding: 20px 24px; gap: 8px; border-top: 1px solid #e2e8f0; background: white;}
+        .page-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; border-radius: 10px; background: white; font-weight: 700; color: #475569; cursor: pointer; transition: 0.2s;}
+        .page-btn:hover { background: #f1f5f9; transform: translateY(-2px);}
+        .page-btn.active { background: var(--color-1); color: white; border-color: var(--color-1); box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);}
+
+        /* Toasts */
+        .toast-system-container { z-index: 1060; }
+        .toast-premium-error { background-color: var(--danger) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3); }
+
+        /* =========================================
+           6. RESPONSIVE QUERIES
+        ========================================= */
+        @media (max-width: 1024px) {
+            .desktop-sidebar { display: none; }
+            .bottom-nav { display: flex; }
+            .main-content { margin-left: 0; padding: 24px; padding-bottom: 100px; }
+        }
+
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .header-actions { width: 100%; }
+            .filter-wrapper, .date-picker { width: 100%; }
+            .card-value { font-size: 2rem; }
+            
+            /* Chuyển đổi Bảng sang Dạng Thẻ cho Mobile */
+            .desktop-table-wrapper { display: none; }
+            .mobile-trx-list { display: flex; }
+            .table-header { flex-direction: column; align-items: flex-start; gap: 16px; border-bottom: none;}
+            .btn-export { width: 100%; justify-content: center;}
+            .data-section { background: transparent; box-shadow: none; border: none;}
+        }
+
+        /* =========================================
+           8. TỐI ƯU MÀN HÌNH SIÊU RỘNG (ULTRA-WIDE > 1920px)
+        ========================================= */
+        @media (min-width: 1920px) {
+            /* 1. Xử lý căn giữa thông minh không bị lỗi Scrollbar */
+            .app-wrapper {
+                padding-left: 280px; /* Bù lại khoảng không gian của Sidebar cố định */
+                justify-content: center; /* Tự động căn giữa toàn bộ bảng Dashboard */
+            }
+            
+            .main-content {
+                margin-left: 0; /* Gỡ margin cũ */
+                max-width: 1800px; /* Nới rộng giới hạn hiển thị lên 1800px */
+                width: 100%;
+                padding: 50px 80px; /* Tăng không gian lề 2 bên để không bị quá sát màn hình */
+            }
+            
+            /* 2. Scale-up Typography & Spacing (Tăng tỷ lệ chữ và khoảng trống) */
+            .page-title { font-size: 2.2rem; }
+            .date-picker { font-size: 1.1rem; padding: 14px 20px 14px 48px; }
+            .grid-3-col { gap: 40px; margin-bottom: 40px; }
+            
+            /* 3. Phóng to Thẻ Tổng quan (Summary Cards) */
+            .stat-card { padding: 36px; border-radius: 24px; }
+            .card-label { font-size: 1.1rem; margin-bottom: 12px; }
+            .card-value { font-size: 3.2rem; margin-bottom: 16px; }
+            .card-icon { width: 68px; height: 68px; font-size: 2rem; border-radius: 20px; }
+            .trend-badge { font-size: 1rem; padding: 8px 16px; }
+            
+            /* 4. Tăng không gian Biểu đồ */
+            .chart-container { padding: 36px; margin-bottom: 40px; border-radius: 24px; }
+            
+            /* 5. Tối ưu hóa Bảng Dữ liệu (DataTable) */
+            .data-section { border-radius: 24px; }
+            .table-header { padding: 32px; }
+            .table-title { font-size: 1.5rem; }
+            .btn-export { font-size: 1.1rem; padding: 14px 28px; border-radius: 14px; }
+            
+            .custom-table th { padding: 24px 32px; font-size: 1rem; }
+            .custom-table td { padding: 24px 32px; }
+            .trx-code { font-size: 1.25rem; }
+            .trx-time { font-size: 1.05rem; }
+            .type-badge { font-size: 0.95rem; padding: 8px 16px; }
+            .amt-gross { font-size: 1.1rem; }
+            .amt-com { font-size: 1.1rem; }
+            .amt-net { font-size: 1.5rem; }
+            
+            .pagination-container { padding: 24px 32px; gap: 12px; }
+            .page-btn { width: 44px; height: 44px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR GLOBAL -->
+    <header class="custom-navbar">
+        <a href="#" class="brand-logo">
+            <img src="../assets/img/logo1.jpg" alt="FleetFlow" style="filter: brightness(0) invert(1);">
+            <span class="d-none d-sm-block text-dark">TÀI XẾ</span>
+        </a>
+        <div class="nav-right">
+            <img src="https://ui-avatars.com/api/?name=Quang+Driver&background=00b14f&color=fff&bold=true" alt="Avatar" class="user-avatar">
+        </div>
+    </header>
+
+    <div class="app-wrapper">
+        
+        <!-- SIDEBAR PC -->
+        <aside class="desktop-sidebar">
+            <ul class="sidebar-menu">
+                <li><a href="driverProfile.html"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
+                <li><a href="jobBoard.html"><i class="fa-solid fa-satellite-dish"></i> Nhận chuyến</a></li>
+                <li><a href="incomeTracker.html" class="active"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử thu nhập</a></li>
+                <li><a href="driverProfile.html"><i class="fa-solid fa-circle-user"></i> Tài khoản</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+            
+            <!-- HEADER -->
+            <div class="page-header animate-fade-up">
+                <h1 class="page-title">Bảng điều khiển Tài chính</h1>
+                <div class="header-actions">
+                    <div class="filter-wrapper">
+                        <i class="fa-regular fa-calendar"></i>
+                        <select class="date-picker" onchange="triggerApiAction(this)">
+                            <option value="this_week">Tuần này (14/06 - 20/06)</option>
+                            <option value="last_week">Tuần trước</option>
+                            <option value="this_month">Tháng này</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TỔNG QUAN CARDS -->
+            <div class="grid-3-col">
+                <div class="stat-card card-hero animate-fade-up delay-1">
+                    <div class="card-header-flex">
+                        <div class="card-label">Thu nhập ròng</div>
+                        <div class="card-icon"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                    <div class="card-value">4.250.000 đ</div>
+                    <span class="trend-badge trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +15% so với kỳ trước</span>
+                </div>
+                
+                <div class="stat-card animate-fade-up delay-2">
+                    <div class="card-header-flex">
+                        <div class="card-label text-muted">Tổng chuyến xe</div>
+                        <div class="card-icon"><i class="fa-solid fa-steering-wheel"></i></div>
+                    </div>
+                    <div class="card-value text-dark">18 <span class="fs-5 text-muted fw-bold ms-2">Chuyến</span></div>
+                    <span class="trend-badge trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -2% so với kỳ trước</span>
+                </div>
+
+                <div class="stat-card animate-fade-up delay-3">
+                    <div class="card-header-flex">
+                        <div class="card-label text-muted">Thưởng & Đền bù</div>
+                        <div class="card-icon icon-warning"><i class="fa-solid fa-gift"></i></div>
+                    </div>
+                    <div class="card-value text-dark">300.000 đ</div>
+                    <span class="trend-badge" style="background: #f1f5f9; color: #475569;"><i class="fa-solid fa-minus"></i> Không đổi</span>
+                </div>
+            </div>
+
+            <!-- BIỂU ĐỒ -->
+            <div class="chart-container animate-fade-up delay-4">
+                <canvas id="incomeChart" height="90"></canvas>
+            </div>
+
+            <!-- BẢNG DỮ LIỆU & DANH SÁCH MOBILE -->
+            <div class="data-section animate-fade-up delay-4">
+                <div class="table-header">
+                    <h3 class="table-title">Chi tiết Giao dịch</h3>
+                    <button class="btn-export" id="btnExport" onclick="triggerApiAction(this)">
+                        <i class="fa-solid fa-file-excel text-success fs-5"></i> Xuất dữ liệu Excel
+                    </button>
+                </div>
+
+                <!-- TABLE CHO PC / TABLET -->
+                <div class="desktop-table-wrapper">
+                    <table class="custom-table" id="transactionTable">
+                        <thead>
+                            <tr>
+                                <th>Mã GD & Thời gian</th>
+                                <th>Loại giao dịch</th>
+                                <th>Tham chiếu</th>
+                                <th>Tiền phát sinh (Gross)</th>
+                                <th>Chiết khấu (60%)</th>
+                                <th>Thực nhận (Net)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="trx-code">#TRX-8821</span><span class="trx-time">14/06/2026 • 14:30</span></td>
+                                <td><span class="type-badge badge-trip"><i class="fa-solid fa-car-side"></i> Cước chuyến đi</span></td>
+                                <td><a href="#" class="ref-link">#BK-1029</a></td>
+                                <td class="amt-gross">600.000 đ</td>
+                                <td><span class="amt-com">-360.000 đ</span></td>
+                                <td class="amt-net">+ 240.000 đ</td>
+                            </tr>
+                            <tr>
+                                <td><span class="trx-code">#TRX-8820</span><span class="trx-time">14/06/2026 • 09:15</span></td>
+                                <td><span class="type-badge badge-comp"><i class="fa-solid fa-hand-holding-dollar"></i> Phạt khách hủy</span></td>
+                                <td><a href="#" class="ref-link">#BK-1025</a></td>
+                                <td class="amt-gross">150.000 đ</td>
+                                <td><span class="badge bg-light text-muted">Miễn phí</span></td>
+                                <td class="amt-net">+ 150.000 đ</td>
+                            </tr>
+                            <tr>
+                                <td><span class="trx-code">#TRX-8819</span><span class="trx-time">13/06/2026 • 18:00</span></td>
+                                <td><span class="type-badge badge-comp"><i class="fa-solid fa-receipt"></i> Phụ phí BOT</span></td>
+                                <td><a href="#" class="ref-link">#BK-0998</a></td>
+                                <td class="amt-gross">35.000 đ</td>
+                                <td><span class="badge bg-light text-muted">Miễn phí</span></td>
+                                <td class="amt-net">+ 35.000 đ</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- CARD LIST CHO MOBILE -->
+                <div class="mobile-trx-list">
+                    <div class="trx-mobile-card">
+                        <div class="trx-mob-header">
+                            <div><div class="fw-bold fs-6 text-dark">#TRX-8821</div><div class="small text-muted">14/06/2026 • 14:30</div></div>
+                            <span class="type-badge badge-trip">Cước chuyến đi</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted fw-semibold small">Mã đơn:</span> <a href="#" class="ref-link">#BK-1029</a>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted fw-semibold small">Chiết khấu (60%):</span> <span class="amt-com">-360.000 đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <span class="fw-bold text-dark">Thực nhận:</span> <span class="amt-net fs-4">+ 240.000 đ</span>
+                        </div>
+                    </div>
+
+                    <div class="trx-mobile-card">
+                        <div class="trx-mob-header">
+                            <div><div class="fw-bold fs-6 text-dark">#TRX-8820</div><div class="small text-muted">14/06/2026 • 09:15</div></div>
+                            <span class="type-badge badge-comp">Phạt khách hủy</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted fw-semibold small">Mã đơn:</span> <a href="#" class="ref-link">#BK-1025</a>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                            <span class="fw-bold text-dark">Thực nhận:</span> <span class="amt-net fs-4">+ 150.000 đ</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phân trang -->
+                <div class="pagination-container">
+                    <div class="page-btn"><i class="fa-solid fa-chevron-left"></i></div>
+                    <div class="page-btn active">1</div>
+                    <div class="page-btn">2</div>
+                    <div class="page-btn">3</div>
+                    <div class="page-btn"><i class="fa-solid fa-chevron-right"></i></div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- BOTTOM NAV CHO MOBILE -->
+    <nav class="bottom-nav">
+        <a href="driverProfile.html" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Tổng quan</span></a>
+        <a href="jobBoard.html" class="nav-item"><i class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a>
+        <a href="incomeTracker.html" class="nav-item active"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
+        <a href="driverProfile.html" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài khoản</span></a>
+    </nav>
+
+    <!-- TOAST LỖI TOÀN CỤC -->
+    <div class="toast-container toast-system-container position-fixed top-0 start-50 translate-middle-x p-3" style="width: 100%; max-width: 400px; margin-top: 80px;">
+        <div id="systemErrorToast" class="toast align-items-center toast-premium-error w-100" role="alert">
+            <div class="d-flex">
+                <div class="toast-body py-3 fw-bold fs-6">
+                    <i class="fa-solid fa-circle-xmark me-2 fs-5"></i> Update failed
+                </div>
+                <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Khởi tạo Biểu đồ (Chart.js) phong cách hiện đại
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('incomeChart').getContext('2d');
+            
+            // Gradient cho cột thu nhập
+            let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientBlue.addColorStop(0, '#3b82f6');
+            gradientBlue.addColorStop(1, '#60a5fa');
+
+            let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
+            gradientOrange.addColorStop(0, '#f59e0b');
+            gradientOrange.addColorStop(1, '#fbbf24');
+
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
+                    datasets: [
+                        {
+                            label: 'Cước chuyến đi',
+                            data: [450000, 600000, 0, 800000, 1200000, 900000, 300000],
+                            backgroundColor: gradientBlue,
+                            borderRadius: 8,
+                            barThickness: 24
+                        },
+                        {
+                            label: 'Thưởng / Phụ phí',
+                            data: [0, 150000, 0, 35000, 0, 115000, 0],
+                            backgroundColor: gradientOrange,
+                            borderRadius: 8,
+                            barThickness: 24
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    plugins: {
+                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 10, padding: 20, font: {family: 'Inter', weight: '600'} } },
+                        tooltip: { backgroundColor: '#0f172a', titleFont: {family: 'Inter', size: 14}, bodyFont: {family: 'Inter', size: 13}, padding: 12, cornerRadius: 8 }
+                    },
+                    scales: {
+                        x: { stacked: true, grid: { display: false }, ticks: { font: {family: 'Inter', weight: '600'}, color: '#64748b' } },
+                        y: { stacked: true, border: { display: false }, grid: { color: '#f1f5f9' }, ticks: { font: {family: 'Inter'}, color: '#94a3b8', callback: function(value) { return value.toLocaleString('vi-VN') + ' đ'; } } }
+                    }
+                }
+            });
+        });
+
+        // Xử lý Lỗi Toàn cục (Update failed)
+        const toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
+
+        function triggerApiAction(element) {
+            let originalHTML = '';
+            let isBtn = element.tagName === 'BUTTON';
+
+            if(isBtn) {
+                originalHTML = element.innerHTML;
+                element.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải...';
+                element.disabled = true;
+            }
+
+            // Giả lập lỗi máy chủ/mạng (Delay 1.2s)
+            setTimeout(() => {
+                if(isBtn) {
+                    element.innerHTML = originalHTML;
+                    element.disabled = false;
+                }
+                
+                // HIỂN THỊ CHÍNH XÁC CHỮ "Update failed" VÀ GIỮ NGUYÊN GIAO DIỆN
+                toastError.show();
+            }, 1200);
+        }
+    </script>
+</body>
+</html>
