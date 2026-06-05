@@ -201,9 +201,9 @@ body {
   transition: all var(--transition-speed) ease;
 }
 .btn-save:hover {
-  background-color: #009640;
+  background-color: var(--color-3);
   transform: translateY(-2px);
-  box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
+  box-shadow: 0 10px 20px rgba(177, 121, 0, 0.5);
 }
 
 /* =========================================
