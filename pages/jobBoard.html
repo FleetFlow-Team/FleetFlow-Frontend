@@ -3,153 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FleetFlow - Bảng Công Việc</title>
+    <title>FleetFlow - Trạm Phát Sóng Nhận Chuyến</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../style/base.css" />
+    <link rel="icon" type="image/jpeg" href="../assets/img/logo1.jpg">
 
     <style>
-        /* ==================== GLOBAL ==================== */
+        /* =========================================
+           1. NỀN TẢNG & BIẾN CƠ SỞ CHUẨN
+        ========================================= */
         :root {
-            --primary: #10B981; /* Xanh lá chuẩn requirement */
+            --primary: #10B981; /* Xanh lá theo chuẩn Job Board */
             --primary-dark: #059669;
+            --warning: #F59E0B;
+            --danger: #EF4444;
             --bg-body: #F3F4F6;
             --text-main: #1F2937;
             --text-muted: #6B7280;
             --text-light: #9CA3AF;
-            --warning: #F59E0B;
-            --danger: #EF4444;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
-            margin: 0;
-            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        /* =========================================
+           2. HEADER & NAVBAR (STICKY TOP)
+        ========================================= */
+        .custom-navbar {
+            background-color: #ffffff;
+            height: 70px; padding: 0 !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1050;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .custom-navbar .container-base {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; max-width: 100% !important; margin: 0; padding: 0 24px !important; height: 100%;
         }
 
-        /* Mobile Wrapper để xem đẹp trên cả PC */
-        .mobile-wrapper {
-            max-width: 414px;
-            margin: 0 auto;
-            background: var(--bg-body);
-            min-height: 100vh;
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
+        /* Nút Hamburger & Tiêu đề */
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .btn-hamburger { background: none; border: none; font-size: 1.5rem; color: var(--text-main); cursor: pointer; transition: 0.2s;}
+        .btn-hamburger:hover { color: var(--primary); }
+        .header-title { font-weight: 800; font-size: 1.1rem; margin: 0; letter-spacing: 0.5px; color: var(--text-main); text-transform: uppercase;}
 
-        /* ==================== 1. HEADER ==================== */
-        .app-header {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: #FFFFFF;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 16px;
-            height: 60px;
-        }
-
-        .header-title {
-            font-weight: 700;
-            font-size: 16px;
-            margin: 0;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-icon {
-            background: none; border: none; font-size: 20px; color: var(--text-main); padding: 0;
-        }
-
-        /* Toggle Switch Custom */
-        .status-toggle-wrapper {
-            display: flex; align-items: center; gap: 8px;
-        }
+        /* Công tắc trạng thái (Góc phải) */
+        .status-toggle-wrapper { display: flex; align-items: center; gap: 10px; background: #F9FAFB; padding: 6px 14px; border-radius: 50px; border: 1px solid #E5E7EB;}
+        .indicator-dot { width: 12px; height: 12px; border-radius: 50%; background: #D1D5DB; transition: all 0.3s;}
+        .indicator-dot.active { background: var(--primary); animation: pulse-green 1.5s infinite; }
+        .indicator-dot.error { background: var(--danger); box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);}
         
-        .indicator-dot {
-            width: 10px; height: 10px; border-radius: 50%; background: #D1D5DB;
-        }
-        .indicator-dot.active {
-            background: var(--primary);
-            animation: pulse-green 1.5s infinite;
-        }
-        .indicator-dot.error { background: var(--danger); }
-
         @keyframes pulse-green {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            70% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        .toggle-switch {
-            position: relative; display: inline-block; width: 44px; height: 24px;
-        }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #E5E7EB; transition: .3s; border-radius: 24px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+        .switch { position: relative; display: inline-block; width: 48px; height: 26px; margin: 0;}
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #D1D5DB; transition: .4s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .4s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 50%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        input:disabled + .slider { background-color: #F3F4F6; cursor: not-allowed; border: 1px solid #E5E7EB;}
-        input:disabled + .slider:before { background-color: #D1D5DB; box-shadow: none;}
+        input:checked + .slider:before { transform: translateX(22px); }
+        input:disabled + .slider { cursor: not-allowed; opacity: 0.5; }
 
-        /* ==================== 2. TABS ==================== */
-        .app-tabs {
-            display: flex; background: #FFF; border-bottom: 1px solid #E5E7EB;
-            position: sticky; top: 60px; z-index: 99;
+        /* =========================================
+           3. TABS CHUYỂN ĐỔI (HORIZONTAL TABS)
+        ========================================= */
+        .tabs-container {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            position: sticky; top: 70px; z-index: 1040;
+            display: flex; border-bottom: 1px solid #E5E7EB;
+            padding: 0 24px;
         }
         .tab-item {
-            flex: 1; text-align: center; padding: 14px 0; font-weight: 600; font-size: 14px;
-            color: var(--text-muted); cursor: pointer; position: relative;
+            padding: 16px 24px; font-weight: 700; font-size: 0.95rem; color: var(--text-muted);
+            cursor: pointer; position: relative; transition: all 0.3s;
+            display: flex; align-items: center; gap: 8px;
         }
-        .tab-item.active {
-            color: #2563EB; /* Màu xanh chủ đạo của tab */
-            border-bottom: 2px solid #2563EB;
+        .tab-item:hover { color: var(--text-main); background: #F9FAFB; }
+        .tab-item.active { color: #2563EB; }
+        .tab-item.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px;
+            background-color: #2563EB; border-radius: 3px 3px 0 0;
         }
-        .tab-badge {
-            position: absolute; top: 6px; right: 15px; background: var(--danger);
-            color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 10px;
+        .tab-badge { background: var(--danger); color: white; font-size: 0.7rem; font-weight: 800; padding: 2px 8px; border-radius: 50px; }
+
+        /* =========================================
+           4. MAIN CONTENT & GRID LAYOUT
+        ========================================= */
+        .app-wrapper { display: flex; min-height: 100vh; padding-top: 130px; } /* Bù Header + Tabs */
+
+        /* Desktop Sidebar (Tích hợp Offcanvas/Sidebar) */
+        .sidebar {
+            width: 280px; background: white; border-right: 1px solid #E5E7EB;
+            position: fixed; top: 70px; bottom: 0; left: 0; z-index: 1000;
+            padding: 24px 0; overflow-y: auto; transition: transform 0.3s ease;
+        }
+        .sidebar-menu { list-style: none; padding: 0 16px; margin: 0; display: flex; flex-direction: column; gap: 8px;}
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 14px; padding: 14px 20px; color: var(--text-main);
+            text-decoration: none; font-weight: 600; font-size: 0.95rem; border-radius: 12px; transition: 0.3s;
+        }
+        .sidebar-menu a i { font-size: 1.2rem; color: var(--text-muted); width: 24px; text-align: center; transition: 0.3s;}
+        .sidebar-menu a:hover { background: #F3F4F6; transform: translateX(5px); }
+        .sidebar-menu a.active { background: rgba(37, 99, 235, 0.1); color: #2563EB; }
+        .sidebar-menu a.active i { color: #2563EB; transform: scale(1.1); }
+
+        /* Vùng nội dung chính (Grid 3 cột trên PC) */
+        .main-content {
+            flex: 1; padding: 24px; margin-left: 280px; transition: all 0.3s; max-width: 1400px;
+        }
+        .job-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px;
         }
 
-        /* ==================== 3. FEED & EMPTY STATE ==================== */
-        .feed-container { padding: 16px; padding-bottom: 30px; min-height: calc(100vh - 110px);}
-        
-        .empty-state {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            height: 60vh; text-align: center; display: none;
-        }
-        .radar-icon { font-size: 60px; color: var(--text-light); margin-bottom: 16px; animation: scan 2s linear infinite;}
-        @keyframes scan { 0% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(0.9); opacity: 0.5; } }
-        .empty-state p { color: var(--text-light); font-size: 14px; font-weight: 500; }
-
-        /* ==================== 4. BROADCAST CARD ==================== */
+        /* =========================================
+           5. THẺ NHẬN CHUYẾN (BROADCAST CARD) ĐỈNH CAO
+        ========================================= */
         .broadcast-card {
-            background: #FFF; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-            margin-bottom: 16px; overflow: hidden; transition: all 0.3s;
+            background: #FFFFFF; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #E5E7EB; overflow: hidden; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; will-change: transform, box-shadow;
         }
+        .broadcast-card:hover { transform: translateY(-6px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); border-color: #D1D5DB;}
 
-        /* Phần 1: Header */
-        .card-header-custom {
-            padding: 16px; border-bottom: 1px dashed #E5E7EB; display: flex; justify-content: space-between; align-items: flex-start;
-        }
-        .bk-code { font-weight: 700; font-size: 15px; color: var(--text-main); display: block; margin-bottom: 4px;}
-        .bk-time { font-size: 12px; color: var(--text-muted); font-weight: 500;}
+        /* Phần 1: Header của Thẻ */
+        .card-header-custom { padding: 20px; border-bottom: 1px dashed #E5E7EB; display: flex; justify-content: space-between; align-items: flex-start; background: #FAFAFA;}
+        .bk-code { font-weight: 800; font-size: 1.1rem; color: #111827; display: block; margin-bottom: 4px; letter-spacing: -0.5px;}
+        .bk-time { font-size: 0.85rem; color: var(--text-muted); font-weight: 600;}
         
-        .timer-box { font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 6px; }
-        .timer-box.safe { color: var(--primary); }
-        .timer-box.warning { color: var(--warning); }
-        .timer-box.danger { color: var(--danger); }
+        .timer-box { font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid #E5E7EB; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
+        .timer-box.safe { color: var(--primary); border-color: #D1FAE5;}
+        .timer-box.warning { color: var(--warning); border-color: #FEF3C7;}
+        .timer-box.danger { color: var(--danger); border-color: #FEE2E2; background: #FEF2F2;}
         .timer-box.danger i { animation: shake 0.5s infinite; }
 
         @keyframes shake {
@@ -160,143 +159,391 @@
             100% { transform: rotate(0deg); }
         }
 
-        /* Phần 2: Body (Route) */
-        .card-body-custom { padding: 16px; }
-        .route-stepper { position: relative; padding-left: 20px; margin-bottom: 16px; }
-        .route-stepper::before {
-            content: ''; position: absolute; left: 5px; top: 12px; bottom: 12px;
-            width: 2px; background: #E5E7EB;
-        }
-        .step-point { position: relative; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 16px; line-height: 1.4;}
+        /* Phần 2: Thân thẻ (Route Stepper & Tags) */
+        .card-body-custom { padding: 20px; }
+        .route-stepper { position: relative; padding-left: 24px; margin-bottom: 20px; }
+        .route-stepper::before { content: ''; position: absolute; left: 7px; top: 14px; bottom: 14px; width: 2px; background: #E5E7EB; }
+        
+        .step-point { position: relative; font-size: 1rem; font-weight: 700; color: var(--text-main); margin-bottom: 20px; line-height: 1.4;}
         .step-point:last-child { margin-bottom: 0; }
         .step-point::before {
-            content: ''; position: absolute; left: -20px; top: 4px; width: 12px; height: 12px;
-            border-radius: 50%; background: #FFF; border: 3px solid; z-index: 2;
+            content: ''; position: absolute; left: -24px; top: 4px; width: 14px; height: 14px;
+            border-radius: 50%; background: #FFF; border: 4px solid; z-index: 2; box-shadow: 0 0 0 3px white;
         }
         .step-pickup::before { border-color: var(--primary); }
         .step-dropoff::before { border-color: var(--danger); }
 
         .tags-container { display: flex; gap: 8px; flex-wrap: wrap; }
-        .tag-pill { background: #F3F4F6; color: var(--text-muted); font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 4px; }
+        .tag-pill { background: #F3F4F6; color: #4B5563; font-size: 0.75rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; border: 1px solid #E5E7EB;}
 
-        /* Phần 3: Footer & CTA */
-        .card-footer-custom { padding: 16px; background: #FAFAFA; border-top: 1px solid #E5E7EB; }
-        .finance-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .finance-label { font-size: 14px; color: #4B5563; font-weight: 500;}
-        .finance-amount { font-size: 20px; font-weight: 800; color: var(--primary); }
+        /* Phần 3: Chân thẻ & Nút Tương tác */
+        .card-footer-custom { padding: 20px; background: #ffffff; border-top: 1px solid #E5E7EB; }
+        .finance-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .finance-label { font-size: 0.95rem; color: var(--text-muted); font-weight: 600;}
+        .finance-amount { font-size: 1.6rem; font-weight: 800; color: var(--primary); letter-spacing: -0.5px;}
 
         .btn-accept {
-            width: 100%; padding: 16px; background: var(--primary); color: #FFF;
-            border: none; border-radius: 8px; font-size: 15px; font-weight: 800;
-            text-transform: uppercase; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 18px; background: var(--primary); color: #FFF;
+            border: none; border-radius: 12px; font-size: 1rem; font-weight: 800;
+            text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-        .btn-accept:active { transform: scale(0.98); }
-        .btn-accept:disabled { opacity: 0.7; cursor: not-allowed; }
+        .btn-accept:hover:not(:disabled) { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4); }
+        .btn-accept:active:not(:disabled) { transform: scale(0.97); box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3); }
+        .btn-accept:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; background: #D1D5DB; color: #6B7280;}
 
-        /* ==================== 5. TOASTS & MODALS ==================== */
-        .toast-container { position: fixed; top: 70px; left: 50%; transform: translateX(-50%); z-index: 1060; width: 100%; max-width: 380px; padding: 0 16px;}
-        .toast-custom { border-radius: 8px; color: #FFF; border: none; font-weight: 600; font-size: 14px; padding: 12px; display: flex; align-items: center; gap: 10px;}
-        .toast-conflict { background: var(--warning); box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);}
-        .toast-error { background: var(--danger); box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);}
+        /* =========================================
+           6. TRẠNG THÁI RỖNG (EMPTY STATE)
+        ========================================= */
+        .empty-state {
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            height: 60vh; text-align: center; width: 100%; grid-column: 1 / -1;
+        }
+        .radar-icon { font-size: 5rem; color: #CBD5E1; margin-bottom: 24px; animation: scan 2s linear infinite;}
+        @keyframes scan { 0% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 20px #CBD5E1);} 100% { transform: scale(0.9); opacity: 0.5; } }
+        .empty-state p { color: #64748b; font-size: 1rem; font-weight: 600; }
 
-        /* Success Modal */
-        #successModal .modal-content { border-radius: 20px; border: none; text-align: center; padding: 30px 20px; }
+        /* =========================================
+           7. TOASTS & MODALS CHUẨN XÁC
+        ========================================= */
+        .toast-container { position: fixed; top: 140px; left: 50%; transform: translateX(-50%); z-index: 1060; width: 100%; max-width: 400px; padding: 0 16px;}
+        .toast-custom { border-radius: 12px; color: #FFF; border: none; font-weight: 600; font-size: 0.95rem; padding: 16px; display: flex; align-items: center; gap: 12px;}
+        .toast-warning { background: var(--warning); box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);}
+        .toast-error { background: var(--danger); box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);}
+
+        #successModal .modal-content { border-radius: 24px; border: none; text-align: center; padding: 40px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);}
         .check-circle {
-            width: 80px; height: 80px; background: #D1FAE5; color: var(--primary); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 20px auto;
+            width: 90px; height: 90px; background: #D1FAE5; color: var(--primary); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 45px; margin: 0 auto 24px auto;
+            box-shadow: 0 0 0 15px rgba(209, 250, 229, 0.5); animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
+        /* =========================================
+           RESPONSIVE MOBILE
+        ========================================= */
+        @media (max-width: 991px) {
+            .sidebar { transform: translateX(-100%); } /* Ẩn sidebar trên Mobile */
+            .sidebar.show { transform: translateX(0); box-shadow: 10px 0 30px rgba(0,0,0,0.1); }
+            .main-content { margin-left: 0; padding: 16px; }
+            .job-grid { grid-template-columns: 1fr; gap: 16px;}
+            .tabs-container { padding: 0 16px; }
+            .tab-item { flex: 1; justify-content: center;}
+        }
     </style>
 </head>
 <body>
 
-<div class="mobile-wrapper">
-    
-    <header class="app-header">
-        <button class="btn-icon"><i class="fa-solid fa-bars"></i></button>
-        <h1 class="header-title">BẢNG CÔNG VIỆC</h1>
-        
-        <div class="status-toggle-wrapper">
-            <div class="indicator-dot" id="statusDot"></div>
-            <label class="toggle-switch">
-                <input type="checkbox" id="statusToggle" onchange="handleStatusChange()">
-                <span class="slider"></span>
-            </label>
+    <header class="custom-navbar">
+        <div class="container-base">
+            <div class="header-left">
+                <button class="btn-hamburger d-lg-none" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i></button>
+                <h1 class="header-title">BẢNG CÔNG VIỆC</h1>
+            </div>
+
+            <div class="status-toggle-wrapper">
+                <div class="indicator-dot" id="statusDot"></div>
+                <label class="switch">
+                    <input type="checkbox" id="statusToggle" onchange="handleStatusChange()">
+                    <span class="slider"></span>
+                </label>
+            </div>
         </div>
     </header>
 
-    <nav class="app-tabs">
+    <div class="tabs-container">
         <div class="tab-item active">
             Chờ Nhận (Phát sóng)
             <span class="tab-badge" id="jobBadge">3</span>
         </div>
-        <div class="tab-item" style="color: #6B7280; border-bottom: 2px solid transparent;">
+        <div class="tab-item" style="color: #9CA3AF;">
             Đã Nhận (Sắp chạy)
         </div>
-    </nav>
+    </div>
 
-    <main class="feed-container">
+    <div class="app-wrapper">
         
-        <div class="empty-state" id="emptyState">
-            <i class="fa-solid fa-satellite-dish radar-icon"></i>
-            <p>Hệ thống đang dò tìm chuyến đi quanh bạn...</p>
-        </div>
+        <aside class="sidebar" id="mobileSidebar">
+            <div class="d-flex align-items-center gap-3 mb-4 px-4">
+                <img src="https://ui-avatars.com/api/?name=Tai+Xe&background=10B981&color=fff&bold=true" alt="Avatar" style="width: 50px; height: 50px; border-radius: 50%;">
+                <div>
+                    <div class="fw-bold text-dark fs-6">Nguyễn Văn A</div>
+                    <div class="text-muted small fw-medium">Tài xế Đối tác</div>
+                </div>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="fa-solid fa-satellite-dish"></i> Nhận chuyến</a></li>
+                <li><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử Thu nhập</a></li>
+                <li><a href="#"><i class="fa-solid fa-circle-user"></i> Hồ sơ cá nhân</a></li>
+                <hr class="mx-3 my-2 border-light">
+                <li><a href="login.html" class="text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a></li>
+            </ul>
+        </aside>
 
-        <div id="jobList">
+        <main class="main-content">
             
-            <article class="broadcast-card" id="job-1">
-                <div class="card-header-custom">
-                    <div>
-                        <span class="bk-code">#BK-1029</span>
-                        <span class="bk-time">Khởi hành: 14:30 hôm nay</span>
-                    </div>
-                    <div class="timer-box safe" data-seconds="720"> <i class="fa-regular fa-clock"></i> <span class="time-text">12:00</span>
-                    </div>
-                </div>
-                <div class="card-body-custom">
-                    <div class="route-stepper">
-                        <div class="step-point step-pickup">Tòa nhà Alpha, ĐH FPT, Khu CNC</div>
-                        <div class="step-point step-dropoff">Sân bay Tân Sơn Nhất, Ga Quốc Nội</div>
-                    </div>
-                    <div class="tags-container">
-                        <span class="tag-pill">22 km</span>
-                        <span class="tag-pill">Xe 4 chỗ</span>
-                        <span class="tag-pill">Không đi cao tốc</span>
-                    </div>
-                </div>
-                <div class="card-footer-custom">
-                    <div class="finance-row">
-                        <span class="finance-label">Thu nhập thực nhận</span>
-                        <span class="finance-amount">240.000đ</span>
-                    </div>
-                    <button class="btn-accept" onclick="acceptJob(this, 'job-1', 'error500')">Nhận Chuyến (Test Lỗi 500)</button>
-                </div>
-            </article>
+            <div class="empty-state" id="emptyState">
+                <i class="fa-solid fa-satellite-dish radar-icon"></i>
+                <p>Hệ thống đang dò tìm chuyến đi quanh bạn...</p>
+            </div>
 
-            <article class="broadcast-card" id="job-2">
-                <div class="card-header-custom">
-                    <div>
-                        <span class="bk-code">#BK-8842</span>
-                        <span class="bk-time">Khởi hành: 15:00 hôm nay</span>
+            <div class="job-grid" id="jobList">
+                
+                <article class="broadcast-card" id="job-1">
+                    <div class="card-header-custom">
+                        <div>
+                            <span class="bk-code">#BK-1029</span>
+                            <span class="bk-time">Khởi hành: 14:30 hôm nay</span>
+                        </div>
+                        <div class="timer-box safe" data-seconds="720"> <i class="fa-regular fa-clock"></i> <span class="time-text">12:00</span>
+                        </div>
                     </div>
-                    <div class="timer-box warning" data-seconds="180"> <i class="fa-regular fa-clock"></i> <span class="time-text">03:00</span>
+                    <div class="card-body-custom">
+                        <div class="route-stepper">
+                            <div class="step-point step-pickup">Tòa nhà Alpha, Đại học FPT, Khu CNC</div>
+                            <div class="step-point step-dropoff">Sân bay Tân Sơn Nhất, Ga Quốc Nội</div>
+                        </div>
+                        <div class="tags-container">
+                            <span class="tag-pill">25 km</span>
+                            <span class="tag-pill">Xe 4 chỗ</span>
+                            <span class="tag-pill">Không đi cao tốc</span>
+                        </div>
                     </div>
-                </div>
-                <div class="card-body-custom">
-                    <div class="route-stepper">
-                        <div class="step-point step-pickup">Chợ Bến Thành, Quận 1</div>
-                        <div class="step-point step-dropoff">KDL Bửu Long, Biên Hòa</div>
+                    <div class="card-footer-custom">
+                        <div class="finance-row">
+                            <span class="finance-label">Thu nhập thực nhận</span>
+                            <span class="finance-amount">240.000đ</span>
+                        </div>
+                        <button class="btn-accept" onclick="acceptJob(this, 'job-1', 'error500')">Nhận Chuyến (Test Lỗi 500)</button>
                     </div>
-                    <div class="tags-container">
-                        <span class="tag-pill">35 km</span>
-                        <span class="tag-pill">Xe 7 chỗ</span>
+                </article>
+
+                <article class="broadcast-card" id="job-2">
+                    <div class="card-header-custom">
+                        <div>
+                            <span class="bk-code">#BK-8842</span>
+                            <span class="bk-time">Khởi hành: 15:00 hôm nay</span>
+                        </div>
+                        <div class="timer-box warning" data-seconds="180"> <i class="fa-regular fa-clock"></i> <span class="time-text">03:00</span>
+                        </div>
                     </div>
-                </div>
-                <div class="card-footer-custom">
-                    <div class="finance-row">
-                        <span class="finance-label">Thu nhập thực nhận</span>
-                        <span class="finance-amount">450.000đ</span>
+                    <div class="card-body-custom">
+                        <div class="route-stepper">
+                            <div class="step-point step-pickup">Chợ Bến Thành, Quận 1</div>
+                            <div class="step-point step-dropoff">KDL Bửu Long, Biên Hòa</div>
+                        </div>
+                        <div class="tags-container">
+                            <span class="tag-pill">35 km</span>
+                            <span class="tag-pill">Xe 7 chỗ</span>
+                        </div>
                     </div>
-                    <button class="btn-accept" onclick="acceptJob(this, 'job-2', 'error409')">Nhận Chuyến (Test Trùng Đơn)</button>
-                </div>
-            </article>
+                    <div class="card-footer-custom">
+                        <div class="finance-row">
+                            <span class="finance-label">Thu nhập thực nhận</span>
+                            <span class="finance-amount">450.000đ</span>
+                        </div>
+                        <button class="btn-accept" onclick="acceptJob(this, 'job-2', 'error409')">Nhận Chuyến (Test Bị Giành Đơn)</button>
+                    </div>
+                </article>
+
+                <article class="broadcast-card" id="job-3">
+                    <div class="card-header-custom">
+                        <div>
+                            <span class="bk-code">#BK-9911</span>
+                            <span class="bk-time">Khởi hành: 16:30 hôm nay</span>
+                        </div>
+                        <div class="timer-box danger" data-seconds="45"> <i class="fa-solid fa-stopwatch"></i> <span class="time-text">00:45</span>
+                        </div>
+                    </div>
+                    <div class="card-body-custom">
+                        <div class="route-stepper">
+                            <div class="step-point step-pickup">Landmark 81, Bình Thạnh</div>
+                            <div class="step-point step-dropoff">Bãi Sau, Vũng Tàu</div>
+                        </div>
+                        <div class="tags-container">
+                            <span class="tag-pill">105 km</span>
+                            <span class="tag-pill">Xe 4 chỗ</span>
+                            <span class="tag-pill">Cao tốc LT-DG</span>
+                        </div>
+                    </div>
+                    <div class="card-footer-custom">
+                        <div class="finance-row">
+                            <span class="finance-label">Thu nhập thực nhận</span>
+                            <span class="finance-amount">1.250.000đ</span>
+                        </div>
+                        <button class="btn-accept" onclick="acceptJob(this, 'job-3', 'success')">Nhận Chuyến (Test Thành Công)</button>
+                    </div>
+                </article>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <div class="modal fade" id="successModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 360px; margin: 0 auto;">
+            <div class="modal-content shadow-lg">
+                <div class="check-circle"><i class="fa-solid fa-check"></i></div>
+                <h3 class="fw-bold mb-3 text-dark">Nhận chuyến thành công!</h3>
+                <p class="text-muted mb-4" style="font-size: 0.95rem;">Hệ thống đã chốt lộ trình. Vui lòng chuyển sang tab <strong>Đã Nhận</strong> để xem chi tiết và liên hệ khách hàng.</p>
+                <button type="button" class="btn btn-success w-100 fw-bold py-3 fs-6 rounded-3" onclick="location.reload()" style="background: var(--primary); border: none;">Đến Chi tiết Hành trình</button>
+            </div>
+        </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // ==========================================
+    // MOCK STATE & LOGIC KHỞI TẠO (BR-13)
+    // ==========================================
+    const walletBalance = 35000; // < 50k: Khóa công tắc. Bạn có thể đổi thành 60000 để bật.
+    const toggleInput = document.getElementById('statusToggle');
+    const statusDot = document.getElementById('statusDot');
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Kiểm tra tiền ví (BR-13)
+        if (walletBalance < 50000) {
+            toggleInput.checked = false;
+            toggleInput.disabled = true;
+            statusDot.className = "indicator-dot error"; // Chấm đỏ
+            showToast("Ví dưới 50.000đ. Không thể bật nhận chuyến.", "error", "fa-circle-xmark");
+        } else {
+            toggleInput.disabled = false;
+            toggleInput.checked = true; // Mặc định bật nếu đủ tiền
+            handleStatusChange();
+        }
+
+        // Bật hệ thống đếm ngược thời gian thẻ
+        startGlobalTimers();
+    });
+
+    // Bật/Tắt công tắc trạng thái
+    function handleStatusChange() {
+        if(toggleInput.checked) {
+            statusDot.className = "indicator-dot active"; // Chấm xanh nhấp nháy Pulse
+        } else {
+            statusDot.className = "indicator-dot"; // Chấm xám
+        }
+    }
+
+    // Mở Sidebar Mobile
+    function toggleSidebar() {
+        document.getElementById('mobileSidebar').classList.toggle('show');
+    }
+
+    // ==========================================
+    // LOGIC ĐỒNG HỒ ĐẾM NGƯỢC (COUNTDOWN TIMER)
+    // ==========================================
+    function startGlobalTimers() {
+        setInterval(() => {
+            const timerBoxes = document.querySelectorAll('.timer-box');
+            timerBoxes.forEach(box => {
+                let seconds = parseInt(box.getAttribute('data-seconds'));
+                if (seconds > 0) {
+                    seconds--;
+                    box.setAttribute('data-seconds', seconds);
+                    
+                    // Format MM:SS
+                    const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    const s = (seconds % 60).toString().padStart(2, '0');
+                    box.querySelector('.time-text').innerText = `${m}:${s}`;
+
+                    // Đổi màu cảnh báo theo thời gian thực
+                    if (seconds <= 60) { // < 1 phút: Đỏ & Lắc
+                        box.className = "timer-box danger";
+                        box.querySelector('i').className = "fa-solid fa-stopwatch"; 
+                    } else if (seconds <= 300) { // < 5 phút: Cam
+                        box.className = "timer-box warning";
+                    }
+                } else {
+                    // Về 00:00: Xóa thẻ mượt mà khỏi DOM
+                    const card = box.closest('.broadcast-card');
+                    if(card) {
+                        card.style.transform = 'scale(0.9)';
+                        card.style.opacity = '0';
+                        setTimeout(() => { card.remove(); updateBadgeCount(); }, 300);
+                    }
+                }
+            });
+        }, 1000);
+    }
+
+    // ==========================================
+    // LOGIC BUTTON & BẮT LỖI NGOẠI LỆ (API MOCKING)
+    // ==========================================
+    function acceptJob(btnElement, cardId, scenario) {
+        // 1. Chuyển nút sang trạng thái Đang xử lý
+        const originalText = btnElement.innerHTML;
+        btnElement.disabled = true;
+        btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> ĐANG XỬ LÝ...';
+
+        // 2. Giả lập gọi API (Đợi 1.2s)
+        setTimeout(() => {
+            if (scenario === 'error409') {
+                // Ngoại lệ 1 (Thua cuộc): Bị giật mất đơn (Xóa thẻ, báo Toast Cam)
+                removeCardSmoothly(cardId);
+                showToast("Đơn hàng này đã được tài xế khác nhận.", "warning", "fa-triangle-exclamation");
+
+            } else if (scenario === 'error500') {
+                // Ngoại lệ 2 (Lỗi hệ thống): Trả lại nút, báo Toast Đỏ "Update failed"
+                btnElement.disabled = false;
+                btnElement.innerHTML = originalText;
+                showToast("Update failed", "error", "fa-circle-xmark");
+
+            } else if (scenario === 'success') {
+                // Thành công (200 OK): Xóa thẻ, Mở Modal Xanh
+                removeCardSmoothly(cardId);
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+            }
+        }, 1200);
+    }
+
+    // ==========================================
+    // HÀM HỖ TRỢ (UTILS)
+    // ==========================================
+    function removeCardSmoothly(cardId) {
+        const card = document.getElementById(cardId);
+        if(card) {
+            card.style.transform = 'scale(0.9)';
+            card.style.opacity = '0';
+            setTimeout(() => { 
+                card.remove(); 
+                updateBadgeCount(); 
+            }, 300);
+        }
+    }
+
+    function showToast(message, type, icon) {
+        const toastContainer = document.getElementById('toastContainer');
+        const toastHTML = `
+            <div class="toast align-items-center toast-custom toast-${type} show mb-3" role="alert" aria-live="assertive" aria-atomic="true">
+                <i class="fa-solid ${icon} fs-4"></i>
+                <div class="fw-bold" style="font-size: 0.95rem;">${message}</div>
+            </div>
+        `;
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+
+        // Tự xóa toast sau 3.5s
+        const lastToast = toastContainer.lastElementChild;
+        setTimeout(() => {
+            lastToast.classList.remove('show');
+            setTimeout(() => lastToast.remove(), 300);
+        }, 3500);
+    }
+
+    function updateBadgeCount() {
+        const count = document.querySelectorAll('.broadcast-card').length;
+        const badge = document.getElementById('jobBadge');
+        badge.innerText = count;
+        
+        if (count === 0) {
+            badge.style.display = 'none';
+            document.getElementById('emptyState').style.display = 'flex';
+        }
+    }
+</script>
+
+</body>
+</html>
