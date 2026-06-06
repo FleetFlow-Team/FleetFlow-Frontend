@@ -362,6 +362,49 @@
             .chart-container { padding: 36px; margin-bottom: 40px; border-radius: 24px; height: 450px;}
             .custom-table th, .custom-table td { padding: 24px 32px; font-size: 1rem; }
         }
+        /* =========================================
+           9. TAB TÀI KHOẢN & CÀI ĐẶT (DRIVER PROFILE)
+        ========================================= */
+        .profile-header {
+            background: white; border-radius: 20px; padding: 32px; display: flex; align-items: center; gap: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 24px; position: relative; overflow: hidden;
+        }
+        .profile-header::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; 
+            background: linear-gradient(90deg, var(--color-1), #10b981);
+        }
+        .profile-avatar { 
+            width: 90px; height: 90px; border-radius: 50%; border: 4px solid #f1f5f9; 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1); object-fit: cover; 
+        }
+        .profile-info h3 { margin: 0 0 8px 0; font-weight: 800; color: var(--color-dark); font-size: 1.5rem; }
+        .rating-badge { display: inline-flex; align-items: center; gap: 6px; background: #fffbeb; color: #d97706; padding: 6px 12px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; }
+        
+        /* Hiệu ứng Nút Rút Tiền (Sweeping Hover Effect) */
+        .btn-withdraw {
+            position: relative; overflow: hidden; background: white; border: 2px solid var(--color-1); color: var(--color-1);
+            padding: 12px 24px; border-radius: 12px; font-weight: 800; z-index: 1; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-withdraw::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 0%; height: 100%;
+            background: var(--color-1); z-index: -1; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-withdraw:hover::before { width: 100%; }
+        .btn-withdraw:hover { color: white; box-shadow: 0 8px 20px rgba(0,177,79,0.3); transform: translateY(-3px); }
+
+        /* Khối Cài đặt (Settings List) */
+        .setting-group { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 24px; }
+        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f1f5f9; transition: all 0.3s; cursor: pointer;}
+        .setting-item:last-child { border-bottom: none; }
+        .setting-item:hover { transform: translateX(8px); }
+        .setting-item .title { font-weight: 700; color: var(--color-dark); font-size: 1.05rem; }
+        .setting-item .desc { font-size: 0.85rem; color: #64748b; margin-top: 4px; font-weight: 500;}
+        
+        .setting-icon { 
+            width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; color: var(--color-1); 
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .setting-item:hover .setting-icon { background: var(--color-1); color: white; transform: rotate(15deg) scale(1.1); }
     </style>
 </head>
 <body>
@@ -660,6 +703,86 @@
                         <div class="page-btn active">1</div>
                         <div class="page-btn">2</div>
                         <div class="page-btn"><i class="fa-solid fa-chevron-right"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-account" class="tab-section">
+                <div class="page-header animate-fade-up">
+                    <h1 class="page-title">Hồ sơ Tài khoản</h1>
+                    <button class="btn-withdraw" onclick="triggerApiAction(this)">
+                        <i class="fa-solid fa-money-bill-transfer me-2"></i> Rút tiền về Ngân hàng
+                    </button>
+                </div>
+
+                <div class="profile-header animate-fade-up delay-1">
+                    <img src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff" class="profile-avatar" alt="Avatar">
+                    <div class="profile-info">
+                        <h3>Nguyễn Quang</h3>
+                        <div class="d-flex gap-3 align-items-center flex-wrap">
+                            <span class="rating-badge"><i class="fa-solid fa-star"></i> 4.98 (245 đánh giá)</span>
+                            <span class="badge bg-light text-dark border p-2"><i class="fa-solid fa-car"></i> Mitsubishi Xpander (51H-123.45)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4 animate-fade-up delay-2">
+                    <div class="col-lg-6">
+                        <div class="setting-group h-100">
+                            <h5 class="fw-bold mb-4">Quản lý Dữ liệu</h5>
+                            <div class="setting-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                    <div>
+                                        <div class="title">Định danh eKYC</div>
+                                        <div class="desc">Hồ sơ đã được xác thực</div>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-circle-check text-success fs-4"></i>
+                            </div>
+                            <div class="setting-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="setting-icon"><i class="fa-solid fa-car-on"></i></div>
+                                    <div>
+                                        <div class="title">Giấy tờ Phương tiện</div>
+                                        <div class="desc">Đăng kiểm, Bảo hiểm bắt buộc</div>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-chevron-right text-muted"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="setting-group h-100">
+                            <h5 class="fw-bold mb-4">Tùy chỉnh Ứng dụng</h5>
+                            <div class="setting-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="setting-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-bell-ring"></i></div>
+                                    <div>
+                                        <div class="title">Âm thanh thông báo</div>
+                                        <div class="desc">Đổ chuông lớn khi có chuyến</div>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                            <div class="setting-item">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="setting-icon" style="background: #fef2f2; color: #ef4444;"><i class="fa-solid fa-location-dot"></i></div>
+                                    <div>
+                                        <div class="title">Chia sẻ Vị trí (GPS)</div>
+                                        <div class="desc">Bắt buộc để nhận chuyến đi</div>
+                                    </div>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" checked disabled>
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
