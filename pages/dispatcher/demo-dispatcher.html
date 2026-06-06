@@ -77,9 +77,10 @@
         .sidebar-menu a.active i { transform: scale(1.15); }
         .sidebar-menu i { font-size: 1.1rem; width: 24px; text-align: center; transition: 0.3s; }
         
-        .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 30px; position: relative; }
+        .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 30px; position: relative; display: flex; 
+    flex-direction: column;}
         .tab-section { display: none; }
-        .tab-section.active { display: flex; flex-direction: column; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .tab-section.active { display: flex; flex-direction: column; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; flex: 1;}
         @keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         /* =========================================
@@ -164,41 +165,125 @@
         .frozen-row .bk-id { color: var(--frozen); }
 
         /* =========================================
-           6. GPS TRACKING MAP 
-        ========================================= */
-        .map-layout { display: flex; gap: 20px; height: 600px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; width: 100%;}
-        .map-area { flex: 3; background: var(--map-bg); background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 30px 30px; position: relative; overflow: hidden; }
-        
-        .vehicle-marker { position: absolute; width: 40px; height: 40px; background: rgba(0, 177, 79, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: all 0.5s linear; cursor: pointer; border: 2px solid rgba(0, 177, 79, 0.5); }
-        .vehicle-marker::after { content: '\f0b1'; font-family: 'Font Awesome 6 Free'; font-weight: 900; color: var(--color-1); font-size: 1.2rem; transform: rotate(-45deg); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
-        .vehicle-marker:hover { transform: scale(1.3) !important; background: var(--color-1); border-color: white; z-index: 10; }
-        .vehicle-marker:hover::after { color: white; }
-        
-        .marker-tooltip { position: absolute; top: -45px; left: 50%; transform: translateX(-50%); background: white; color: var(--color-dark); padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; white-space: nowrap; pointer-events: none; opacity: 0; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        .vehicle-marker:hover .marker-tooltip { opacity: 1; top: -55px; }
-        
-        /* BR-31: Lost Signal Effect */
-        .vehicle-marker.lost { border-color: transparent; background: transparent; }
-        .vehicle-marker.lost::after { color: var(--danger); }
-        .vehicle-marker.lost::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; border: 2px solid var(--danger); animation: map-pulse-red 1.2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+   6. GPS TRACKING MAP (MODERN OPTIMIZED)
+========================================= */
+.map-layout { display: flex; gap: 20px; flex: 1; 
+    min-height: 500px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; width: 100%;}
 
-        .map-sidebar { flex: 1; min-width: 320px; max-width: 400px; background: #fff; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; }
-        .map-sidebar-header { padding: 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
-        .search-box { display: flex; align-items: center; background: white; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; transition: 0.3s; }
-        .search-box:focus-within { border-color: var(--color-1); box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.1); }
-        .search-box input { border: none; background: transparent; outline: none; margin-left: 10px; width: 100%; font-weight: 500; }
-        
-        .vehicle-list { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-        .vehicle-card { padding: 16px; border-radius: 12px; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; display: flex; justify-content: space-between; align-items: center; background: white;}
-        .vehicle-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.05); border-color: var(--color-1); }
-        .v-plate { font-weight: 800; font-size: 1.05rem; color: var(--color-dark); margin-bottom: 4px; }
-        .v-driver { font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500; }
-        .v-status { width: 12px; height: 12px; border-radius: 50%; background: var(--color-1); box-shadow: 0 0 8px rgba(0, 177, 79, 0.5); }
-        
-        .vehicle-card.lost-card { background: #fef2f2; border-color: #fecaca; animation: bg-flash 2s infinite; order: -1; }
-        .vehicle-card.lost-card .v-status { background: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
-        @keyframes bg-flash { 0%, 100% { background: #fef2f2; } 50% { background: #fee2e2; } }
+/* Nền bản đồ với hiệu ứng trượt nhẹ */
+.map-area { 
+    flex: 3; background: var(--map-bg); 
+    background-image: 
+        radial-gradient(rgba(0, 177, 79, 0.15) 2px, transparent 2px),
+        radial-gradient(rgba(0, 177, 79, 0.08) 1px, transparent 1px);
+    background-size: 60px 60px, 30px 30px;
+    background-position: 0 0, 15px 15px;
+    position: relative; overflow: hidden; 
+    animation: panBackground 30s linear infinite;
+}
+@keyframes panBackground { from { background-position: 0 0, 15px 15px; } to { background-position: -60px -60px, -45px -45px; } }
 
+/* MARKER XE - Tối ưu Transition & Biến CSS */
+.vehicle-marker { 
+    position: absolute; width: 42px; height: 42px; 
+    background: rgba(0, 177, 79, 0.15); border-radius: 50%; 
+    display: flex; align-items: center; justify-content: center; 
+    /* Transition cực mượt khi xe di chuyển tọa độ */
+    transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                top 2.5s cubic-bezier(0.25, 1, 0.5, 1),
+                transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                box-shadow 0.3s ease, background 0.3s ease; 
+    cursor: pointer; border: 2px solid rgba(0, 177, 79, 0.6); 
+    backdrop-filter: blur(2px); z-index: 5;
+    /* Translate -50% để tâm điểm chuẩn xác */
+    transform: translate(-50%, -50%);
+}
+
+/* Sóng Radar tỏa ra xung quanh (chỉ xe đang chạy) */
+.vehicle-marker:not(.lost)::before {
+    content: ''; position: absolute; inset: -50%; 
+    border-radius: 50%; border: 1px solid var(--color-1);
+    animation: radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+    z-index: -1; pointer-events: none;
+}
+@keyframes radar-ping { 0% { transform: scale(0.6); opacity: 0.8; } 80%, 100% { transform: scale(2.2); opacity: 0; } }
+
+/* Icon Xe (Xoay độc lập bằng CSS Variable --heading) */
+.vehicle-marker::after { 
+    content: '\f0b1'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
+    color: var(--color-1); font-size: 1.3rem; 
+    transform: rotate(var(--heading, -45deg)); 
+    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); 
+}
+
+/* Hiệu ứng Hover & Khi được Click Chọn (Focused) */
+.vehicle-marker:hover, .vehicle-marker.focused { 
+    transform: translate(-50%, -50%) scale(1.3) !important; 
+    background: var(--color-1); border-color: #fff; 
+    box-shadow: 0 10px 25px rgba(0, 177, 79, 0.5); z-index: 100; 
+}
+.vehicle-marker:hover::after, .vehicle-marker.focused::after { color: white; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
+
+/* TOOLTIP KÍNH MỜ (Glassmorphism) */
+.marker-tooltip { 
+    position: absolute; bottom: calc(100% + 15px); left: 50%; 
+    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); 
+    color: var(--color-dark); padding: 8px 16px; border-radius: 12px; 
+    font-size: 0.8rem; font-weight: 700; white-space: nowrap; 
+    pointer-events: none; opacity: 0; visibility: hidden; 
+    /* Bật nảy lên từ dưới */
+    transform: translateX(-50%) translateY(10px) scale(0.9); 
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.6); 
+    display: flex; flex-direction: column; align-items: center;
+}
+.marker-tooltip::after { /* Mũi tên chỉ xuống */
+    content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); 
+    border-width: 6px 6px 0; border-style: solid; border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent; 
+}
+.vehicle-marker:hover .marker-tooltip, .vehicle-marker.focused .marker-tooltip { 
+    opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0) scale(1); 
+}
+.tooltip-speed { font-size: 0.7rem; color: var(--color-text-muted); font-weight: 500; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+
+/* HIỆU ỨNG MẤT TÍN HIỆU (LOST) */
+.vehicle-marker.lost { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
+.vehicle-marker.lost::after { color: var(--danger); animation: glitch-skew 1s infinite linear alternate-reverse; }
+.vehicle-marker.lost::before { border-color: var(--danger); animation: lost-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
+@keyframes lost-ping { 0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 70% { transform: scale(1.6); opacity: 0; box-shadow: 0 0 0 15px rgba(239,68,68,0); } 100% { transform: scale(1.6); opacity: 0; box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
+
+/* SIDEBAR BẢN ĐỒ & LIST XE */
+.map-sidebar { flex: 1; min-width: 320px; max-width: 400px; background: #fff; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; }
+.map-sidebar-header { padding: 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; z-index: 10; }
+.search-box { display: flex; align-items: center; background: white; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; transition: 0.3s; }
+.search-box:focus-within { border-color: var(--color-1); box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.1); }
+.search-box input { border: none; background: transparent; outline: none; margin-left: 10px; width: 100%; font-weight: 500; }
+
+.vehicle-list { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.vehicle-card { 
+    padding: 16px; border-radius: 12px; border: 1px solid #f1f5f9; border-left: 4px solid #cbd5e1;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+    display: flex; justify-content: space-between; align-items: center; background: white; position: relative; overflow: hidden;
+}
+/* Hiệu ứng trượt sáng khi hover */
+.vehicle-card::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+    transform: translateX(-100%); transition: 0.5s; pointer-events: none;
+}
+.vehicle-card:hover { transform: translateY(-2px) translateX(2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--color-1); }
+.vehicle-card:hover::before { transform: translateX(100%); }
+
+.vehicle-card.active-card { border-color: var(--color-1); border-left-color: var(--color-1); background: #f0fdf4; transform: translateX(4px); }
+.v-plate { font-weight: 800; font-size: 1.05rem; color: var(--color-dark); margin-bottom: 4px; }
+.v-driver { font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500; display: flex; align-items: center; gap: 5px;}
+.v-status { width: 12px; height: 12px; border-radius: 50%; background: var(--color-1); box-shadow: 0 0 8px rgba(0, 177, 79, 0.5); flex-shrink: 0;}
+
+.vehicle-card.lost-card { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); order: -1; }
+.vehicle-card.lost-card.active-card { background: #fee2e2; }
+.vehicle-card.lost-card .v-status { background: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.6); animation: pulse-status 1.5s infinite; }
+@keyframes pulse-status { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
         /* =========================================
            7. INCIDENTS (SOS)
         ========================================= */
@@ -473,7 +558,7 @@
                         <div class="map-sidebar-header">
                             <div class="search-box">
                                 <i class="fa-solid fa-magnifying-glass text-muted"></i>
-                                <input type="text" placeholder="Tìm biển số, tên tài xế...">
+                                <input type="text" id="mapSearchInput" placeholder="Tìm biển số, tên tài xế...">
                             </div>
                         </div>
                         <div class="vehicle-list" id="vehicleList">
@@ -582,55 +667,160 @@
         // ==========================================
         // 2. MOCK DATA & BR-31: GIÁM SÁT BẢN ĐỒ LIVE
         // ==========================================
-        const vehicles = [
-            { id: 'v1', plate: '51H-123.45', driver: 'Nguyễn Trọng A', lat: 30, lng: 40, heading: 45, lastPing: Date.now() },
-            { id: 'v2', plate: '60A-987.65', driver: 'Trần Văn B', lat: 60, lng: 70, heading: 120, lastPing: Date.now() - 100000 } // Cố tình làm mất tín hiệu >90s
-        ];
+        // ==========================================
+// 2. MOCK DATA & BẢN ĐỒ STATEFUL (CẬP NHẬT MƯỢT MÀ)
+// ==========================================
+const vehicles = [
+    { id: 'v1', plate: '51H-123.45', driver: 'Nguyễn Trọng A', lat: 35, lng: 40, heading: 45, speed: 62, status: 'moving', lastPing: Date.now() },
+    { id: 'v2', plate: '60A-987.65', driver: 'Trần Văn B', lat: 60, lng: 70, heading: 120, speed: 0, status: 'lost', lastPing: Date.now() - 100000 },
+    { id: 'v3', plate: '29C-456.78', driver: 'Lê Hoàng C', lat: 20, lng: 80, heading: -30, speed: 55, status: 'moving', lastPing: Date.now() }
+];
 
-        function renderMap() {
-            const mapArea = document.getElementById('simulatedMap');
-            const listArea = document.getElementById('vehicleList');
-            if(!mapArea || !listArea) return;
-            
-            mapArea.innerHTML = ''; listArea.innerHTML = '';
+let focusedVehicleId = null;
 
-            const sortedVehicles = [...vehicles].sort((a, b) => {
-                const aLost = (Date.now() - a.lastPing) >= 90000;
-                const bLost = (Date.now() - b.lastPing) >= 90000;
-                return bLost - aLost; 
-            });
+function initMapUI() {
+    const mapArea = document.getElementById('simulatedMap');
+    const listArea = document.getElementById('vehicleList');
+    mapArea.innerHTML = ''; listArea.innerHTML = '';
 
-            sortedVehicles.forEach(v => {
-                const isLost = (Date.now() - v.lastPing) >= 90000;
+    // Khởi tạo các Element 1 lần duy nhất
+    vehicles.forEach(v => {
+        // 1. Tạo Marker
+        const marker = document.createElement('div');
+        marker.id = `marker-${v.id}`;
+        marker.className = `vehicle-marker ${v.status === 'lost' ? 'lost' : ''}`;
+        marker.style.left = `${v.lng}%`;
+        marker.style.top = `${v.lat}%`;
+        marker.style.setProperty('--heading', `${v.heading}deg`);
+        
+        marker.innerHTML = `
+            <div class="marker-tooltip" id="tooltip-${v.id}">
+                <div>${v.plate}</div>
+                <div class="tooltip-speed">
+                    <i class="fa-solid fa-gauge-high"></i> <span id="speed-${v.id}">${v.speed} km/h</span>
+                </div>
+            </div>
+        `;
+        
+        // 2. Tạo Card Sidebar
+        const card = document.createElement('div');
+        card.id = `card-${v.id}`;
+        card.className = `vehicle-card ${v.status === 'lost' ? 'lost-card' : ''}`;
+        card.innerHTML = `
+            <div>
+                <div class="v-plate ${v.status === 'lost' ? 'text-danger' : ''}" id="card-plate-${v.id}">${v.plate}</div>
+                <div class="v-driver">${v.driver} <span class="mx-1">•</span> <span id="card-speed-${v.id}">${v.speed} km/h</span></div>
+            </div>
+            <div class="v-status"></div>
+        `;
+
+        // Gắn sự kiện click tương tác đồng bộ
+        const focusAction = () => focusVehicle(v.id);
+        marker.addEventListener('click', focusAction);
+        card.addEventListener('click', focusAction);
+
+        mapArea.appendChild(marker);
+        listArea.appendChild(card);
+    });
+
+    // Bắt sự kiện Filter Tìm kiếm
+    const searchInput = document.getElementById('mapSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            vehicles.forEach(v => {
+                const match = v.plate.toLowerCase().includes(term) || v.driver.toLowerCase().includes(term);
+                const card = document.getElementById(`card-${v.id}`);
+                const marker = document.getElementById(`marker-${v.id}`);
                 
-                // Draw Map Marker
-                const marker = document.createElement('div');
-                marker.className = `vehicle-marker ${isLost ? 'lost' : ''}`;
-                marker.style.top = `${v.lat}%`; marker.style.left = `${v.lng}%`;
-                marker.style.transform = `rotate(${v.heading}deg)`;
-                marker.innerHTML = `<div class="marker-tooltip" style="transform: rotate(-${v.heading}deg)">${v.plate}</div>`;
-                mapArea.appendChild(marker);
-
-                // Draw Side List
-                const card = document.createElement('div');
-                card.className = `vehicle-card ${isLost ? 'lost-card' : ''}`;
-                card.innerHTML = `
-                    <div><div class="v-plate ${isLost ? 'text-danger' : ''}">${v.plate}</div><div class="v-driver">${v.driver}</div></div>
-                    <div class="v-status"></div>
-                `;
-                listArea.appendChild(card);
+                if(card) card.style.display = match ? 'flex' : 'none';
+                if(marker) {
+                    marker.style.opacity = match ? '1' : '0.1';
+                    marker.style.pointerEvents = match ? 'auto' : 'none';
+                }
             });
+        });
+    }
+}
+
+// Hàm Focus kết nối giữa bản đồ và List
+function focusVehicle(id) {
+    focusedVehicleId = id;
+    
+    // Reset toàn bộ active
+    document.querySelectorAll('.vehicle-marker').forEach(m => m.classList.remove('focused'));
+    document.querySelectorAll('.vehicle-card').forEach(c => c.classList.remove('active-card'));
+    
+    // Set active mới
+    const marker = document.getElementById(`marker-${id}`);
+    const card = document.getElementById(`card-${id}`);
+    
+    if(marker) marker.classList.add('focused');
+    if(card) {
+        card.classList.add('active-card');
+        card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+// Hàm Update định kỳ không phá vỡ DOM
+function simulateLiveTracking() {
+    vehicles.forEach(v => {
+        // Giả lập Logic di chuyển
+        if (v.status !== 'lost') {
+            v.heading += (Math.random() * 30 - 15); // Đổi hướng nhẹ
+            v.speed = Math.floor(Math.random() * 20 + 45); // Tốc độ 45-65 km/h
+            
+            // Tính toán di chuyển giả lập dựa trên góc (lượng giác cơ bản)
+            const rad = (v.heading - 90) * (Math.PI / 180); // Trừ 90 độ vì icon xe FontAwesome chéo
+            v.lng += Math.cos(rad) * 1.2; 
+            v.lat += Math.sin(rad) * 1.2;
+
+            // Chặn khung hình (đập tường nảy lại)
+            if(v.lng < 5 || v.lng > 95) v.heading += 180;
+            if(v.lat < 5 || v.lat > 95) v.heading += 180;
+            
+            v.lastPing = Date.now();
         }
 
-        setInterval(() => {
-            vehicles[0].lat += Math.random() * 2 - 1; 
-            vehicles[0].lng += Math.random() * 2 - 1;
-            vehicles[0].heading = Math.random() * 360;
-            vehicles[0].lastPing = Date.now(); 
-            renderMap();
-        }, 5000);
+        const isLost = (Date.now() - v.lastPing) >= 90000;
+        v.status = isLost ? 'lost' : 'moving';
 
-        renderMap();
+        // --- CẬP NHẬT DOM TRỰC TIẾP ---
+        const marker = document.getElementById(`marker-${v.id}`);
+        const card = document.getElementById(`card-${v.id}`);
+        
+        if (marker) {
+            // CSS Transition sẽ tự lo liệu nội suy mượt mà việc chuyển vị trí
+            marker.style.left = `${v.lng}%`;
+            marker.style.top = `${v.lat}%`;
+            marker.style.setProperty('--heading', `${v.heading}deg`);
+
+            // Đổi state lost/moving
+            marker.classList.toggle('lost', isLost);
+            const speedEl = document.getElementById(`speed-${v.id}`);
+            if(speedEl) speedEl.innerHTML = isLost ? '<span class="text-danger">Mất tín hiệu</span>' : `${v.speed} km/h`;
+        }
+
+        if (card) {
+            card.classList.toggle('lost-card', isLost);
+            const plateText = document.getElementById(`card-plate-${v.id}`);
+            if(plateText) plateText.classList.toggle('text-danger', isLost);
+            
+            const cardSpeedEl = document.getElementById(`card-speed-${v.id}`);
+            if(cardSpeedEl) cardSpeedEl.innerHTML = isLost ? '<span class="text-danger fw-bold">Offline</span>' : `${v.speed} km/h`;
+        }
+    });
+}
+
+// Khởi chạy
+initMapUI();
+setInterval(simulateLiveTracking, 2500); // 2.5s cập nhật 1 lần
+
+// Mô phỏng Toast rớt mạng ban đầu
+setTimeout(() => {
+    document.getElementById('toastMsg').innerText = "Location Alert: Mất tín hiệu xe 60A-987.65 quá 90s";
+    new bootstrap.Toast(document.getElementById('systemErrorToast')).show();
+}, 1500);
 
         // Mô phỏng Toast rớt mạng GPS ban đầu
         setTimeout(() => {
