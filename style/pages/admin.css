@@ -145,6 +145,7 @@ body {
   margin-left: 280px;
   padding: 30px;
   width: calc(100% - 280px);
+  background-color: #F4F7FE;
 }
 .tab-section {
   display: none;
