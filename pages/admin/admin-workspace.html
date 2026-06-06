@@ -1,402 +1,599 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FleetFlow - Master Admin Workspace</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="stylesheet" href="../../style/base.css" />
+    <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
+    <link rel="stylesheet" href="../../style/pages/admin.css" />
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/admin.js" defer></script>
 
-    <style>
-        /* =========================================
-           1. ROOT VARIABLES & GLOBAL CSS
-        ========================================= */
-        :root {
-            --color-1: #00B14F; 
-            --color-2: #FFFFFF; 
-            --color-3: #FFDE59; 
-            --color-dark: #1e293b;
-            --color-bg: #F4F7FE; /* Nền xám cực nhạt đặc trưng của Admin Dashboard */
-            --text-color: #334155;
-            --sidebar-width: 260px;
-            --header-height: 70px;
-            --transition-speed: 0.3s;
-            --shadow-card: 0 4px 20px rgba(0,0,0,0.03);
-            --shadow-hover: 0 10px 30px rgba(0,0,0,0.06);
-            --danger: #EF4444;
-            --blue: #2563EB;
-            --warning: #F59E0B;
-        }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg);
-            color: var(--text-color);
-            margin: 0; overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-        /* Animation Global */
-        .fade-in-up {
-            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; transform: translateY(15px);
-        }
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
-        /* =========================================
-           2. LAYOUT: TOPBAR & SIDEBAR
-        ========================================= */
-        .topbar {
-            position: fixed; top: 0; left: var(--sidebar-width); right: 0; height: var(--header-height);
-            background: rgba(255,255,255,0.9); backdrop-filter: blur(10px); z-index: 1000;
-            display: flex; align-items: center; justify-content: space-between; padding: 0 32px;
-            border-bottom: 1px solid rgba(0,0,0,0.05); transition: left 0.3s ease;
-        }
-
-        .global-search { position: relative; width: 300px; }
-        .global-search i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94a3b8; }
-        .global-search input {
-            width: 100%; padding: 10px 16px 10px 42px; border-radius: 50px; border: 1px solid #e2e8f0;
-            background: #f8fafc; font-size: 0.9rem; transition: 0.3s;
-        }
-        .global-search input:focus { background: white; border-color: var(--color-1); outline: none; box-shadow: 0 0 0 3px rgba(0,177,79,0.1); }
-
-        .topbar-actions { display: flex; align-items: center; gap: 24px; }
-        .btn-icon { background: none; border: none; font-size: 1.2rem; color: #64748b; position: relative; cursor: pointer; transition: 0.3s;}
-        .btn-icon:hover { color: var(--color-1); transform: scale(1.1); }
-        .badge-dot { position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--danger); border-radius: 50%; }
-        .admin-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--color-1); cursor: pointer;}
-
-        .sidebar {
-            position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-width);
-            background: #ffffff; z-index: 1050; border-right: 1px solid #e2e8f0;
-            display: flex; flex-direction: column; transition: 0.3s ease; box-shadow: 4px 0 24px rgba(0,0,0,0.02);
-        }
-        .sidebar-header { height: var(--header-height); display: flex; align-items: center; padding: 0 24px; border-bottom: 1px solid #f1f5f9; }
-        .sidebar-logo { font-weight: 800; font-size: 1.2rem; color: var(--color-dark); text-decoration: none; letter-spacing: -0.5px;}
-        .sidebar-logo span { color: var(--color-1); }
-
-        .sidebar-menu { list-style: none; padding: 24px 16px; margin: 0; display: flex; flex-direction: column; gap: 8px;}
-        .sidebar-menu li a {
-            display: flex; align-items: center; gap: 14px; padding: 14px 20px; color: #64748b;
-            font-weight: 600; font-size: 0.95rem; border-radius: 12px; transition: 0.3s; text-decoration: none;
-        }
-        .sidebar-menu li a i { font-size: 1.2rem; width: 24px; text-align: center; transition: 0.3s;}
-        .sidebar-menu li a:hover { background: #f8fafc; color: var(--color-dark); transform: translateX(4px); }
-        .sidebar-menu li a.active { background: var(--color-1); color: white; box-shadow: 0 4px 15px rgba(0,177,79,0.3); }
-        .sidebar-menu li a.active i { transform: scale(1.1); color: white;}
-
-        /* Main Workspace */
-        .main-workspace {
-            margin-left: var(--sidebar-width); margin-top: var(--header-height);
-            padding: 32px; min-height: calc(100vh - var(--header-height)); transition: margin-left 0.3s ease;
-        }
-        .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* =========================================
-           3. DASHBOARD & DATA VISUALIZATION
-        ========================================= */
-        .section-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
-        .page-title { font-weight: 800; font-size: 1.5rem; color: var(--color-dark); margin: 0; letter-spacing: -0.5px;}
-
-        /* Thẻ KPI Widgets */
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .kpi-card { background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-card); transition: 0.3s; position: relative; overflow: hidden; border: 1px solid rgba(0,0,0,0.02);}
-        .kpi-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
-        
-        .kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
-        .kpi-title { font-size: 0.9rem; font-weight: 600; color: #64748b; }
-        .kpi-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
-        
-        .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--color-dark); margin-bottom: 8px;}
-        .kpi-trend { font-size: 0.8rem; font-weight: 700; padding: 4px 8px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
-        .trend-up { background: #D1FAE5; color: #10B981; }
-        .trend-down { background: #FEE2E2; color: #EF4444; }
-
-        /* Biểu đồ */
-        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px; }
-        @media (max-width: 1200px) { .charts-grid { grid-template-columns: 1fr; } }
-        .chart-card { background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-card); border: 1px solid rgba(0,0,0,0.02);}
-        .chart-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 20px; color: var(--color-dark); }
-
-        /* =========================================
-           4. DATAGRID & MODAL eKYC (Driver/Vehicle)
-        ========================================= */
-        .data-grid-card { background: white; border-radius: 16px; box-shadow: var(--shadow-card); border: 1px solid rgba(0,0,0,0.02); overflow: hidden; }
-        .grid-toolbar { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
-        
-        .enterprise-table { width: 100%; border-collapse: collapse; }
-        .enterprise-table th { position: sticky; top: 0; background: #f8fafc; padding: 16px 24px; text-align: left; font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0; }
-        .enterprise-table td { padding: 16px 24px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-size: 0.95rem; transition: 0.2s;}
-        .enterprise-table tbody tr { transition: transform 0.2s, box-shadow 0.2s; background: white;}
-        .enterprise-table tbody tr:hover { transform: scale(1.002); box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative; z-index: 5;}
-        
-        /* Highlight Bảo dưỡng xe */
-        .row-warning { background-color: #FEF3C7 !important; }
-        .row-warning td { border-bottom-color: #FDE68A; }
-
-        /* Badges */
-        .status-badge { padding: 6px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; min-width: 100px;}
-        .badge-pending { background: #FEF3C7; color: #B45309; cursor: pointer; border: 1px solid #FDE68A;}
-        .badge-pending:hover { background: #FDE68A; }
-        .badge-active { background: #D1FAE5; color: #166534; }
-        
-        /* Modal eKYC */
-        .ekyc-modal .modal-content { border-radius: 24px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.2); overflow: hidden; }
-        .ekyc-layout { display: flex; min-height: 500px; }
-        .ekyc-info { flex: 1; padding: 32px; background: #f8fafc; border-right: 1px solid #e2e8f0; }
-        .ekyc-image-viewer { flex: 1.5; padding: 32px; background: #1e293b; display: flex; flex-direction: column;}
-        .ekyc-img-container { flex: 1; background: #0f172a; border-radius: 16px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;}
-        .ekyc-img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: grab; transition: transform 0.3s; }
-        
-        .img-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 50px; backdrop-filter: blur(5px);}
-        .img-controls button { width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; transition: 0.2s;}
-        .img-controls button:hover { background: var(--color-1); }
-
-        .ekyc-footer { padding: 24px 32px; background: white; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px; position: sticky; bottom: 0;}
-
-        /* =========================================
-           5. SYSTEM CONFIG & AI KNOWLEDGE (BR-17, BR-24)
-        ========================================= */
-        .config-tabs { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 32px; }
-        .cfg-tab { padding: 16px 32px; font-weight: 700; font-size: 1rem; color: #64748b; background: none; border: none; cursor: pointer; position: relative; transition: 0.3s;}
-        .cfg-tab.active { color: var(--color-1); }
-        .cfg-tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: var(--color-1); border-radius: 3px 3px 0 0; }
-
-        /* BR-17 Alert */
-        .config-alert { background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid var(--blue); padding: 16px 20px; border-radius: 8px; display: flex; gap: 16px; margin-bottom: 32px; color: #1E3A8A; font-weight: 500;}
-
-        /* Drag & Drop AI (BR-24) */
-        .kanban-board { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
-        .kb-column { background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-card); min-height: 400px;}
-        .tag-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: grab; margin-bottom: 8px; transition: 0.2s;}
-        .tag-pill:hover { border-color: var(--color-1); background: #f0fdf4; color: var(--color-1); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,177,79,0.1);}
-        
-        .vehicle-dropzone { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: 0.3s;}
-        .vehicle-dropzone.drag-over { background: #f0fdf4; border-color: var(--color-1); }
-        .v-plate { font-weight: 800; font-size: 1.1rem; color: var(--color-dark); margin-bottom: 12px; display: block;}
-
-        /* =========================================
-           6. GLOBAL ERRORS (Update failed)
-        ========================================= */
-        .toast-system-container { z-index: 9999; }
-        .toast-premium-error { background-color: var(--danger) !important; color: white !important; border: none; border-radius: 12px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3); }
-
-    </style>
 </head>
 <body>
+    <header>
+      <nav class="navbar custom-navbar fixed-top">
+        <div class="container-base h-100 position-relative">
+          <a class="navbar-brand brand-overflow" href="#">
+            <img
+              src="../../assets/img/logo1.jpg"
+              alt="FleetFlow Logo"
+              class="logo-img"
+            />
+          </a>
 
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="#" class="sidebar-logo">Fleet<span>Flow</span> Admin</a>
-        </div>
-        <ul class="sidebar-menu mt-3">
-            <li><a href="#" class="active" onclick="switchAdminView('view-dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Bảng Tổng Quan</a></li>
-            <li><a href="#" onclick="switchAdminView('view-fleet', this)"><i class="fa-solid fa-users-gear"></i> Xe & Tài Xế (eKYC)</a></li>
-            <li><a href="#" onclick="switchAdminView('view-config', this)"><i class="fa-solid fa-sliders"></i> Cấu hình Hệ thống</a></li>
-        </ul>
-    </aside>
+          <div class="navbar-slogan d-none d-md-block">
+                    Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
+                </div>
 
-    <header class="topbar">
-        <div class="global-search">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Tìm ID chuyến, biển số, SĐT...">
+          <div class="user-profile">
+            <div class="nav-right-actions d-flex align-items-center gap-4 pe-3">
+                    
+                    <div class="notification-bell" title="Thông báo">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge" id="notiCount">3</span>
+                    </div>
+                    
+                    <div class="user-profile-dropdown">
+                        <div class="user-profile-trigger d-flex align-items-center">
+                            <div class="d-none d-sm-block text-end me-2">
+                                <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Quản trị</div>
+                                <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Administrator</div>
+                            </div>
+                            <img src="https://ui-avatars.com/api/?name=Quan+Tri&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
+                            <i class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon" style="font-size: 0.8rem;"></i>
+                        </div>
+                        
+                        <div class="dropdown-menu-modern shadow-lg">
+                            <div class="dropdown-header-custom px-4 py-3">
+                                <div class="fw-bold text-dark fs-6">Nguyễn Quản trị</div>
+                                <div class="small text-muted">admin@fleetflow.vn</div>
+                            </div>
+                            <hr class="dropdown-divider-custom">
+                            
+                            <a href="#" class="dropdown-item-custom">
+                                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
+                            </a>
+                            <a href="#" class="dropdown-item-custom">
+                                <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
+                            </a>
+                            
+                            <hr class="dropdown-divider-custom">
+                            
+                            <a href="login.html" class="dropdown-item-custom text-danger fw-bold logout-item">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+                </div>
+          </div>
         </div>
-        <div class="topbar-actions">
-            <button class="btn-icon"><i class="fa-solid fa-expand"></i></button>
-            <button class="btn-icon">
-                <i class="fa-regular fa-bell"></i>
-                <span class="badge-dot"></span>
-            </button>
-            <img src="https://ui-avatars.com/api/?name=Admin+Root&background=00b14f&color=fff&bold=true" alt="Admin" class="admin-avatar">
-        </div>
+      </nav>
     </header>
 
-    <main class="main-workspace">
+    <div class="wrapper">
+        <aside class="sidebar shadow-sm">
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active" onclick="switchTab('tab-dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Tổng quan (Dashboard)</a></li>
+                <div class="menu-header">Quản lý Tài sản & Nhân sự</div>
+                <li><a href="#" onclick="switchTab('tab-fleet', this)"><i class="fa-solid fa-car"></i> Quản lý Vòng đời Xe</a></li>
+                <li><a href="#" onclick="switchTab('tab-drivers', this)"><i class="fa-solid fa-id-card-clip"></i> Duyệt Hồ sơ Tài xế <span class="badge bg-warning text-dark ms-auto rounded-pill">3</span></a></li>
+                <div class="menu-header">Tài chính & Tiếp thị</div>
+                <li><a href="#" onclick="switchTab('tab-pricing', this)"><i class="fa-solid fa-file-invoice-dollar"></i> Giá cước & Voucher</a></li>
+                <li><a href="#" onclick="switchTab('tab-ai-marketing', this)"><i class="fa-solid fa-robot"></i> Trợ lý AI & Marketing</a></li>
+                <div class="menu-header">Hệ thống & Phân quyền</div>
+                <li><a href="#" onclick="switchTab('tab-users', this)"><i class="fa-solid fa-users-gear"></i> Tài khoản & RBAC</a></li>
+                <li><a href="#" onclick="switchTab('tab-reports', this)"><i class="fa-solid fa-star"></i> Báo cáo Chất lượng</a></li>
+                <li><a href="#" onclick="switchTab('tab-audit', this)"><i class="fa-solid fa-server"></i> Audit Log</a></li>
+            </ul>
+        </aside>
 
-        <section id="view-dashboard" class="view-section active">
-            <div class="section-header fade-in-up">
-                <h1 class="page-title">Bảng Tổng Quan Hoạt Động</h1>
-                <div>
-                    <select class="form-select form-select-sm fw-bold border-0 shadow-sm" style="background:#fff; border-radius:8px; padding: 8px 30px 8px 16px;" onchange="testGlobalError(this)">
+        <main class="main-content">
+            
+            <section id="tab-dashboard" class="tab-section active">
+                <div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
+                    <h4 class="fw-bold m-0 text-dark">Bảng Tổng Quan Hoạt Động</h4>
+                    <select class="form-select form-select-sm fw-bold border bg-white shadow-sm w-auto" onchange="testGlobalError(this)">
                         <option>Tháng này</option>
                         <option>Tháng trước</option>
                         <option>Test Lỗi Mạng</option>
                     </select>
                 </div>
-            </div>
 
-            <div class="kpi-grid">
-                <div class="kpi-card fade-in-up delay-1">
-                    <div class="kpi-header">
-                        <div>
-                            <div class="kpi-title">Tổng Doanh Thu</div>
-                            <div class="kpi-value">1.45 Tỷ đ</div>
-                        </div>
-                        <div class="kpi-icon" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-wallet"></i></div>
-                    </div>
-                    <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +15% so với tháng trước</span>
-                </div>
-                
-                <div class="kpi-card fade-in-up delay-2">
-                    <div class="kpi-header">
-                        <div>
-                            <div class="kpi-title">Lợi Nhuận Công Ty</div>
-                            <div class="kpi-value text-success">580 Tr đ</div>
-                        </div>
-                        <div class="kpi-icon" style="background: #dcfce7; color: #166534;"><i class="fa-solid fa-piggy-bank"></i></div>
-                    </div>
-                    <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.5%</span>
-                </div>
-
-                <div class="kpi-card fade-in-up delay-3">
-                    <div class="kpi-header">
-                        <div>
-                            <div class="kpi-title">Chuyến Hoàn Thành</div>
-                            <div class="kpi-value">2,845</div>
-                        </div>
-                        <div class="kpi-icon" style="background: #f3f4f6; color: #475569;"><i class="fa-solid fa-car-side"></i></div>
-                    </div>
-                    <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12%</span>
-                </div>
-
-                <div class="kpi-card fade-in-up delay-4">
-                    <div class="kpi-header">
-                        <div>
-                            <div class="kpi-title">Tỷ Lệ Hủy / Sự Cố</div>
-                            <div class="kpi-value text-danger">4.2%</div>
-                        </div>
-                        <div class="kpi-icon" style="background: #fee2e2; color: #991b1b;"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                    </div>
-                    <span class="kpi-trend trend-down"><i class="fa-solid fa-arrow-trend-down"></i> Tăng 1.2%</span>
-                </div>
-            </div>
-
-            <div class="charts-grid fade-in-up delay-4">
-                <div class="chart-card">
-                    <h3 class="chart-title">Biểu đồ Doanh thu (30 ngày)</h3>
-                    <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
-                </div>
-                <div class="chart-card">
-                    <h3 class="chart-title">Trạng thái Chuyến đi</h3>
-                    <div style="height: 300px; display: flex; justify-content: center;"><canvas id="statusChart"></canvas></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="view-fleet" class="view-section">
-            <div class="section-header">
-                <h1 class="page-title">Quản lý Tài nguyên</h1>
-                <button class="btn btn-primary fw-bold px-4 rounded-3 shadow-sm" style="background: var(--color-1); border:none;"><i class="fa-solid fa-plus me-2"></i>Thêm Xe Mới</button>
-            </div>
-
-            <div class="data-grid-card">
-                <div class="grid-toolbar">
-                    <h5 class="m-0 fw-bold fs-6">Danh sách Đội Xe & Tài xế</h5>
-                    <input type="text" class="form-control form-control-sm w-25 border-0 bg-light" placeholder="Lọc nhanh...">
-                </div>
-                <table class="enterprise-table">
-                    <thead>
-                        <tr>
-                            <th>ID / Biển Số</th>
-                            <th>Tài Xế Đăng Ký</th>
-                            <th>Dòng Xe</th>
-                            <th>Số Km Tích Lũy</th>
-                            <th>Trạng Thái eKYC</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="fw-bold text-dark">51H-123.45</td>
-                            <td>Nguyễn Quang</td>
-                            <td class="text-muted">7 Chỗ (SUV)</td>
-                            <td class="fw-bold">12,450 km</td>
-                            <td><span class="status-badge badge-active">Hoạt Động</span></td>
-                        </tr>
-                        <tr class="row-warning">
-                            <td class="fw-bold text-dark">60A-987.65</td>
-                            <td>Lê Văn Tám</td>
-                            <td class="text-muted">4 Chỗ (Sedan)</td>
-                            <td class="fw-bold text-danger"><i class="fa-solid fa-wrench fa-shake me-1"></i> 50,200 km</td>
-                            <td><span class="status-badge badge-active">Cần Bảo Dưỡng</span></td>
-                        </tr>
-                        <tr>
-                            <td class="fw-bold text-dark">Chưa cấp</td>
-                            <td>Trần Mới Tinh</td>
-                            <td class="text-muted">Xe cá nhân</td>
-                            <td class="fw-bold">0 km</td>
-                            <td><span class="status-badge badge-pending" onclick="openEkycModal()"><i class="fa-solid fa-fingerprint me-1"></i> Chờ Duyệt (eKYC)</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="view-config" class="view-section">
-            <h1 class="page-title mb-4">Cấu hình Hệ thống & Trí tuệ Nhân tạo</h1>
-            
-            <div class="config-tabs">
-                <button class="cfg-tab active">Cấu hình Bảng giá</button>
-                <button class="cfg-tab">Bộ nhớ AI (Tag Mapping)</button>
-            </div>
-
-            <div class="config-alert shadow-sm">
-                <i class="fa-solid fa-circle-info fs-3"></i>
-                <div>
-                    <h5 class="fw-bold mb-1 fs-6">Quy tắc Nội suy Giá (BR-17)</h5>
-                    <p class="m-0 text-dark" style="font-size: 0.9rem;">Admin chỉ được thiết lập Đơn giá cơ sở. Giá cước từng chuyến sẽ do thuật toán hệ thống tự động nội suy dựa trên Map API Directions và hệ số tại đây. Tuyệt đối không can thiệp giá đơn lẻ.</p>
-                </div>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="data-grid-card p-4">
-                        <h5 class="fw-bold mb-4 fs-6">Đơn giá Cơ bản (VNĐ / Km)</h5>
-                        <div class="mb-3">
-                            <label class="form-label text-muted fw-bold small">Dòng xe 4 Chỗ Tiêu chuẩn</label>
-                            <input type="number" class="form-control fw-bold fs-5 bg-light border-0" value="12000">
-                        </div>
-                        <div class="mb-4">
-                            <label class="form-label text-muted fw-bold small">Hệ số Lễ / Tết (%)</label>
-                            <input type="number" class="form-control fw-bold fs-5 bg-light border-0" value="15">
-                        </div>
-                        <button class="btn-base w-100 py-3" onclick="simulateSaveConfig(this)">Lưu Cấu Hình Cơ Sở</button>
-                    </div>
-                </div>
-
-                <div class="col-lg-6">
-                    <div class="data-grid-card p-4 h-100">
-                        <h5 class="fw-bold mb-4 fs-6">Gán Thuộc tính AI (Kéo thả)</h5>
-                        <div class="kanban-board">
-                            <div class="kb-column">
-                                <h6 class="text-muted fw-bold small mb-3">Tags Khả dụng</h6>
-                                <div class="tag-pill" draggable="true"><i class="fa-solid fa-wheelchair"></i> Xe có xe lăn</div>
-                                <div class="tag-pill" draggable="true"><i class="fa-solid fa-volume-xmark"></i> Tài xế yên tĩnh</div>
-                                <div class="tag-pill" draggable="true"><i class="fa-solid fa-paw"></i> Cho phép Thú cưng</div>
+                <div class="kpi-grid">
+                    <div class="kpi-card fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="kpi-header">
+                            <div>
+                                <div class="kpi-title">Tổng Doanh Thu</div>
+                                <div class="kpi-value">1.45 Tỷ đ</div>
                             </div>
-                            <div class="kb-column">
-                                <h6 class="text-muted fw-bold small mb-3">Hồ sơ Phương tiện</h6>
-                                <div class="vehicle-dropzone">
-                                    <span class="v-plate">51H-123.45</span>
+                            <div class="kpi-icon" style="background: #e0f2fe; color: #0284c7;"><i class="fa-solid fa-wallet"></i></div>
+                        </div>
+                        <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +15% so với tháng trước</span>
+                    </div>
+                    
+                    <div class="kpi-card fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="kpi-header">
+                            <div>
+                                <div class="kpi-title">Lợi Nhuận Công Ty</div>
+                                <div class="kpi-value text-success">580 Tr đ</div>
+                            </div>
+                            <div class="kpi-icon" style="background: #dcfce7; color: #166534;"><i class="fa-solid fa-piggy-bank"></i></div>
+                        </div>
+                        <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.5%</span>
+                    </div>
+
+                    <div class="kpi-card fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="kpi-header">
+                            <div>
+                                <div class="kpi-title">Chuyến Hoàn Thành</div>
+                                <div class="kpi-value">2,845</div>
+                            </div>
+                            <div class="kpi-icon" style="background: #f3f4f6; color: #475569;"><i class="fa-solid fa-car-side"></i></div>
+                        </div>
+                        <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12%</span>
+                    </div>
+
+                    <div class="kpi-card fade-in-up" style="animation-delay: 0.4s;">
+                        <div class="kpi-header">
+                            <div>
+                                <div class="kpi-title">Tỷ Lệ Hủy / Sự Cố</div>
+                                <div class="kpi-value text-danger">4.2%</div>
+                            </div>
+                            <div class="kpi-icon" style="background: #fee2e2; color: #991b1b;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                        </div>
+                        <span class="kpi-trend trend-down"><i class="fa-solid fa-arrow-trend-down"></i> Tăng 1.2%</span>
+                    </div>
+                </div>
+
+                <div class="charts-grid fade-in-up" style="animation-delay: 0.5s;">
+                    <div class="chart-card">
+                        <h5 class="chart-title">Biểu đồ Doanh thu (30 ngày)</h5>
+                        <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
+                    </div>
+                    <div class="chart-card">
+                        <h5 class="chart-title">Trạng thái Chuyến đi</h5>
+                        <div style="height: 300px; display: flex; justify-content: center;"><canvas id="statusChart"></canvas></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-fleet" class="tab-section">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Quản lý Vòng đời Xe (Fleet Lifecycle)</h4>
+            <p class="text-muted small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám sát tự động hạn kiểm định pháp lý.</p>
+        </div>
+        <button class="btn btn-primary fw-bold shadow-sm px-4 py-2" style="background: var(--color-1); border:none; border-radius: 10px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+            <i class="fa-solid fa-plus me-2"></i> Khởi tạo xe mới
+        </button>
+    </div>
+
+    <div class="table-custom">
+        <table class="table table-hover-custom mb-0">
+            <thead>
+                <tr>
+                    <th width="30%">Biển số & Phương tiện</th>
+                    <th width="25%">Giấy tờ pháp lý</th>
+                    <th width="25%">Thuộc tính AI (Tags)</th>
+                    <th width="20%">Trạng thái hiện tại</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
+                                <i class="fa-solid fa-car-side fs-4 text-secondary"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">51H-123.45</div>
+                                <div class="small text-muted fw-medium mt-1">VinFast VF8 Plus | 5 Chỗ</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 150 ngày</div>
+                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 200 ngày</div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-bolt text-warning me-1"></i> Xe Điện</span>
+                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-suitcase text-secondary me-1"></i> Cốp rộng</span>
+                        </div>
+                    </td>
+                    <td>
+                        <select class="form-select status-select status-ready">
+                            <option value="ready" selected>Sẵn sàng nhận chuyến</option>
+                            <option value="maintenance">Chuyển sang bảo dưỡng</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
+                                <i class="fa-solid fa-van-shuttle fs-4 text-secondary"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">60A-456.78</div>
+                                <div class="small text-muted fw-medium mt-1">Mitsubishi Xpander | 7 Chỗ</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 85 ngày</div>
+                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 112 ngày</div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-users text-primary me-1"></i> Gia đình</span>
+                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-gas-pump text-danger me-1"></i> Tiết kiệm xăng</span>
+                        </div>
+                    </td>
+                    <td>
+                        <select class="form-select status-select status-maintenance">
+                            <option value="ready">Sẵn sàng nhận chuyến</option>
+                            <option value="maintenance" selected>Đang bảo dưỡng</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
+                                <i class="fa-solid fa-truck-pickup fs-4 text-secondary"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">51G-999.88</div>
+                                <div class="small text-muted fw-medium mt-1">Toyota Fortuner | 7 Chỗ</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="small text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation fa-fade me-1"></i> Đăng kiểm: Đã hết hạn</div>
+                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 45 ngày</div>
+                    </td>
+                    <td>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-mountain text-success me-1"></i> Gầm cao</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="status-select status-locked text-center w-100" style="pointer-events: none;">
+                            <i class="fa-solid fa-lock me-1"></i> Hệ thống tự khóa
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section id="tab-drivers" class="tab-section">
+    <div class="d-flex justify-content-between align-items-end mb-4">
+        <div>
+            <h4 class="fw-bold mb-1 text-dark">Kiểm duyệt Hồ sơ Tài xế</h4>
+            <p class="text-muted small m-0">Xác thực chứng minh nhân dân/CCCD và bằng lái xe (eKYC) trước khi kích hoạt quyền giành đơn chuyến.</p>
+        </div>
+        <div class="input-group w-auto">
+            <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+            <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm tên, SĐT tài xế...">
+        </div>
+    </div>
+
+    <div class="table-custom">
+        <table class="table table-hover-custom mb-0">
+            <thead>
+                <tr>
+                    <th width="30%">Họ Tên & Liên hệ</th>
+                    <th width="20%">Thời gian nộp</th>
+                    <th width="25%">Trạng thái eKYC</th>
+                    <th width="25%" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Tran+Tinh&background=random" class="rounded-circle" width="40" height="40">
+                            <div>
+                                <div class="fw-bold text-dark fs-6">Trần Mới Tinh</div>
+                                <div class="small text-muted mt-1"><i class="fa-solid fa-phone me-1"></i> 0912 345 678</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="small fw-bold text-dark">10:30 AM</div>
+                        <div class="small text-muted mt-1">Hôm nay, 06/06/2026</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-warning text-dark border border-warning p-2 px-3 fw-bold shadow-sm" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="openEkycModal()">
+                            <i class="fa-solid fa-fingerprint fa-beat-fade me-1"></i> Chờ Thẩm Định (Click)
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-outline-secondary btn-table-action me-2" onclick="openEkycModal()">Xem Hồ Sơ</button>
+                        <button class="btn text-white btn-table-action" style="background: var(--color-1);" onclick="simulateSaveConfig(this)">Duyệt Nhanh</button>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <img src="https://ui-avatars.com/api/?name=Nguyen+Quang&background=random" class="rounded-circle" width="40" height="40">
+                            <div>
+                                <div class="fw-bold text-dark fs-6">Nguyễn Quang</div>
+                                <div class="small text-muted mt-1"><i class="fa-solid fa-phone me-1"></i> 0988 111 222</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="small fw-bold text-dark">14:15 PM</div>
+                        <div class="small text-muted mt-1">Hôm qua, 05/06/2026</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-success bg-opacity-10 text-success border border-success p-2 px-3 fw-bold">
+                            <i class="fa-solid fa-circle-check me-1"></i> Đã Kích Hoạt
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <button class="btn btn-light btn-table-action text-muted" disabled><i class="fa-solid fa-check"></i> Đã Xử Lý</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+            <section id="tab-pricing" class="tab-section">
+                <h4 class="fw-bold mb-4 text-dark">Cấu hình Định giá & Khuyến mãi</h4>
+                
+                <div class="config-alert shadow-sm fade-in-up">
+                    <i class="fa-solid fa-circle-info fs-3"></i>
+                    <div>
+                        <h5 class="fw-bold mb-1 fs-6">Quy tắc Nội suy Giá (BR-17)</h5>
+                        <p class="m-0 text-dark" style="font-size: 0.9rem;">Admin chỉ được thiết lập Đơn giá cơ sở. Giá cước từng chuyến sẽ do thuật toán hệ thống tự động nội suy dựa trên Map API Directions. Tuyệt đối không can thiệp giá đơn lẻ.</p>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-6">
+                        <div class="config-card">
+                            <h5 class="fw-bold mb-4 fs-6">Đơn giá Cơ bản (VNĐ / Km)</h5>
+                            <div class="mb-3">
+                                <label class="form-label text-muted fw-bold small">Dòng xe 4 Chỗ Tiêu chuẩn</label>
+                                <input type="number" class="form-control fw-bold fs-5 bg-light border-0" value="12000">
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-muted fw-bold small">Hệ số Lễ / Tết (%)</label>
+                                <input type="number" class="form-control fw-bold fs-5 bg-light border-0" value="15">
+                            </div>
+                            <button class="btn btn-primary w-100 py-2 fw-bold" onclick="simulateSaveConfig(this)">Lưu Cấu Hình Cơ Sở</button>
+                        </div>
+                    </div>
+                    </div>
+            </section>
+
+            <section id="tab-ai-marketing" class="tab-section">
+                <h4 class="fw-bold mb-4 text-dark">Trợ lý AI & Chiến dịch Email</h4>
+                <div class="row g-4">
+                    <div class="col-12">
+                        <div class="config-card">
+                            <h5 class="fw-bold mb-4 fs-6"><i class="fa-solid fa-brain me-2 text-info"></i>Gán Thuộc tính AI (Kéo thả Tags)</h5>
+                            <div class="kanban-board">
+                                <div class="kb-column">
+                                    <h6 class="text-muted fw-bold small mb-3">Tags Khả dụng (Kéo sang phải)</h6>
+                                    <div class="tag-pill" draggable="true"><i class="fa-solid fa-wheelchair"></i> Xe có xe lăn</div>
+                                    <div class="tag-pill" draggable="true"><i class="fa-solid fa-volume-xmark"></i> Tài xế yên tĩnh</div>
+                                    <div class="tag-pill" draggable="true"><i class="fa-solid fa-paw"></i> Cho phép Thú cưng</div>
+                                    <div class="tag-pill" draggable="true"><i class="fa-solid fa-suitcase"></i> Cốp siêu rộng</div>
+                                </div>
+                                <div class="kb-column">
+                                    <h6 class="text-muted fw-bold small mb-3">Hồ sơ Phương tiện (Thả vào đây)</h6>
+                                    <div class="vehicle-dropzone">
+                                        <span class="v-plate">51H-123.45</span>
                                     </div>
-                                <div class="vehicle-dropzone">
-                                    <span class="v-plate">60A-987.65</span>
+                                    <div class="vehicle-dropzone">
+                                        <span class="v-plate">60A-987.65</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-    </main>
+            <section id="tab-users" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Tài khoản & Phân quyền (RBAC)</h4>
+                        <p class="text-muted small m-0">Kiểm soát truy cập theo nguyên tắc Đặc quyền tối thiểu (Least Privilege).</p>
+                    </div>
+                    <button class="btn btn-primary fw-bold shadow-sm" style="background: var(--color-1); border:none;"><i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự</button>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="table-custom p-0 h-100">
+                            <div class="p-3 border-bottom bg-light fw-bold text-dark"><i class="fa-solid fa-users me-2"></i> Nhân sự Back-Office</div>
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="rounded-circle" width="40" height="40">
+                                    <div><div class="fw-bold text-dark fs-6">Trần Giám Đốc</div><div class="small text-muted">ID: ADM-01</div></div>
+                                </div>
+                                <span class="role-badge role-super">Super Admin</span>
+                            </div>
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: #f8fafc; border-left: 3px solid var(--color-1);">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=random" class="rounded-circle" width="40" height="40">
+                                    <div><div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div><div class="small text-muted">ID: DP-889</div></div>
+                                </div>
+                                <span class="role-badge role-dispatcher">Dispatcher</span>
+                            </div>
+                            <div class="p-3 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=CSKH&background=random" class="rounded-circle" width="40" height="40">
+                                    <div><div class="fw-bold text-dark fs-6">Lê CSKH</div><div class="small text-muted">ID: CS-102</div></div>
+                                </div>
+                                <span class="role-badge role-cs">Support</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="table-custom p-0">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="fw-bold text-dark"><i class="fa-solid fa-table-cells me-2"></i> Ma trận Quyền hạn: <span class="text-primary">Dispatcher</span></div>
+                                <button class="btn btn-dark fw-bold btn-table-action" onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
+                            </div>
+                            <table class="table matrix-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Module / Chức năng</th>
+                                        <th>Xem</th>
+                                        <th>Thêm</th>
+                                        <th>Sửa</th>
+                                        <th>Xóa</th>
+                                        <th class="text-primary">Duyệt/Đóng Băng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Bảng Giám sát Hành trình</td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox" disabled><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hồ sơ Tài xế (eKYC)</td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-reports" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Đo lường Chất lượng Dịch vụ</h4>
+                        <p class="text-muted small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và sức khỏe vận hành.</p>
+                    </div>
+                    <button class="btn btn-light shadow-sm border fw-bold" onclick="simulateSaveConfig(this)"><i class="fa-solid fa-file-export text-success me-2"></i> Xuất PDF</button>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="table-custom p-4 h-100">
+                            <h6 class="fw-bold mb-4 text-center">Phổ Điểm Đánh Giá Tài Xế (Radar)</h6>
+                            <div style="height: 300px; display: flex; justify-content: center;"><canvas id="qualityRadarChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="table-custom p-4 h-100">
+                            <h6 class="fw-bold mb-4">Phân tích Lý do Hủy chuyến (Stacked Bar)</h6>
+                            <div style="height: 300px;"><canvas id="cancelReasonChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-audit" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Nhật ký Hệ thống (Audit Log)</h4>
+                        <p class="text-muted small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất biến, Read-only.</p>
+                    </div>
+                    <div class="input-group w-auto shadow-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm Audit ID, User...">
+                    </div>
+                </div>
+
+                <div class="table-custom">
+                    <table class="table table-hover-custom table-dense mb-0">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Nhân sự (Who)</th>
+                                <th>Hành động</th>
+                                <th>Đối tượng (Target)</th>
+                                <th>Thiết bị / IP</th>
+                                <th class="text-end">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">09:15:22</div></td>
+                                <td><div class="fw-bold text-primary">ADM-01</div><div class="text-muted small">Trần Giám Đốc</div></td>
+                                <td><span class="badge bg-warning text-dark">UPDATE</span></td>
+                                <td class="fw-bold">Cấu hình Hệ số Lễ/Tết</td>
+                                <td><div class="text-muted small">113.160.22.1</div><div class="text-muted small">Chrome / Mac OS</div></td>
+                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action" onclick="openDiffModal()">Xem Diff</button></td>
+                            </tr>
+                            <tr>
+                                <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">08:42:10</div></td>
+                                <td><div class="fw-bold text-info">DP-889</div><div class="text-muted small">Nguyễn Điều Phối</div></td>
+                                <td><span class="badge bg-info text-white">FREEZE</span></td>
+                                <td class="fw-bold">Hóa đơn chuyến #BK-9015</td>
+                                <td><div class="text-muted small">113.160.22.5</div><div class="text-muted small">Safari / Windows</div></td>
+                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action">Xem Log</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            </main>
+    </div>
+
+    <div class="modal fade" id="addVehicleModal" tabindex="-1">
+       </div>
+
+       <div class="modal fade modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0 rounded-4" style="overflow: hidden;">
+                <div class="modal-header border-0 px-4 pt-4 pb-2">
+                    <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-code-compare text-primary me-2"></i> Chi tiết Thay đổi (Diff View)</h5>
+                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-4">
+                    <div class="d-flex justify-content-between text-muted small fw-bold mb-2 px-2">
+                        <span>Dữ liệu Cũ (Before)</span>
+                        <span>Dữ liệu Mới (After)</span>
+                    </div>
+                    <div class="diff-container">
+                        <div class="diff-box diff-old">
+                            "holiday_multiplier": <del>10%</del>,<br>
+                            "updated_by": "System"
+                        </div>
+                        <div class="diff-box diff-new">
+                            "holiday_multiplier": <ins>15%</ins>,<br>
+                            "updated_by": "ADM-01"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade ekyc-modal" id="ekycModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -443,7 +640,7 @@
         </div>
     </div>
 
-    <div class="toast-container position-fixed top-0 end-0 p-4" style="z-index: 9999;">
+    <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
         <div id="systemErrorToast" class="toast align-items-center text-white border-0 rounded-3 shadow-lg" role="alert" style="background: var(--danger);">
             <div class="d-flex p-3">
                 <div class="toast-body p-0 fw-bold fs-6 d-flex align-items-center gap-3">
@@ -455,113 +652,6 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // ==========================================
-        // SPA NAVIGATION
-        // ==========================================
-        function switchAdminView(sectionId, element) {
-            document.querySelectorAll('.sidebar-menu li a').forEach(el => el.classList.remove('active'));
-            element.classList.add('active');
 
-            document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-            const target = document.getElementById(sectionId);
-            void target.offsetWidth; // Reflow for animation
-            target.classList.add('active');
-        }
-
-        // ==========================================
-        // CHARTS & VISUALIZATION (Master Dashboard)
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Line Chart: Doanh Thu
-            const ctxRev = document.getElementById('revenueChart').getContext('2d');
-            let gradientRev = ctxRev.createLinearGradient(0, 0, 0, 300);
-            gradientRev.addColorStop(0, 'rgba(0, 177, 79, 0.4)');
-            gradientRev.addColorStop(1, 'rgba(0, 177, 79, 0)');
-
-            new Chart(ctxRev, {
-                type: 'line',
-                data: {
-                    labels: ['1/6', '5/6', '10/6', '15/6', '20/6', '25/6', '30/6'],
-                    datasets: [{
-                        label: 'Doanh thu (Triệu VNĐ)',
-                        data: [120, 150, 140, 200, 180, 250, 220],
-                        borderColor: '#00B14F',
-                        backgroundColor: gradientRev,
-                        borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#fff', pointBorderColor: '#00B14F', pointRadius: 5
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { border: { display: false }, grid: { color: '#f1f5f9' } } } }
-            });
-
-            // Doughnut Chart: Trạng thái
-            const ctxStatus = document.getElementById('statusChart').getContext('2d');
-            new Chart(ctxStatus, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Hoàn thành', 'Hủy', 'Tranh chấp'],
-                    datasets: [{
-                        data: [85, 10, 5],
-                        backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
-                        borderWidth: 0, cutout: '75%'
-                    }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, boxWidth: 8 } } } }
-            });
-        });
-
-        // ==========================================
-        // eKYC MODAL LOGIC (Zoom & Pan)
-        // ==========================================
-        const ekycModal = new bootstrap.Modal(document.getElementById('ekycModal'));
-        function openEkycModal() { ekycModal.show(); }
-
-        let currentScale = 1;
-        let currentRotation = 0;
-        function zoomImg(factor) {
-            const img = document.getElementById('cccdImg');
-            currentScale *= factor;
-            applyImgTransform();
-        }
-        function rotateImg() {
-            const img = document.getElementById('cccdImg');
-            currentRotation += 90;
-            applyImgTransform();
-        }
-        function applyImgTransform() {
-            document.getElementById('cccdImg').style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
-        }
-
-        // ==========================================
-        // GLOBAL ERROR HANDLING (API MOCKING)
-        // ==========================================
-        const toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
-
-        function testGlobalError(selectObj) {
-            if(selectObj.value === 'Test Lỗi Mạng') {
-                selectObj.disabled = true;
-                setTimeout(() => {
-                    selectObj.disabled = false;
-                    selectObj.selectedIndex = 0; // Trả về mặc định
-                    toastError.show(); // Bắn lỗi "Update failed"
-                }, 1000);
-            }
-        }
-
-        function simulateSaveConfig(btn) {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Xử lý...';
-            btn.disabled = true;
-
-            // Buộc xảy ra lỗi để đáp ứng Constraint
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.disabled = false;
-                toastError.show(); // Hiển thị chuẩn xác chữ "Update failed"
-                // Modal eKYC KHÔNG được tự động đóng nếu có lỗi (UX requirement)
-            }, 1500);
-        }
-
-    </script>
 </body>
 </html>
