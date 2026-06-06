@@ -14,67 +14,196 @@
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <style>
+        /* =========================================
+           STYLES TÍNH NĂNG TÍCH HỢP (Từ File 2)
+        ========================================= */
+        :root {
+            --color-1: #00B14F; 
+            --color-dark: #1e293b;
+            --shadow-card: 0 4px 20px rgba(0,0,0,0.03);
+            --danger: #EF4444;
+            --blue: #2563EB;
+        }
+        /* =========================================
+   HIỆU ỨNG CHUYỂN TAB (TAB-SECTION ANIMATION)
+========================================= */
+.tab-section {
+    display: none;
+}
+.tab-section.active {
+    display: block;
+    animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
 
+@keyframes slideUpFade {
+    from { 
+        opacity: 0; 
+        transform: translateY(20px) scale(0.98); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+/* =========================================
+   UI BẢNG DỮ LIỆU (FLEET & DRIVERS)
+========================================= */
+.table-custom {
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f1f5f9;
+    overflow: visible; /* Giữ visible để bóng của tr:hover không bị cắt */
+}
+
+.table-custom table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table-custom thead th {
+    background: #f8fafc;
+    padding: 16px 24px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table-custom tbody td {
+    padding: 20px 24px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f8fafc;
+    transition: background-color 0.3s ease;
+}
+
+/* Hiệu ứng Hover Transform cho Từng Dòng */
+.table-hover-custom tbody tr {
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background-color: #ffffff;
+}
+
+.table-hover-custom tbody tr:hover {
+    transform: translateY(-3px) scale(1.002);
+    box-shadow: 0 10px 25px rgba(0, 177, 79, 0.08);
+    background-color: #fcfcfc;
+    z-index: 10;
+    position: relative;
+    border-radius: 12px;
+}
+
+.table-hover-custom tbody tr:hover td {
+    border-bottom-color: transparent; /* Ẩn viền khi bay lên */
+}
+
+/* Nút Action trong bảng */
+.btn-table-action {
+    border-radius: 10px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+.btn-table-action:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Dropdown trạng thái xe */
+.status-select {
+    border-radius: 50px;
+    padding: 6px 30px 6px 16px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+.status-select:focus {
+    box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.15);
+    border-color: var(--color-1);
+}
+.status-ready { background-color: #ecfdf5; color: #059669; }
+.status-maintenance { background-color: #fffbeb; color: #d97706; }
+.status-locked { background-color: #fef2f2; color: #dc2626; }
+
+        /* Dashboard KPIs & Charts */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-bottom: 32px; }
+        .kpi-card { background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-card); transition: 0.3s; border: 1px solid rgba(0,0,0,0.05); }
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
+        .kpi-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+        .kpi-title { font-size: 0.9rem; font-weight: 600; color: #64748b; }
+        .kpi-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+        .kpi-value { font-size: 1.8rem; font-weight: 800; color: var(--color-dark); margin-bottom: 8px;}
+        .kpi-trend { font-size: 0.8rem; font-weight: 700; padding: 4px 8px; border-radius: 20px; display: inline-flex; align-items: center; gap: 4px; }
+        .trend-up { background: #D1FAE5; color: #10B981; }
+        .trend-down { background: #FEE2E2; color: #EF4444; }
+        
+        .charts-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px; }
+        @media (max-width: 1200px) { .charts-grid { grid-template-columns: 1fr; } }
+        .chart-card { background: white; border-radius: 16px; padding: 24px; box-shadow: var(--shadow-card); border: 1px solid rgba(0,0,0,0.05);}
+        .chart-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 20px; color: var(--color-dark); }
+
+        /* eKYC Modal */
+        .ekyc-modal .modal-content { border-radius: 24px; border: none; overflow: hidden; }
+        .ekyc-layout { display: flex; min-height: 500px; }
+        .ekyc-info { flex: 1; padding: 32px; background: #f8fafc; border-right: 1px solid #e2e8f0; }
+        .ekyc-image-viewer { flex: 1.5; padding: 32px; background: #1e293b; display: flex; flex-direction: column;}
+        .ekyc-img-container { flex: 1; background: #0f172a; border-radius: 16px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center;}
+        .ekyc-img { max-width: 100%; max-height: 100%; object-fit: contain; cursor: grab; transition: transform 0.3s; }
+        .img-controls { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; background: rgba(0,0,0,0.6); padding: 8px; border-radius: 50px; backdrop-filter: blur(5px);}
+        .img-controls button { width: 36px; height: 36px; border-radius: 50%; border: none; background: rgba(255,255,255,0.1); color: white; transition: 0.2s;}
+        .img-controls button:hover { background: var(--color-1); }
+
+        /* Kanban AI Tags */
+        .kanban-board { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        .kb-column { background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; box-shadow: var(--shadow-card); min-height: 400px;}
+        .tag-pill { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 50px; font-size: 0.85rem; font-weight: 600; cursor: grab; margin-bottom: 8px; transition: 0.2s;}
+        .tag-pill:hover { border-color: var(--color-1); background: #f0fdf4; color: var(--color-1); transform: translateY(-2px);}
+        .vehicle-dropzone { background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px; padding: 20px; margin-bottom: 16px; transition: 0.3s;}
+        
+        /* Config Alert BR-17 */
+        .config-alert { background: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid var(--blue); padding: 16px 20px; border-radius: 8px; display: flex; gap: 16px; margin-bottom: 32px; color: #1E3A8A; font-weight: 500;}
+
+        /* Animations */
+        .fade-in-up { animation: fadeInUp 0.4s forwards; opacity: 0; transform: translateY(15px); }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
 <body>
     <header>
-      <nav class="navbar custom-navbar fixed-top">
-        <div class="container-base h-100 position-relative">
-          <a class="navbar-brand brand-overflow" href="#">
-            <img
-              src="../../assets/img/logo1.jpg"
-              alt="FleetFlow Logo"
-              class="logo-img"
-            />
-          </a>
-
-          <div class="navbar-slogan d-none d-md-block">
+        <nav class="navbar custom-navbar fixed-top">
+            <div class="container-base h-100 position-relative">
+                <a class="navbar-brand brand-overflow" href="#">
+                    <img src="../../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
+                </a>
+                <div class="navbar-slogan d-none d-md-block">
                     Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
                 </div>
-
-          <div class="user-profile">
-            <div class="nav-right-actions d-flex align-items-center gap-4 pe-3">
-                    
-                    <div class="notification-bell" title="Thông báo">
-                        <i class="fa-regular fa-bell"></i>
-                        <span class="notification-badge" id="notiCount">3</span>
-                    </div>
-                    
-                    <div class="user-profile-dropdown">
-                        <div class="user-profile-trigger d-flex align-items-center">
-                            <div class="d-none d-sm-block text-end me-2">
-                                <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Quản trị</div>
-                                <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Administrator</div>
-                            </div>
-                            <img src="https://ui-avatars.com/api/?name=Quan+Tri&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
-                            <i class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon" style="font-size: 0.8rem;"></i>
+                <div class="user-profile">
+                    <div class="nav-right-actions d-flex align-items-center gap-4 pe-3">
+                        <div class="notification-bell" title="Thông báo">
+                            <i class="fa-regular fa-bell"></i>
+                            <span class="notification-badge" id="notiCount">3</span>
                         </div>
-                        
-                        <div class="dropdown-menu-modern shadow-lg">
-                            <div class="dropdown-header-custom px-4 py-3">
-                                <div class="fw-bold text-dark fs-6">Nguyễn Quản trị</div>
-                                <div class="small text-muted">admin@fleetflow.vn</div>
+                        <div class="user-profile-dropdown">
+                            <div class="user-profile-trigger d-flex align-items-center">
+                                <div class="d-none d-sm-block text-end me-2">
+                                    <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Quản trị</div>
+                                    <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Administrator</div>
+                                </div>
+                                <img src="https://ui-avatars.com/api/?name=Quan+Tri&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
                             </div>
-                            <hr class="dropdown-divider-custom">
-                            
-                            <a href="#" class="dropdown-item-custom">
-                                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
-                            </a>
-                            <a href="#" class="dropdown-item-custom">
-                                <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
-                            </a>
-                            
-                            <hr class="dropdown-divider-custom">
-                            
-                            <a href="login.html" class="dropdown-item-custom text-danger fw-bold logout-item">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-                            </a>
                         </div>
                     </div>
                 </div>
-          </div>
-        </div>
-      </nav>
+            </div>
+        </nav>
     </header>
 
     <div class="wrapper">
@@ -411,188 +540,12 @@
                     </div>
                 </div>
             </section>
-
-            <section id="tab-users" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <div>
-                        <h4 class="fw-bold mb-1 text-dark">Tài khoản & Phân quyền (RBAC)</h4>
-                        <p class="text-muted small m-0">Kiểm soát truy cập theo nguyên tắc Đặc quyền tối thiểu (Least Privilege).</p>
-                    </div>
-                    <button class="btn btn-primary fw-bold shadow-sm" style="background: var(--color-1); border:none;"><i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự</button>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-lg-4">
-                        <div class="table-custom p-0 h-100">
-                            <div class="p-3 border-bottom bg-light fw-bold text-dark"><i class="fa-solid fa-users me-2"></i> Nhân sự Back-Office</div>
-                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="rounded-circle" width="40" height="40">
-                                    <div><div class="fw-bold text-dark fs-6">Trần Giám Đốc</div><div class="small text-muted">ID: ADM-01</div></div>
-                                </div>
-                                <span class="role-badge role-super">Super Admin</span>
-                            </div>
-                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: #f8fafc; border-left: 3px solid var(--color-1);">
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=random" class="rounded-circle" width="40" height="40">
-                                    <div><div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div><div class="small text-muted">ID: DP-889</div></div>
-                                </div>
-                                <span class="role-badge role-dispatcher">Dispatcher</span>
-                            </div>
-                            <div class="p-3 d-flex justify-content-between align-items-center">
-                                <div class="d-flex align-items-center gap-3">
-                                    <img src="https://ui-avatars.com/api/?name=CSKH&background=random" class="rounded-circle" width="40" height="40">
-                                    <div><div class="fw-bold text-dark fs-6">Lê CSKH</div><div class="small text-muted">ID: CS-102</div></div>
-                                </div>
-                                <span class="role-badge role-cs">Support</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-8">
-                        <div class="table-custom p-0">
-                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
-                                <div class="fw-bold text-dark"><i class="fa-solid fa-table-cells me-2"></i> Ma trận Quyền hạn: <span class="text-primary">Dispatcher</span></div>
-                                <button class="btn btn-dark fw-bold btn-table-action" onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
-                            </div>
-                            <table class="table matrix-table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th>Module / Chức năng</th>
-                                        <th>Xem</th>
-                                        <th>Thêm</th>
-                                        <th>Sửa</th>
-                                        <th>Xóa</th>
-                                        <th class="text-primary">Duyệt/Đóng Băng</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Bảng Giám sát Hành trình</td>
-                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox" disabled><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Hồ sơ Tài xế (eKYC)</td>
-                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tab-reports" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <div>
-                        <h4 class="fw-bold mb-1 text-dark">Đo lường Chất lượng Dịch vụ</h4>
-                        <p class="text-muted small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và sức khỏe vận hành.</p>
-                    </div>
-                    <button class="btn btn-light shadow-sm border fw-bold" onclick="simulateSaveConfig(this)"><i class="fa-solid fa-file-export text-success me-2"></i> Xuất PDF</button>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-lg-5">
-                        <div class="table-custom p-4 h-100">
-                            <h6 class="fw-bold mb-4 text-center">Phổ Điểm Đánh Giá Tài Xế (Radar)</h6>
-                            <div style="height: 300px; display: flex; justify-content: center;"><canvas id="qualityRadarChart"></canvas></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-7">
-                        <div class="table-custom p-4 h-100">
-                            <h6 class="fw-bold mb-4">Phân tích Lý do Hủy chuyến (Stacked Bar)</h6>
-                            <div style="height: 300px;"><canvas id="cancelReasonChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tab-audit" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <div>
-                        <h4 class="fw-bold mb-1 text-dark">Nhật ký Hệ thống (Audit Log)</h4>
-                        <p class="text-muted small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất biến, Read-only.</p>
-                    </div>
-                    <div class="input-group w-auto shadow-sm">
-                        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm Audit ID, User...">
-                    </div>
-                </div>
-
-                <div class="table-custom">
-                    <table class="table table-hover-custom table-dense mb-0">
-                        <thead>
-                            <tr>
-                                <th>Thời gian</th>
-                                <th>Nhân sự (Who)</th>
-                                <th>Hành động</th>
-                                <th>Đối tượng (Target)</th>
-                                <th>Thiết bị / IP</th>
-                                <th class="text-end">Chi tiết</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">09:15:22</div></td>
-                                <td><div class="fw-bold text-primary">ADM-01</div><div class="text-muted small">Trần Giám Đốc</div></td>
-                                <td><span class="badge bg-warning text-dark">UPDATE</span></td>
-                                <td class="fw-bold">Cấu hình Hệ số Lễ/Tết</td>
-                                <td><div class="text-muted small">113.160.22.1</div><div class="text-muted small">Chrome / Mac OS</div></td>
-                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action" onclick="openDiffModal()">Xem Diff</button></td>
-                            </tr>
-                            <tr>
-                                <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">08:42:10</div></td>
-                                <td><div class="fw-bold text-info">DP-889</div><div class="text-muted small">Nguyễn Điều Phối</div></td>
-                                <td><span class="badge bg-info text-white">FREEZE</span></td>
-                                <td class="fw-bold">Hóa đơn chuyến #BK-9015</td>
-                                <td><div class="text-muted small">113.160.22.5</div><div class="text-muted small">Safari / Windows</div></td>
-                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action">Xem Log</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
             
             </main>
     </div>
 
     <div class="modal fade" id="addVehicleModal" tabindex="-1">
        </div>
-
-       <div class="modal fade modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0 rounded-4" style="overflow: hidden;">
-                <div class="modal-header border-0 px-4 pt-4 pb-2">
-                    <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-code-compare text-primary me-2"></i> Chi tiết Thay đổi (Diff View)</h5>
-                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body px-4 pb-4">
-                    <div class="d-flex justify-content-between text-muted small fw-bold mb-2 px-2">
-                        <span>Dữ liệu Cũ (Before)</span>
-                        <span>Dữ liệu Mới (After)</span>
-                    </div>
-                    <div class="diff-container">
-                        <div class="diff-box diff-old">
-                            "holiday_multiplier": <del>10%</del>,<br>
-                            "updated_by": "System"
-                        </div>
-                        <div class="diff-box diff-new">
-                            "holiday_multiplier": <ins>15%</ins>,<br>
-                            "updated_by": "ADM-01"
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <div class="modal fade ekyc-modal" id="ekycModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -653,53 +606,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Khôi phục Navigation Tabs từ File 1
-        // Radar Chart (Driver Ratings)
-            if(document.getElementById('qualityRadarChart')) {
-                const ctxRadar = document.getElementById('qualityRadarChart').getContext('2d');
-                new Chart(ctxRadar, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Đúng giờ', 'Thái độ', 'Lái xe an toàn', 'Vệ sinh xe', 'Hỗ trợ khách'],
-                        datasets: [{
-                            label: 'Điểm TB Hệ thống',
-                            data: [4.5, 4.2, 4.8, 4.6, 4.1],
-                            backgroundColor: 'rgba(0, 177, 79, 0.2)',
-                            borderColor: '#00B14F',
-                            pointBackgroundColor: '#00B14F',
-                            borderWidth: 2
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false, scales: { r: { angleLines: { color: '#e2e8f0' }, grid: { color: '#e2e8f0' }, pointLabels: { font: { family: 'Inter', weight: '600' } } } } }
-                });
-            }
-
-            // Stacked Bar Chart (Cancellation Reasons)
-            if(document.getElementById('cancelReasonChart')) {
-                const ctxBar = document.getElementById('cancelReasonChart').getContext('2d');
-                new Chart(ctxBar, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
-                        datasets: [
-                            { label: 'Khách đổi ý', data: [120, 90, 100, 80], backgroundColor: '#F59E0B', borderRadius: 4 },
-                            { label: 'Tài xế đến trễ', data: [40, 30, 20, 15], backgroundColor: '#EF4444', borderRadius: 4 },
-                            { label: 'Lỗi hệ thống', data: [10, 5, 2, 0], backgroundColor: '#64748b', borderRadius: 4 }
-                        ]
-                    },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, border: { display: false } } },
-                        plugins: { legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } } }
-                    }
-                });
-            }
-
-        // Logic Mở Modal Diff View
-        let diffModalInstance;
-        function openDiffModal() {
-            if(!diffModalInstance) diffModalInstance = new bootstrap.Modal(document.getElementById('diffModal'));
-            diffModalInstance.show();
-        }
         function switchTab(tabId, element) {
             document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
             element.classList.add('active');

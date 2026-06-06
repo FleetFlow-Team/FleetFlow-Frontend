@@ -1,6 +1,5 @@
 /* =========================================
-   CÁC BIẾN CSS TOÀN CỤC (ROOT VARIABLES)
-   Khai báo màu sắc chủ đạo, màu chữ và kiểu bóng đổ dùng chung cho toàn bộ dự án
+   1. CÁC BIẾN TOÀN CỤC & BASE (ROOT VARIABLES)
 ========================================= */
 :root {
   --color-1: #00b14f;
@@ -8,24 +7,48 @@
   --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
   --danger: #ef4444;
   --blue: #2563eb;
+  /* --color-2, --color-3 sẽ lấy từ file base.css nếu có */
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background-color: var(
+    --color-2,
+    #f4f7fe
+  ); /* Fallback màu nền nếu base chưa có */
+  overflow-x: hidden;
 }
 
 /* =========================================
-   HIỆU ỨNG CHUYỂN TAB (TAB-SECTION ANIMATION)
-   Xử lý việc ẩn/hiện các tab nội dung và tạo hiệu ứng trượt lên, mờ dần (slideUpFade)
+   2. BỐ CỤC CHÍNH (MAIN LAYOUT & TABS)
 ========================================= */
+.wrapper {
+  display: flex;
+  margin-top: 70px;
+  min-height: calc(100vh - 70px);
+}
+
+.main-content {
+  margin-left: 280px;
+  padding: 30px;
+  width: calc(100% - 280px);
+  background-color: #f4f7fe;
+}
+
+/* Hiệu ứng chuyển Tab */
 .tab-section {
   display: none;
 }
+
 .tab-section.active {
   display: block;
-  animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes slideUpFade {
   from {
     opacity: 0;
-    transform: translateY(20px) scale(0.98);
+    transform: translateY(15px) scale(0.98);
   }
   to {
     opacity: 1;
@@ -33,16 +56,310 @@
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in-up {
+  animation: slideUpFade 0.4s forwards;
+  opacity: 0;
+  transform: translateY(15px);
+}
+
 /* =========================================
-   UI BẢNG DỮ LIỆU (FLEET & DRIVERS TABLE)
-   Thiết kế giao diện bảng chung: nền trắng, bo góc, bóng đổ và định dạng phần Header
+   3. THANH ĐIỀU HƯỚNG TRÊN (TOP NAVBAR)
+========================================= */
+.custom-navbar {
+  background-color: var(--color-1);
+  height: 70px;
+  padding: 0 !important; /* Xóa lề navbar */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-navbar .container-base {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Đẩy mạnh về 2 phía */
+  width: 100%;
+  max-width: 100% !important; /* Phá vỡ max-width có thể có trong base.css */
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100%;
+  position: relative; /* Bắt buộc để căn giữa absolute cho Slogan */
+}
+
+/* Xử lý Logo sát mép trái */
+.brand-overflow {
+  position: relative;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  padding: 0 !important;
+  padding-left: 20px !important;
+  margin: 0 !important;
+  background-color: transparent;
+  text-decoration: none;
+}
+
+.brand-overflow .logo-img {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Dòng Slogan ở giữa Navbar */
+.navbar-slogan {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Kéo tâm của chữ vào chính giữa màn hình */
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap; /* Ngăn chữ bị rớt dòng */
+  pointer-events: none; /* Chống click nhầm */
+}
+
+/* =========================================
+   4. THÔNG TIN NGƯỜI DÙNG & MENU DROPDOWN
+========================================= */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  cursor: pointer;
+  padding-right: 50px !important;
+  margin: 0 !important;
+}
+
+.user-profile img,
+.avatar-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background-color: #ffffff;
+  object-fit: cover;
+  display: block;
+  transition:
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    border-color 0.3s;
+}
+
+.badge-admin {
+  background-color: #e53e3e;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  letter-spacing: 1px;
+}
+
+/* Chuông thông báo */
+.notification-bell {
+  color: white;
+  position: relative;
+  cursor: pointer;
+  font-size: 1.3rem;
+  margin-right: 8px;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  background-color: #e27a7a;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 1px 6px;
+  border-radius: 50%;
+}
+
+.notification-bell i:hover {
+  color: #e27a7a;
+  transform: scale(1.2);
+  transition: transform 0.3s ease;
+}
+
+/* Dropdown Menu Hiện Đại */
+.user-profile-dropdown {
+  position: relative;
+  padding: 10px 0; /* Vùng đệm ảo chống mất hover */
+}
+
+.user-profile-trigger {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.user-profile-trigger:hover {
+  opacity: 0.8;
+}
+
+.transition-icon {
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.user-profile-dropdown:hover .transition-icon {
+  transform: rotate(-180deg);
+}
+
+.user-profile-dropdown:hover .avatar-img {
+  transform: scale(1.1);
+  border-color: var(--color-3, #f1c40f);
+}
+
+.dropdown-menu-modern {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 240px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(15px);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1060;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile-dropdown:hover .dropdown-menu-modern {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-divider-custom {
+  margin: 0;
+  border-color: #edf2f7;
+  opacity: 1;
+}
+
+.dropdown-item-custom {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  color: #4a5568;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.dropdown-item-custom i {
+  font-size: 1.1rem;
+  color: #a0aec0;
+  transition: color 0.2s ease;
+}
+
+.dropdown-item-custom:hover {
+  background-color: #f8fafc;
+  color: var(--color-1);
+  padding-left: 28px; /* Trượt nhẹ tạo cảm giác động */
+}
+
+.dropdown-item-custom:hover i {
+  color: var(--color-1);
+}
+
+.logout-item:hover {
+  background-color: #fff5f5 !important;
+  color: #e53e3e !important;
+}
+
+.logout-item:hover i {
+  color: #e53e3e !important;
+}
+
+/* =========================================
+   5. MENU BÊN TRÁI (SIDEBAR)
+========================================= */
+.sidebar {
+  width: 280px;
+  background-color: #fff;
+  border-right: 1px solid #e2e8f0;
+  position: fixed;
+  top: 70px;
+  bottom: 0;
+  left: 0;
+  padding: 20px 0;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  color: #4a5568;
+  text-decoration: none;
+  font-weight: 500;
+  border-left: 4px solid transparent;
+  transition: 0.2s;
+  font-size: 0.95rem;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+  background-color: rgba(0, 177, 79, 0.05);
+  color: var(--color-1);
+  border-left-color: var(--color-1);
+  font-weight: 600;
+}
+
+.sidebar-menu i {
+  font-size: 1.1rem;
+  width: 24px;
+  text-align: center;
+}
+
+.menu-header {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #a0aec0;
+  font-weight: 700;
+  padding: 10px 24px;
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================
+   6. GIAO DIỆN BẢNG DỮ LIỆU (TABLES)
 ========================================= */
 .table-custom {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   border: 1px solid #f1f5f9;
-  overflow: visible; /* Giữ visible để bóng của tr:hover không bị cắt */
+  overflow: visible; /* Giữ visible để bóng hover dòng không bị cắt */
 }
 
 .table-custom table {
@@ -51,28 +368,27 @@
   border-spacing: 0;
 }
 
+.table-custom th,
 .table-custom thead th {
-  background: #f8fafc;
+  background-color: #f8fafc;
+  color: #64748b;
   padding: 16px 24px;
   font-size: 0.75rem;
   font-weight: 800;
-  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   border-bottom: 2px solid #e2e8f0;
 }
 
+.table-custom td,
 .table-custom tbody td {
-  padding: 20px 24px;
+  padding: 16px 24px;
   vertical-align: middle;
-  border-bottom: 1px solid #f8fafc;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 0.95rem;
   transition: background-color 0.3s ease;
 }
 
-/* =========================================
-   HIỆU ỨNG HOVER CHO TỪNG DÒNG (ROW HOVER)
-   Làm nổi bật dòng trong bảng khi đưa chuột vào: đẩy nhẹ lên trên, đổ bóng màu xanh
-========================================= */
 .table-hover-custom tbody tr {
   transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   background-color: #ffffff;
@@ -88,29 +404,10 @@
 }
 
 .table-hover-custom tbody tr:hover td {
-  border-bottom-color: transparent; /* Ẩn viền khi dòng bay lên để trông tự nhiên hơn */
+  border-bottom-color: transparent; /* Ẩn viền khi dòng nổi lên */
 }
 
-/* =========================================
-   NÚT HÀNH ĐỘNG (ACTION BUTTONS TRONG BẢNG)
-   Thiết kế nút bấm nhỏ gọn nằm trong bảng kèm hiệu ứng trôi lên khi hover
-========================================= */
-.btn-table-action {
-  border-radius: 10px;
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  transition: all 0.2s ease;
-}
-.btn-table-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-/* =========================================
-   DROPDOWN TRẠNG THÁI (STATUS SELECT)
-   Trang trí các thẻ chọn trạng thái xe (Sẵn sàng, Bảo dưỡng, Khóa) với màu sắc tương ứng
-========================================= */
+/* Dropdown trạng thái xe */
 .status-select {
   border-radius: 50px;
   padding: 6px 30px 6px 16px;
@@ -120,10 +417,12 @@
   cursor: pointer;
   transition: all 0.3s;
 }
+
 .status-select:focus {
   box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.15);
   border-color: var(--color-1);
 }
+
 .status-ready {
   background-color: #ecfdf5;
   color: #059669;
@@ -138,8 +437,123 @@
 }
 
 /* =========================================
-   DASHBOARD KPIS & CHARTS (TỔNG QUAN)
-   Thiết kế dạng lưới (Grid) cho các thẻ thông số báo cáo và vùng chứa biểu đồ
+   7. CÁC THÀNH PHẦN CHUNG (COMPONENTS)
+========================================= */
+/* Các loại Buttons */
+.btn-action,
+.btn-table-action {
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 10px;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-action:hover,
+.btn-table-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary-custom {
+  background-color: var(--color-1);
+  color: white;
+}
+.btn-primary-custom:hover {
+  background-color: #009640;
+}
+.btn-outline-custom {
+  background-color: transparent;
+  border: 1px solid #cbd5e0;
+  color: #4a5568;
+}
+.btn-outline-custom:hover {
+  background-color: #f7fafc;
+  border-color: #a0aec0;
+}
+.btn-danger-custom {
+  background-color: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+}
+.btn-danger-custom:hover {
+  background-color: #fed7d7;
+}
+
+/* Config Cards (Cấu hình hệ thống) */
+.config-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  height: 100%;
+}
+
+.config-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  border-bottom: 2px solid #f0f2f5;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+.config-alert {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid var(--blue);
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  color: #1e3a8a;
+  font-weight: 500;
+}
+
+/* Thẻ Tag & Thông báo Audit */
+.tag-badge {
+  background-color: #edf2f7;
+  color: #4a5568;
+  border: 1px solid #cbd5e0;
+  padding: 5px 10px;
+  border-radius: 50px;
+  font-size: 0.8rem;
+  margin-right: 5px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+
+.log-audit-text {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #d53f8c;
+  background: #fff5f7;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border: 1px solid #fed7e2;
+}
+
+/* Khu vực Upload (Kéo & Thả file) */
+.upload-area {
+  border: 2px dashed #cbd5e0;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.upload-area:hover {
+  border-color: var(--color-1);
+  background: #e6fffa;
+}
+
+/* =========================================
+   8. DASHBOARD & BIỂU ĐỒ (CHARTS & KPIS)
 ========================================= */
 .kpi-grid {
   display: grid;
@@ -170,15 +584,6 @@
   font-weight: 600;
   color: #64748b;
 }
-.kpi-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.2rem;
-}
 .kpi-value {
   font-size: 1.8rem;
   font-weight: 800;
@@ -194,6 +599,7 @@
   align-items: center;
   gap: 4px;
 }
+
 .trend-up {
   background: #d1fae5;
   color: #10b981;
@@ -201,6 +607,44 @@
 .trend-down {
   background: #fee2e2;
   color: #ef4444;
+}
+
+/* Stat Icons dùng kèm trong Dashboard */
+.stat-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #edf2f7;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+.stat-icon,
+.kpi-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+}
+.bg-icon-primary {
+  background-color: #e6fffa;
+  color: var(--color-1);
+}
+.bg-icon-warning {
+  background-color: #fffaf0;
+  color: #dd6b20;
+}
+.bg-icon-info {
+  background-color: #ebf8ff;
+  color: #3182ce;
+}
+.bg-icon-purple {
+  background-color: #faf5ff;
+  color: #805ad5;
 }
 
 .charts-grid {
@@ -229,8 +673,7 @@
 }
 
 /* =========================================
-   MODAL eKYC (KIỂM DUYỆT HỒ SƠ TÀI XẾ)
-   Bố cục Modal chia 2 phần: Thông tin cá nhân (trái) và Bộ xem/phóng to ảnh CCCD (phải)
+   9. MODAL HỒ SƠ TÀI XẾ (eKYC)
 ========================================= */
 .ekyc-modal .modal-content {
   border-radius: 24px;
@@ -272,7 +715,6 @@
   transition: transform 0.3s;
 }
 
-/* Trình điều khiển ảnh (Phóng to, thu nhỏ, xoay ảnh) */
 .img-controls {
   position: absolute;
   bottom: 20px;
@@ -299,8 +741,7 @@
 }
 
 /* =========================================
-   KANBAN AI TAGS (BẢNG KÉO THẢ)
-   Thiết kế giao diện chia cột kéo thả các thẻ (Tags) gán thuộc tính cho xe
+   10. KANBAN AI TAGS (Kéo thả gán thuộc tính xe)
 ========================================= */
 .kanban-board {
   display: grid;
@@ -342,37 +783,4 @@
   padding: 20px;
   margin-bottom: 16px;
   transition: 0.3s;
-}
-
-/* =========================================
-   CONFIG ALERT BR-17 (HỘP CẢNH BÁO CẤU HÌNH)
-   Trang trí khung màu xanh thông báo luật nội suy giá cước cho Admin
-========================================= */
-.config-alert {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-left: 4px solid var(--blue);
-  padding: 16px 20px;
-  border-radius: 8px;
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
-  color: #1e3a8a;
-  font-weight: 500;
-}
-
-/* =========================================
-   ANIMATIONS (CÁC HIỆU ỨNG KHÁC)
-   Hiệu ứng mờ dần và trượt lên (Dùng cho nhiều thành phần xuất hiện lần đầu)
-========================================= */
-.fade-in-up {
-  animation: fadeInUp 0.4s forwards;
-  opacity: 0;
-  transform: translateY(15px);
-}
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
