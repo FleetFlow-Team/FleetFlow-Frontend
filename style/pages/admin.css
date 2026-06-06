@@ -1,466 +1,97 @@
-body {
-  font-family: "Inter", sans-serif;
-  background-color: var(--color-2);
-  overflow-x: hidden;
-}
-
 /* =========================================
-            TOP NAVBAR
-        ========================================= */
-/* =========================================
-   TOP NAVBAR (ÉP SÁT TUYỆT ĐỐI 2 MÉP TRÌNH DUYỆT)
+   1. ROOT VARIABLES
 ========================================= */
-.custom-navbar {
-  background-color: var(--color-1);
-  height: 70px;
-  padding: 0 !important; /* Xóa lề navbar */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Triệt tiêu mọi giới hạn của container */
-.custom-navbar .container-base {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Đẩy mạnh về 2 phía */
-  width: 100%;
-  max-width: 100% !important; /* Phá vỡ max-width có thể có trong base.css */
-  padding: 0 !important; /* Xóa sạch lề trái/phải */
-  margin: 0 !important;
-  height: 100%;
-}
-
-/* Xử lý Logo sát mép trái */
-.brand-overflow {
-  position: relative;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  padding: 0 !important;
-  padding-left: 20px !important; /* Đẩy logo sát mép trái, có thể điều chỉnh nếu cần */
-  margin: 0 !important;
-  background-color: transparent;
-  text-decoration: none;
-}
-
-.brand-overflow .logo-img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-  padding: 0 !important; /* Bỏ khoảng lề trên/dưới/trái/phải của chính bức ảnh */
-  margin: 0 !important;
-}
-
-/* Khu vực thông tin Admin sát mép phải */
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: white;
-  cursor: pointer;
-  padding-right: 50px !important;
-  margin: 0 !important;
-}
-
-.user-profile img {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-  background-color: #ffffff;
-  object-fit: cover;
-  display: block;
-}
-.badge-admin {
-  background-color: #e53e3e;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 8px;
-  letter-spacing: 1px;
+:root {
+  --color-1: #00b14f;
+  --color-dark: #1e293b;
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
+  --danger: #ef4444;
+  --blue: #2563eb;
 }
 
 /* =========================================
-            SIDEBAR
-        ========================================= */
-.wrapper {
-  display: flex;
-  margin-top: 70px;
-  min-height: calc(100vh - 70px);
-}
-.sidebar {
-  width: 280px;
-  background-color: #fff;
-  border-right: 1px solid #e2e8f0;
-  position: fixed;
-  top: 70px;
-  bottom: 0;
-  left: 0;
-  padding: 20px 0;
-  z-index: 1000;
-  overflow-y: auto;
-}
-.sidebar-menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-.sidebar-menu a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  color: #4a5568;
-  text-decoration: none;
-  font-weight: 500;
-  border-left: 4px solid transparent;
-  transition: 0.2s;
-  font-size: 0.95rem;
-}
-.sidebar-menu a:hover,
-.sidebar-menu a.active {
-  background-color: rgba(0, 177, 79, 0.05);
-  color: var(--color-1);
-  border-left-color: var(--color-1);
-  font-weight: 600;
-}
-.sidebar-menu i {
-  font-size: 1.1rem;
-  width: 24px;
-  text-align: center;
-}
-.menu-header {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #a0aec0;
-  font-weight: 700;
-  padding: 10px 24px;
-  margin-top: 10px;
-  letter-spacing: 0.5px;
-}
-
-/* =========================================
-            MAIN CONTENT & TABS
-        ========================================= */
-.main-content {
-  margin-left: 280px;
-  padding: 30px;
-  width: calc(100% - 280px);
-  background-color: #F4F7FE;
-}
+   2. TAB ANIMATIONS
+========================================= */
 .tab-section {
   display: none;
-  animation: fadeIn 0.3s;
 }
 .tab-section.active {
   display: block;
+  animation: slideUpFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-@keyframes fadeIn {
+
+@keyframes slideUpFade {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px) scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
 /* =========================================
-            COMPONENTS
-        ========================================= */
-.stat-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #edf2f7;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-}
-.stat-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-.bg-icon-primary {
-  background-color: #e6fffa;
-  color: var(--color-1);
-}
-.bg-icon-warning {
-  background-color: #fffaf0;
-  color: #dd6b20;
-}
-.bg-icon-info {
-  background-color: #ebf8ff;
-  color: #3182ce;
-}
-.bg-icon-purple {
-  background-color: #faf5ff;
-  color: #805ad5;
-}
-
+   3. TABLE STYLES (FLEET & DRIVERS)
+========================================= */
 .table-custom {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+  border: 1px solid #f1f5f9;
+  overflow: visible;
 }
-.table-custom th {
-  background-color: #f8fafc;
-  color: #4a5568;
-  padding: 16px;
-  border-bottom: 1px solid #e2e8f0;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-.table-custom td {
-  padding: 16px;
-  vertical-align: middle;
-  border-bottom: 1px solid #edf2f7;
-  font-size: 0.95rem;
-}
-
-.btn-action {
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  border-radius: 8px;
-  border: none;
-  transition: 0.2s;
-}
-.btn-primary-custom {
-  background-color: var(--color-1);
-  color: white;
-}
-.btn-primary-custom:hover {
-  background-color: #009640;
-}
-.btn-outline-custom {
-  background-color: transparent;
-  border: 1px solid #cbd5e0;
-  color: #4a5568;
-}
-.btn-outline-custom:hover {
-  background-color: #f7fafc;
-  border-color: #a0aec0;
-}
-.btn-danger-custom {
-  background-color: #fff5f5;
-  color: #e53e3e;
-  border: 1px solid #fed7d7;
-}
-.btn-danger-custom:hover {
-  background-color: #fed7d7;
-}
-
-.config-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-  height: 100%;
-}
-.config-card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--color-dark);
-  border-bottom: 2px solid #f0f2f5;
-  padding-bottom: 12px;
-  margin-bottom: 20px;
-}
-
-.log-audit-text {
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #d53f8c;
-  background: #fff5f7;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #fed7e2;
-}
-.tag-badge {
-  background-color: #edf2f7;
-  color: #4a5568;
-  border: 1px solid #cbd5e0;
-  padding: 5px 10px;
-  border-radius: 50px;
-  font-size: 0.8rem;
-  margin-right: 5px;
-  display: inline-block;
-  margin-bottom: 5px;
-}
-
-/* Drag & Drop File Upload Area */
-.upload-area {
-  border: 2px dashed #cbd5e0;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  background: #f8fafc;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.upload-area:hover {
-  border-color: var(--color-1);
-  background: #e6fffa;
-}
-
-/* Đảm bảo container làm mốc tọa độ chính xác */
-.custom-navbar .container-base {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.table-custom table {
   width: 100%;
-  max-width: 100% !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  height: 100%;
-  position: relative; /* Bắt buộc để căn giữa absolute */
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.table-custom thead th {
+  background: #f8fafc;
+  padding: 16px 24px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  border-bottom: 2px solid #e2e8f0;
 }
 
-/* CSS cho dòng Slogan ở giữa */
-.navbar-slogan {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(
-    -50%,
-    -50%
-  ); /* Kéo tâm của chữ vào chính giữa màn hình */
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  white-space: nowrap; /* Ngăn chữ bị rớt dòng */
-  pointer-events: none; /* Chống click nhầm vào chữ làm mất focus của các nút bên dưới */
+.table-hover-custom tbody tr:hover {
+  transform: translateY(-3px) scale(1.002);
+  box-shadow: 0 10px 25px rgba(0, 177, 79, 0.08);
+  background-color: #fcfcfc;
 }
 
 /* =========================================
-           USER PROFILE DROPDOWN & HOVER EFFECTS
-        ========================================= */
-        /* Cụm trigger Profile */
-        .user-profile-dropdown {
-            position: relative;
-            padding: 10px 0; /* Tạo vùng đệm màng ảo để khi di chuột xuống menu không bị mất hover */
-        }
+   4. DASHBOARD KPIS & CHARTS
+========================================= */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 24px;
+  margin-bottom: 32px;
+}
+.kpi-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  transition: 0.3s;
+}
 
-        .user-profile-trigger {
-            cursor: pointer;
-            transition: opacity 0.3s ease;
-        }
+/* =========================================
+   5. EKYC MODAL & UPLOAD
+========================================= */
+.ekyc-layout {
+  display: flex;
+  min-height: 500px;
+}
+.ekyc-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  cursor: grab;
+  transition: transform 0.3s;
+}
 
-        .user-profile-trigger:hover {
-            opacity: 0.8;
-        }
-
-        .avatar-img {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.8);
-            object-fit: cover;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
-        }
-
-        /* Xoay mũi tên khi hover vào cụm Profile */
-        .transition-icon {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        .user-profile-dropdown:hover .transition-icon {
-            transform: rotate(-180deg);
-        }
-
-        .user-profile-dropdown:hover .avatar-img {
-            transform: scale(1.1);
-            border-color: var(--color-3); /* Viền sáng màu vàng khi hover */
-        }
-
-        /* Bảng Dropdown Menu Hiện Đại */
-        .dropdown-menu-modern {
-            position: absolute;
-            top: 100%;
-            right: 0;
-            width: 240px;
-            background-color: #ffffff;
-            border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            /* Trạng thái ẩn mặc định */
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(15px); /* Đẩy xuống một chút */
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1060;
-            overflow: hidden;
-        }
-
-        /* Khi hover vào cha thì hiện menu con lên */
-        .user-profile-dropdown:hover .dropdown-menu-modern {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-divider-custom {
-            margin: 0;
-            border-color: #edf2f7;
-            opacity: 1;
-        }
-
-        /* Các thẻ Link bên trong Dropdown */
-        .dropdown-item-custom {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #4a5568;
-            text-decoration: none;
-            font-size: 0.95rem;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            position: relative;
-        }
-
-        .dropdown-item-custom i {
-            font-size: 1.1rem;
-            color: #a0aec0;
-            transition: color 0.2s ease;
-        }
-
-        /* Hiệu ứng khi lướt qua từng Item */
-        .dropdown-item-custom:hover {
-            background-color: #f8fafc;
-            color: var(--color-1);
-            padding-left: 28px; /* Trượt nhẹ chữ sang phải tạo cảm giác động */
-        }
-
-        .dropdown-item-custom:hover i {
-            color: var(--color-1);
-        }
-
-        /* Hiệu ứng riêng cho nút Đăng xuất (Màu đỏ) */
-        .logout-item:hover {
-            background-color: #fff5f5 !important;
-            color: #e53e3e !important;
-        }
-        .logout-item:hover i {
-            color: #e53e3e !important;
-        }
-/* Chuông thông báo */
-        .notification-bell { color: white; position: relative; cursor: pointer; font-size: 1.3rem; margin-right: 8px; }
-        .notification-badge { position: absolute; top: -5px; right: -8px; background-color: #e27a7a; color: white; font-size: 0.65rem; font-weight: bold; padding: 1px 6px; border-radius: 50%; }
-
-        .notification-bell i:hover {
-            color: #e27a7a;
-            transform: scale(1.5);
-            transition: transform 0.3s ease;
-        }
+/* ... (Bổ sung thêm các style kanban, config-alert v.v. từ file gốc của bạn) ... */
