@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow - Dispatcher Workspace</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+    <style>
+        /* =========================================
+           1. ROOT VARIABLES (HỆ MÀU CHUẨN)
+        ========================================= */
+        :root {
+            --color-1: #00B14F; 
+            --color-2: #FFFFFF; 
+            --color-3: #FFDE59; 
+            --color-dark: #1a1c1a;
+            --color-bg: #f4f6f8;
+            --text-color: #333333;
+            --color-text-muted: #64748b;
+            --transition-speed: 0.3s; 
+
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --frozen: #06B6D4; 
+            --map-bg: #1e1e1e; 
+            --sidebar-width: 260px;
+            --header-height: 70px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            color: var(--text-color);
+            background-color: var(--color-bg);
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        a { text-decoration: none; color: inherit; transition: color var(--transition-speed) ease; }
+
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+
+        .btn-base {
+            display: inline-flex; align-items: center; justify-content: center;
+            background-color: var(--color-1); color: var(--color-2);
+            padding: 10px 24px; font-size: 0.95rem; font-weight: 700;
+            border: none; border-radius: 8px; cursor: pointer;
+            transition: all var(--transition-speed) cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .btn-base:hover { background-color: #009640; transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2); }
+        .btn-base:active { transform: scale(0.95); }
+        .btn-base:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* =========================================
+           2. TOP NAVBAR & SIDEBAR
+        ========================================= */
+        .custom-navbar {
+            background-color: var(--color-1); height: var(--header-height); padding: 0 !important;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1); position: fixed; top: 0; left: 0; width: 100%; z-index: 2000;
+        }
+        .custom-navbar .container-base {
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; max-width: 100% !important; padding: 0 !important; margin: 0 !important; height: 100%; position: relative;
+        }
+        .brand-overflow { height: 100%; display: flex; align-items: center; padding: 0 24px !important; text-decoration: none; }
+        .brand-overflow .logo-img { height: 40px; width: auto; object-fit: contain; filter: brightness(0) invert(1); transition: 0.3s;}
+        
+        .navbar-slogan {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            color: rgba(255, 255, 255, 0.95); font-size: 1.1rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; pointer-events: none;
+        }
+
+        .user-profile { display: flex; align-items: center; gap: 12px; color: white; cursor: pointer; padding-right: 30px !important; }
+        .nav-right-actions { display: flex; align-items: center; gap: 24px; }
+        
+        .notification-bell { position: relative; font-size: 1.4rem; transition: 0.3s; }
+        .notification-bell:hover { transform: scale(1.15) rotate(10deg); }
+        .notification-badge { position: absolute; top: -5px; right: -8px; background: var(--danger); color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 50px; border: 2px solid var(--color-1);}
+
+        .user-profile-trigger { display: flex; align-items: center; }
+        .avatar-img { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8); object-fit: cover; }
+
+        /* Bố cục SPA */
+        .wrapper { display: flex; margin-top: var(--header-height); height: calc(100vh - var(--header-height)); width: 100vw; }
+
+        .sidebar {
+            width: var(--sidebar-width); background-color: var(--color-2); border-right: 1px solid #e2e8f0;
+            display: flex; flex-direction: column; padding: 24px 0; z-index: 1000; box-shadow: 4px 0 15px rgba(0,0,0,0.02);
+        }
+        .menu-header { font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 800; padding: 0 24px 12px 24px; letter-spacing: 1px; }
+        .sidebar-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px;}
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: #4a5568; position: relative;
+            font-weight: 600; font-size: 0.95rem; transition: 0.3s;
+        }
+        .sidebar-menu a::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--color-1); transform: scaleY(0); transition: transform 0.3s ease; }
+        .sidebar-menu a i { font-size: 1.25rem; width: 24px; text-align: center; transition: 0.3s;}
+        .sidebar-menu a:hover { background-color: #f1f5f9; color: var(--color-dark); padding-left: 30px;}
+        .sidebar-menu a.active { background-color: rgba(0, 177, 79, 0.08); color: var(--color-1); }
+        .sidebar-menu a.active::before { transform: scaleY(1); }
+        .sidebar-menu a.active i { transform: scale(1.15); }
+
+        .main-content {
+            flex: 1; height: 100%; position: relative; background: var(--color-bg); overflow: hidden;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .workspace-section { display: none; width: 100%; height: 100%; opacity: 0; transform: translateY(15px); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .workspace-section.active { display: flex; opacity: 1; transform: translateY(0); }
+
+        /* =========================================
+           3. SCREEN 1: MÔ PHỎNG MAP (Rút gọn)
+        ========================================= */
+        #map-monitor { flex-direction: row; }
+        .map-area { flex: 4; background: #1e1e1e; display: flex; align-items: center; justify-content: center; color: #333;}
+        .map-sidebar { flex: 1; min-width: 320px; background: white; border-left: 1px solid #e2e8f0; }
+
+        /* =========================================
+           4. SCREEN 2: DATA GRID & DISPUTES ĐỈNH CAO
+        ========================================= */
+        #grid-workspace { flex-direction: column; padding: 32px; overflow-y: auto; align-items: center; }
+        
+        .grid-container { width: 100%; max-width: 1600px; display: flex; flex-direction: column; height: 100%; }
+
+        /* Khối Tabs (Chờ duyệt / Đang chạy / Đóng băng) */
+        .tabs-header { display: flex; gap: 40px; border-bottom: 2px solid #e2e8f0; margin-bottom: 30px; }
+        .tab-btn {
+            background: none; border: none; font-size: 1.1rem; font-weight: 800; color: #94a3b8;
+            padding: 16px 0; cursor: pointer; position: relative; transition: 0.3s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .tab-btn:hover { color: var(--color-dark); }
+        .tab-btn.active { color: var(--color-1); }
+        .tab-btn.active::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px;
+            background: var(--color-1); border-radius: 3px 3px 0 0;
+        }
+        .tab-btn.frozen-tab.active { color: var(--frozen); }
+        .tab-btn.frozen-tab.active::after { background: var(--frozen); }
+        .tab-badge { background: var(--danger); color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.8rem; }
+        
+        /* Hiệu ứng chuyển Grid mượt mà */
+        .grid-tab-content { display: none; animation: fadeIn 0.4s ease; }
+        .grid-tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Floating Row Table (Lưới thẻ nổi) */
+        .enterprise-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; min-width: 1100px; }
+        .enterprise-table th {
+            position: sticky; top: 0; padding: 0 24px 10px 24px; text-align: left;
+            font-size: 0.8rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; z-index: 10; border: none;
+        }
+        .enterprise-table td {
+            padding: 20px 24px; vertical-align: middle; background: white; border-top: 1px solid transparent; border-bottom: 1px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        /* Bo góc thẻ từng hàng */
+        .enterprise-table td:first-child { border-left: 1px solid transparent; border-radius: 16px 0 0 16px; }
+        .enterprise-table td:last-child { border-right: 1px solid transparent; border-radius: 0 16px 16px 0; }
+        
+        /* Default Row Shadow */
+        .enterprise-table tbody tr { box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        
+        /* Row Hover Effect Đỉnh cao */
+        .enterprise-table tbody tr:hover { transform: scale(1.008) translateY(-2px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); z-index: 5; position: relative;}
+        .enterprise-table tbody tr:hover td { border-color: var(--color-1); background: #fdfdfd;}
+        .enterprise-table tbody tr:hover td:first-child { border-left-color: var(--color-1); }
+        .enterprise-table tbody tr:hover td:last-child { border-right-color: var(--color-1); }
+
+        /* Typography trong Bảng */
+        .bk-id { font-weight: 800; font-size: 1.1rem; color: var(--color-dark); display: block;}
+        .bk-route { font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500; margin-top: 4px; display: inline-flex; align-items: center; gap: 6px;}
+        
+        .time-urgent { color: var(--danger); font-weight: 800; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fef2f2; border-radius: 8px; animation: pulse-red 2s infinite;}
+        @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.2); } }
+        
+        .person-info { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--color-dark); }
+        .icon-avatar { width: 40px; height: 40px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: var(--color-1); font-size: 1.1rem; position: relative;}
+        .icon-avatar img { width: 100%; height: 100%; border-radius: 12px; object-fit: cover;}
+
+        /* Progress Bar (Tab Đang Di Chuyển) */
+        .trip-progress { display: flex; flex-direction: column; gap: 6px; width: 180px;}
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted);}
+        .progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--color-1); border-radius: 10px; transition: width 1s ease;}
+        
+        /* Badges */
+        .pill-badge { padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; justify-content: center;}
+        .bg-pending { background: #fef3c7; color: #b45309; }
+        .bg-active { background: #dcfce7; color: #166534; }
+
+        /* Action Buttons */
+        .action-group { display: flex; gap: 10px; }
+        .btn-act { width: 44px; height: 44px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .act-approve { background: var(--color-1); color: white; }
+        .act-approve:hover { background: #009640; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,177,79,0.3);}
+        .act-dispute { background: white; color: var(--warning); border: 2px solid #fde68a;}
+        .act-dispute:hover { background: var(--warning); color: white; border-color: var(--warning); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(245,158,11,0.3);}
+        .act-resolve { background: var(--frozen); color: white; }
+        .act-resolve:hover { background: #0891b2; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(6,182,212,0.3);}
+
+        /* BR-28: Frozen Row Styling (Tab Đóng Băng) */
+        .frozen-reason { color: var(--frozen); font-weight: 600; font-size: 0.9rem; line-height: 1.4;}
+        .frozen-row td { background: #f8fafc; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; }
+        .frozen-row:hover td { border-color: var(--frozen) !important; background: white;}
+        .frozen-row .bk-id { color: var(--frozen); }
+
+        /* =========================================
+           5. MODALS & TOASTS 
+        ========================================= */
+        .modal-blur { backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.5); }
+        .modal-content-custom { border-radius: 24px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.2); overflow: hidden; }
+        .textarea-custom { border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px; font-size: 1rem; font-weight: 500; resize: none; transition: 0.3s; background: #f8fafc;}
+        .textarea-custom:focus { border-color: var(--danger); outline: none; box-shadow: 0 0 0 5px rgba(239,68,68,0.1); background: white;}
+
+        .toast-system-container { z-index: 9999; }
+        .toast-premium { border-radius: 16px; border: none; padding: 20px; font-weight: 800; color: white; display: flex; align-items: center; gap: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); font-size: 1.05rem;}
+        .toast-error { background: var(--danger); }
+
+        /* =========================================
+           6. ULTRA-WIDE SCREENS (>2300px)
+        ========================================= */
+        @media (min-width: 2300px) {
+            :root { --sidebar-width: 340px; --header-height: 90px; }
+            body { font-size: 1.1rem; }
+            .brand-overflow .logo-img { height: 50px; }
+            .sidebar-menu a { font-size: 1.15rem; padding: 20px 32px; }
+            .sidebar-menu a i { font-size: 1.5rem; }
+            .grid-container { max-width: 2200px; }
+            .enterprise-table th { font-size: 1rem; padding: 0 32px 16px 32px; }
+            .enterprise-table td { padding: 32px; font-size: 1.15rem; }
+            .bk-id { font-size: 1.3rem; }
+            .icon-avatar { width: 50px; height: 50px; font-size: 1.4rem; }
+            .pill-badge { font-size: 1rem; padding: 12px 24px; }
+            .btn-act { width: 56px; height: 56px; font-size: 1.5rem; }
+            .trip-progress { width: 250px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="custom-navbar">
+        <div class="container-base">
+            <a class="brand-overflow" href="#">
+                <img src="../assets/img/logo1.jpg" alt="FleetFlow" class="logo-img" />
+            </a>
+
+            <div class="navbar-slogan d-none d-md-block">THÁP ĐIỀU KHÔNG FLEETFLOW</div>
+
+            <div class="user-profile">
+                <div class="nav-right-actions">
+                    <div class="notification-bell"><i class="fa-regular fa-bell"></i><span class="notification-badge">5</span></div>
+
+                    <div class="user-profile-dropdown d-none d-md-block">
+                        <div class="user-profile-trigger">
+                            <div class="text-end me-3">
+                                <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Quản trị</div>
+                                <div class="text-white-50 small mt-1 fw-bold">Administrator</div>
+                            </div>
+                            <img src="https://ui-avatars.com/api/?name=Quan+Tri&background=FFDE59&color=1a1c1a&bold=true" alt="Avatar" class="avatar-img" />
+                            <i class="fa-solid fa-chevron-down transition-icon text-white-50"></i>
+                        </div>
+                        
+                        <div class="dropdown-menu-modern">
+                            <div class="px-4 py-3 bg-light">
+                                <div class="fw-bold text-dark fs-6">Nguyễn Quản trị</div>
+                                <div class="small text-muted fw-bold">ID: ADMIN-8890</div>
+                            </div>
+                            <hr class="m-0 border-light">
+                            <a href="#" class="dropdown-item-custom"><i class="fa-solid fa-gear"></i> Thiết lập hệ thống</a>
+                            <a href="#" class="dropdown-item-custom text-danger fw-bold"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất an toàn</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="wrapper">
+        
+        <aside class="sidebar">
+            <div class="menu-header">Hệ thống Điều hành</div>
+            <ul class="sidebar-menu">
+                <li><a href="#" onclick="switchView('map-monitor', this)"><i class="fa-solid fa-earth-americas"></i> Giám sát Bản đồ Live</a></li>
+                <li><a href="#" class="active" onclick="switchView('grid-workspace', this)"><i class="fa-solid fa-table-list"></i> Lưới Yêu cầu</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            
+            <section id="map-monitor" class="workspace-section">
+                <div class="w-100 h-100 d-flex align-items-center justify-content-center text-muted flex-column">
+                    <i class="fa-solid fa-map-location-dot fs-1 mb-3"></i>
+                    <h3>Không gian Bản đồ</h3>
+                </div>
+            </section>
+
+            <section id="grid-workspace" class="workspace-section active">
+                <div class="grid-container">
+                    
+                    <div class="tabs-header">
+                        <button class="tab-btn active" id="btn-tab-pending" onclick="switchGridTab('pending')">
+                            <i class="fa-solid fa-hourglass-half me-2"></i> Chờ duyệt <span class="tab-badge ms-2">2</span>
+                        </button>
+                        <button class="tab-btn" id="btn-tab-active" onclick="switchGridTab('active')">
+                            <i class="fa-solid fa-route me-2"></i> Đang di chuyển (85)
+                        </button>
+                        <button class="tab-btn frozen-tab" id="btn-tab-frozen" onclick="switchGridTab('frozen')">
+                            <i class="fa-solid fa-snowflake me-2"></i> Tranh chấp/Đóng băng (1)
+                        </button>
+                    </div>
+
+                    <div class="grid-tab-content active" id="grid-pending">
+                        <table class="enterprise-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Yêu Cầu</th>
+                                    <th>Giờ Khởi hành</th>
+                                    <th>Hành khách</th>
+                                    <th>Tài xế nhận</th>
+                                    <th>Trạng thái</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <span class="bk-id">#BK-9012</span>
+                                        <span class="bk-route">HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</span>
+                                    </td>
+                                    <td><span class="time-urgent"><i class="fa-solid fa-fire"></i> 14:00 (Sát giờ)</span></td>
+                                    <td><div class="person-info"><div class="icon-avatar"><i class="fa-regular fa-user"></i></div>Trần V. Khách</div></td>
+                                    <td class="text-muted fw-bold">Chưa có</td>
+                                    <td><span class="pill-badge bg-pending">Đang rà quét</span></td>
+                                    <td class="text-end">
+                                        <div class="action-group justify-content-end">
+                                            <button class="btn-act act-approve" title="Phát sóng / Ép chuyến" onclick="simulateAction(this)"><i class="fa-solid fa-satellite-dish"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="bk-id">#BK-9013</span>
+                                        <span class="bk-route">Đà Nẵng <i class="fa-solid fa-arrow-right mx-1"></i> Huế</span>
+                                    </td>
+                                    <td><span class="fw-bold text-dark">16:00 (Hôm nay)</span></td>
+                                    <td><div class="person-info"><div class="icon-avatar"><i class="fa-regular fa-user"></i></div>Lê Minh Tú</div></td>
+                                    <td class="text-muted fw-bold">Chưa có</td>
+                                    <td><span class="pill-badge bg-pending">Đang rà quét</span></td>
+                                    <td class="text-end">
+                                        <div class="action-group justify-content-end">
+                                            <button class="btn-act act-approve" title="Phát sóng / Ép chuyến" onclick="simulateAction(this)"><i class="fa-solid fa-satellite-dish"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid-tab-content" id="grid-active">
+                        <table class="enterprise-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Chuyến</th>
+                                    <th>Khởi hành</th>
+                                    <th>Hành khách</th>
+                                    <th>Tài xế chạy</th>
+                                    <th>Tiến trình</th>
+                                    <th class="text-end">Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr id="row-bk-9014">
+                                    <td>
+                                        <span class="bk-id">#BK-9014</span>
+                                        <span class="bk-route">Biên Hòa <i class="fa-solid fa-arrow-right mx-1"></i> Q1, HCM</span>
+                                    </td>
+                                    <td><span class="fw-bold text-dark">12:30 hôm nay</span></td>
+                                    <td><div class="person-info"><div class="icon-avatar"><img src="https://ui-avatars.com/api/?name=KH&background=e2e8f0" alt="Avatar"></div>Lê T. Nga</div></td>
+                                    <td><div class="person-info"><div class="icon-avatar" style="background: #dcfce7; color: var(--color-1);"><i class="fa-solid fa-car-side"></i></div>Tài xế Bằng</div></td>
+                                    <td>
+                                        <div class="trip-progress">
+                                            <div class="progress-info"><span>Còn 12km</span><span>60%</span></div>
+                                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%;"></div></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="action-group justify-content-end">
+                                            <button class="btn-act act-dispute" title="Xử lý Tranh chấp (BR-28)" onclick="openDisputeModal('row-bk-9014', '#BK-9014')"><i class="fa-solid fa-exclamation"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <span class="bk-id">#BK-9015</span>
+                                        <span class="bk-route">Nha Trang <i class="fa-solid fa-arrow-right mx-1"></i> Hội An</span>
+                                    </td>
+                                    <td><span class="fw-bold text-dark">09:00 hôm nay</span></td>
+                                    <td><div class="person-info"><div class="icon-avatar"><img src="https://ui-avatars.com/api/?name=K+A&background=e2e8f0" alt="Avatar"></div>Khách VIP A</div></td>
+                                    <td><div class="person-info"><div class="icon-avatar" style="background: #dcfce7; color: var(--color-1);"><i class="fa-solid fa-car-side"></i></div>Tài xế Cường</div></td>
+                                    <td>
+                                        <div class="trip-progress">
+                                            <div class="progress-info"><span>Còn 5km</span><span>95%</span></div>
+                                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 95%;"></div></div>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="action-group justify-content-end">
+                                            <button class="btn-act act-dispute" title="Xử lý Tranh chấp" onclick="openDisputeModal('row-bk-9015', '#BK-9015')"><i class="fa-solid fa-exclamation"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid-tab-content" id="grid-frozen">
+                        <table class="enterprise-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Chuyến</th>
+                                    <th>Hành khách</th>
+                                    <th>Tài xế</th>
+                                    <th>Lý do Đóng băng / Khiếu nại</th>
+                                    <th class="text-end">Giải quyết</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="frozen-row" id="row-bk-9000">
+                                    <td>
+                                        <span class="bk-id">#BK-9000</span>
+                                        <div class="mt-2"><span class="pill-badge bg-frozen" style="padding: 4px 10px; font-size: 0.7rem;"><i class="fa-solid fa-snowflake me-1"></i> Bị đóng băng</span></div>
+                                    </td>
+                                    <td><div class="person-info"><i class="fa-regular fa-user"></i> Nguyễn T. Oanh</div></td>
+                                    <td><div class="person-info"><i class="fa-solid fa-car"></i> Hoàng Tài Xế</div></td>
+                                    <td class="frozen-reason">
+                                        <i class="fa-solid fa-lock me-1"></i> Khách báo tài xế cố tình đi đường xa để tăng cước, thu thêm 50k phụ phí không rõ ràng.
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn-act act-resolve ms-auto" title="Giải quyết & Mở khóa" onclick="resolveDispute('row-bk-9000')"><i class="fa-solid fa-unlock-keyhole"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div class="modal fade modal-blur" id="disputeModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 550px;">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header border-0 px-4 pt-4 pb-2">
+                    <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-snowflake text-info me-2"></i> Đóng Băng Dòng Tiền</h3>
+                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded-4" style="background: #f1f5f9; border: 1px solid #e2e8f0;">
+                        <span class="fw-bold text-muted fs-6">Tham chiếu chuyến đi:</span>
+                        <span class="fw-bold text-dark fs-4" id="disputeBookingId">#BK-xxxx</span>
+                    </div>
+                    
+                    <label class="fw-bold text-dark mb-2 fs-6">Chi tiết Khiếu nại <span class="text-danger">*</span></label>
+                    <textarea class="form-control textarea-custom w-100 mb-4" rows="4" id="disputeReason" placeholder="Ghi chú lý do khách phàn nàn. Hệ thống sẽ tạm khóa thanh toán của tài xế..." oninput="validateDisputeForm()"></textarea>
+                    
+                    <div class="d-flex gap-3">
+                        <button class="btn-base w-50 py-3" style="background: var(--text-color); color: white;" onclick="submitDispute(true)" id="btnTestError" disabled>Test Lỗi "Update failed"</button>
+                        <button class="btn-base w-50 py-3" style="background: var(--frozen);" onclick="submitDispute(false)" id="btnFreeze" disabled><i class="fa-solid fa-lock me-2"></i> Khóa Hóa Đơn</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade modal-blur" id="resolveModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header border-0 px-4 pt-4 pb-2">
+                    <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-gavel text-success me-2"></i> Phán Quyết Hệ Thống</h3>
+                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-4">
+                    <p class="text-muted fw-medium mb-4">Bạn đang thực hiện thao tác mở khóa dòng tiền cho chuyến đi bị khiếu nại.</p>
+                    <select class="form-control textarea-custom w-100 mb-4" style="cursor: pointer;">
+                        <option>Bác bỏ khiếu nại (Mở khóa tiền cho tài xế)</option>
+                        <option>Đồng ý khiếu nại (Hoàn tiền phụ phí cho khách)</option>
+                        <option>Phạt cảnh cáo tài xế & Hoàn tiền</option>
+                    </select>
+                    <button class="btn-base w-100 py-3" onclick="simulateAction(this, true)"><i class="fa-solid fa-unlock me-2"></i> Thi Hành & Mở Khóa</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="margin-top: 20px; z-index: 9999;">
+        <div id="systemErrorToast" class="toast align-items-center toast-error w-100" role="alert" style="background: var(--danger); color: white; border-radius: 12px; border: none; box-shadow: 0 10px 40px rgba(239,68,68,0.3);">
+            <div class="d-flex p-3">
+                <div class="toast-body p-0 fw-bold d-flex align-items-center gap-3 fs-6">
+                    <i class="fa-solid fa-circle-xmark fs-3"></i> <span id="toastMsg">Update failed</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white ms-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ==========================================
+        // SPA NAVIGATION & TAB SWITCHING
+        // ==========================================
+        function switchView(sectionId, element) {
+            document.querySelectorAll('.sidebar-menu a').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            document.querySelectorAll('.workspace-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+        }
+
+        function switchGridTab(tabName) {
+            // Update Tab Buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-tab-' + tabName).classList.add('active');
+
+            // Update Tab Content
+            document.querySelectorAll('.grid-tab-content').forEach(content => content.classList.remove('active'));
+            const target = document.getElementById('grid-' + tabName);
+            void target.offsetWidth; // Trigger reflow for animation
+            target.classList.add('active');
+        }
+
+        // ==========================================
+        // BR-28: DISPUTE & FREEZE LOGIC
+        // ==========================================
+        let currentDisputeRowId = null;
+        const disputeModal = new bootstrap.Modal(document.getElementById('disputeModal'));
+        const resolveModal = new bootstrap.Modal(document.getElementById('resolveModal'));
+
+        // Mở Modal Đóng băng
+        function openDisputeModal(rowId, bookingId) {
+            currentDisputeRowId = rowId;
+            document.getElementById('disputeBookingId').innerText = bookingId;
+            document.getElementById('disputeReason').value = '';
+            validateDisputeForm();
+            disputeModal.show();
+        }
+
+        function validateDisputeForm() {
+            const text = document.getElementById('disputeReason').value.trim();
+            const btn1 = document.getElementById('btnTestError');
+            const btn2 = document.getElementById('btnFreeze');
+            if (text.length > 5) {
+                btn1.disabled = false; btn2.disabled = false;
+            } else {
+                btn1.disabled = true; btn2.disabled = true;
+            }
+        }
+
+        // Thực thi lệnh Đóng băng
+        function submitDispute(isForceError) {
+            const btn = isForceError ? document.getElementById('btnTestError') : document.getElementById('btnFreeze');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin fs-5"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                if (isForceError) {
+                    // Global Error: Modal giữ nguyên, show Toast Đỏ "Update failed"
+                    document.getElementById('toastMsg').innerText = "Update failed";
+                    new bootstrap.Toast(document.getElementById('systemErrorToast')).show();
+                } else {
+                    // Thành công: Chuyển dữ liệu sang tab Frozen (Demo chuyển DOM)
+                    disputeModal.hide();
+                    const row = document.getElementById(currentDisputeRowId);
+                    
+                    // Style lại dòng thành dạng đóng băng
+                    row.className = 'frozen-row';
+                    const actionTd = row.lastElementChild;
+                    
+                    // Lấy lý do
+                    const reason = document.getElementById('disputeReason').value;
+                    
+                    // Thêm dòng này vào bảng Frozen
+                    const tbodyFrozen = document.querySelector('#grid-frozen tbody');
+                    const newRow = document.createElement('tr');
+                    newRow.className = 'frozen-row';
+                    newRow.id = currentDisputeRowId + '-frozen';
+                    newRow.innerHTML = `
+                        <td>
+                            <span class="bk-id">${document.getElementById('disputeBookingId').innerText}</span>
+                            <div class="mt-2"><span class="pill-badge bg-frozen" style="padding: 4px 10px; font-size: 0.7rem;"><i class="fa-solid fa-snowflake me-1"></i> Bị đóng băng</span></div>
+                        </td>
+                        <td>${row.cells[2].innerHTML}</td>
+                        <td>${row.cells[3].innerHTML}</td>
+                        <td class="frozen-reason"><i class="fa-solid fa-lock me-1"></i> ${reason}</td>
+                        <td class="text-end"><button class="btn-act act-resolve ms-auto" onclick="resolveDispute('${newRow.id}')"><i class="fa-solid fa-unlock-keyhole"></i></button></td>
+                    `;
+                    tbodyFrozen.appendChild(newRow);
+                    
+                    // Xóa ở bảng cũ
+                    row.remove();
+                    
+                    // Cập nhật số lượng (Badge ảo)
+                    document.querySelector('.tab-btn.frozen-tab').innerHTML = '<i class="fa-solid fa-snowflake me-2"></i> Tranh chấp/Đóng băng (2)';
+                    
+                    // Chuyển tab để thấy kết quả
+                    switchGridTab('frozen');
+                }
+            }, 1200);
+        }
+
+        // Mở Modal Giải quyết 
+        function resolveDispute(rowId) {
+            currentDisputeRowId = rowId;
+            resolveModal.show();
+        }
+
+        // ==========================================
+        // UTILS: SIMULATE GENERAL API ACTIONS
+        // ==========================================
+        function simulateAction(btn, isResolve = false) {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+                if(isResolve) {
+                    resolveModal.hide();
+                    document.getElementById(currentDisputeRowId).remove();
+                } else {
+                    document.getElementById('toastMsg').innerText = "Update failed";
+                    new bootstrap.Toast(document.getElementById('systemErrorToast')).show();
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
