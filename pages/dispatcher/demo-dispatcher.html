@@ -38,33 +38,206 @@
         /* =========================================
            2. TOP NAVBAR
         ========================================= */
-        .custom-navbar { background-color: var(--color-1); height: var(--header-height); padding: 0 !important; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-        .custom-navbar .container-base { display: flex; align-items: center; justify-content: space-between; width: 100%; max-width: 100% !important; padding: 0 !important; margin: 0 !important; height: 100%; position: relative; }
-        .brand-overflow { position: relative; height: var(--header-height); display: flex; align-items: center; padding-left: 20px !important; text-decoration: none; }
-        .brand-overflow .logo-img { height: 40px; width: auto; object-fit: contain; filter: brightness(0) invert(1); }
-        .navbar-slogan { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: rgba(255, 255, 255, 0.95); font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; pointer-events: none; }
-        
-        .user-profile { display: flex; align-items: center; gap: 16px; color: white; cursor: pointer; padding-right: 50px !important; }
-        .notification-bell { color: white; position: relative; cursor: pointer; font-size: 1.3rem; margin-right: 8px; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);}
-        .notification-bell:hover { transform: scale(1.2) rotate(10deg); color: #e27a7a;}
-        .notification-badge { position: absolute; top: -5px; right: -8px; background-color: #e27a7a; color: white; font-size: 0.65rem; font-weight: bold; padding: 1px 6px; border-radius: 50%; }
-        
-        .user-profile-dropdown { position: relative; padding: 10px 0; }
-        .user-profile-trigger { display: flex; align-items: center; transition: 0.3s; }
-        .avatar-img { width: 42px; height: 42px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.8); object-fit: cover; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-        .transition-icon { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); font-size: 0.8rem; margin-left: 8px;}
-        .user-profile-dropdown:hover .avatar-img { transform: scale(1.1); border-color: var(--color-3); }
-        .user-profile-dropdown:hover .transition-icon { transform: rotate(-180deg); color: var(--color-3); }
-        
-        .dropdown-menu-modern { position: absolute; top: 100%; right: 0; width: 240px; background-color: #ffffff; border-radius: 16px; border: 1px solid rgba(0, 0, 0, 0.05); opacity: 0; visibility: hidden; transform: translateY(15px); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1060; overflow: hidden; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12); }
-        .user-profile-dropdown:hover .dropdown-menu-modern { opacity: 1; visibility: visible; transform: translateY(0); }
-        .dropdown-item-custom { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: #4a5568; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.2s ease; position: relative; overflow: hidden; }
-        .dropdown-item-custom i { font-size: 1.1rem; color: #a0aec0; transition: 0.2s; width: 20px; text-align: center;}
-        .dropdown-item-custom::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--color-1); transform: scaleY(0); transition: 0.2s ease; }
-        .dropdown-item-custom:hover { background-color: #f8fafc; color: var(--color-1); padding-left: 30px; }
-        .dropdown-item-custom:hover::before { transform: scaleY(1); }
-        .dropdown-item-custom:hover i { color: var(--color-1); transform: scale(1.1); }
+       /* =========================================
+           TOP NAVBAR (ÉP SÁT TUYỆT ĐỐI 2 MÉP TRÌNH DUYỆT)
+        ========================================= */
+        .custom-navbar {
+            background-color: var(--color-1);
+            height: 70px;
+            padding: 0 !important; /* Xóa lề navbar */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
 
+        /* Triệt tiêu mọi giới hạn của container */
+        .custom-navbar .container-base {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Đẩy mạnh về 2 phía */
+            width: 100%;
+            max-width: 100% !important; /* Phá vỡ max-width có thể có trong base.css */
+            padding: 0 !important; /* Xóa sạch lề trái/phải */
+            margin: 0 !important;
+            height: 100%;
+            position: relative; /* Bắt buộc để căn giữa slogan absolute */
+        }
+
+        /* Xử lý Logo sát mép trái */
+        .brand-overflow {
+            position: relative;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            padding: 0 !important;
+            padding-left: 20px !important; /* Đẩy logo sát mép trái */
+            margin: 0 !important;
+            background-color: transparent;
+            text-decoration: none;
+        }
+
+        .brand-overflow .logo-img {
+            height: 100%;
+            width: auto;
+            object-fit: contain;
+            padding: 0 !important; /* Bỏ khoảng lề trên/dưới/trái/phải của chính bức ảnh */
+            margin: 0 !important;
+        }
+
+        /* CSS cho dòng Slogan ở giữa */
+        .navbar-slogan {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(
+    -50%,
+    -50%
+  ); /* Kéo tâm của chữ vào chính giữa màn hình */
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  white-space: nowrap; /* Ngăn chữ bị rớt dòng */
+  pointer-events: none; /* Chống click nhầm vào chữ làm mất focus của các nút bên dưới */
+}
+
+        /* Khu vực thông tin Dispatcher & Chuông sát mép phải */
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: white;
+            cursor: pointer;
+            padding-right: 50px !important; /* Ép sát mép phải theo code mẫu */
+            margin: 0 !important;
+        }
+
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            background-color: #ffffff;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Chuông thông báo */
+        .notification-bell { color: white; position: relative; cursor: pointer; font-size: 1.3rem; margin-right: 8px; }
+        .notification-badge { position: absolute; top: -5px; right: -8px; background-color: #e27a7a; color: white; font-size: 0.65rem; font-weight: bold; padding: 1px 6px; border-radius: 50%; }
+
+        .notification-bell i:hover {
+            color: #e27a7a;
+            transform: scale(1.5);
+            transition: transform 0.3s ease;
+        }
+        /* Cụm trigger Profile */
+        .user-profile-dropdown {
+            position: relative;
+            padding: 10px 0; /* Tạo vùng đệm màng ảo để khi di chuột xuống menu không bị mất hover */
+        }
+
+        .user-profile-trigger {
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .user-profile-trigger:hover {
+            opacity: 0.8;
+        }
+
+        .avatar-img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.8);
+            object-fit: cover;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
+        }
+
+        /* Xoay mũi tên khi hover vào cụm Profile */
+        .transition-icon {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .user-profile-dropdown:hover .transition-icon {
+            transform: rotate(-180deg);
+        }
+
+        .user-profile-dropdown:hover .avatar-img {
+            transform: scale(1.1);
+            border-color: var(--color-3); /* Viền sáng màu vàng khi hover */
+        }
+
+        /* Bảng Dropdown Menu Hiện Đại */
+        .dropdown-menu-modern {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 240px;
+            background-color: #ffffff;
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            /* Trạng thái ẩn mặc định */
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(15px); /* Đẩy xuống một chút */
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 1060;
+            overflow: hidden;
+        }
+
+        /* Khi hover vào cha thì hiện menu con lên */
+        .user-profile-dropdown:hover .dropdown-menu-modern {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-divider-custom {
+            margin: 0;
+            border-color: #edf2f7;
+            opacity: 1;
+        }
+
+        /* Các thẻ Link bên trong Dropdown */
+        .dropdown-item-custom {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 24px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .dropdown-item-custom i {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            transition: color 0.2s ease;
+        }
+
+        /* Hiệu ứng khi lướt qua từng Item */
+        .dropdown-item-custom:hover {
+            background-color: #f8fafc;
+            color: var(--color-1);
+            padding-left: 28px; /* Trượt nhẹ chữ sang phải tạo cảm giác động */
+        }
+
+        .dropdown-item-custom:hover i {
+            color: var(--color-1);
+        }
+
+        /* Hiệu ứng riêng cho nút Đăng xuất (Màu đỏ) */
+        .logout-item:hover {
+            background-color: #fff5f5 !important;
+            color: #e53e3e !important;
+        }
+        .logout-item:hover i {
+            color: #e53e3e !important;
+        }
         /* =========================================
            3. SIDEBAR & TABS CƠ BẢN
         ========================================= */
@@ -363,44 +536,58 @@ input:checked + .slider:before { transform: translateX(18px); }
 
     <header>
         <nav class="navbar custom-navbar fixed-top">
-            <div class="container-base">
-                <a class="brand-overflow" href="#">
+            <div class="container-base h-100 position-relative">
+                
+                <a class="navbar-brand brand-overflow" href="#">
                     <img src="../../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
                 </a>
 
-                <div class="navbar-slogan d-none d-md-block">KHÔNG GIAN ĐIỀU PHỐI VIÊN</div>
+                <div class="navbar-slogan d-none d-md-block">
+                    Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
+                </div>
 
                 <div class="user-profile">
-                    <div class="d-flex align-items-center gap-4 pe-3">
-                        <div class="notification-bell" title="Thông báo">
-                            <i class="fa-regular fa-bell"></i>
-                            <span class="notification-badge" id="notiCount">3</span>
+                    <div class="nav-right-actions d-flex align-items-center gap-4 pe-3">
+                    
+                    <div class="notification-bell" title="Thông báo">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="notification-badge" id="notiCount">3</span>
+                    </div>
+                    
+                    <div class="user-profile-dropdown">
+                        <div class="user-profile-trigger d-flex align-items-center">
+                            <div class="d-none d-sm-block text-end me-2">
+                                <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Điều Phối</div>
+                                <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Dispatcher</div>
+                            </div>
+                            <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
+                            <i class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon" style="font-size: 0.8rem;"></i>
                         </div>
                         
-                        <div class="user-profile-dropdown">
-                            <div class="user-profile-trigger">
-                                <div class="d-none d-sm-block text-end me-2">
-                                    <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Điều Phối</div>
-                                    <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Dispatcher</div>
-                                </div>
-                                <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
-                                <i class="fa-solid fa-chevron-down text-white-50 transition-icon"></i>
+                        <div class="dropdown-menu-modern shadow-lg">
+                            <div class="dropdown-header-custom px-4 py-3">
+                                <div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div>
+                                <div class="small text-muted">dieuphoi@fleetflow.vn</div>
                             </div>
+                            <hr class="dropdown-divider-custom">
                             
-                            <div class="dropdown-menu-modern">
-                                <div class="px-4 py-3 bg-light">
-                                    <div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div>
-                                    <div class="small text-muted">dieuphoi@fleetflow.vn</div>
-                                </div>
-                                <hr class="m-0 border-light">
-                                <a href="#" class="dropdown-item-custom"><i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân</a>
-                                <a href="#" class="dropdown-item-custom"><i class="fa-solid fa-gear"></i> Cài đặt hệ thống</a>
-                                <hr class="m-0 border-light">
-                                <a href="login.html" class="dropdown-item-custom text-danger fw-bold"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
-                            </div>
+                            <a href="#" class="dropdown-item-custom">
+                                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
+                            </a>
+                            <a href="#" class="dropdown-item-custom">
+                                <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
+                            </a>
+                            
+                            <hr class="dropdown-divider-custom">
+                            
+                            <a href="login.html" class="dropdown-item-custom text-danger fw-bold logout-item">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
                         </div>
                     </div>
                 </div>
+                </div>
+                
             </div>
         </nav>
     </header>
