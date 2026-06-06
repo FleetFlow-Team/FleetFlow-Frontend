@@ -540,12 +540,188 @@
                     </div>
                 </div>
             </section>
+
+            <section id="tab-users" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Tài khoản & Phân quyền (RBAC)</h4>
+                        <p class="text-muted small m-0">Kiểm soát truy cập theo nguyên tắc Đặc quyền tối thiểu (Least Privilege).</p>
+                    </div>
+                    <button class="btn btn-primary fw-bold shadow-sm" style="background: var(--color-1); border:none;"><i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự</button>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="table-custom p-0 h-100">
+                            <div class="p-3 border-bottom bg-light fw-bold text-dark"><i class="fa-solid fa-users me-2"></i> Nhân sự Back-Office</div>
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="rounded-circle" width="40" height="40">
+                                    <div><div class="fw-bold text-dark fs-6">Trần Giám Đốc</div><div class="small text-muted">ID: ADM-01</div></div>
+                                </div>
+                                <span class="role-badge role-super">Super Admin</span>
+                            </div>
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: #f8fafc; border-left: 3px solid var(--color-1);">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=random" class="rounded-circle" width="40" height="40">
+                                    <div><div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div><div class="small text-muted">ID: DP-889</div></div>
+                                </div>
+                                <span class="role-badge role-dispatcher">Dispatcher</span>
+                            </div>
+                            <div class="p-3 d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center gap-3">
+                                    <img src="https://ui-avatars.com/api/?name=CSKH&background=random" class="rounded-circle" width="40" height="40">
+                                    <div><div class="fw-bold text-dark fs-6">Lê CSKH</div><div class="small text-muted">ID: CS-102</div></div>
+                                </div>
+                                <span class="role-badge role-cs">Support</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div class="table-custom p-0">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <div class="fw-bold text-dark"><i class="fa-solid fa-table-cells me-2"></i> Ma trận Quyền hạn: <span class="text-primary">Dispatcher</span></div>
+                                <button class="btn btn-dark fw-bold btn-table-action" onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
+                            </div>
+                            <table class="table matrix-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Module / Chức năng</th>
+                                        <th>Xem</th>
+                                        <th>Thêm</th>
+                                        <th>Sửa</th>
+                                        <th>Xóa</th>
+                                        <th class="text-primary">Duyệt/Đóng Băng</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Bảng Giám sát Hành trình</td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox" disabled><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Hồ sơ Tài xế (eKYC)</td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-reports" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Đo lường Chất lượng Dịch vụ</h4>
+                        <p class="text-muted small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và sức khỏe vận hành.</p>
+                    </div>
+                    <button class="btn btn-light shadow-sm border fw-bold" onclick="simulateSaveConfig(this)"><i class="fa-solid fa-file-export text-success me-2"></i> Xuất PDF</button>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-5">
+                        <div class="table-custom p-4 h-100">
+                            <h6 class="fw-bold mb-4 text-center">Phổ Điểm Đánh Giá Tài Xế (Radar)</h6>
+                            <div style="height: 300px; display: flex; justify-content: center;"><canvas id="qualityRadarChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="table-custom p-4 h-100">
+                            <h6 class="fw-bold mb-4">Phân tích Lý do Hủy chuyến (Stacked Bar)</h6>
+                            <div style="height: 300px;"><canvas id="cancelReasonChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-audit" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Nhật ký Hệ thống (Audit Log)</h4>
+                        <p class="text-muted small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất biến, Read-only.</p>
+                    </div>
+                    <div class="input-group w-auto shadow-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm kiếm Audit ID, User...">
+                    </div>
+                </div>
+
+                <div class="table-custom">
+                    <table class="table table-hover-custom table-dense mb-0">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Nhân sự (Who)</th>
+                                <th>Hành động</th>
+                                <th>Đối tượng (Target)</th>
+                                <th>Thiết bị / IP</th>
+                                <th class="text-end">Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">09:15:22</div></td>
+                                <td><div class="fw-bold text-primary">ADM-01</div><div class="text-muted small">Trần Giám Đốc</div></td>
+                                <td><span class="badge bg-warning text-dark">UPDATE</span></td>
+                                <td class="fw-bold">Cấu hình Hệ số Lễ/Tết</td>
+                                <td><div class="text-muted small">113.160.22.1</div><div class="text-muted small">Chrome / Mac OS</div></td>
+                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action" onclick="openDiffModal()">Xem Diff</button></td>
+                            </tr>
+                            <tr>
+                                <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">08:42:10</div></td>
+                                <td><div class="fw-bold text-info">DP-889</div><div class="text-muted small">Nguyễn Điều Phối</div></td>
+                                <td><span class="badge bg-info text-white">FREEZE</span></td>
+                                <td class="fw-bold">Hóa đơn chuyến #BK-9015</td>
+                                <td><div class="text-muted small">113.160.22.5</div><div class="text-muted small">Safari / Windows</div></td>
+                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action">Xem Log</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
             
             </main>
     </div>
 
     <div class="modal fade" id="addVehicleModal" tabindex="-1">
        </div>
+
+       <div class="modal fade modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0 rounded-4" style="overflow: hidden;">
+                <div class="modal-header border-0 px-4 pt-4 pb-2">
+                    <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-code-compare text-primary me-2"></i> Chi tiết Thay đổi (Diff View)</h5>
+                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body px-4 pb-4">
+                    <div class="d-flex justify-content-between text-muted small fw-bold mb-2 px-2">
+                        <span>Dữ liệu Cũ (Before)</span>
+                        <span>Dữ liệu Mới (After)</span>
+                    </div>
+                    <div class="diff-container">
+                        <div class="diff-box diff-old">
+                            "holiday_multiplier": <del>10%</del>,<br>
+                            "updated_by": "System"
+                        </div>
+                        <div class="diff-box diff-new">
+                            "holiday_multiplier": <ins>15%</ins>,<br>
+                            "updated_by": "ADM-01"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade ekyc-modal" id="ekycModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-xl modal-dialog-centered">
@@ -606,6 +782,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Khôi phục Navigation Tabs từ File 1
+        
         function switchTab(tabId, element) {
             document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
             element.classList.add('active');
