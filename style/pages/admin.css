@@ -1,5 +1,6 @@
 /* =========================================
-   1. ROOT VARIABLES
+   CÁC BIẾN CSS TOÀN CỤC (ROOT VARIABLES)
+   Khai báo màu sắc chủ đạo, màu chữ và kiểu bóng đổ dùng chung cho toàn bộ dự án
 ========================================= */
 :root {
   --color-1: #00b14f;
@@ -10,7 +11,8 @@
 }
 
 /* =========================================
-   2. TAB ANIMATIONS
+   HIỆU ỨNG CHUYỂN TAB (TAB-SECTION ANIMATION)
+   Xử lý việc ẩn/hiện các tab nội dung và tạo hiệu ứng trượt lên, mờ dần (slideUpFade)
 ========================================= */
 .tab-section {
   display: none;
@@ -32,20 +34,23 @@
 }
 
 /* =========================================
-   3. TABLE STYLES (FLEET & DRIVERS)
+   UI BẢNG DỮ LIỆU (FLEET & DRIVERS TABLE)
+   Thiết kế giao diện bảng chung: nền trắng, bo góc, bóng đổ và định dạng phần Header
 ========================================= */
 .table-custom {
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
   border: 1px solid #f1f5f9;
-  overflow: visible;
+  overflow: visible; /* Giữ visible để bóng của tr:hover không bị cắt */
 }
+
 .table-custom table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
 }
+
 .table-custom thead th {
   background: #f8fafc;
   padding: 16px 24px;
@@ -53,17 +58,88 @@
   font-weight: 800;
   color: #64748b;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
   border-bottom: 2px solid #e2e8f0;
+}
+
+.table-custom tbody td {
+  padding: 20px 24px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f8fafc;
+  transition: background-color 0.3s ease;
+}
+
+/* =========================================
+   HIỆU ỨNG HOVER CHO TỪNG DÒNG (ROW HOVER)
+   Làm nổi bật dòng trong bảng khi đưa chuột vào: đẩy nhẹ lên trên, đổ bóng màu xanh
+========================================= */
+.table-hover-custom tbody tr {
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background-color: #ffffff;
 }
 
 .table-hover-custom tbody tr:hover {
   transform: translateY(-3px) scale(1.002);
   box-shadow: 0 10px 25px rgba(0, 177, 79, 0.08);
   background-color: #fcfcfc;
+  z-index: 10;
+  position: relative;
+  border-radius: 12px;
+}
+
+.table-hover-custom tbody tr:hover td {
+  border-bottom-color: transparent; /* Ẩn viền khi dòng bay lên để trông tự nhiên hơn */
 }
 
 /* =========================================
-   4. DASHBOARD KPIS & CHARTS
+   NÚT HÀNH ĐỘNG (ACTION BUTTONS TRONG BẢNG)
+   Thiết kế nút bấm nhỏ gọn nằm trong bảng kèm hiệu ứng trôi lên khi hover
+========================================= */
+.btn-table-action {
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+.btn-table-action:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================
+   DROPDOWN TRẠNG THÁI (STATUS SELECT)
+   Trang trí các thẻ chọn trạng thái xe (Sẵn sàng, Bảo dưỡng, Khóa) với màu sắc tương ứng
+========================================= */
+.status-select {
+  border-radius: 50px;
+  padding: 6px 30px 6px 16px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.status-select:focus {
+  box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.15);
+  border-color: var(--color-1);
+}
+.status-ready {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+.status-maintenance {
+  background-color: #fffbeb;
+  color: #d97706;
+}
+.status-locked {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+
+/* =========================================
+   DASHBOARD KPIS & CHARTS (TỔNG QUAN)
+   Thiết kế dạng lưới (Grid) cho các thẻ thông số báo cáo và vùng chứa biểu đồ
 ========================================= */
 .kpi-grid {
   display: grid;
@@ -77,14 +153,116 @@
   padding: 24px;
   box-shadow: var(--shadow-card);
   transition: 0.3s;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.kpi-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+.kpi-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+.kpi-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+}
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.kpi-value {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 8px;
+}
+.kpi-trend {
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.trend-up {
+  background: #d1fae5;
+  color: #10b981;
+}
+.trend-down {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  margin-bottom: 32px;
+}
+@media (max-width: 1200px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.chart-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+.chart-title {
+  font-weight: 800;
+  font-size: 1.1rem;
+  margin-bottom: 20px;
+  color: var(--color-dark);
 }
 
 /* =========================================
-   5. EKYC MODAL & UPLOAD
+   MODAL eKYC (KIỂM DUYỆT HỒ SƠ TÀI XẾ)
+   Bố cục Modal chia 2 phần: Thông tin cá nhân (trái) và Bộ xem/phóng to ảnh CCCD (phải)
 ========================================= */
+.ekyc-modal .modal-content {
+  border-radius: 24px;
+  border: none;
+  overflow: hidden;
+}
 .ekyc-layout {
   display: flex;
   min-height: 500px;
+}
+.ekyc-info {
+  flex: 1;
+  padding: 32px;
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+}
+.ekyc-image-viewer {
+  flex: 1.5;
+  padding: 32px;
+  background: #1e293b;
+  display: flex;
+  flex-direction: column;
+}
+.ekyc-img-container {
+  flex: 1;
+  background: #0f172a;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .ekyc-img {
   max-width: 100%;
@@ -94,4 +272,107 @@
   transition: transform 0.3s;
 }
 
-/* ... (Bổ sung thêm các style kanban, config-alert v.v. từ file gốc của bạn) ... */
+/* Trình điều khiển ảnh (Phóng to, thu nhỏ, xoay ảnh) */
+.img-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px;
+  border-radius: 50px;
+  backdrop-filter: blur(5px);
+}
+.img-controls button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: 0.2s;
+}
+.img-controls button:hover {
+  background: var(--color-1);
+}
+
+/* =========================================
+   KANBAN AI TAGS (BẢNG KÉO THẢ)
+   Thiết kế giao diện chia cột kéo thả các thẻ (Tags) gán thuộc tính cho xe
+========================================= */
+.kanban-board {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+.kb-column {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1px solid #e2e8f0;
+  box-shadow: var(--shadow-card);
+  min-height: 400px;
+}
+.tag-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: grab;
+  margin-bottom: 8px;
+  transition: 0.2s;
+}
+.tag-pill:hover {
+  border-color: var(--color-1);
+  background: #f0fdf4;
+  color: var(--color-1);
+  transform: translateY(-2px);
+}
+.vehicle-dropzone {
+  background: #f8fafc;
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  transition: 0.3s;
+}
+
+/* =========================================
+   CONFIG ALERT BR-17 (HỘP CẢNH BÁO CẤU HÌNH)
+   Trang trí khung màu xanh thông báo luật nội suy giá cước cho Admin
+========================================= */
+.config-alert {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid var(--blue);
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+  color: #1e3a8a;
+  font-weight: 500;
+}
+
+/* =========================================
+   ANIMATIONS (CÁC HIỆU ỨNG KHÁC)
+   Hiệu ứng mờ dần và trượt lên (Dùng cho nhiều thành phần xuất hiện lần đầu)
+========================================= */
+.fade-in-up {
+  animation: fadeInUp 0.4s forwards;
+  opacity: 0;
+  transform: translateY(15px);
+}
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
