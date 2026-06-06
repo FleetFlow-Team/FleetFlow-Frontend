@@ -23,7 +23,7 @@
             --color-1: #00B14F; 
             --color-1-dark: #009640;
             --color-dark: #0f172a;
-            --color-bg: #f4f7fe; /* Đồng bộ nền Admin */
+            --color-bg: #f4f7fe;
             --color-2: #FFFFFF;
             --blue: #2563EB;
             --danger: #EF4444;
@@ -66,11 +66,10 @@
         .delay-4 { animation-delay: 0.4s; }
 
         /* =========================================
-           3. NAVBAR (ĐỒNG BỘ ADMIN + CÔNG TẮC TÀI XẾ)
+           3. NAVBAR & GÓC PHẢI
         ========================================= */
         .custom-navbar {
-            background-color: var(--color-1);
-            height: 70px; padding: 0 !important;
+            background-color: var(--color-1); height: 70px; padding: 0 !important;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); z-index: 1050;
         }
         .custom-navbar .container-base {
@@ -95,10 +94,9 @@
             padding-right: 20px !important; margin: 0 !important;
         }
         
-        /* Cụm chức năng góc phải */
         .nav-right-actions { display: flex; align-items: center; gap: 24px; }
         
-        /* Công tắc trạng thái nhận chuyến (Độc quyền Tài xế) */
+        /* Nút Công tắc trạng thái */
         .nav-status-toggle { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.15); padding: 6px 12px; border-radius: 50px; }
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; margin: 0;}
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -109,18 +107,17 @@
         input:disabled + .slider { cursor: not-allowed; opacity: 0.5; }
         .toggle-text { color: white; font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px;}
 
-        /* Chuông và Avatar */
         .notification-bell { position: relative; color: white; font-size: 1.4rem; cursor: pointer; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .notification-bell:hover { transform: scale(1.15) rotate(10deg); }
+        
+        /* Dropdown Profile */
         .user-profile-dropdown { position: relative; padding: 10px 0; }
         .user-profile-trigger { cursor: pointer; transition: opacity 0.3s; display: flex; align-items: center; }
         .avatar-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8); object-fit: cover; transition: all 0.3s; background: white;}
         .transition-icon { transition: transform 0.3s; font-size: 0.8rem; margin-left: 8px; }
-        
         .user-profile-dropdown:hover .avatar-img { transform: scale(1.1); border-color: #f1c40f; }
         .user-profile-dropdown:hover .transition-icon { transform: rotate(-180deg); color: #f1c40f; }
 
-        /* Dropdown Menu (Đồng bộ) */
         .dropdown-menu-modern {
             position: absolute; top: 100%; right: 0; width: 240px; background-color: #ffffff; border-radius: 16px;
             border: 1px solid rgba(0, 0, 0, 0.05); opacity: 0; visibility: hidden; transform: translateY(15px);
@@ -134,14 +131,12 @@
         .logout-item:hover { background-color: #fff5f5 !important; color: #e53e3e !important; }
         .logout-item:hover i { color: #e53e3e !important; }
 
-        /* Cảnh báo khóa ví */
         .wallet-alert-banner {
             display: none; background-color: #fef2f2; color: #ef4444; border-bottom: 1px solid #fecaca;
             padding: 10px 20px; font-size: 0.9rem; font-weight: 700; text-align: center;
             position: fixed; top: 70px; left: 0; width: 100%; z-index: 1040;
             animation: slideDownAlert 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
         }
-        @keyframes slideDownAlert { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         /* =========================================
            4. BỐ CỤC CHUNG (SIDEBAR & MAIN)
@@ -162,11 +157,8 @@
         .sidebar-menu a:hover { transform: translateX(5px); }
         .sidebar-menu a.active i { transform: scale(1.2); }
 
-        .main-content {
-            flex: 1; margin-left: 280px; padding: 32px; max-width: 1400px;
-        }
+        .main-content { flex: 1; margin-left: 280px; padding: 32px; max-width: 1400px; }
 
-        /* Bottom Nav Mobile */
         .bottom-nav {
             display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
             border-top: 1px solid rgba(0, 0, 0, 0.05); justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
@@ -224,10 +216,9 @@
         .finance-amount { font-size: 1.6rem; font-weight: 800; color: var(--color-1); letter-spacing: -0.5px;}
 
         .btn-accept {
-            width: 100%; padding: 16px; background: var(--color-1); color: #FFF; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(0, 177, 79, 0.3);
+            width: 100%; padding: 16px; background: var(--color-1); color: #FFF; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 177, 79, 0.3);
         }
         .btn-accept:hover:not(:disabled) { background: #009640; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 177, 79, 0.4); }
-        .btn-accept:active:not(:disabled) { transform: scale(0.97); }
         .btn-accept:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; background: #D1D5DB; color: #6B7280;}
 
         .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; height: 50vh; text-align: center; width: 100%; grid-column: 1 / -1;}
@@ -236,134 +227,68 @@
         .empty-state p { color: #64748b; font-size: 1rem; font-weight: 600; }
 
         /* =========================================
-           6. TAB 2: LỊCH SỬ THU NHẬP (INCOME TRACKER)
+           6. TAB 2: LỊCH SỬ THU NHẬP
         ========================================= */
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 16px;}
         .page-title { font-size: 1.6rem; font-weight: 800; color: var(--color-dark); margin: 0;}
-        
         .filter-wrapper { position: relative; }
         .filter-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--color-1); font-size: 1.1rem; pointer-events: none;}
-        .date-picker { 
-            padding: 12px 16px 12px 42px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; 
-            font-weight: 700; font-size: 0.95rem; color: var(--color-dark); outline: none; cursor: pointer; 
-            transition: all 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.02); appearance: none; padding-right: 40px;
-        }
+        .date-picker { padding: 12px 16px 12px 42px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; font-weight: 700; color: var(--color-dark); outline: none; cursor: pointer; transition: all 0.3s; appearance: none; padding-right: 40px; }
         .filter-wrapper::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 0.8rem;}
-        .date-picker:hover, .date-picker:focus { border-color: var(--color-1); box-shadow: 0 4px 15px rgba(0,177,79,0.1); }
-
+        
         .grid-3-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px; }
-
-        .stat-card {
-            background: white; border-radius: 20px; padding: 24px; border: 1px solid rgba(0,0,0,0.03); 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); position: relative; overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); border-color: #e2e8f0;}
+        .stat-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.4s; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
+        .card-hero { background: linear-gradient(135deg, var(--color-1) 0%, var(--color-1-dark) 100%); color: white; box-shadow: 0 10px 30px rgba(0, 177, 79, 0.25); }
         
-        .card-hero { background: linear-gradient(135deg, var(--color-1) 0%, var(--color-1-dark) 100%); color: white; border: none; box-shadow: 0 10px 30px rgba(0, 177, 79, 0.25); }
-        .card-hero:hover { box-shadow: 0 15px 40px rgba(0, 177, 79, 0.35); }
-        .card-hero::after { content: ''; position: absolute; top: -50%; right: -20%; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(20px); }
-        
-        .card-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; position: relative; z-index: 2;}
-        .card-label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .card-header-flex { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .card-label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
         .card-hero .card-label { color: rgba(255,255,255,0.9); }
-        
         .card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #f1f5f9; color: var(--blue);}
-        .card-hero .card-icon { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(5px);}
+        .card-hero .card-icon { background: rgba(255,255,255,0.2); color: white;}
         .icon-warning { color: var(--warning); background: #fef3c7; }
-
-        .card-value { font-size: 2.2rem; font-weight: 800; line-height: 1; margin-bottom: 12px; position: relative; z-index: 2;}
+        .card-value { font-size: 2.2rem; font-weight: 800; margin-bottom: 12px;}
         .trend-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
         .trend-up { background: #dcfce7; color: #166534; }
-        .card-hero .trend-up { background: rgba(255,255,255,0.2); color: white; backdrop-filter: blur(5px);}
+        .card-hero .trend-up { background: rgba(255,255,255,0.2); color: white;}
         .trend-down { background: #fee2e2; color: #991b1b; }
 
-        /* Vùng chứa Biểu đồ */
-        .chart-container { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 32px; border: 1px solid rgba(0,0,0,0.03); height: 350px;}
+        .chart-container { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 32px; height: 350px;}
 
-        /* Bảng Data */
-        .data-section { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); overflow: hidden; }
-        .table-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;}
+        /* Bảng Data Tab 2 */
+        .data-section { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; }
+        .table-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;}
         .table-title { font-size: 1.25rem; font-weight: 800; color: var(--color-dark); margin: 0;}
-        .btn-export { padding: 12px 20px; background: white; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #475569; transition: all 0.3s; display: flex; align-items: center; gap: 8px; font-size: 0.95rem; }
-        .btn-export:hover { border-color: var(--color-1); color: var(--color-1); background: #f0fdf4; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,177,79,0.1);}
+        .btn-export { padding: 12px 20px; background: white; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #475569; transition: all 0.3s; display: flex; align-items: center; gap: 8px;}
+        .btn-export:hover { border-color: var(--color-1); color: var(--color-1); background: #f0fdf4; transform: translateY(-2px); }
 
         .desktop-table-wrapper { overflow-x: auto; }
         .custom-table { width: 100%; border-collapse: collapse; min-width: 1000px;}
-        .custom-table th { background: #f8fafc; padding: 18px 24px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e2e8f0;}
-        .custom-table td { padding: 20px 24px; vertical-align: middle; border-bottom: 1px solid #f1f5f9; transition: all 0.2s;}
-        .custom-table tbody tr { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .custom-table th { background: #f8fafc; padding: 18px 24px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #e2e8f0;}
+        .custom-table td { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; transition: all 0.2s;}
         .custom-table tbody tr:hover { transform: scale(1.005); box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; position: relative; z-index: 10; border-radius: 12px;}
         
         .trx-code { font-weight: 800; color: var(--color-dark); display: block; margin-bottom: 4px; font-size: 1.05rem;}
         .trx-time { font-size: 0.85rem; color: var(--text-muted); font-weight: 600;}
-        .ref-link { color: var(--blue); font-weight: 700; text-decoration: none; padding: 4px 8px; background: #eff6ff; border-radius: 6px; transition: 0.2s;}
-        .ref-link:hover { background: var(--blue); color: white; }
+        .ref-link { color: var(--blue); font-weight: 700; text-decoration: none; padding: 4px 8px; background: #eff6ff; border-radius: 6px;}
         .amt-gross { font-weight: 700; color: #475569; }
-        .amt-com { font-weight: 700; color: var(--danger); background: #fef2f2; padding: 4px 8px; border-radius: 6px; display: inline-block;}
+        .amt-com { font-weight: 700; color: var(--danger); background: #fef2f2; padding: 4px 8px; border-radius: 6px; }
         .amt-net { font-weight: 800; color: var(--color-1); font-size: 1.15rem;}
         .type-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;}
         .badge-trip { background: #E0F2FE; color: #0369A1; }
         .badge-comp { background: #FEF3C7; color: #B45309; }
 
-        /* Mobile Cards List */
         .mobile-trx-list { display: none; padding: 16px; flex-direction: column; gap: 16px; background: #f8fafc;}
-        .trx-mobile-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;}
-        .trx-mob-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0;}
+        .trx-mobile-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);}
+        .trx-mob-header { display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0;}
 
-        /* Phân trang */
         .pagination-container { display: flex; justify-content: flex-end; padding: 20px 24px; gap: 8px; border-top: 1px solid #e2e8f0; background: white;}
-        .page-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; border-radius: 10px; background: white; font-weight: 700; color: #475569; cursor: pointer; transition: 0.2s;}
+        .page-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; border-radius: 10px; background: white; font-weight: 700; cursor: pointer; transition: 0.2s;}
         .page-btn:hover { background: #f1f5f9; transform: translateY(-2px);}
-        .page-btn.active { background: var(--color-1); color: white; border-color: var(--color-1); box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);}
+        .page-btn.active { background: var(--color-1); color: white; border-color: var(--color-1); }
 
         /* =========================================
-           7. MODALS & TOASTS
-        ========================================= */
-        .toast-system-container { z-index: 1060; }
-        .toast-premium-error { background-color: var(--danger) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3); }
-        .toast-premium-warning { background-color: var(--warning) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3); }
-        
-        #successModal .modal-content { border-radius: 24px; border: none; text-align: center; padding: 40px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);}
-        .check-circle { width: 90px; height: 90px; background: #D1FAE5; color: var(--color-1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; margin: 0 auto 24px auto; box-shadow: 0 0 0 15px rgba(209, 250, 229, 0.5); animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);}
-        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
-
-        /* =========================================
-           8. RESPONSIVE QUERIES
-        ========================================= */
-        @media (max-width: 1024px) {
-            .desktop-sidebar { display: none; }
-            .bottom-nav { display: flex; }
-            .main-content { margin-left: 0; padding: 24px; padding-bottom: 100px; }
-        }
-
-        @media (max-width: 768px) {
-            .page-header { flex-direction: column; align-items: flex-start; }
-            .header-actions { width: 100%; }
-            .filter-wrapper, .date-picker { width: 100%; }
-            .card-value { font-size: 2rem; }
-            
-            .desktop-table-wrapper { display: none; }
-            .mobile-trx-list { display: flex; }
-            .table-header { flex-direction: column; align-items: flex-start; gap: 16px; border-bottom: none;}
-            .btn-export { width: 100%; justify-content: center;}
-            .data-section { background: transparent; box-shadow: none; border: none;}
-        }
-
-        @media (min-width: 1920px) {
-            .app-wrapper { padding-left: 280px; justify-content: center; }
-            .main-content { margin-left: 0; max-width: 1800px; width: 100%; padding: 50px 80px; }
-            .page-title { font-size: 2.2rem; }
-            .date-picker { font-size: 1.1rem; padding: 14px 20px 14px 48px; }
-            .grid-3-col { gap: 40px; margin-bottom: 40px; }
-            .stat-card { padding: 36px; border-radius: 24px; }
-            .card-value { font-size: 3.2rem; margin-bottom: 16px; }
-            .card-icon { width: 68px; height: 68px; font-size: 2rem; border-radius: 20px; }
-            .chart-container { padding: 36px; margin-bottom: 40px; border-radius: 24px; height: 450px;}
-            .custom-table th, .custom-table td { padding: 24px 32px; font-size: 1rem; }
-        }
-        /* =========================================
-           9. TAB TÀI KHOẢN & CÀI ĐẶT (DRIVER PROFILE)
+           7. TAB 3: TÀI KHOẢN & CÀI ĐẶT (MỚI THÊM)
         ========================================= */
         .profile-header {
             background: white; border-radius: 20px; padding: 32px; display: flex; align-items: center; gap: 24px;
@@ -380,7 +305,6 @@
         .profile-info h3 { margin: 0 0 8px 0; font-weight: 800; color: var(--color-dark); font-size: 1.5rem; }
         .rating-badge { display: inline-flex; align-items: center; gap: 6px; background: #fffbeb; color: #d97706; padding: 6px 12px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; }
         
-        /* Hiệu ứng Nút Rút Tiền (Sweeping Hover Effect) */
         .btn-withdraw {
             position: relative; overflow: hidden; background: white; border: 2px solid var(--color-1); color: var(--color-1);
             padding: 12px 24px; border-radius: 12px; font-weight: 800; z-index: 1; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -392,7 +316,6 @@
         .btn-withdraw:hover::before { width: 100%; }
         .btn-withdraw:hover { color: white; box-shadow: 0 8px 20px rgba(0,177,79,0.3); transform: translateY(-3px); }
 
-        /* Khối Cài đặt (Settings List) */
         .setting-group { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 24px; }
         .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f1f5f9; transition: all 0.3s; cursor: pointer;}
         .setting-item:last-child { border-bottom: none; }
@@ -402,9 +325,49 @@
         
         .setting-icon { 
             width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; color: var(--color-1); 
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s;
         }
         .setting-item:hover .setting-icon { background: var(--color-1); color: white; transform: rotate(15deg) scale(1.1); }
+
+        /* =========================================
+           8. MODALS & TOASTS
+        ========================================= */
+        .toast-system-container { z-index: 1060; }
+        .toast-premium-error { background-color: var(--danger) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3); }
+        .toast-premium-warning { background-color: var(--warning) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3); }
+        
+        #successModal .modal-content { border-radius: 24px; border: none; text-align: center; padding: 40px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);}
+        .check-circle { width: 90px; height: 90px; background: #D1FAE5; color: var(--color-1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; margin: 0 auto 24px auto; box-shadow: 0 0 0 15px rgba(209, 250, 229, 0.5); animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);}
+        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        /* =========================================
+           9. RESPONSIVE QUERIES
+        ========================================= */
+        @media (max-width: 1024px) {
+            .desktop-sidebar { display: none; }
+            .bottom-nav { display: flex; }
+            .main-content { margin-left: 0; padding: 24px; padding-bottom: 100px; }
+        }
+
+        @media (max-width: 768px) {
+            .page-header { flex-direction: column; align-items: flex-start; }
+            .header-actions { width: 100%; }
+            .filter-wrapper, .date-picker { width: 100%; }
+            .desktop-table-wrapper { display: none; }
+            .mobile-trx-list { display: flex; }
+            .table-header { flex-direction: column; align-items: flex-start; gap: 16px; border-bottom: none;}
+            .btn-export { width: 100%; justify-content: center;}
+            .profile-header { flex-direction: column; text-align: center; }
+        }
+
+        @media (min-width: 1920px) {
+            .app-wrapper { padding-left: 280px; justify-content: center; }
+            .main-content { margin-left: 0; max-width: 1800px; width: 100%; padding: 50px 80px; }
+            .page-title { font-size: 2.2rem; }
+            .stat-card { padding: 36px; border-radius: 24px; }
+            .card-value { font-size: 3.2rem; margin-bottom: 16px; }
+            .chart-container { height: 450px;}
+        }
     </style>
 </head>
 <body>
@@ -412,7 +375,7 @@
     <header class="custom-navbar fixed-top">
         <div class="container-base position-relative">
             <a class="brand-overflow" href="#">
-                <img src="../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
+                <img src="../assets/img/logo1.jpg" alt="FleetFlow" class="logo-img" />
             </a>
 
             <div class="navbar-slogan d-none d-md-block">TRẠM ĐIỀU VẬN TÀI XẾ</div>
@@ -471,8 +434,8 @@
             <ul class="sidebar-menu nav-menu">
                 <li><a onclick="switchTab('tab-job-board', this)" class="active"><i class="fa-solid fa-satellite-dish"></i> Nhận chuyến</a></li>
                 <li><a onclick="switchTab('tab-income', this)"><i class="fa-solid fa-chart-pie"></i> Lịch sử thu nhập</a></li>
-                <li><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> Chuyến đi cũ</a></li>
-                <li><a href="#"><i class="fa-solid fa-circle-user"></i> Tài khoản</a></li>
+                <li><a onclick="switchTab('tab-history', this)"><i class="fa-solid fa-clock-rotate-left"></i> Chuyến đi cũ</a></li>
+                <li><a onclick="switchTab('tab-account', this)"><i class="fa-solid fa-circle-user"></i> Tài khoản</a></li>
             </ul>
         </aside>
 
@@ -489,7 +452,6 @@
                 </div>
 
                 <div class="job-grid-pc animate-fade-up delay-2" id="jobList">
-                    
                     <div class="empty-state" id="emptyState">
                         <i class="fa-solid fa-satellite-dish radar-icon"></i>
                         <p>Hệ thống đang dò tìm chuyến đi quanh bạn...</p>
@@ -497,10 +459,7 @@
 
                     <article class="broadcast-card" id="job-1">
                         <div class="card-header-custom">
-                            <div>
-                                <span class="bk-code">#BK-1029</span>
-                                <span class="bk-time">Khởi hành: 14:30 hôm nay</span>
-                            </div>
+                            <div><span class="bk-code">#BK-1029</span><span class="bk-time">Khởi hành: 14:30 hôm nay</span></div>
                             <div class="timer-box safe" data-seconds="720"> <i class="fa-regular fa-clock"></i> <span class="time-text">12:00</span></div>
                         </div>
                         <div class="card-body-custom">
@@ -509,26 +468,18 @@
                                 <div class="step-point step-dropoff">Sân bay Tân Sơn Nhất, Ga Quốc Nội</div>
                             </div>
                             <div class="tags-container">
-                                <span class="tag-pill">22 km</span>
-                                <span class="tag-pill">Xe 4 chỗ</span>
-                                <span class="tag-pill">Không đi cao tốc</span>
+                                <span class="tag-pill">22 km</span><span class="tag-pill">Xe 4 chỗ</span><span class="tag-pill">Không đi cao tốc</span>
                             </div>
                         </div>
                         <div class="card-footer-custom">
-                            <div class="finance-row">
-                                <span class="finance-label">Thu nhập thực nhận</span>
-                                <span class="finance-amount">240.000đ</span>
-                            </div>
+                            <div class="finance-row"><span class="finance-label">Thu nhập thực nhận</span><span class="finance-amount">240.000đ</span></div>
                             <button class="btn-accept" onclick="acceptJob(this, 'job-1', 'error500')">Nhận Chuyến (Test Lỗi 500)</button>
                         </div>
                     </article>
 
                     <article class="broadcast-card" id="job-2">
                         <div class="card-header-custom">
-                            <div>
-                                <span class="bk-code">#BK-8842</span>
-                                <span class="bk-time">Khởi hành: 15:00 hôm nay</span>
-                            </div>
+                            <div><span class="bk-code">#BK-8842</span><span class="bk-time">Khởi hành: 15:00 hôm nay</span></div>
                             <div class="timer-box warning" data-seconds="180"> <i class="fa-regular fa-clock"></i> <span class="time-text">03:00</span></div>
                         </div>
                         <div class="card-body-custom">
@@ -536,26 +487,17 @@
                                 <div class="step-point step-pickup">Chợ Bến Thành, Quận 1</div>
                                 <div class="step-point step-dropoff">KDL Bửu Long, Biên Hòa</div>
                             </div>
-                            <div class="tags-container">
-                                <span class="tag-pill">35 km</span>
-                                <span class="tag-pill">Xe 7 chỗ</span>
-                            </div>
+                            <div class="tags-container"><span class="tag-pill">35 km</span><span class="tag-pill">Xe 7 chỗ</span></div>
                         </div>
                         <div class="card-footer-custom">
-                            <div class="finance-row">
-                                <span class="finance-label">Thu nhập thực nhận</span>
-                                <span class="finance-amount">450.000đ</span>
-                            </div>
+                            <div class="finance-row"><span class="finance-label">Thu nhập thực nhận</span><span class="finance-amount">450.000đ</span></div>
                             <button class="btn-accept" onclick="acceptJob(this, 'job-2', 'error409')">Nhận Chuyến (Test Mất Đơn)</button>
                         </div>
                     </article>
 
                     <article class="broadcast-card" id="job-3">
                         <div class="card-header-custom">
-                            <div>
-                                <span class="bk-code">#BK-9911</span>
-                                <span class="bk-time">Khởi hành: 16:30 hôm nay</span>
-                            </div>
+                            <div><span class="bk-code">#BK-9911</span><span class="bk-time">Khởi hành: 16:30 hôm nay</span></div>
                             <div class="timer-box danger" data-seconds="45"> <i class="fa-solid fa-stopwatch"></i> <span class="time-text">00:45</span></div>
                         </div>
                         <div class="card-body-custom">
@@ -563,23 +505,15 @@
                                 <div class="step-point step-pickup">Landmark 81, Bình Thạnh</div>
                                 <div class="step-point step-dropoff">Bãi Sau, Vũng Tàu</div>
                             </div>
-                            <div class="tags-container">
-                                <span class="tag-pill">105 km</span>
-                                <span class="tag-pill">Xe 4 chỗ</span>
-                                <span class="tag-pill">Cao tốc LT-DG</span>
-                            </div>
+                            <div class="tags-container"><span class="tag-pill">105 km</span><span class="tag-pill">Xe 4 chỗ</span><span class="tag-pill">Cao tốc LT-DG</span></div>
                         </div>
                         <div class="card-footer-custom">
-                            <div class="finance-row">
-                                <span class="finance-label">Thu nhập thực nhận</span>
-                                <span class="finance-amount">1.250.000đ</span>
-                            </div>
+                            <div class="finance-row"><span class="finance-label">Thu nhập thực nhận</span><span class="finance-amount">1.250.000đ</span></div>
                             <button class="btn-accept" onclick="acceptJob(this, 'job-3', 'success')">Nhận Chuyến (Thành Công)</button>
                         </div>
                     </article>
                 </div>
             </section>
-
 
             <section id="tab-income" class="tab-section">
                 <div class="page-header animate-fade-up">
@@ -666,44 +600,19 @@
                                     <td><span class="badge bg-light text-muted">Miễn phí</span></td>
                                     <td class="amt-net">+ 150.000 đ</td>
                                 </tr>
-                                <tr>
-                                    <td><span class="trx-code">#TRX-8819</span><span class="trx-time">13/06/2026 • 18:00</span></td>
-                                    <td><span class="type-badge badge-comp"><i class="fa-solid fa-receipt"></i> Phụ phí BOT</span></td>
-                                    <td><a href="#" class="ref-link">#BK-0998</a></td>
-                                    <td class="amt-gross">35.000 đ</td>
-                                    <td><span class="badge bg-light text-muted">Miễn phí</span></td>
-                                    <td class="amt-net">+ 35.000 đ</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </section>
 
-                    <div class="mobile-trx-list">
-                        <div class="trx-mobile-card">
-                            <div class="trx-mob-header">
-                                <div><div class="fw-bold fs-6 text-dark">#TRX-8821</div><div class="small text-muted">14/06/2026 • 14:30</div></div>
-                                <span class="type-badge badge-trip">Cước đi</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-semibold small">Mã đơn:</span> <a href="#" class="ref-link">#BK-1029</a></div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-semibold small">Chiết khấu (60%):</span> <span class="amt-com">-360.000 đ</span></div>
-                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top"><span class="fw-bold text-dark">Thực nhận:</span> <span class="amt-net fs-4">+ 240.000 đ</span></div>
-                        </div>
-                        <div class="trx-mobile-card">
-                            <div class="trx-mob-header">
-                                <div><div class="fw-bold fs-6 text-dark">#TRX-8820</div><div class="small text-muted">14/06/2026 • 09:15</div></div>
-                                <span class="type-badge badge-comp">Phạt hủy</span>
-                            </div>
-                            <div class="d-flex justify-content-between mb-2"><span class="text-muted fw-semibold small">Mã đơn:</span> <a href="#" class="ref-link">#BK-1025</a></div>
-                            <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top"><span class="fw-bold text-dark">Thực nhận:</span> <span class="amt-net fs-4">+ 150.000 đ</span></div>
-                        </div>
-                    </div>
-
-                    <div class="pagination-container">
-                        <div class="page-btn"><i class="fa-solid fa-chevron-left"></i></div>
-                        <div class="page-btn active">1</div>
-                        <div class="page-btn">2</div>
-                        <div class="page-btn"><i class="fa-solid fa-chevron-right"></i></div>
-                    </div>
+            <section id="tab-history" class="tab-section">
+                <div class="page-header animate-fade-up">
+                    <h1 class="page-title">Lịch sử Chuyến đi</h1>
+                </div>
+                <div class="empty-state animate-fade-up delay-1" style="display: flex;">
+                    <i class="fa-solid fa-folder-open radar-icon" style="animation: none;"></i>
+                    <p>Chưa có dữ liệu chuyến đi cũ nào trong tuần này.</p>
                 </div>
             </section>
 
@@ -733,20 +642,14 @@
                             <div class="setting-item">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                                    <div>
-                                        <div class="title">Định danh eKYC</div>
-                                        <div class="desc">Hồ sơ đã được xác thực</div>
-                                    </div>
+                                    <div><div class="title">Định danh eKYC</div><div class="desc">Hồ sơ đã được xác thực</div></div>
                                 </div>
                                 <i class="fa-solid fa-circle-check text-success fs-4"></i>
                             </div>
                             <div class="setting-item">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="setting-icon"><i class="fa-solid fa-car-on"></i></div>
-                                    <div>
-                                        <div class="title">Giấy tờ Phương tiện</div>
-                                        <div class="desc">Đăng kiểm, Bảo hiểm bắt buộc</div>
-                                    </div>
+                                    <div><div class="title">Giấy tờ Phương tiện</div><div class="desc">Đăng kiểm, Bảo hiểm bắt buộc</div></div>
                                 </div>
                                 <i class="fa-solid fa-chevron-right text-muted"></i>
                             </div>
@@ -759,28 +662,16 @@
                             <div class="setting-item">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="setting-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-bell-ring"></i></div>
-                                    <div>
-                                        <div class="title">Âm thanh thông báo</div>
-                                        <div class="desc">Đổ chuông lớn khi có chuyến</div>
-                                    </div>
+                                    <div><div class="title">Âm thanh thông báo</div><div class="desc">Đổ chuông lớn khi có chuyến</div></div>
                                 </div>
-                                <label class="switch">
-                                    <input type="checkbox" checked>
-                                    <span class="slider"></span>
-                                </label>
+                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
                             </div>
                             <div class="setting-item">
                                 <div class="d-flex align-items-center gap-3">
                                     <div class="setting-icon" style="background: #fef2f2; color: #ef4444;"><i class="fa-solid fa-location-dot"></i></div>
-                                    <div>
-                                        <div class="title">Chia sẻ Vị trí (GPS)</div>
-                                        <div class="desc">Bắt buộc để nhận chuyến đi</div>
-                                    </div>
+                                    <div><div class="title">Chia sẻ Vị trí (GPS)</div><div class="desc">Bắt buộc để nhận chuyến đi</div></div>
                                 </div>
-                                <label class="switch">
-                                    <input type="checkbox" checked disabled>
-                                    <span class="slider"></span>
-                                </label>
+                                <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
                             </div>
                         </div>
                     </div>
@@ -792,13 +683,13 @@
     <nav class="bottom-nav nav-menu">
         <a onclick="switchTab('tab-job-board', this)" class="nav-item active"><i class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a>
         <a onclick="switchTab('tab-income', this)" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Thu nhập</span></a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
-        <a href="#" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài khoản</span></a>
+        <a onclick="switchTab('tab-history', this)" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
+        <a onclick="switchTab('tab-account', this)" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài khoản</span></a>
     </nav>
 
     <div class="toast-container toast-system-container position-fixed top-0 start-50 translate-middle-x p-3" style="width: 100%; max-width: 400px; margin-top: 70px;">
         <div id="systemErrorToast" class="toast align-items-center toast-premium-error w-100" role="alert">
-            <div class="d-flex"><div class="toast-body py-3 fw-bold fs-6"><i class="fa-solid fa-circle-xmark me-2 fs-5"></i> Update failed</div><button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button></div>
+            <div class="d-flex"><div class="toast-body py-3 fw-bold fs-6"><i class="fa-solid fa-circle-xmark me-2 fs-5"></i> Cập nhật thất bại</div><button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button></div>
         </div>
         <div id="conflictToast" class="toast align-items-center toast-premium-warning w-100 mt-2" role="alert">
             <div class="d-flex"><div class="toast-body py-3 fw-bold text-dark"><i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> Đơn hàng đã được tài xế khác nhận.</div><button type="button" class="btn-close me-3 m-auto" data-bs-dismiss="toast"></button></div>
@@ -817,35 +708,36 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
-        // ==========================================
-        // 1. CHUYỂN TAB (SPA) & RENDER BIỂU ĐỒ
-        // ==========================================
         let isChartInitialized = false;
+        let toastError, toastConflict, successModal;
 
+        // Xử lý Chuyển Tab Mượt mà
         function switchTab(tabId, element) {
-            // Đổi state của Navbar/Sidebar
             const menus = document.querySelectorAll('.nav-menu a');
             menus.forEach(a => a.classList.remove('active'));
-            // Nếu click ở Mobile hay PC thì đồng bộ active class cả 2 nơi (trùng href/onclick)
-            menus.forEach(a => { if (a.getAttribute('onclick') === `switchTab('${tabId}', this)`) a.classList.add('active'); });
             
-            // Chuyển section
+            menus.forEach(a => { 
+                if (a.getAttribute('onclick') && a.getAttribute('onclick').includes(tabId)) {
+                    a.classList.add('active'); 
+                }
+            });
+            
             document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
 
-            // Khởi tạo Chart khi tab Lịch sử được bật (Chỉ render 1 lần để tránh lag)
             if (tabId === 'tab-income' && !isChartInitialized) {
                 renderIncomeChart();
                 isChartInitialized = true;
             }
         }
 
-        // ==========================================
-        // 2. KHỞI TẠO BIỂU ĐỒ CHART.JS
-        // ==========================================
+        // Vẽ biểu đồ thu nhập
         function renderIncomeChart() {
-            const ctx = document.getElementById('incomeChart').getContext('2d');
+            const chartEl = document.getElementById('incomeChart');
+            if(!chartEl) return;
+            const ctx = chartEl.getContext('2d');
             let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
             gradientBlue.addColorStop(0, '#3b82f6'); gradientBlue.addColorStop(1, '#60a5fa');
             let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
@@ -861,8 +753,7 @@
                     ]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
+                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
                     plugins: { 
                         legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 10, padding: 20, font: {family: 'Inter', weight: '600'} } },
                         tooltip: { backgroundColor: '#0f172a', titleFont: {family: 'Inter', size: 14}, bodyFont: {family: 'Inter', size: 13}, padding: 12, cornerRadius: 8 }
@@ -875,21 +766,18 @@
             });
         }
 
-        // ==========================================
-        // 3. LOGIC JOB BOARD (Tài xế)
-        // ==========================================
-        const walletBalance = 100000; // Đổi < 50000 để thấy chức năng khóa công tắc
-        const toggleInput = document.getElementById('navOnlineToggle');
-        const toggleText = document.getElementById('navToggleText');
-        const statusDot = document.getElementById('statusDot');
-        
-        let toastError, toastConflict;
-
+        // Bắt đầu chạy Logic khi Load trang xong
         document.addEventListener("DOMContentLoaded", () => {
+            // Khởi tạo Toast UI
             toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
             toastConflict = new bootstrap.Toast(document.getElementById('conflictToast'), { delay: 3000 });
 
-            // Kiểm tra ví (BR-13)
+            // Kiểm tra ví (Mock BR-13)
+            const walletBalance = 100000;
+            const toggleInput = document.getElementById('navOnlineToggle');
+            const toggleText = document.getElementById('navToggleText');
+            const statusDot = document.getElementById('statusDot');
+
             if (walletBalance < 50000) {
                 toggleInput.checked = false; toggleInput.disabled = true;
                 statusDot.className = "indicator-dot error"; toggleText.innerText = "Đang nghỉ";
@@ -899,7 +787,7 @@
                 handleOnlineToggle();
             }
 
-            // Bắt đầu đồng hồ đếm ngược của Card
+            // Đồng hồ Đếm ngược từng đơn (Trạm Phát Sóng)
             setInterval(() => {
                 document.querySelectorAll('.timer-box').forEach(box => {
                     let seconds = parseInt(box.getAttribute('data-seconds'));
@@ -907,9 +795,10 @@
                         seconds--; box.setAttribute('data-seconds', seconds);
                         const m = Math.floor(seconds / 60).toString().padStart(2, '0');
                         const s = (seconds % 60).toString().padStart(2, '0');
-                        box.querySelector('.time-text').innerText = `${m}:${s}`;
+                        const timeText = box.querySelector('.time-text');
+                        if(timeText) timeText.innerText = `${m}:${s}`;
                         
-                        if (seconds <= 60) { box.className = "timer-box danger"; box.querySelector('i').className = "fa-solid fa-stopwatch"; } 
+                        if (seconds <= 60) { box.className = "timer-box danger"; const i = box.querySelector('i'); if(i) i.className = "fa-solid fa-stopwatch"; } 
                         else if (seconds <= 300) { box.className = "timer-box warning"; }
                     } else {
                         removeCardSmoothly(box.closest('.broadcast-card'));
@@ -919,15 +808,16 @@
         });
 
         function handleOnlineToggle() {
-            if(toggleInput.checked) {
-                statusDot.className = "indicator-dot active";
-                toggleText.innerText = "Đang nhận chuyến";
+            const statusDot = document.getElementById('statusDot');
+            const toggleText = document.getElementById('navToggleText');
+            if(document.getElementById('navOnlineToggle').checked) {
+                statusDot.className = "indicator-dot active"; toggleText.innerText = "Đang nhận chuyến";
             } else {
-                statusDot.className = "indicator-dot";
-                toggleText.innerText = "Đang nghỉ";
+                statusDot.className = "indicator-dot"; toggleText.innerText = "Đang nghỉ";
             }
         }
 
+        // Logic Xử lý Bấm nút nhận chuyến
         function acceptJob(btnElement, cardId, scenario) {
             const originalText = btnElement.innerHTML;
             btnElement.disabled = true;
@@ -936,36 +826,37 @@
             setTimeout(() => {
                 if (scenario === 'error409') {
                     removeCardSmoothly(document.getElementById(cardId));
-                    toastConflict.show();
+                    if(toastConflict) toastConflict.show();
                 } else if (scenario === 'error500') {
                     btnElement.disabled = false;
                     btnElement.innerHTML = originalText;
-                    toastError.show();
+                    if(toastError) toastError.show();
                 } else if (scenario === 'success') {
                     removeCardSmoothly(document.getElementById(cardId));
-                    new bootstrap.Modal(document.getElementById('successModal')).show();
+                    if(!successModal) successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
                 }
             }, 1200);
         }
 
+        // Logic Ẩn mượt mà các Card
         function removeCardSmoothly(card) {
             if(card) {
                 card.style.transform = 'scale(0.9)'; card.style.opacity = '0';
                 setTimeout(() => { 
                     card.remove(); 
                     const count = document.querySelectorAll('.broadcast-card').length;
-                    document.getElementById('jobBadge').innerText = count;
+                    const badge = document.getElementById('jobBadge');
+                    if(badge) badge.innerText = count;
                     if (count === 0) {
-                        document.getElementById('jobBadge').style.display = 'none';
+                        if(badge) badge.style.display = 'none';
                         document.getElementById('emptyState').style.display = 'flex';
                     }
                 }, 400);
             }
         }
 
-        // ==========================================
-        // 4. XỬ LÝ NÚT Ở TAB INCOME
-        // ==========================================
+        // Logic Loading nút Tùy chọn (Rút tiền, xuất dữ liệu...)
         function triggerApiAction(element) {
             let originalHTML = '';
             let isBtn = element.tagName === 'BUTTON';
@@ -977,7 +868,7 @@
             }
             setTimeout(() => {
                 if(isBtn) { element.innerHTML = originalHTML; element.disabled = false; }
-                toastError.show();
+                if(toastError) toastError.show();
             }, 1200);
         }
     </script>
