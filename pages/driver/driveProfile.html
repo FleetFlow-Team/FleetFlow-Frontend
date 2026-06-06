@@ -368,6 +368,31 @@
             .card-value { font-size: 3.2rem; margin-bottom: 16px; }
             .chart-container { height: 450px;}
         }
+
+        /* =========================================
+           10. TAB LỊCH SỬ CHUYẾN ĐI (HISTORY)
+        ========================================= */
+        .history-card { border-left: 4px solid transparent; }
+        .history-card.completed { border-left-color: var(--color-1); }
+        .history-card.cancelled { border-left-color: var(--danger); }
+        
+        .history-status { font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 50px; display: inline-flex; align-items: center; gap: 4px;}
+        .status-completed { background: #dcfce7; color: #166534; }
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        
+        .rating-stars { color: #f59e0b; font-size: 0.9rem; letter-spacing: 2px;}
+        
+        /* Hiệu ứng Nút Xem chi tiết */
+        .btn-details {
+            background: #f1f5f9; color: var(--color-dark); border: none; padding: 12px 20px;
+            border-radius: 12px; font-weight: 700; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); width: 100%;
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .btn-details:hover { 
+            background: var(--color-1); color: white; 
+            transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2); 
+        }
+        .btn-details:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
@@ -675,6 +700,140 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </section>
+
+            <section id="tab-history" class="tab-section">
+                <div class="page-header animate-fade-up">
+                    <h1 class="page-title">Lịch sử Chuyến đi</h1>
+                    <div class="header-actions">
+                        <div class="filter-wrapper">
+                            <i class="fa-regular fa-calendar"></i>
+                            <select class="date-picker" onchange="triggerApiAction(this)">
+                                <option>Tháng này</option>
+                                <option>Tháng trước</option>
+                                <option>Tất cả thời gian</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4 animate-fade-up delay-1">
+                    <div class="col-6 col-md-4">
+                        <div class="stat-card p-3 d-flex align-items-center gap-3">
+                            <div class="setting-icon" style="background: #dcfce7; color: #166534; width: 40px; height: 40px;"><i class="fa-solid fa-check-double"></i></div>
+                            <div><div class="text-muted small fw-bold">Hoàn thành</div><div class="fs-4 fw-bold">142</div></div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-4">
+                        <div class="stat-card p-3 d-flex align-items-center gap-3">
+                            <div class="setting-icon" style="background: #fee2e2; color: #ef4444; width: 40px; height: 40px;"><i class="fa-solid fa-ban"></i></div>
+                            <div><div class="text-muted small fw-bold">Đã hủy</div><div class="fs-4 fw-bold">3</div></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-4">
+                        <div class="stat-card p-3 d-flex align-items-center gap-3">
+                            <div class="setting-icon" style="background: #fef3c7; color: #d97706; width: 40px; height: 40px;"><i class="fa-solid fa-star"></i></div>
+                            <div><div class="text-muted small fw-bold">Đánh giá TB</div><div class="fs-4 fw-bold">4.95</div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="job-grid-pc animate-fade-up delay-2">
+                    
+                    <article class="broadcast-card history-card completed">
+                        <div class="card-header-custom pb-3">
+                            <div>
+                                <span class="bk-code">#BK-1028</span>
+                                <span class="bk-time">13/06/2026 • 09:30</span>
+                            </div>
+                            <div class="history-status status-completed"><i class="fa-solid fa-check"></i> Hoàn thành</div>
+                        </div>
+                        <div class="card-body-custom pb-0 pt-3">
+                            <div class="route-stepper mb-3">
+                                <div class="step-point step-pickup">KĐT Vinhomes Central Park</div>
+                                <div class="step-point step-dropoff">Sân bay Tân Sơn Nhất, Ga Quốc Nội</div>
+                            </div>
+                        </div>
+                        <div class="card-footer-custom border-0 pt-2">
+                            <div class="finance-row mb-3">
+                                <div>
+                                    <div class="finance-label mb-1">Cước phí</div>
+                                    <div class="finance-amount text-dark" style="font-size: 1.3rem;">210.000đ</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="finance-label mb-1">Đánh giá</div>
+                                    <div class="rating-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                                </div>
+                            </div>
+                            <button class="btn-details" onclick="triggerApiAction(this)">
+                                Xem chi tiết chuyến <i class="fa-solid fa-arrow-right fs-6"></i>
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="broadcast-card history-card cancelled">
+                        <div class="card-header-custom pb-3">
+                            <div>
+                                <span class="bk-code">#BK-1025</span>
+                                <span class="bk-time">12/06/2026 • 15:45</span>
+                            </div>
+                            <div class="history-status status-cancelled"><i class="fa-solid fa-xmark"></i> Đã hủy</div>
+                        </div>
+                        <div class="card-body-custom pb-0 pt-3">
+                            <div class="route-stepper mb-3">
+                                <div class="step-point step-pickup">Bitexco Financial Tower, Q1</div>
+                                <div class="step-point step-dropoff">Phố đi bộ Nguyễn Huệ</div>
+                            </div>
+                        </div>
+                        <div class="card-footer-custom border-0 pt-2">
+                            <div class="finance-row mb-3">
+                                <div>
+                                    <div class="finance-label mb-1">Phí đền bù</div>
+                                    <div class="finance-amount text-danger" style="font-size: 1.3rem;">+ 15.000đ</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="finance-label mb-1">Lý do</div>
+                                    <div class="text-dark fw-bold small mt-1">Khách không đến</div>
+                                </div>
+                            </div>
+                            <button class="btn-details" onclick="triggerApiAction(this)">
+                                Xem chi tiết chuyến <i class="fa-solid fa-arrow-right fs-6"></i>
+                            </button>
+                        </div>
+                    </article>
+
+                    <article class="broadcast-card history-card completed">
+                        <div class="card-header-custom pb-3">
+                            <div>
+                                <span class="bk-code">#BK-0998</span>
+                                <span class="bk-time">11/06/2026 • 18:15</span>
+                            </div>
+                            <div class="history-status status-completed"><i class="fa-solid fa-check"></i> Hoàn thành</div>
+                        </div>
+                        <div class="card-body-custom pb-0 pt-3">
+                            <div class="route-stepper mb-3">
+                                <div class="step-point step-pickup">Đại học Quốc gia TP.HCM</div>
+                                <div class="step-point step-dropoff">KDL Suối Tiên</div>
+                            </div>
+                        </div>
+                        <div class="card-footer-custom border-0 pt-2">
+                            <div class="finance-row mb-3">
+                                <div>
+                                    <div class="finance-label mb-1">Cước phí</div>
+                                    <div class="finance-amount text-dark" style="font-size: 1.3rem;">145.000đ</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="finance-label mb-1">Đánh giá</div>
+                                    <div class="rating-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-muted"></i></div>
+                                </div>
+                            </div>
+                            <button class="btn-details" onclick="triggerApiAction(this)">
+                                Xem chi tiết chuyến <i class="fa-solid fa-arrow-right fs-6"></i>
+                            </button>
+                        </div>
+                    </article>
+
                 </div>
             </section>
         </main>
