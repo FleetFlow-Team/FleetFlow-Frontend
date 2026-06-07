@@ -8,18 +8,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
     <link rel="stylesheet" href="../../style/base.css" />
-    <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="../../style/pages/admin.css" />
+    <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../../js/admin.js" defer></script>
-
-
+    <script src="../../js/base.js"></script>
+    <script src="../../js/admin.js"></script>
 </head>
 <body>
     <header>
-      <nav class="navbar custom-navbar fixed-top">
+      <nav class="navbar custom-navbar sticky-top">
         <div class="container-base h-100 position-relative">
           <a class="navbar-brand brand-overflow" href="#">
             <img
@@ -30,8 +30,8 @@
           </a>
 
           <div class="navbar-slogan d-none d-md-block">
-                    Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
-                </div>
+                Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
+          </div>
 
           <div class="user-profile">
             <div class="nav-right-actions d-flex align-items-center gap-4 pe-3">
@@ -98,7 +98,7 @@
         <main class="main-content">
             
             <section id="tab-dashboard" class="tab-section active">
-                <div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
+                <div class="d-flex justify-content-between align-items-end mb-4 reveal-on-scroll">
                     <h4 class="fw-bold m-0 text-dark">Bảng Tổng Quan Hoạt Động</h4>
                     <select class="form-select form-select-sm fw-bold border bg-white shadow-sm w-auto" onchange="testGlobalError(this)">
                         <option>Tháng này</option>
@@ -108,7 +108,7 @@
                 </div>
 
                 <div class="kpi-grid">
-                    <div class="kpi-card fade-in-up" style="animation-delay: 0.1s;">
+                    <div class="kpi-card reveal-on-scroll delay-1">
                         <div class="kpi-header">
                             <div>
                                 <div class="kpi-title">Tổng Doanh Thu</div>
@@ -119,7 +119,7 @@
                         <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +15% so với tháng trước</span>
                     </div>
                     
-                    <div class="kpi-card fade-in-up" style="animation-delay: 0.2s;">
+                    <div class="kpi-card reveal-on-scroll delay-2">
                         <div class="kpi-header">
                             <div>
                                 <div class="kpi-title">Lợi Nhuận Công Ty</div>
@@ -130,7 +130,7 @@
                         <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +8.5%</span>
                     </div>
 
-                    <div class="kpi-card fade-in-up" style="animation-delay: 0.3s;">
+                    <div class="kpi-card reveal-on-scroll delay-3">
                         <div class="kpi-header">
                             <div>
                                 <div class="kpi-title">Chuyến Hoàn Thành</div>
@@ -141,7 +141,7 @@
                         <span class="kpi-trend trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +12%</span>
                     </div>
 
-                    <div class="kpi-card fade-in-up" style="animation-delay: 0.4s;">
+                    <div class="kpi-card reveal-on-scroll delay-4">
                         <div class="kpi-header">
                             <div>
                                 <div class="kpi-title">Tỷ Lệ Hủy / Sự Cố</div>
@@ -153,12 +153,12 @@
                     </div>
                 </div>
 
-                <div class="charts-grid fade-in-up" style="animation-delay: 0.5s;">
-                    <div class="chart-card">
+                <div class="charts-grid">
+                    <div class="chart-card reveal-on-scroll delay-2">
                         <h5 class="chart-title">Biểu đồ Doanh thu (30 ngày)</h5>
                         <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
                     </div>
-                    <div class="chart-card">
+                    <div class="chart-card reveal-on-scroll delay-3">
                         <h5 class="chart-title">Trạng thái Chuyến đi</h5>
                         <div style="height: 300px; display: flex; justify-content: center;"><canvas id="statusChart"></canvas></div>
                     </div>
@@ -166,199 +166,199 @@
             </section>
 
             <section id="tab-fleet" class="tab-section">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <div>
-            <h4 class="fw-bold mb-1 text-dark">Quản lý Vòng đời Xe (Fleet Lifecycle)</h4>
-            <p class="text-muted small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám sát tự động hạn kiểm định pháp lý.</p>
-        </div>
-        <button class="btn btn-primary fw-bold shadow-sm px-4 py-2" style="background: var(--color-1); border:none; border-radius: 10px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
-            <i class="fa-solid fa-plus me-2"></i> Khởi tạo xe mới
-        </button>
-    </div>
+                <div class="d-flex justify-content-between align-items-end mb-4 reveal-on-scroll">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Quản lý Vòng đời Xe (Fleet Lifecycle)</h4>
+                        <p class="text-muted small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám sát tự động hạn kiểm định pháp lý.</p>
+                    </div>
+                    <button class="btn btn-primary fw-bold px-4 py-2" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+                        <i class="fa-solid fa-plus me-2"></i> Khởi tạo xe mới
+                    </button>
+                </div>
 
-    <div class="table-custom">
-        <table class="table table-hover-custom mb-0">
-            <thead>
-                <tr>
-                    <th width="30%">Biển số & Phương tiện</th>
-                    <th width="25%">Giấy tờ pháp lý</th>
-                    <th width="25%">Thuộc tính AI (Tags)</th>
-                    <th width="20%">Trạng thái hiện tại</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
-                                <i class="fa-solid fa-car-side fs-4 text-secondary"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">51H-123.45</div>
-                                <div class="small text-muted fw-medium mt-1">VinFast VF8 Plus | 5 Chỗ</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 150 ngày</div>
-                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 200 ngày</div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-wrap gap-1">
-                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-bolt text-warning me-1"></i> Xe Điện</span>
-                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-suitcase text-secondary me-1"></i> Cốp rộng</span>
-                        </div>
-                    </td>
-                    <td>
-                        <select class="form-select status-select status-ready">
-                            <option value="ready" selected>Sẵn sàng nhận chuyến</option>
-                            <option value="maintenance">Chuyển sang bảo dưỡng</option>
-                        </select>
-                    </td>
-                </tr>
+                <div class="table-custom reveal-on-scroll delay-1">
+                    <table class="table table-hover-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th width="30%">Biển số & Phương tiện</th>
+                                <th width="25%">Giấy tờ pháp lý</th>
+                                <th width="25%">Thuộc tính AI (Tags)</th>
+                                <th width="20%">Trạng thái hiện tại</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
+                                            <i class="fa-solid fa-car-side fs-4 text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">51H-123.45</div>
+                                            <div class="small text-muted fw-medium mt-1">VinFast VF8 Plus | 5 Chỗ</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 150 ngày</div>
+                                    <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 200 ngày</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span class="badge bg-light text-dark border"><i class="fa-solid fa-bolt text-warning me-1"></i> Xe Điện</span>
+                                        <span class="badge bg-light text-dark border"><i class="fa-solid fa-suitcase text-secondary me-1"></i> Cốp rộng</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select class="form-select status-select status-ready">
+                                        <option value="ready" selected>Sẵn sàng nhận chuyến</option>
+                                        <option value="maintenance">Chuyển sang bảo dưỡng</option>
+                                    </select>
+                                </td>
+                            </tr>
 
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
-                                <i class="fa-solid fa-van-shuttle fs-4 text-secondary"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">60A-456.78</div>
-                                <div class="small text-muted fw-medium mt-1">Mitsubishi Xpander | 7 Chỗ</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 85 ngày</div>
-                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 112 ngày</div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-wrap gap-1">
-                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-users text-primary me-1"></i> Gia đình</span>
-                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-gas-pump text-danger me-1"></i> Tiết kiệm xăng</span>
-                        </div>
-                    </td>
-                    <td>
-                        <select class="form-select status-select status-maintenance">
-                            <option value="ready">Sẵn sàng nhận chuyến</option>
-                            <option value="maintenance" selected>Đang bảo dưỡng</option>
-                        </select>
-                    </td>
-                </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
+                                            <i class="fa-solid fa-van-shuttle fs-4 text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">60A-456.78</div>
+                                            <div class="small text-muted fw-medium mt-1">Mitsubishi Xpander | 7 Chỗ</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 85 ngày</div>
+                                    <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 112 ngày</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span class="badge bg-light text-dark border"><i class="fa-solid fa-users text-primary me-1"></i> Gia đình</span>
+                                        <span class="badge bg-light text-dark border"><i class="fa-solid fa-gas-pump text-danger me-1"></i> Tiết kiệm xăng</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <select class="form-select status-select status-maintenance">
+                                        <option value="ready">Sẵn sàng nhận chuyến</option>
+                                        <option value="maintenance" selected>Đang bảo dưỡng</option>
+                                    </select>
+                                </td>
+                            </tr>
 
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
-                                <i class="fa-solid fa-truck-pickup fs-4 text-secondary"></i>
-                            </div>
-                            <div>
-                                <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">51G-999.88</div>
-                                <div class="small text-muted fw-medium mt-1">Toyota Fortuner | 7 Chỗ</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="small text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation fa-fade me-1"></i> Đăng kiểm: Đã hết hạn</div>
-                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 45 ngày</div>
-                    </td>
-                    <td>
-                        <div class="d-flex flex-wrap gap-1">
-                            <span class="badge bg-light text-dark border"><i class="fa-solid fa-mountain text-success me-1"></i> Gầm cao</span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="status-select status-locked text-center w-100" style="pointer-events: none;">
-                            <i class="fa-solid fa-lock me-1"></i> Hệ thống tự khóa
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</section>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-light rounded-3 p-2 text-center" style="width: 60px; height: 45px; border: 1px solid #e2e8f0;">
+                                            <i class="fa-solid fa-truck-pickup fs-4 text-secondary"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-6 text-dark" style="letter-spacing: 0.5px;">51G-999.88</div>
+                                            <div class="small text-muted fw-medium mt-1">Toyota Fortuner | 7 Chỗ</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation fa-fade me-1"></i> Đăng kiểm: Đã hết hạn</div>
+                                    <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 45 ngày</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        <span class="badge bg-light text-dark border"><i class="fa-solid fa-mountain text-success me-1"></i> Gầm cao</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="status-select status-locked text-center w-100" style="pointer-events: none;">
+                                        <i class="fa-solid fa-lock me-1"></i> Hệ thống tự khóa
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
-<section id="tab-drivers" class="tab-section">
-    <div class="d-flex justify-content-between align-items-end mb-4">
-        <div>
-            <h4 class="fw-bold mb-1 text-dark">Kiểm duyệt Hồ sơ Tài xế</h4>
-            <p class="text-muted small m-0">Xác thực chứng minh nhân dân/CCCD và bằng lái xe (eKYC) trước khi kích hoạt quyền giành đơn chuyến.</p>
-        </div>
-        <div class="input-group w-auto">
-            <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
-            <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm tên, SĐT tài xế...">
-        </div>
-    </div>
+            <section id="tab-drivers" class="tab-section">
+                <div class="d-flex justify-content-between align-items-end mb-4 reveal-on-scroll">
+                    <div>
+                        <h4 class="fw-bold mb-1 text-dark">Kiểm duyệt Hồ sơ Tài xế</h4>
+                        <p class="text-muted small m-0">Xác thực chứng minh nhân dân/CCCD và bằng lái xe (eKYC) trước khi kích hoạt quyền giành đơn chuyến.</p>
+                    </div>
+                    <div class="input-group w-auto shadow-sm">
+                        <span class="input-group-text bg-white border-end-0"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+                        <input type="text" class="form-control border-start-0 ps-0" placeholder="Tìm tên, SĐT tài xế...">
+                    </div>
+                </div>
 
-    <div class="table-custom">
-        <table class="table table-hover-custom mb-0">
-            <thead>
-                <tr>
-                    <th width="30%">Họ Tên & Liên hệ</th>
-                    <th width="20%">Thời gian nộp</th>
-                    <th width="25%">Trạng thái eKYC</th>
-                    <th width="25%" class="text-end">Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="https://ui-avatars.com/api/?name=Tran+Tinh&background=random" class="rounded-circle" width="40" height="40">
-                            <div>
-                                <div class="fw-bold text-dark fs-6">Trần Mới Tinh</div>
-                                <div class="small text-muted mt-1"><i class="fa-solid fa-phone me-1"></i> 0912 345 678</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="small fw-bold text-dark">10:30 AM</div>
-                        <div class="small text-muted mt-1">Hôm nay, 06/06/2026</div>
-                    </td>
-                    <td>
-                        <span class="badge bg-warning text-dark border border-warning p-2 px-3 fw-bold shadow-sm" style="cursor: pointer; transition: 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="openEkycModal()">
-                            <i class="fa-solid fa-fingerprint fa-beat-fade me-1"></i> Chờ Thẩm Định (Click)
-                        </span>
-                    </td>
-                    <td class="text-end">
-                        <button class="btn btn-outline-secondary btn-table-action me-2" onclick="openEkycModal()">Xem Hồ Sơ</button>
-                        <button class="btn text-white btn-table-action" style="background: var(--color-1);" onclick="simulateSaveConfig(this)">Duyệt Nhanh</button>
-                    </td>
-                </tr>
+                <div class="table-custom reveal-on-scroll delay-1">
+                    <table class="table table-hover-custom mb-0">
+                        <thead>
+                            <tr>
+                                <th width="30%">Họ Tên & Liên hệ</th>
+                                <th width="20%">Thời gian nộp</th>
+                                <th width="25%">Trạng thái eKYC</th>
+                                <th width="25%" class="text-end">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="https://ui-avatars.com/api/?name=Tran+Tinh&background=random" class="rounded-circle" width="40" height="40">
+                                        <div>
+                                            <div class="fw-bold text-dark fs-6">Trần Mới Tinh</div>
+                                            <div class="small text-muted mt-1"><i class="fa-solid fa-phone me-1"></i> 0912 345 678</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold text-dark">10:30 AM</div>
+                                    <div class="small text-muted mt-1">Hôm nay, 06/06/2026</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning text-dark border border-warning p-2 px-3 fw-bold shadow-sm" style="cursor: pointer;" onclick="openEkycModal()">
+                                        <i class="fa-solid fa-fingerprint fa-beat-fade me-1"></i> Chờ Thẩm Định (Click)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-table-action me-2" onclick="openEkycModal()">Xem Hồ Sơ</button>
+                                    <button class="btn btn-primary btn-table-action" onclick="simulateSaveConfig(this)">Duyệt Nhanh</button>
+                                </td>
+                            </tr>
 
-                <tr>
-                    <td>
-                        <div class="d-flex align-items-center gap-3">
-                            <img src="https://ui-avatars.com/api/?name=Nguyen+Quang&background=random" class="rounded-circle" width="40" height="40">
-                            <div>
-                                <div class="fw-bold text-dark fs-6">Nguyễn Quang</div>
-                                <div class="small text-muted mt-1"><i class="fa-solid fa-phone me-1"></i> 0988 111 222</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="small fw-bold text-dark">14:15 PM</div>
-                        <div class="small text-muted mt-1">Hôm qua, 05/06/2026</div>
-                    </td>
-                    <td>
-                        <span class="badge bg-success bg-opacity-10 text-success border border-success p-2 px-3 fw-bold">
-                            <i class="fa-solid fa-circle-check me-1"></i> Đã Kích Hoạt
-                        </span>
-                    </td>
-                    <td class="text-end">
-                        <button class="btn btn-light btn-table-action text-muted" disabled><i class="fa-solid fa-check"></i> Đã Xử Lý</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</section>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <img src="https://ui-avatars.com/api/?name=Nguyen+Quang&background=random" class="rounded-circle" width="40" height="40">
+                                        <div>
+                                            <div class="fw-bold text-dark fs-6">Nguyễn Quang</div>
+                                            <div class="small text-muted mt-1"><i class="fa-solid fa-phone me-1"></i> 0988 111 222</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="small fw-bold text-dark">14:15 PM</div>
+                                    <div class="small text-muted mt-1">Hôm qua, 05/06/2026</div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-success bg-opacity-10 text-success border border-success p-2 px-3 fw-bold">
+                                        <i class="fa-solid fa-circle-check me-1"></i> Đã Kích Hoạt
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <button class="btn btn-light btn-table-action text-muted" disabled><i class="fa-solid fa-check"></i> Đã Xử Lý</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             <section id="tab-pricing" class="tab-section">
-                <h4 class="fw-bold mb-4 text-dark">Cấu hình Định giá & Khuyến mãi</h4>
+                <h4 class="fw-bold mb-4 text-dark reveal-on-scroll">Cấu hình Định giá & Khuyến mãi</h4>
                 
-                <div class="config-alert shadow-sm fade-in-up">
+                <div class="config-alert shadow-sm reveal-on-scroll delay-1">
                     <i class="fa-solid fa-circle-info fs-3"></i>
                     <div>
                         <h5 class="fw-bold mb-1 fs-6">Quy tắc Nội suy Giá (BR-17)</h5>
@@ -367,7 +367,7 @@
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 reveal-on-scroll delay-2">
                         <div class="config-card">
                             <h5 class="fw-bold mb-4 fs-6">Đơn giá Cơ bản (VNĐ / Km)</h5>
                             <div class="mb-3">
@@ -381,13 +381,13 @@
                             <button class="btn btn-primary w-100 py-2 fw-bold" onclick="simulateSaveConfig(this)">Lưu Cấu Hình Cơ Sở</button>
                         </div>
                     </div>
-                    </div>
+                </div>
             </section>
 
             <section id="tab-ai-marketing" class="tab-section">
-                <h4 class="fw-bold mb-4 text-dark">Trợ lý AI & Chiến dịch Email</h4>
+                <h4 class="fw-bold mb-4 text-dark reveal-on-scroll">Trợ lý AI & Chiến dịch Email</h4>
                 <div class="row g-4">
-                    <div class="col-12">
+                    <div class="col-12 reveal-on-scroll delay-1">
                         <div class="config-card">
                             <h5 class="fw-bold mb-4 fs-6"><i class="fa-solid fa-brain me-2 text-info"></i>Gán Thuộc tính AI (Kéo thả Tags)</h5>
                             <div class="kanban-board">
@@ -400,11 +400,11 @@
                                 </div>
                                 <div class="kb-column">
                                     <h6 class="text-muted fw-bold small mb-3">Hồ sơ Phương tiện (Thả vào đây)</h6>
-                                    <div class="vehicle-dropzone">
-                                        <span class="v-plate">51H-123.45</span>
+                                    <div class="vehicle-dropzone mb-3">
+                                        <span class="v-plate fw-bold">51H-123.45</span>
                                     </div>
                                     <div class="vehicle-dropzone">
-                                        <span class="v-plate">60A-987.65</span>
+                                        <span class="v-plate fw-bold">60A-987.65</span>
                                     </div>
                                 </div>
                             </div>
@@ -414,16 +414,16 @@
             </section>
 
             <section id="tab-users" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex justify-content-between align-items-end mb-4 reveal-on-scroll">
                     <div>
                         <h4 class="fw-bold mb-1 text-dark">Tài khoản & Phân quyền (RBAC)</h4>
                         <p class="text-muted small m-0">Kiểm soát truy cập theo nguyên tắc Đặc quyền tối thiểu (Least Privilege).</p>
                     </div>
-                    <button class="btn btn-primary fw-bold shadow-sm" style="background: var(--color-1); border:none;"><i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự</button>
+                    <button class="btn btn-primary fw-bold shadow-sm"><i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự</button>
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-lg-4">
+                    <div class="col-lg-4 reveal-on-scroll delay-1">
                         <div class="table-custom p-0 h-100">
                             <div class="p-3 border-bottom bg-light fw-bold text-dark"><i class="fa-solid fa-users me-2"></i> Nhân sự Back-Office</div>
                             <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
@@ -433,7 +433,7 @@
                                 </div>
                                 <span class="role-badge role-super">Super Admin</span>
                             </div>
-                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: #f8fafc; border-left: 3px solid var(--color-1);">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center" style="background: rgba(0, 177, 79, 0.05); border-left: 4px solid var(--color-1);">
                                 <div class="d-flex align-items-center gap-3">
                                     <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=random" class="rounded-circle" width="40" height="40">
                                     <div><div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div><div class="small text-muted">ID: DP-889</div></div>
@@ -450,11 +450,11 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-8">
+                    <div class="col-lg-8 reveal-on-scroll delay-2">
                         <div class="table-custom p-0">
                             <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
                                 <div class="fw-bold text-dark"><i class="fa-solid fa-table-cells me-2"></i> Ma trận Quyền hạn: <span class="text-primary">Dispatcher</span></div>
-                                <button class="btn btn-dark fw-bold btn-table-action" onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
+                                <button class="btn btn-primary fw-bold btn-table-action" onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
                             </div>
                             <table class="table matrix-table mb-0">
                                 <thead>
@@ -482,7 +482,7 @@
                                         <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
                                         <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
                                         <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
-                                        <td><label class="switch"><input type="checkbox"><span class="slider"></span></label></td>
+                                        <td><label class="switch"><input type="checkbox" checked><span class="slider"></span></label></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -492,7 +492,7 @@
             </section>
 
             <section id="tab-reports" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex justify-content-between align-items-end mb-4 reveal-on-scroll">
                     <div>
                         <h4 class="fw-bold mb-1 text-dark">Đo lường Chất lượng Dịch vụ</h4>
                         <p class="text-muted small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và sức khỏe vận hành.</p>
@@ -501,13 +501,13 @@
                 </div>
 
                 <div class="row g-4">
-                    <div class="col-lg-5">
+                    <div class="col-lg-5 reveal-on-scroll delay-1">
                         <div class="table-custom p-4 h-100">
                             <h6 class="fw-bold mb-4 text-center">Phổ Điểm Đánh Giá Tài Xế (Radar)</h6>
                             <div style="height: 300px; display: flex; justify-content: center;"><canvas id="qualityRadarChart"></canvas></div>
                         </div>
                     </div>
-                    <div class="col-lg-7">
+                    <div class="col-lg-7 reveal-on-scroll delay-2">
                         <div class="table-custom p-4 h-100">
                             <h6 class="fw-bold mb-4">Phân tích Lý do Hủy chuyến (Stacked Bar)</h6>
                             <div style="height: 300px;"><canvas id="cancelReasonChart"></canvas></div>
@@ -517,7 +517,7 @@
             </section>
 
             <section id="tab-audit" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
+                <div class="d-flex justify-content-between align-items-end mb-4 reveal-on-scroll">
                     <div>
                         <h4 class="fw-bold mb-1 text-dark">Nhật ký Hệ thống (Audit Log)</h4>
                         <p class="text-muted small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất biến, Read-only.</p>
@@ -528,7 +528,7 @@
                     </div>
                 </div>
 
-                <div class="table-custom">
+                <div class="table-custom reveal-on-scroll delay-1">
                     <table class="table table-hover-custom table-dense mb-0">
                         <thead>
                             <tr>
@@ -547,7 +547,7 @@
                                 <td><span class="badge bg-warning text-dark">UPDATE</span></td>
                                 <td class="fw-bold">Cấu hình Hệ số Lễ/Tết</td>
                                 <td><div class="text-muted small">113.160.22.1</div><div class="text-muted small">Chrome / Mac OS</div></td>
-                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action" onclick="openDiffModal()">Xem Diff</button></td>
+                                <td class="text-end"><button class="btn btn-table-action" onclick="openDiffModal()">Xem Diff</button></td>
                             </tr>
                             <tr>
                                 <td><div class="fw-bold text-dark">06/06/2026</div><div class="text-muted small">08:42:10</div></td>
@@ -555,7 +555,7 @@
                                 <td><span class="badge bg-info text-white">FREEZE</span></td>
                                 <td class="fw-bold">Hóa đơn chuyến #BK-9015</td>
                                 <td><div class="text-muted small">113.160.22.5</div><div class="text-muted small">Safari / Windows</div></td>
-                                <td class="text-end"><button class="btn btn-outline-secondary btn-table-action">Xem Log</button></td>
+                                <td class="text-end"><button class="btn btn-table-action">Xem Log</button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -566,9 +566,30 @@
     </div>
 
     <div class="modal fade" id="addVehicleModal" tabindex="-1">
-       </div>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow">
+                <div class="modal-header border-0 px-4 pt-4">
+                    <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-car text-success me-2"></i>Thêm Phương Tiện Mới</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="addVehicleForm">
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Biển số xe</label>
+                            <input type="text" class="form-control" placeholder="Ví dụ: 51H-123.45">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-muted">Dòng xe / Model</label>
+                            <input type="text" class="form-control" placeholder="Ví dụ: VinFast VF8">
+                        </div>
+                        <button type="button" class="btn btn-primary w-100 py-2 fw-bold" data-bs-dismiss="modal" onclick="simulateSaveConfig(this)">Khởi tạo</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
-       <div class="modal fade modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal fade modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-lg modal-dialog-centered">
             <div class="modal-content shadow-lg border-0 rounded-4" style="overflow: hidden;">
                 <div class="modal-header border-0 px-4 pt-4 pb-2">
@@ -597,7 +618,7 @@
 
     <div class="modal fade ekyc-modal" id="ekycModal" tabindex="-1" data-bs-backdrop="static">
         <div class="modal-dialog modal-xl modal-dialog-centered">
-            <div class="modal-content">
+            <div class="modal-content border-0 shadow-lg">
                 <div class="ekyc-layout">
                     <div class="ekyc-info d-flex flex-column">
                         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -616,8 +637,8 @@
                         </div>
 
                         <div class="mt-auto d-flex gap-2">
-                            <button class="btn btn-outline-danger fw-bold flex-1 w-50 py-3 rounded-3" onclick="simulateSaveConfig(this)">Từ Chối</button>
-                            <button class="btn btn-success fw-bold flex-1 w-50 py-3 rounded-3 shadow" style="background: var(--color-1); border:none;" onclick="simulateSaveConfig(this)">Phê Duyệt</button>
+                            <button class="btn btn-outline-danger fw-bold flex-1 w-50 py-3 rounded-3" data-bs-dismiss="modal" onclick="simulateSaveConfig(this)">Từ Chối</button>
+                            <button class="btn btn-primary fw-bold flex-1 w-50 py-3 rounded-3 shadow" data-bs-dismiss="modal" onclick="simulateSaveConfig(this)">Phê Duyệt</button>
                         </div>
                     </div>
                     

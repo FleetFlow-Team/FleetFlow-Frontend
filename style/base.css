@@ -166,7 +166,7 @@ html {
 }
 
 .custom-navbar.is-scrolled {
-    top: 15px; width: 95%; max-width: 1300px; border-radius: 20px;
+    top: 15px; width: 95%; max-width: 1300px; border-radius: 50px;
     background-color: transparent !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2); border-color: var(--glass-border) !important;
 }
 .custom-navbar.is-scrolled::after, .custom-navbar.is-scrolled::before { opacity: 1; }
