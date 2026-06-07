@@ -277,3 +277,48 @@ body {
 .upload-box.has-img .upload-text {
   display: none;
 }
+
+/* Sử dụng chuẩn border-radius 50px */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.6) !important;
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50px !important; 
+    padding: 30px;
+}
+
+/* Sidebar Nav Links */
+.nav-pills .nav-link {
+    border-radius: 50px !important;
+    color: #475569;
+    padding: 12px 20px;
+    transition: 0.3s;
+}
+.nav-pills .nav-link.active {
+    background: var(--color-1) !important;
+    color: white !important;
+}
+
+/* Upload Box */
+.upload-box {
+    border: 2px dashed rgba(0, 177, 79, 0.3);
+    border-radius: 50px !important;
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.3);
+    transition: 0.3s;
+}
+.upload-box:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: var(--color-1);
+}
+
+/* Nút Save */
+.btn-save {
+    background: var(--color-1);
+    color: white;
+    border-radius: 50px !important;
+    padding: 10px 30px;
+    border: none;
+}
