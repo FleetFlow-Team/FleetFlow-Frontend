@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* =========================================
+   THIẾT KẾ NÚT NHẬN CHUYẾN TÀI XẾ (PREMIUM UI)
+========================================= */
+.driver-status-wrapper {
+    display: flex; align-items: center; justify-content: center;
+}
+
+.custom-pill-toggle {
+    /* Đưa các chỉ số vào biến để dễ quản lý và tự động scale */
+    --pill-width: 170px; 
+    --pill-height: 44px;
+    --thumb-size: 36px;
+    --thumb-margin: 4px;
+
+    position: relative;
+    display: inline-block;
+    width: var(--pill-width);
+    height: var(--pill-height);
+    cursor: pointer;
+    margin: 0;
+    border-radius: 50px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.custom-pill-toggle input {
+    display: none;
+}
+
+/* 1. Track (Rãnh trượt & Background) */
+.pill-track {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #f43f5e; /* Màu đỏ hồng hiện đại hơn #ef4444 */
+    border-radius: 50px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 4px 15px rgba(244, 63, 94, 0.3);
+    overflow: hidden;
+}
+
+/* 2. Thumb (Nút tròn gạt chứa Icon) */
+.pill-thumb {
+    position: absolute;
+    top: var(--thumb-margin); 
+    left: var(--thumb-margin);
+    height: var(--thumb-size); 
+    width: var(--thumb-size);
+    background-color: #ffffff;
+    border-radius: 50px;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), width 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Icon bên trong bi trượt */
+.icon-status {
+    position: absolute;
+    font-size: 1rem;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.icon-off { color: #f43f5e; opacity: 1; transform: scale(1) rotate(0deg); }
+.icon-on { color: var(--color-1); opacity: 0; transform: scale(0.5) rotate(-90deg); }
+
+/* Hiệu ứng đàn hồi (Squish) khi ấn giữ */
+.custom-pill-toggle:active .pill-thumb {
+    width: calc(var(--thumb-size) + 10px); 
+}
+.custom-pill-toggle input:checked + .pill-track:active .pill-thumb {
+    /* Trừ đi độ giãn để không bị tràn viền phải */
+    transform: translateX(calc(var(--pill-width) - var(--thumb-size) - 10px - (var(--thumb-margin) * 2)));
+}
+
+/* 3. Typography (Chữ bên trong) */
+.pill-text {
+    position: absolute;
+    top: 50%;
+    color: white;
+    font-weight: 700;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 1;
+    user-select: none;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.text-off { right: 20px; opacity: 1; transform: translateY(-50%) translateX(0); }
+.text-on { left: 20px; opacity: 0; transform: translateY(-50%) translateX(-15px); }
+
+/* =========================================
+   4. TRẠNG THÁI ON (BẬT NHẬN CHUYẾN) 
+========================================= */
+.custom-pill-toggle input:checked + .pill-track {
+    background-color: var(--color-1);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1), 0 4px 15px rgba(0, 177, 79, 0.35); 
+}
+
+/* Tự động dịch chuyển bi dựa trên công thức biến CSS */
+.custom-pill-toggle input:checked + .pill-track .pill-thumb {
+    transform: translateX(calc(var(--pill-width) - var(--thumb-size) - (var(--thumb-margin) * 2)));
+}
+
+/* Đổi Icon */
+.custom-pill-toggle input:checked + .pill-track .icon-off { opacity: 0; transform: scale(0.5) rotate(90deg); }
+.custom-pill-toggle input:checked + .pill-track .icon-on { opacity: 1; transform: scale(1) rotate(0deg); }
+
+/* Đổi Chữ lướt */
+.custom-pill-toggle input:checked + .pill-track .text-off {
+    opacity: 0; transform: translateY(-50%) translateX(15px);
+}
+.custom-pill-toggle input:checked + .pill-track .text-on {
+    opacity: 1; transform: translateY(-50%) translateX(0);
+}
+
+/* =========================================
+   5. TRẠNG THÁI KHÓA (KHI VÍ HẾT TIỀN)
+========================================= */
+.custom-pill-toggle input:disabled + .pill-track {
+    background-color: #cbd5e1;
+    box-shadow: none;
+    cursor: not-allowed;
+}
+.custom-pill-toggle input:disabled + .pill-track .pill-thumb {
+    background-color: #f1f5f9;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+.custom-pill-toggle input:disabled + .pill-track .icon-off {
+    color: #94a3b8;
+}
+        </style>
+</head>
+<body>
+    <label class="custom-pill-toggle" title="Thay đổi trạng thái">
+    <input type="checkbox" id="navOnlineToggle" onchange="handleOnlineToggle()">
+    <div class="pill-track">
+        <span class="pill-text text-off">Tạm nghỉ</span>
+        <span class="pill-text text-on">Nhận chuyến</span>
+        <div class="pill-thumb">
+            <i class="fa-solid fa-moon icon-status icon-off"></i>
+            <i class="fa-solid fa-satellite-dish icon-status icon-on"></i>
+        </div>
+    </div>
+</label>
+</body>
+</html>

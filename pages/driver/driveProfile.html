@@ -1,1104 +1,2601 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>FleetFlow - Driver Workspace</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
     <link rel="stylesheet" href="../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../assets/img/logo1.jpg" />
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* =========================================
+      /* =========================================
            1. NỀN TẢNG & BIẾN CƠ SỞ
         ========================================= */
-        :root {
-            --color-1: #00B14F; 
-            --color-1-dark: #009640;
-            --color-dark: #0f172a;
-            --color-bg: #f4f7fe;
-            --color-2: #FFFFFF;
-            --blue: #2563EB;
-            --danger: #EF4444;
-            --warning: #F59E0B;
-            --text-muted: #64748b;
-        }
+      :root {
+        --color-1: #00b14f;
+        --color-1-dark: #009640;
+        --color-dark: #0f172a;
+        --color-bg: #f4f7fe;
+        --color-2: #ffffff;
+        --blue: #2563eb;
+        --danger: #ef4444;
+        --warning: #f59e0b;
+        --text-muted: #64748b;
+      }
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--color-bg);
-            color: var(--color-dark);
-            margin: 0; overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: var(--color-bg);
+        color: var(--color-dark);
+        margin: 0;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
 
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+      ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+      }
 
-        /* =========================================
+      /* =========================================
            2. ANIMATIONS & CHUYỂN TAB (SPA)
         ========================================= */
-        .tab-section { display: none; }
-        .tab-section.active {
-            display: block;
-            animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+      .tab-section {
+        display: none;
+      }
+      .tab-section.active {
+        display: block;
+        animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
 
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(15px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+      @keyframes slideUpFade {
+        from {
+          opacity: 0;
+          transform: translateY(15px) scale(0.98);
         }
-
-        .animate-fade-up {
-            opacity: 0; transform: translateY(20px);
-            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
         }
-        .delay-1 { animation-delay: 0.1s; }
-        .delay-2 { animation-delay: 0.2s; }
-        .delay-3 { animation-delay: 0.3s; }
-        .delay-4 { animation-delay: 0.4s; }
+      }
 
-        /* =========================================
+      .animate-fade-up {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .delay-1 {
+        animation-delay: 0.1s;
+      }
+      .delay-2 {
+        animation-delay: 0.2s;
+      }
+      .delay-3 {
+        animation-delay: 0.3s;
+      }
+      .delay-4 {
+        animation-delay: 0.4s;
+      }
+
+      /* =========================================
            3. NAVBAR & GÓC PHẢI
         ========================================= */
-        .custom-navbar {
-            background-color: var(--color-1); height: 70px; padding: 0 !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); z-index: 1050;
-        }
-        .custom-navbar .container-base {
-            display: flex; align-items: center; justify-content: space-between;
-            width: 100%; max-width: 100% !important; padding: 0 !important; margin: 0 !important;
-            height: 100%; position: relative;
-        }
-        .brand-overflow {
-            position: relative; height: 70px; display: flex; align-items: center;
-            padding: 0 !important; padding-left: 20px !important; margin: 0 !important; text-decoration: none;
-        }
-        .brand-overflow .logo-img { height: 100%; width: auto; object-fit: contain; }
-        
-        .navbar-slogan {
-            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            color: rgba(255, 255, 255, 0.95); font-size: 1.5rem; font-weight: 600;
-            letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; pointer-events: none;
-        }
+      .custom-navbar {
+        background-color: var(--color-1);
+        height: 70px;
+        padding: 0 !important;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        z-index: 1050;
+      }
+      .custom-navbar .container-base {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 100%;
+        position: relative;
+      }
+      .brand-overflow {
+        position: relative;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        padding: 0 !important;
+        padding-left: 20px !important;
+        margin: 0 !important;
+        text-decoration: none;
+      }
+      .brand-overflow .logo-img {
+        height: 100%;
+        width: auto;
+        object-fit: contain;
+      }
 
-        .user-profile {
-            display: flex; align-items: center; gap: 12px; color: white; cursor: pointer;
-            padding-right: 20px !important; margin: 0 !important;
-        }
-        
-        .nav-right-actions { display: flex; align-items: center; gap: 24px; }
-        
-        /* Nút Công tắc trạng thái */
-        /* =========================================
-           THIẾT KẾ NÚT NHẬN CHUYẾN TÀI XẾ (MỚI)
+      .navbar-slogan {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        color: rgba(255, 255, 255, 0.95);
+        font-size: 1.5rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        white-space: nowrap;
+        pointer-events: none;
+      }
+
+      .user-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: white;
+        cursor: pointer;
+        padding-right: 20px !important;
+        margin: 0 !important;
+      }
+
+      .nav-right-actions {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+
+      /* =========================================
+   THIẾT KẾ NÚT NHẬN CHUYẾN TÀI XẾ (PREMIUM UI)
+========================================= */
+      /* =========================================
+   THIẾT KẾ NÚT NHẬN CHUYẾN TÀI XẾ (PREMIUM UI)
+========================================= */
+      .driver-status-wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .custom-pill-toggle {
+        /* Đưa các chỉ số vào biến để dễ quản lý và tự động scale */
+        --pill-width: 170px;
+        --pill-height: 44px;
+        --thumb-size: 36px;
+        --thumb-margin: 4px;
+
+        position: relative;
+        display: inline-block;
+        width: var(--pill-width);
+        height: var(--pill-height);
+        cursor: pointer;
+        margin: 0;
+        border-radius: 50px;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .custom-pill-toggle input {
+        display: none;
+      }
+
+      /* 1. Track (Rãnh trượt & Background) */
+      .pill-track {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgb(
+          231,
+          91,
+          115
+        ); /* Màu đỏ hồng hiện đại hơn #ef4444 */
+        border-radius: 50px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow:
+          inset 0 2px 4px rgba(0, 0, 0, 0.1),
+          0 4px 15px rgba(244, 63, 94, 0.3);
+        overflow: hidden;
+      }
+
+      /* 2. Thumb (Nút tròn gạt chứa Icon) */
+      .pill-thumb {
+        position: absolute;
+        top: var(--thumb-margin);
+        left: var(--thumb-margin);
+        height: var(--thumb-size);
+        width: var(--thumb-size);
+        background-color: #ffffff;
+        border-radius: 50px;
+        transition:
+          transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+          width 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      /* Icon bên trong bi trượt */
+      .icon-status {
+        position: absolute;
+        font-size: 1rem;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .icon-off {
+        color: #e0314e;
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+      .icon-on {
+        color: #009640;
+        opacity: 0;
+        transform: scale(0.5) rotate(-90deg);
+      }
+
+      /* Hiệu ứng đàn hồi (Squish) khi ấn giữ */
+      .custom-pill-toggle:active .pill-thumb {
+        width: calc(var(--thumb-size) + 10px);
+      }
+      .custom-pill-toggle input:checked + .pill-track:active .pill-thumb {
+        /* Trừ đi độ giãn để không bị tràn viền phải */
+        transform: translateX(
+          calc(
+            var(--pill-width) - var(--thumb-size) - 10px -
+              (var(--thumb-margin) * 2)
+          )
+        );
+      }
+
+      /* 3. Typography (Chữ bên trong) */
+      .pill-text {
+        position: absolute;
+        top: 50%;
+        color: white;
+        font-weight: 700;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        z-index: 1;
+        user-select: none;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Tinh chỉnh lại tọa độ lề chữ để căn giữa không gian trống */
+      .text-off {
+        /* Dịch neo ra giữa phần trống bên phải viên bi */
+        left: calc(50% + var(--thumb-size) / 2);
+        transform: translate(-50%, -50%);
+        opacity: 1;
+      }
+
+      .text-on { left: 25px; opacity: 0; transform: translateY(-50%) translateX(-10px); }
+
+      /* =========================================
+   4. TRẠNG THÁI ON (BẬT NHẬN CHUYẾN) 
+========================================= */
+      .custom-pill-toggle input:checked + .pill-track {
+        background-color: #009640;
+        box-shadow:
+          inset 0 2px 4px rgba(0, 0, 0, 0.1),
+          0 4px 15px rgba(0, 177, 79, 0.35);
+      }
+
+      /* Tự động dịch chuyển bi dựa trên công thức biến CSS */
+      .custom-pill-toggle input:checked + .pill-track .pill-thumb {
+        transform: translateX(
+          calc(
+            var(--pill-width) - var(--thumb-size) - (var(--thumb-margin) * 2)
+          )
+        );
+      }
+
+      /* Đổi Icon */
+      .custom-pill-toggle input:checked + .pill-track .icon-off {
+        opacity: 0;
+        transform: scale(0.5) rotate(90deg);
+      }
+      .custom-pill-toggle input:checked + .pill-track .icon-on {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
+
+      /* Đổi Chữ lướt */
+      .custom-pill-toggle input:checked + .pill-track .text-off {
+        opacity: 0;
+        transform: translateY(-50%) translateX(15px);
+      }
+      .custom-pill-toggle input:checked + .pill-track .text-on {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+      }
+
+      /* =========================================
+   5. TRẠNG THÁI KHÓA (KHI VÍ HẾT TIỀN)
+========================================= */
+      .custom-pill-toggle input:disabled + .pill-track {
+        background-color: #cbd5e1;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+      .custom-pill-toggle input:disabled + .pill-track .pill-thumb {
+        background-color: #f1f5f9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .custom-pill-toggle input:disabled + .pill-track .icon-off {
+        color: #94a3b8;
+      }
+
+      /* =========================================
+   5. TRẠNG THÁI KHÓA (KHI VÍ HẾT TIỀN)
+========================================= */
+      .custom-pill-toggle input:disabled + .pill-track {
+        background-color: #cbd5e1;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+      .custom-pill-toggle input:disabled + .pill-track .pill-thumb {
+        background-color: #f1f5f9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+      .custom-pill-toggle input:disabled + .pill-track .icon-off {
+        color: #94a3b8;
+      }
+
+      /* =========================================
+           5. TRẠNG THÁI KHÓA (KHI VÍ HẾT TIỀN)
         ========================================= */
-        .driver-status-wrapper {
-            display: flex; align-items: center;
-        }
+      .custom-pill-toggle input:disabled + .pill-track {
+        background-color: #cbd5e1;
+        box-shadow: none;
+        cursor: not-allowed;
+      }
+      .custom-pill-toggle input:disabled + .pill-track .pill-thumb {
+        background-color: #f1f5f9;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
 
-        .custom-pill-toggle {
-            position: relative;
-            display: inline-block;
-            width: 150px; /* Độ rộng bằng với thiết kế của bạn */
-            height: 48px;
-            cursor: pointer;
-            margin: 0;
-            border-radius: 50px;
-        }
+      .notification-bell {
+        position: relative;
+        color: white;
+        font-size: 1.4rem;
+        cursor: pointer;
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .notification-bell:hover {
+        transform: scale(1.15) rotate(10deg);
+      }
 
-        .custom-pill-toggle input {
-            opacity: 0; width: 0; height: 0; margin: 0;
-        }
+      /* Dropdown Profile */
+      .user-profile-dropdown {
+        position: relative;
+        padding: 10px 0;
+      }
+      .user-profile-trigger {
+        cursor: pointer;
+        transition: opacity 0.3s;
+        display: flex;
+        align-items: center;
+      }
+      .avatar-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        object-fit: cover;
+        transition: all 0.3s;
+        background: white;
+      }
+      .transition-icon {
+        transition: transform 0.3s;
+        font-size: 0.8rem;
+        margin-left: 8px;
+      }
+      .user-profile-dropdown:hover .avatar-img {
+        transform: scale(1.1);
+        border-color: #f1c40f;
+      }
+      .user-profile-dropdown:hover .transition-icon {
+        transform: rotate(-180deg);
+        color: #f1c40f;
+      }
 
-        /* Rãnh trượt & Màu nền (Mặc định là màu Đỏ - Tạm nghỉ) */
-        .pill-track {
-            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #EF4444; 
-            border: 3px solid #1e293b; /* Viền đen dày giống bản thiết kế */
-            border-radius: 50px;
-            transition: background-color 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.4s;
-            overflow: hidden;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-        }
+      .dropdown-menu-modern {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        width: 240px;
+        background-color: #ffffff;
+        border-radius: 16px;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(15px);
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1060;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+      .user-profile-dropdown:hover .dropdown-menu-modern {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+      .dropdown-item-custom {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 24px;
+        color: #4a5568;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: all 0.2s;
+      }
+      .dropdown-item-custom i {
+        font-size: 1.1rem;
+        color: #a0aec0;
+        transition: color 0.2s;
+        width: 20px;
+        text-align: center;
+      }
+      .dropdown-item-custom:hover {
+        background-color: #f8fafc;
+        color: var(--color-1);
+        padding-left: 28px;
+      }
+      .dropdown-item-custom:hover i {
+        color: var(--color-1);
+      }
+      .logout-item:hover {
+        background-color: #fff5f5 !important;
+        color: #e53e3e !important;
+      }
+      .logout-item:hover i {
+        color: #e53e3e !important;
+      }
 
-        /* Nút tròn màu trắng (Thumb) */
-        .pill-thumb {
-            position: absolute; top: 3px; left: 4px;
-            height: 36px; width: 36px;
-            background-color: white; border-radius: 50%;
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 2;
-        }
+      .wallet-alert-banner {
+        display: none;
+        background-color: #fef2f2;
+        color: #ef4444;
+        border-bottom: 1px solid #fecaca;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-align: center;
+        position: fixed;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        z-index: 1040;
+        animation: slideDownAlert 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
+      }
 
-        /* Hiệu ứng hào quang (Glow) khi hover vào nút */
-        .custom-pill-toggle:hover .pill-thumb {
-            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.2);
-        }
-
-        /* CSS cho chữ bên trong */
-        .pill-text {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            color: white; font-weight: 800; font-size: 0.95rem;
-            letter-spacing: 0.5px; white-space: nowrap;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            z-index: 1;
-        }
-
-        .text-off { right: 18px; opacity: 1; transform: translate(0, -50%); }
-        .text-on { left: 16px; opacity: 0; transform: translate(-10px, -50%); }
-
-        /* =========================================
-           TRẠNG THÁI KHI BẬT (NHẬN CHUYẾN) 
-        ========================================= */
-        .custom-pill-toggle input:checked + .pill-track {
-            background-color: var(--color-1); /* Đổi sang màu Xanh */
-            border-color: #064e3b;
-        }
-
-        .custom-pill-toggle input:checked + .pill-track .pill-thumb {
-            transform: translateX(100px); /* Đẩy nút tròn sang phải */
-        }
-
-        .custom-pill-toggle input:checked + .pill-track .text-off {
-            opacity: 0; transform: translate(10px, -50%); /* Đẩy chữ Tạm nghỉ trượt mất */
-        }
-
-        .custom-pill-toggle input:checked + .pill-track .text-on {
-            opacity: 1; transform: translate(0, -50%); /* Chữ Nhận chuyến trượt vào */
-        }
-
-        /* Trạng thái Disable (Khi ví hết tiền) */
-        .custom-pill-toggle input:disabled + .pill-track {
-            opacity: 0.5; filter: grayscale(50%); cursor: not-allowed;
-        }
-        
-        .notification-bell { position: relative; color: white; font-size: 1.4rem; cursor: pointer; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .notification-bell:hover { transform: scale(1.15) rotate(10deg); }
-        
-        /* Dropdown Profile */
-        .user-profile-dropdown { position: relative; padding: 10px 0; }
-        .user-profile-trigger { cursor: pointer; transition: opacity 0.3s; display: flex; align-items: center; }
-        .avatar-img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.8); object-fit: cover; transition: all 0.3s; background: white;}
-        .transition-icon { transition: transform 0.3s; font-size: 0.8rem; margin-left: 8px; }
-        .user-profile-dropdown:hover .avatar-img { transform: scale(1.1); border-color: #f1c40f; }
-        .user-profile-dropdown:hover .transition-icon { transform: rotate(-180deg); color: #f1c40f; }
-
-        .dropdown-menu-modern {
-            position: absolute; top: 100%; right: 0; width: 240px; background-color: #ffffff; border-radius: 16px;
-            border: 1px solid rgba(0, 0, 0, 0.05); opacity: 0; visibility: hidden; transform: translateY(15px);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 1060; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden;
-        }
-        .user-profile-dropdown:hover .dropdown-menu-modern { opacity: 1; visibility: visible; transform: translateY(0); }
-        .dropdown-item-custom { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: #4a5568; text-decoration: none; font-size: 0.95rem; font-weight: 500; transition: all 0.2s; }
-        .dropdown-item-custom i { font-size: 1.1rem; color: #a0aec0; transition: color 0.2s; width: 20px; text-align: center;}
-        .dropdown-item-custom:hover { background-color: #f8fafc; color: var(--color-1); padding-left: 28px; }
-        .dropdown-item-custom:hover i { color: var(--color-1); }
-        .logout-item:hover { background-color: #fff5f5 !important; color: #e53e3e !important; }
-        .logout-item:hover i { color: #e53e3e !important; }
-
-        .wallet-alert-banner {
-            display: none; background-color: #fef2f2; color: #ef4444; border-bottom: 1px solid #fecaca;
-            padding: 10px 20px; font-size: 0.9rem; font-weight: 700; text-align: center;
-            position: fixed; top: 70px; left: 0; width: 100%; z-index: 1040;
-            animation: slideDownAlert 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1);
-        }
-
-        /* =========================================
+      /* =========================================
            4. BỐ CỤC CHUNG (SIDEBAR & MAIN)
         ========================================= */
-        .app-wrapper { display: flex; margin-top: 70px; min-height: calc(100vh - 70px); }
+      .app-wrapper {
+        display: flex;
+        margin-top: 70px;
+        min-height: calc(100vh - 70px);
+      }
 
-        .desktop-sidebar {
-            width: 280px; background: white; border-right: 1px solid #e2e8f0; position: fixed;
-            top: 70px; bottom: 0; left: 0; padding: 24px 0; z-index: 1000; overflow-y: auto;
-        }
-        .sidebar-menu { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px;}
-        .sidebar-menu a {
-            display: flex; align-items: center; gap: 14px; padding: 14px 24px; color: #4a5568; cursor: pointer;
-            text-decoration: none; font-weight: 500; font-size: 0.95rem; border-left: 4px solid transparent; transition: all 0.3s;
-        }
-        .sidebar-menu a i { font-size: 1.2rem; width: 24px; text-align: center; transition: 0.3s;}
-        .sidebar-menu a:hover, .sidebar-menu a.active { background: rgba(0, 177, 79, 0.05); color: var(--color-1); border-left-color: var(--color-1); font-weight: 600;}
-        .sidebar-menu a:hover { transform: translateX(5px); }
-        .sidebar-menu a.active i { transform: scale(1.2); }
+      .desktop-sidebar {
+        width: 280px;
+        background: white;
+        border-right: 1px solid #e2e8f0;
+        position: fixed;
+        top: 70px;
+        bottom: 0;
+        left: 0;
+        padding: 24px 0;
+        z-index: 1000;
+        overflow-y: auto;
+      }
+      .sidebar-menu {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .sidebar-menu a {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 24px;
+        color: #4a5568;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        border-left: 4px solid transparent;
+        transition: all 0.3s;
+      }
+      .sidebar-menu a i {
+        font-size: 1.2rem;
+        width: 24px;
+        text-align: center;
+        transition: 0.3s;
+      }
+      .sidebar-menu a:hover,
+      .sidebar-menu a.active {
+        background: rgba(0, 177, 79, 0.05);
+        color: var(--color-1);
+        border-left-color: var(--color-1);
+        font-weight: 600;
+      }
+      .sidebar-menu a:hover {
+        transform: translateX(5px);
+      }
+      .sidebar-menu a.active i {
+        transform: scale(1.2);
+      }
 
-        .main-content { flex: 1; margin-left: 280px; padding: 32px; max-width: 1400px; }
+      .main-content {
+        flex: 1;
+        margin-left: 280px;
+        padding: 32px;
+        max-width: 1400px;
+      }
 
-        .bottom-nav {
-            display: none; position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px);
-            border-top: 1px solid rgba(0, 0, 0, 0.05); justify-content: space-around; padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0; z-index: 1000; box-shadow: 0 -5px 20px rgba(0,0,0,0.03);
-        }
-        .bottom-nav .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94a3b8; font-size: 0.75rem; font-weight: 700; text-decoration: none; transition: all 0.3s; flex: 1; position: relative; cursor: pointer;}
-        .bottom-nav .nav-item i { font-size: 1.4rem; transition: transform 0.3s; }
-        .bottom-nav .nav-item:hover, .bottom-nav .nav-item.active { color: var(--color-1); }
-        .bottom-nav .nav-item.active i { transform: translateY(-4px) scale(1.1); }
-        .bottom-nav .nav-item.active::after { content: ''; position: absolute; bottom: -8px; width: 6px; height: 6px; background: var(--color-1); border-radius: 50%; }
+      .bottom-nav {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(15px);
+        border-top: 1px solid rgba(0, 0, 0, 0.05);
+        justify-content: space-around;
+        padding: 12px 0 calc(12px + env(safe-area-inset-bottom)) 0;
+        z-index: 1000;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.03);
+      }
+      .bottom-nav .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        color: #94a3b8;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s;
+        flex: 1;
+        position: relative;
+        cursor: pointer;
+      }
+      .bottom-nav .nav-item i {
+        font-size: 1.4rem;
+        transition: transform 0.3s;
+      }
+      .bottom-nav .nav-item:hover,
+      .bottom-nav .nav-item.active {
+        color: var(--color-1);
+      }
+      .bottom-nav .nav-item.active i {
+        transform: translateY(-4px) scale(1.1);
+      }
+      .bottom-nav .nav-item.active::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        width: 6px;
+        height: 6px;
+        background: var(--color-1);
+        border-radius: 50%;
+      }
 
-        /* =========================================
+      /* =========================================
            5. TAB 1: TRẠM PHÁT SÓNG (JOB BOARD)
         ========================================= */
-        .job-tabs { display: flex; border-bottom: 2px solid #E5E7EB; margin-bottom: 24px; }
-        .job-tab-item { flex: 1; text-align: center; padding: 14px 20px; font-weight: 700; font-size: 1.05rem; color: #64748b; cursor: pointer; position: relative; transition: all 0.3s; }
-        .job-tab-item.active { color: var(--color-1); }
-        .job-tab-item.active::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background-color: var(--color-1); border-radius: 3px 3px 0 0; }
-        .tab-badge { position: absolute; top: 6px; right: 10px; background: #ef4444; color: white; font-size: 0.75rem; font-weight: 800; padding: 2px 8px; border-radius: 50px; }
+      .job-tabs {
+        display: flex;
+        border-bottom: 2px solid #e5e7eb;
+        margin-bottom: 24px;
+      }
+      .job-tab-item {
+        flex: 1;
+        text-align: center;
+        padding: 14px 20px;
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #64748b;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s;
+      }
+      .job-tab-item.active {
+        color: var(--color-1);
+      }
+      .job-tab-item.active::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: var(--color-1);
+        border-radius: 3px 3px 0 0;
+      }
+      .tab-badge {
+        position: absolute;
+        top: 6px;
+        right: 10px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 800;
+        padding: 2px 8px;
+        border-radius: 50px;
+      }
 
-        .job-grid-pc { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 24px; }
+      .job-grid-pc {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+        gap: 24px;
+      }
 
-        .broadcast-card {
-            background: white; border-radius: 20px; border: 1px solid rgba(0, 0, 0, 0.03);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative; overflow: hidden; display: flex; flex-direction: column;
+      .broadcast-card {
+        background: white;
+        border-radius: 20px;
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+        transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .broadcast-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+        border-color: #e2e8f0;
+      }
+
+      .card-header-custom {
+        padding: 20px;
+        border-bottom: 1px dashed #e5e7eb;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        background: #fafafa;
+      }
+      .bk-code {
+        font-weight: 800;
+        font-size: 1.1rem;
+        color: #0f172a;
+        display: block;
+        margin-bottom: 4px;
+        letter-spacing: -0.5px;
+      }
+      .bk-time {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .timer-box {
+        font-weight: 800;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: white;
+        padding: 6px 12px;
+        border-radius: 8px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      }
+      .timer-box.safe {
+        color: var(--color-1);
+        border-color: #d1fae5;
+      }
+      .timer-box.warning {
+        color: #f59e0b;
+        border-color: #fef3c7;
+      }
+      .timer-box.danger {
+        color: #ef4444;
+        border-color: #fee2e2;
+        background: #fef2f2;
+      }
+      .timer-box.danger i {
+        animation: shake 0.5s infinite;
+      }
+      @keyframes shake {
+        0%,
+        50%,
+        100% {
+          transform: rotate(0deg);
         }
-        .broadcast-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06); border-color: #e2e8f0; }
-
-        .card-header-custom { padding: 20px; border-bottom: 1px dashed #E5E7EB; display: flex; justify-content: space-between; align-items: flex-start; background: #FAFAFA;}
-        .bk-code { font-weight: 800; font-size: 1.1rem; color: #0f172a; display: block; margin-bottom: 4px; letter-spacing: -0.5px;}
-        .bk-time { font-size: 0.85rem; color: #64748b; font-weight: 600;}
-        
-        .timer-box { font-weight: 800; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; background: white; padding: 6px 12px; border-radius: 8px; border: 1px solid #E5E7EB; box-shadow: 0 2px 4px rgba(0,0,0,0.02);}
-        .timer-box.safe { color: var(--color-1); border-color: #D1FAE5;}
-        .timer-box.warning { color: #F59E0B; border-color: #FEF3C7;}
-        .timer-box.danger { color: #EF4444; border-color: #FEE2E2; background: #FEF2F2;}
-        .timer-box.danger i { animation: shake 0.5s infinite; }
-        @keyframes shake { 0%, 50%, 100% { transform: rotate(0deg); } 25% { transform: rotate(15deg); } 75% { transform: rotate(-15deg); } }
-
-        .card-body-custom { padding: 20px; flex: 1;}
-        .route-stepper { position: relative; padding-left: 24px; margin-bottom: 20px; }
-        .route-stepper::before { content: ''; position: absolute; left: 7px; top: 14px; bottom: 14px; width: 2px; border-left: 2px dashed #cbd5e1; }
-        .step-point { position: relative; font-size: 1rem; font-weight: 700; color: #1e293b; margin-bottom: 20px; line-height: 1.4;}
-        .step-point:last-child { margin-bottom: 0; }
-        .step-point::before { content: ''; position: absolute; left: -24px; top: 4px; width: 14px; height: 14px; border-radius: 50%; background: #FFF; border: 4px solid; z-index: 2; box-shadow: 0 0 0 3px white;}
-        .step-pickup::before { border-color: var(--color-1); }
-        .step-dropoff::before { border-color: #ef4444; }
-
-        .tags-container { display: flex; gap: 8px; flex-wrap: wrap; }
-        .tag-pill { background: #F1F5F9; color: #475569; font-size: 0.8rem; font-weight: 700; padding: 6px 12px; border-radius: 6px; border: 1px solid #E2E8F0;}
-
-        .card-footer-custom { padding: 20px; background: #ffffff; border-top: 1px solid #E5E7EB; }
-        .finance-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .finance-label { font-size: 0.95rem; color: #64748b; font-weight: 600;}
-        .finance-amount { font-size: 1.6rem; font-weight: 800; color: var(--color-1); letter-spacing: -0.5px;}
-
-        .btn-accept {
-            width: 100%; padding: 16px; background: var(--color-1); color: #FFF; border: none; border-radius: 12px; font-size: 1.05rem; font-weight: 800; text-transform: uppercase; transition: all 0.3s; box-shadow: 0 4px 15px rgba(0, 177, 79, 0.3);
+        25% {
+          transform: rotate(15deg);
         }
-        .btn-accept:hover:not(:disabled) { background: #009640; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 177, 79, 0.4); }
-        .btn-accept:disabled { opacity: 0.7; cursor: not-allowed; transform: none; box-shadow: none; background: #D1D5DB; color: #6B7280;}
+        75% {
+          transform: rotate(-15deg);
+        }
+      }
 
-        .empty-state { display: none; flex-direction: column; align-items: center; justify-content: center; height: 50vh; text-align: center; width: 100%; grid-column: 1 / -1;}
-        .radar-icon { font-size: 5rem; color: #CBD5E1; margin-bottom: 24px; animation: scan 2s linear infinite;}
-        @keyframes scan { 0%, 100% { transform: scale(0.9); opacity: 0.5; } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 20px #CBD5E1);} }
-        .empty-state p { color: #64748b; font-size: 1rem; font-weight: 600; }
+      .card-body-custom {
+        padding: 20px;
+        flex: 1;
+      }
+      .route-stepper {
+        position: relative;
+        padding-left: 24px;
+        margin-bottom: 20px;
+      }
+      .route-stepper::before {
+        content: "";
+        position: absolute;
+        left: 7px;
+        top: 14px;
+        bottom: 14px;
+        width: 2px;
+        border-left: 2px dashed #cbd5e1;
+      }
+      .step-point {
+        position: relative;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        line-height: 1.4;
+      }
+      .step-point:last-child {
+        margin-bottom: 0;
+      }
+      .step-point::before {
+        content: "";
+        position: absolute;
+        left: -24px;
+        top: 4px;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #fff;
+        border: 4px solid;
+        z-index: 2;
+        box-shadow: 0 0 0 3px white;
+      }
+      .step-pickup::before {
+        border-color: var(--color-1);
+      }
+      .step-dropoff::before {
+        border-color: #ef4444;
+      }
 
-        /* =========================================
+      .tags-container {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tag-pill {
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .card-footer-custom {
+        padding: 20px;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+      }
+      .finance-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      .finance-label {
+        font-size: 0.95rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+      .finance-amount {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--color-1);
+        letter-spacing: -0.5px;
+      }
+
+      .btn-accept {
+        width: 100%;
+        padding: 16px;
+        background: var(--color-1);
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        transition: all 0.3s;
+        box-shadow: 0 4px 15px rgba(0, 177, 79, 0.3);
+      }
+      .btn-accept:hover:not(:disabled) {
+        background: #009640;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 177, 79, 0.4);
+      }
+      .btn-accept:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+        background: #d1d5db;
+        color: #6b7280;
+      }
+
+      .empty-state {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 50vh;
+        text-align: center;
+        width: 100%;
+        grid-column: 1 / -1;
+      }
+      .radar-icon {
+        font-size: 5rem;
+        color: #cbd5e1;
+        margin-bottom: 24px;
+        animation: scan 2s linear infinite;
+      }
+      @keyframes scan {
+        0%,
+        100% {
+          transform: scale(0.9);
+          opacity: 0.5;
+        }
+        50% {
+          transform: scale(1.1);
+          opacity: 1;
+          filter: drop-shadow(0 0 20px #cbd5e1);
+        }
+      }
+      .empty-state p {
+        color: #64748b;
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      /* =========================================
            6. TAB 2: LỊCH SỬ THU NHẬP
         ========================================= */
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 16px;}
-        .page-title { font-size: 1.6rem; font-weight: 800; color: var(--color-dark); margin: 0;}
-        .filter-wrapper { position: relative; }
-        .filter-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--color-1); font-size: 1.1rem; pointer-events: none;}
-        .date-picker { padding: 12px 16px 12px 42px; border: 1px solid #e2e8f0; border-radius: 12px; background: white; font-weight: 700; color: var(--color-dark); outline: none; cursor: pointer; transition: all 0.3s; appearance: none; padding-right: 40px; }
-        .filter-wrapper::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; font-size: 0.8rem;}
-        
-        .grid-3-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 32px; }
-        .stat-card { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); transition: all 0.4s; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 15px 35px rgba(0,0,0,0.08); }
-        .card-hero { background: linear-gradient(135deg, var(--color-1) 0%, var(--color-1-dark) 100%); color: white; box-shadow: 0 10px 30px rgba(0, 177, 79, 0.25); }
-        
-        .card-header-flex { display: flex; justify-content: space-between; margin-bottom: 12px; }
-        .card-label { font-size: 0.95rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
-        .card-hero .card-label { color: rgba(255,255,255,0.9); }
-        .card-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; background: #f1f5f9; color: var(--blue);}
-        .card-hero .card-icon { background: rgba(255,255,255,0.2); color: white;}
-        .icon-warning { color: var(--warning); background: #fef3c7; }
-        .card-value { font-size: 2.2rem; font-weight: 800; margin-bottom: 12px;}
-        .trend-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
-        .trend-up { background: #dcfce7; color: #166534; }
-        .card-hero .trend-up { background: rgba(255,255,255,0.2); color: white;}
-        .trend-down { background: #fee2e2; color: #991b1b; }
+      .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .page-title {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--color-dark);
+        margin: 0;
+      }
+      .filter-wrapper {
+        position: relative;
+      }
+      .filter-wrapper i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--color-1);
+        font-size: 1.1rem;
+        pointer-events: none;
+      }
+      .date-picker {
+        padding: 12px 16px 12px 42px;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        background: white;
+        font-weight: 700;
+        color: var(--color-dark);
+        outline: none;
+        cursor: pointer;
+        transition: all 0.3s;
+        appearance: none;
+        padding-right: 40px;
+      }
+      .filter-wrapper::after {
+        content: "\f078";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        pointer-events: none;
+        font-size: 0.8rem;
+      }
 
-        .chart-container { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 32px; height: 350px;}
+      .grid-3-col {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 24px;
+        margin-bottom: 32px;
+      }
+      .stat-card {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        transition: all 0.4s;
+      }
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+      }
+      .card-hero {
+        background: linear-gradient(
+          135deg,
+          var(--color-1) 0%,
+          var(--color-1-dark) 100%
+        );
+        color: white;
+        box-shadow: 0 10px 30px rgba(0, 177, 79, 0.25);
+      }
 
-        /* Bảng Data Tab 2 */
-        .data-section { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); overflow: hidden; }
-        .table-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;}
-        .table-title { font-size: 1.25rem; font-weight: 800; color: var(--color-dark); margin: 0;}
-        .btn-export { padding: 12px 20px; background: white; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 700; color: #475569; transition: all 0.3s; display: flex; align-items: center; gap: 8px;}
-        .btn-export:hover { border-color: var(--color-1); color: var(--color-1); background: #f0fdf4; transform: translateY(-2px); }
+      .card-header-flex {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+      }
+      .card-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+      }
+      .card-hero .card-label {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      .card-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        background: #f1f5f9;
+        color: var(--blue);
+      }
+      .card-hero .card-icon {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+      .icon-warning {
+        color: var(--warning);
+        background: #fef3c7;
+      }
+      .card-value {
+        font-size: 2.2rem;
+        font-weight: 800;
+        margin-bottom: 12px;
+      }
+      .trend-badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .trend-up {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .card-hero .trend-up {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+      }
+      .trend-down {
+        background: #fee2e2;
+        color: #991b1b;
+      }
 
-        .desktop-table-wrapper { overflow-x: auto; }
-        .custom-table { width: 100%; border-collapse: collapse; min-width: 1000px;}
-        .custom-table th { background: #f8fafc; padding: 18px 24px; text-align: left; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #e2e8f0;}
-        .custom-table td { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; transition: all 0.2s;}
-        .custom-table tbody tr:hover { transform: scale(1.005); box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; position: relative; z-index: 10; border-radius: 12px;}
-        
-        .trx-code { font-weight: 800; color: var(--color-dark); display: block; margin-bottom: 4px; font-size: 1.05rem;}
-        .trx-time { font-size: 0.85rem; color: var(--text-muted); font-weight: 600;}
-        .ref-link { color: var(--blue); font-weight: 700; text-decoration: none; padding: 4px 8px; background: #eff6ff; border-radius: 6px;}
-        .amt-gross { font-weight: 700; color: #475569; }
-        .amt-com { font-weight: 700; color: var(--danger); background: #fef2f2; padding: 4px 8px; border-radius: 6px; }
-        .amt-net { font-weight: 800; color: var(--color-1); font-size: 1.15rem;}
-        .type-badge { padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;}
-        .badge-trip { background: #E0F2FE; color: #0369A1; }
-        .badge-comp { background: #FEF3C7; color: #B45309; }
+      .chart-container {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        margin-bottom: 32px;
+        height: 350px;
+      }
 
-        .mobile-trx-list { display: none; padding: 16px; flex-direction: column; gap: 16px; background: #f8fafc;}
-        .trx-mobile-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);}
-        .trx-mob-header { display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px dashed #e2e8f0;}
+      /* Bảng Data Tab 2 */
+      .data-section {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+      }
+      .table-header {
+        padding: 24px;
+        border-bottom: 1px solid #e2e8f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .table-title {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--color-dark);
+        margin: 0;
+      }
+      .btn-export {
+        padding: 12px 20px;
+        background: white;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-weight: 700;
+        color: #475569;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-export:hover {
+        border-color: var(--color-1);
+        color: var(--color-1);
+        background: #f0fdf4;
+        transform: translateY(-2px);
+      }
 
-        .pagination-container { display: flex; justify-content: flex-end; padding: 20px 24px; gap: 8px; border-top: 1px solid #e2e8f0; background: white;}
-        .page-btn { width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; border-radius: 10px; background: white; font-weight: 700; cursor: pointer; transition: 0.2s;}
-        .page-btn:hover { background: #f1f5f9; transform: translateY(-2px);}
-        .page-btn.active { background: var(--color-1); color: white; border-color: var(--color-1); }
+      .desktop-table-wrapper {
+        overflow-x: auto;
+      }
+      .custom-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1000px;
+      }
+      .custom-table th {
+        background: #f8fafc;
+        padding: 18px 24px;
+        text-align: left;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        border-bottom: 1px solid #e2e8f0;
+      }
+      .custom-table td {
+        padding: 20px 24px;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.2s;
+      }
+      .custom-table tbody tr:hover {
+        transform: scale(1.005);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        background: white;
+        position: relative;
+        z-index: 10;
+        border-radius: 12px;
+      }
 
-        /* =========================================
+      .trx-code {
+        font-weight: 800;
+        color: var(--color-dark);
+        display: block;
+        margin-bottom: 4px;
+        font-size: 1.05rem;
+      }
+      .trx-time {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 600;
+      }
+      .ref-link {
+        color: var(--blue);
+        font-weight: 700;
+        text-decoration: none;
+        padding: 4px 8px;
+        background: #eff6ff;
+        border-radius: 6px;
+      }
+      .amt-gross {
+        font-weight: 700;
+        color: #475569;
+      }
+      .amt-com {
+        font-weight: 700;
+        color: var(--danger);
+        background: #fef2f2;
+        padding: 4px 8px;
+        border-radius: 6px;
+      }
+      .amt-net {
+        font-weight: 800;
+        color: var(--color-1);
+        font-size: 1.15rem;
+      }
+      .type-badge {
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .badge-trip {
+        background: #e0f2fe;
+        color: #0369a1;
+      }
+      .badge-comp {
+        background: #fef3c7;
+        color: #b45309;
+      }
+
+      .mobile-trx-list {
+        display: none;
+        padding: 16px;
+        flex-direction: column;
+        gap: 16px;
+        background: #f8fafc;
+      }
+      .trx-mobile-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+      }
+      .trx-mob-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 16px;
+        padding-bottom: 16px;
+        border-bottom: 1px dashed #e2e8f0;
+      }
+
+      .pagination-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 20px 24px;
+        gap: 8px;
+        border-top: 1px solid #e2e8f0;
+        background: white;
+      }
+      .page-btn {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        background: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .page-btn:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+      }
+      .page-btn.active {
+        background: var(--color-1);
+        color: white;
+        border-color: var(--color-1);
+      }
+
+      /* =========================================
            7. TAB 3: TÀI KHOẢN & CÀI ĐẶT (MỚI THÊM)
         ========================================= */
-        .profile-header {
-            background: white; border-radius: 20px; padding: 32px; display: flex; align-items: center; gap: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 24px; position: relative; overflow: hidden;
-        }
-        .profile-header::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; 
-            background: linear-gradient(90deg, var(--color-1), #10b981);
-        }
-        .profile-avatar { 
-            width: 90px; height: 90px; border-radius: 50%; border: 4px solid #f1f5f9; 
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1); object-fit: cover; 
-        }
-        .profile-info h3 { margin: 0 0 8px 0; font-weight: 800; color: var(--color-dark); font-size: 1.5rem; }
-        .rating-badge { display: inline-flex; align-items: center; gap: 6px; background: #fffbeb; color: #d97706; padding: 6px 12px; border-radius: 50px; font-weight: 700; font-size: 0.9rem; }
-        
-        .btn-withdraw {
-            position: relative; overflow: hidden; background: white; border: 2px solid var(--color-1); color: var(--color-1);
-            padding: 12px 24px; border-radius: 12px; font-weight: 800; z-index: 1; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn-withdraw::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 0%; height: 100%;
-            background: var(--color-1); z-index: -1; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        .btn-withdraw:hover::before { width: 100%; }
-        .btn-withdraw:hover { color: white; box-shadow: 0 8px 20px rgba(0,177,79,0.3); transform: translateY(-3px); }
+      .profile-header {
+        background: white;
+        border-radius: 20px;
+        padding: 32px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+      }
+      .profile-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 6px;
+        background: linear-gradient(90deg, var(--color-1), #10b981);
+      }
+      .profile-avatar {
+        width: 90px;
+        height: 90px;
+        border-radius: 50%;
+        border: 4px solid #f1f5f9;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        object-fit: cover;
+      }
+      .profile-info h3 {
+        margin: 0 0 8px 0;
+        font-weight: 800;
+        color: var(--color-dark);
+        font-size: 1.5rem;
+      }
+      .rating-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fffbeb;
+        color: #d97706;
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
 
-        .setting-group { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 24px; }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #f1f5f9; transition: all 0.3s; cursor: pointer;}
-        .setting-item:last-child { border-bottom: none; }
-        .setting-item:hover { transform: translateX(8px); }
-        .setting-item .title { font-weight: 700; color: var(--color-dark); font-size: 1.05rem; }
-        .setting-item .desc { font-size: 0.85rem; color: #64748b; margin-top: 4px; font-weight: 500;}
-        
-        .setting-icon { 
-            width: 44px; height: 44px; border-radius: 12px; background: #f1f5f9; color: var(--color-1); 
-            display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.3s;
-        }
-        .setting-item:hover .setting-icon { background: var(--color-1); color: white; transform: rotate(15deg) scale(1.1); }
+      .btn-withdraw {
+        position: relative;
+        overflow: hidden;
+        background: white;
+        border: 2px solid var(--color-1);
+        color: var(--color-1);
+        padding: 12px 24px;
+        border-radius: 12px;
+        font-weight: 800;
+        z-index: 1;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-withdraw::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 0%;
+        height: 100%;
+        background: var(--color-1);
+        z-index: -1;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      .btn-withdraw:hover::before {
+        width: 100%;
+      }
+      .btn-withdraw:hover {
+        color: white;
+        box-shadow: 0 8px 20px rgba(0, 177, 79, 0.3);
+        transform: translateY(-3px);
+      }
 
-        /* =========================================
+      .setting-group {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        margin-bottom: 24px;
+      }
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 0;
+        border-bottom: 1px solid #f1f5f9;
+        transition: all 0.3s;
+        cursor: pointer;
+      }
+      .setting-item:last-child {
+        border-bottom: none;
+      }
+      .setting-item:hover {
+        transform: translateX(8px);
+      }
+      .setting-item .title {
+        font-weight: 700;
+        color: var(--color-dark);
+        font-size: 1.05rem;
+      }
+      .setting-item .desc {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-top: 4px;
+        font-weight: 500;
+      }
+
+      .setting-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        background: #f1f5f9;
+        color: var(--color-1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: 0.3s;
+      }
+      .setting-item:hover .setting-icon {
+        background: var(--color-1);
+        color: white;
+        transform: rotate(15deg) scale(1.1);
+      }
+
+      /* =========================================
            8. MODALS & TOASTS
         ========================================= */
-        .toast-system-container { z-index: 1060; }
-        .toast-premium-error { background-color: var(--danger) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3); }
-        .toast-premium-warning { background-color: var(--warning) !important; color: white !important; border: none; border-radius: 16px; box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3); }
-        
-        #successModal .modal-content { border-radius: 24px; border: none; text-align: center; padding: 40px 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.15);}
-        .check-circle { width: 90px; height: 90px; background: #D1FAE5; color: var(--color-1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 45px; margin: 0 auto 24px auto; box-shadow: 0 0 0 15px rgba(209, 250, 229, 0.5); animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);}
-        @keyframes popIn { 0% { transform: scale(0); } 80% { transform: scale(1.1); } 100% { transform: scale(1); } }
+      .toast-system-container {
+        z-index: 1060;
+      }
+      .toast-premium-error {
+        background-color: var(--danger) !important;
+        color: white !important;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(239, 68, 68, 0.3);
+      }
+      .toast-premium-warning {
+        background-color: var(--warning) !important;
+        color: white !important;
+        border: none;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(245, 158, 11, 0.3);
+      }
 
-        /* =========================================
+      #successModal .modal-content {
+        border-radius: 24px;
+        border: none;
+        text-align: center;
+        padding: 40px 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+      }
+      .check-circle {
+        width: 90px;
+        height: 90px;
+        background: #d1fae5;
+        color: var(--color-1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 45px;
+        margin: 0 auto 24px auto;
+        box-shadow: 0 0 0 15px rgba(209, 250, 229, 0.5);
+        animation: popIn 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes popIn {
+        0% {
+          transform: scale(0);
+        }
+        80% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      /* =========================================
            9. RESPONSIVE QUERIES
         ========================================= */
-        @media (max-width: 1024px) {
-            .desktop-sidebar { display: none; }
-            .bottom-nav { display: flex; }
-            .main-content { margin-left: 0; padding: 24px; padding-bottom: 100px; }
+      @media (max-width: 1024px) {
+        .desktop-sidebar {
+          display: none;
         }
-
-        @media (max-width: 768px) {
-            .page-header { flex-direction: column; align-items: flex-start; }
-            .header-actions { width: 100%; }
-            .filter-wrapper, .date-picker { width: 100%; }
-            .desktop-table-wrapper { display: none; }
-            .mobile-trx-list { display: flex; }
-            .table-header { flex-direction: column; align-items: flex-start; gap: 16px; border-bottom: none;}
-            .btn-export { width: 100%; justify-content: center;}
-            .profile-header { flex-direction: column; text-align: center; }
+        .bottom-nav {
+          display: flex;
         }
-
-        @media (min-width: 1920px) {
-            .app-wrapper { padding-left: 280px; justify-content: center; }
-            .main-content { margin-left: 0; max-width: 1800px; width: 100%; padding: 50px 80px; }
-            .page-title { font-size: 2.2rem; }
-            .stat-card { padding: 36px; border-radius: 24px; }
-            .card-value { font-size: 3.2rem; margin-bottom: 16px; }
-            .chart-container { height: 450px;}
+        .main-content {
+          margin-left: 0;
+          padding: 24px;
+          padding-bottom: 100px;
         }
+      }
 
-        /* =========================================
+      @media (max-width: 768px) {
+        .page-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .header-actions {
+          width: 100%;
+        }
+        .filter-wrapper,
+        .date-picker {
+          width: 100%;
+        }
+        .desktop-table-wrapper {
+          display: none;
+        }
+        .mobile-trx-list {
+          display: flex;
+        }
+        .table-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 16px;
+          border-bottom: none;
+        }
+        .btn-export {
+          width: 100%;
+          justify-content: center;
+        }
+        .profile-header {
+          flex-direction: column;
+          text-align: center;
+        }
+      }
+
+      @media (min-width: 1920px) {
+        .app-wrapper {
+          padding-left: 280px;
+          justify-content: center;
+        }
+        .main-content {
+          margin-left: 0;
+          max-width: 1800px;
+          width: 100%;
+          padding: 50px 80px;
+        }
+        .page-title {
+          font-size: 2.2rem;
+        }
+        .stat-card {
+          padding: 36px;
+          border-radius: 24px;
+        }
+        .card-value {
+          font-size: 3.2rem;
+          margin-bottom: 16px;
+        }
+        .chart-container {
+          height: 450px;
+        }
+      }
+
+      /* =========================================
            10. TAB LỊCH SỬ CHUYẾN ĐI (HISTORY)
         ========================================= */
-        .history-card { border-left: 4px solid transparent; }
-        .history-card.completed { border-left-color: var(--color-1); }
-        .history-card.cancelled { border-left-color: var(--danger); }
-        
-        .history-status { font-size: 0.8rem; font-weight: 700; padding: 4px 12px; border-radius: 50px; display: inline-flex; align-items: center; gap: 4px;}
-        .status-completed { background: #dcfce7; color: #166534; }
-        .status-cancelled { background: #fee2e2; color: #991b1b; }
-        
-        .rating-stars { color: #f59e0b; font-size: 0.9rem; letter-spacing: 2px;}
-        
-        /* Hiệu ứng Nút Xem chi tiết */
-        .btn-details {
-            background: #f1f5f9; color: var(--color-dark); border: none; padding: 12px 20px;
-            border-radius: 12px; font-weight: 700; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); width: 100%;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
-        }
-        .btn-details:hover { 
-            background: var(--color-1); color: white; 
-            transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2); 
-        }
-        .btn-details:active { transform: scale(0.98); }
+      .history-card {
+        border-left: 4px solid transparent;
+      }
+      .history-card.completed {
+        border-left-color: var(--color-1);
+      }
+      .history-card.cancelled {
+        border-left-color: var(--danger);
+      }
+
+      .history-status {
+        font-size: 0.8rem;
+        font-weight: 700;
+        padding: 4px 12px;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .status-completed {
+        background: #dcfce7;
+        color: #166534;
+      }
+      .status-cancelled {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .rating-stars {
+        color: #f59e0b;
+        font-size: 0.9rem;
+        letter-spacing: 2px;
+      }
+
+      /* Hiệu ứng Nút Xem chi tiết */
+      .btn-details {
+        background: #f1f5f9;
+        color: var(--color-dark);
+        border: none;
+        padding: 12px 20px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+      }
+      .btn-details:hover {
+        background: var(--color-1);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2);
+      }
+      .btn-details:active {
+        transform: scale(0.98);
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <header class="custom-navbar fixed-top">
-        <div class="container-base position-relative">
-            <a class="brand-overflow" href="#">
-                <img src="../assets/img/logo1.jpg" alt="FleetFlow" class="logo-img" />
-            </a>
+      <div class="container-base position-relative">
+        <a class="brand-overflow" href="#">
+          <img src="../assets/img/logo1.jpg" alt="FleetFlow" class="logo-img" />
+        </a>
 
-            <div class="navbar-slogan d-none d-md-block">TRẠM ĐIỀU VẬN TÀI XẾ</div>
+        <div class="navbar-slogan d-none d-md-block">TRẠM ĐIỀU VẬN TÀI XẾ</div>
 
-            <div class="user-profile">
-                <div class="nav-right-actions">
-                    <div class="driver-status-wrapper">
-                        <label class="custom-pill-toggle" title="Thay đổi trạng thái">
-                            <input type="checkbox" id="navOnlineToggle" onchange="handleOnlineToggle()">
-                            <div class="pill-track">
-                                <span class="pill-text text-off">Tạm nghỉ</span>
-                                <span class="pill-text text-on">Nhận chuyến</span>
-                                <div class="pill-thumb"></div>
-                            </div>
-                        </label>
-                    </div>
-
-                    <div class="notification-bell" title="Thông báo">
-                        <i class="fa-regular fa-bell"></i>
-                        <span class="notification-badge" id="notiCount">3</span>
-                    </div>
-
-                    <div class="user-profile-dropdown d-none d-md-block">
-                        <div class="user-profile-trigger d-flex align-items-center">
-                            <div class="d-none d-sm-block text-end me-2">
-                                <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Quang</div>
-                                <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Tài xế Hạng Bạc</div>
-                            </div>
-                            <img src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
-                            <i class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon"></i>
-                        </div>
-                        
-                        <div class="dropdown-menu-modern shadow-lg">
-                            <div class="px-4 py-3 bg-light rounded-top-4">
-                                <div class="fw-bold text-dark fs-6">Nguyễn Quang</div>
-                                <div class="small text-muted">0912 345 678</div>
-                            </div>
-                            <hr class="m-0 border-light" />
-                            <a href="#" class="dropdown-item-custom"><i class="fa-solid fa-user-shield"></i> Hồ sơ định danh</a>
-                            <a href="#" class="dropdown-item-custom"><i class="fa-solid fa-gear"></i> Cài đặt ứng dụng</a>
-                            <hr class="m-0 border-light" />
-                            <a href="login.html" class="dropdown-item-custom text-danger fw-bold logout-item"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
-                        </div>
-                    </div>
+        <div class="user-profile">
+          <div class="nav-right-actions">
+            <div class="driver-status-wrapper">
+              <label class="custom-pill-toggle" title="Thay đổi trạng thái">
+                <input
+                  type="checkbox"
+                  id="navOnlineToggle"
+                  onchange="handleOnlineToggle()"
+                />
+                <div class="pill-track">
+                  <span class="pill-text text-off">Tạm nghỉ</span>
+                  <span class="pill-text text-on">Nhận chuyến</span>
+                  <div class="pill-thumb">
+                    <i class="fa-solid fa-moon icon-status icon-off"></i>
+                    <i
+                      class="fa-solid fa-satellite-dish icon-status icon-on"
+                    ></i>
+                  </div>
                 </div>
+              </label>
             </div>
+
+            <div class="notification-bell" title="Thông báo">
+              <i class="fa-regular fa-bell"></i>
+              <span class="notification-badge" id="notiCount">3</span>
+            </div>
+
+            <div class="user-profile-dropdown d-none d-md-block">
+              <div class="user-profile-trigger d-flex align-items-center">
+                <div class="d-none d-sm-block text-end me-2">
+                  <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Quang</div>
+                  <div
+                    class="text-white-50 small mt-1"
+                    style="font-size: 0.75rem"
+                  >
+                    Tài xế Hạng Bạc
+                  </div>
+                </div>
+                <img
+                  src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff"
+                  alt="Avatar"
+                  class="avatar-img"
+                />
+                <i
+                  class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon"
+                ></i>
+              </div>
+
+              <div class="dropdown-menu-modern shadow-lg">
+                <div class="px-4 py-3 bg-light rounded-top-4">
+                  <div class="fw-bold text-dark fs-6">Nguyễn Quang</div>
+                  <div class="small text-muted">0912 345 678</div>
+                </div>
+                <hr class="m-0 border-light" />
+                <a href="#" class="dropdown-item-custom"
+                  ><i class="fa-solid fa-user-shield"></i> Hồ sơ định danh</a
+                >
+                <a href="#" class="dropdown-item-custom"
+                  ><i class="fa-solid fa-gear"></i> Cài đặt ứng dụng</a
+                >
+                <hr class="m-0 border-light" />
+                <a
+                  href="login.html"
+                  class="dropdown-item-custom text-danger fw-bold logout-item"
+                  ><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng
+                  xuất</a
+                >
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </header>
 
     <div class="wallet-alert-banner" id="walletAlertBanner">
-        <i class="fa-solid fa-triangle-exclamation me-1 fa-fade"></i> Số dư dưới 50.000đ. Hệ thống tạm khóa nhận chuyến. Vui lòng nạp tiền vào ví.
+      <i class="fa-solid fa-triangle-exclamation me-1 fa-fade"></i> Số dư dưới
+      50.000đ. Hệ thống tạm khóa nhận chuyến. Vui lòng nạp tiền vào ví.
     </div>
 
     <div class="app-wrapper">
-        
-        <aside class="desktop-sidebar shadow-sm">
-            <h6 class="text-muted fw-bold small text-uppercase mb-3 px-4">Bảng Điều Khiển</h6>
-            <ul class="sidebar-menu nav-menu">
-                <li><a onclick="switchTab('tab-job-board', this)" class="active"><i class="fa-solid fa-satellite-dish"></i> Nhận chuyến</a></li>
-                <li><a onclick="switchTab('tab-income', this)"><i class="fa-solid fa-chart-pie"></i> Lịch sử thu nhập</a></li>
-                <li><a onclick="switchTab('tab-history', this)"><i class="fa-solid fa-clock-rotate-left"></i> Chuyến đi cũ</a></li>
-                <li><a onclick="switchTab('tab-account', this)"><i class="fa-solid fa-circle-user"></i> Tài khoản</a></li>
-            </ul>
-        </aside>
+      <aside class="desktop-sidebar shadow-sm">
+        <h6 class="text-muted fw-bold small text-uppercase mb-3 px-4">
+          Bảng Điều Khiển
+        </h6>
+        <ul class="sidebar-menu nav-menu">
+          <li>
+            <a onclick="switchTab('tab-job-board', this)" class="active"
+              ><i class="fa-solid fa-satellite-dish"></i> Nhận chuyến</a
+            >
+          </li>
+          <li>
+            <a onclick="switchTab('tab-income', this)"
+              ><i class="fa-solid fa-chart-pie"></i> Lịch sử thu nhập</a
+            >
+          </li>
+          <li>
+            <a onclick="switchTab('tab-history', this)"
+              ><i class="fa-solid fa-clock-rotate-left"></i> Chuyến đi cũ</a
+            >
+          </li>
+          <li>
+            <a onclick="switchTab('tab-account', this)"
+              ><i class="fa-solid fa-circle-user"></i> Tài khoản</a
+            >
+          </li>
+        </ul>
+      </aside>
 
-        <main class="main-content">
-            
-            <section id="tab-job-board" class="tab-section active">
-                <div class="d-flex justify-content-between align-items-center mb-2 animate-fade-up">
-                    <h2 class="page-title m-0">Trạm phát sóng đơn hàng</h2>
+      <main class="main-content">
+        <section id="tab-job-board" class="tab-section active">
+          <div
+            class="d-flex justify-content-between align-items-center mb-2 animate-fade-up"
+          >
+            <h2 class="page-title m-0">Trạm phát sóng đơn hàng</h2>
+          </div>
+
+          <div class="job-tabs animate-fade-up delay-1">
+            <div class="job-tab-item active">
+              Chờ Nhận <span class="tab-badge" id="jobBadge">3</span>
+            </div>
+            <div class="job-tab-item">Đã Nhận</div>
+          </div>
+
+          <div class="job-grid-pc animate-fade-up delay-2" id="jobList">
+            <div class="empty-state" id="emptyState">
+              <i class="fa-solid fa-satellite-dish radar-icon"></i>
+              <p>Hệ thống đang dò tìm chuyến đi quanh bạn...</p>
+            </div>
+
+            <article class="broadcast-card" id="job-1">
+              <div class="card-header-custom">
+                <div>
+                  <span class="bk-code">#BK-1029</span
+                  ><span class="bk-time">Khởi hành: 14:30 hôm nay</span>
                 </div>
-
-                <div class="job-tabs animate-fade-up delay-1">
-                    <div class="job-tab-item active">Chờ Nhận <span class="tab-badge" id="jobBadge">3</span></div>
-                    <div class="job-tab-item">Đã Nhận</div>
+                <div class="timer-box safe" data-seconds="720">
+                  <i class="fa-regular fa-clock"></i>
+                  <span class="time-text">12:00</span>
                 </div>
-
-                <div class="job-grid-pc animate-fade-up delay-2" id="jobList">
-                    <div class="empty-state" id="emptyState">
-                        <i class="fa-solid fa-satellite-dish radar-icon"></i>
-                        <p>Hệ thống đang dò tìm chuyến đi quanh bạn...</p>
-                    </div>
-
-                    <article class="broadcast-card" id="job-1">
-                        <div class="card-header-custom">
-                            <div><span class="bk-code">#BK-1029</span><span class="bk-time">Khởi hành: 14:30 hôm nay</span></div>
-                            <div class="timer-box safe" data-seconds="720"> <i class="fa-regular fa-clock"></i> <span class="time-text">12:00</span></div>
-                        </div>
-                        <div class="card-body-custom">
-                            <div class="route-stepper">
-                                <div class="step-point step-pickup">Tòa nhà Alpha, ĐH FPT, Khu CNC</div>
-                                <div class="step-point step-dropoff">Sân bay Tân Sơn Nhất, Ga Quốc Nội</div>
-                            </div>
-                            <div class="tags-container">
-                                <span class="tag-pill">22 km</span><span class="tag-pill">Xe 4 chỗ</span><span class="tag-pill">Không đi cao tốc</span>
-                            </div>
-                        </div>
-                        <div class="card-footer-custom">
-                            <div class="finance-row"><span class="finance-label">Thu nhập thực nhận</span><span class="finance-amount">240.000đ</span></div>
-                            <button class="btn-accept" onclick="acceptJob(this, 'job-1', 'error500')">Nhận Chuyến (Test Lỗi 500)</button>
-                        </div>
-                    </article>
-
-                    <article class="broadcast-card" id="job-2">
-                        <div class="card-header-custom">
-                            <div><span class="bk-code">#BK-8842</span><span class="bk-time">Khởi hành: 15:00 hôm nay</span></div>
-                            <div class="timer-box warning" data-seconds="180"> <i class="fa-regular fa-clock"></i> <span class="time-text">03:00</span></div>
-                        </div>
-                        <div class="card-body-custom">
-                            <div class="route-stepper">
-                                <div class="step-point step-pickup">Chợ Bến Thành, Quận 1</div>
-                                <div class="step-point step-dropoff">KDL Bửu Long, Biên Hòa</div>
-                            </div>
-                            <div class="tags-container"><span class="tag-pill">35 km</span><span class="tag-pill">Xe 7 chỗ</span></div>
-                        </div>
-                        <div class="card-footer-custom">
-                            <div class="finance-row"><span class="finance-label">Thu nhập thực nhận</span><span class="finance-amount">450.000đ</span></div>
-                            <button class="btn-accept" onclick="acceptJob(this, 'job-2', 'error409')">Nhận Chuyến (Test Mất Đơn)</button>
-                        </div>
-                    </article>
-
-                    <article class="broadcast-card" id="job-3">
-                        <div class="card-header-custom">
-                            <div><span class="bk-code">#BK-9911</span><span class="bk-time">Khởi hành: 16:30 hôm nay</span></div>
-                            <div class="timer-box danger" data-seconds="45"> <i class="fa-solid fa-stopwatch"></i> <span class="time-text">00:45</span></div>
-                        </div>
-                        <div class="card-body-custom">
-                            <div class="route-stepper">
-                                <div class="step-point step-pickup">Landmark 81, Bình Thạnh</div>
-                                <div class="step-point step-dropoff">Bãi Sau, Vũng Tàu</div>
-                            </div>
-                            <div class="tags-container"><span class="tag-pill">105 km</span><span class="tag-pill">Xe 4 chỗ</span><span class="tag-pill">Cao tốc LT-DG</span></div>
-                        </div>
-                        <div class="card-footer-custom">
-                            <div class="finance-row"><span class="finance-label">Thu nhập thực nhận</span><span class="finance-amount">1.250.000đ</span></div>
-                            <button class="btn-accept" onclick="acceptJob(this, 'job-3', 'success')">Nhận Chuyến (Thành Công)</button>
-                        </div>
-                    </article>
+              </div>
+              <div class="card-body-custom">
+                <div class="route-stepper">
+                  <div class="step-point step-pickup">
+                    Tòa nhà Alpha, ĐH FPT, Khu CNC
+                  </div>
+                  <div class="step-point step-dropoff">
+                    Sân bay Tân Sơn Nhất, Ga Quốc Nội
+                  </div>
                 </div>
-            </section>
-
-            <section id="tab-income" class="tab-section">
-                <div class="page-header animate-fade-up">
-                    <h1 class="page-title">Bảng điều khiển Tài chính</h1>
-                    <div class="header-actions">
-                        <div class="filter-wrapper">
-                            <i class="fa-regular fa-calendar"></i>
-                            <select class="date-picker" onchange="triggerApiAction(this)">
-                                <option value="this_week">Tuần này (14/06 - 20/06)</option>
-                                <option value="last_week">Tuần trước</option>
-                                <option value="this_month">Tháng này</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="tags-container">
+                  <span class="tag-pill">22 km</span
+                  ><span class="tag-pill">Xe 4 chỗ</span
+                  ><span class="tag-pill">Không đi cao tốc</span>
                 </div>
-
-                <div class="grid-3-col">
-                    <div class="stat-card card-hero animate-fade-up delay-1">
-                        <div class="card-header-flex">
-                            <div class="card-label">Thu nhập ròng</div>
-                            <div class="card-icon"><i class="fa-solid fa-wallet"></i></div>
-                        </div>
-                        <div class="card-value">4.250.000 đ</div>
-                        <span class="trend-badge trend-up"><i class="fa-solid fa-arrow-trend-up"></i> +15% so với kỳ trước</span>
-                    </div>
-                    
-                    <div class="stat-card animate-fade-up delay-2">
-                        <div class="card-header-flex">
-                            <div class="card-label text-muted">Tổng chuyến xe</div>
-                            <div class="card-icon"><i class="fa-solid fa-steering-wheel"></i></div>
-                        </div>
-                        <div class="card-value text-dark">18 <span class="fs-5 text-muted fw-bold ms-2">Chuyến</span></div>
-                        <span class="trend-badge trend-down"><i class="fa-solid fa-arrow-trend-down"></i> -2% so với kỳ trước</span>
-                    </div>
-
-                    <div class="stat-card animate-fade-up delay-3">
-                        <div class="card-header-flex">
-                            <div class="card-label text-muted">Thưởng & Đền bù</div>
-                            <div class="card-icon icon-warning"><i class="fa-solid fa-gift"></i></div>
-                        </div>
-                        <div class="card-value text-dark">300.000 đ</div>
-                        <span class="trend-badge" style="background: #f1f5f9; color: #475569;"><i class="fa-solid fa-minus"></i> Không đổi</span>
-                    </div>
+              </div>
+              <div class="card-footer-custom">
+                <div class="finance-row">
+                  <span class="finance-label">Thu nhập thực nhận</span
+                  ><span class="finance-amount">240.000đ</span>
                 </div>
+                <button
+                  class="btn-accept"
+                  onclick="acceptJob(this, 'job-1', 'error500')"
+                >
+                  Nhận Chuyến (Test Lỗi 500)
+                </button>
+              </div>
+            </article>
 
-                <div class="chart-container animate-fade-up delay-4">
-                    <canvas id="incomeChart"></canvas>
+            <article class="broadcast-card" id="job-2">
+              <div class="card-header-custom">
+                <div>
+                  <span class="bk-code">#BK-8842</span
+                  ><span class="bk-time">Khởi hành: 15:00 hôm nay</span>
                 </div>
-
-                <div class="data-section animate-fade-up delay-4">
-                    <div class="table-header">
-                        <h3 class="table-title">Chi tiết Giao dịch</h3>
-                        <button class="btn-export" onclick="triggerApiAction(this)">
-                            <i class="fa-solid fa-file-excel text-success fs-5"></i> Xuất dữ liệu
-                        </button>
-                    </div>
-
-                    <div class="desktop-table-wrapper">
-                        <table class="custom-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã GD & Thời gian</th>
-                                    <th>Loại giao dịch</th>
-                                    <th>Tham chiếu</th>
-                                    <th>Tiền phát sinh (Gross)</th>
-                                    <th>Chiết khấu (60%)</th>
-                                    <th>Thực nhận (Net)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><span class="trx-code">#TRX-8821</span><span class="trx-time">14/06/2026 • 14:30</span></td>
-                                    <td><span class="type-badge badge-trip"><i class="fa-solid fa-car-side"></i> Cước chuyến đi</span></td>
-                                    <td><a href="#" class="ref-link">#BK-1029</a></td>
-                                    <td class="amt-gross">600.000 đ</td>
-                                    <td><span class="amt-com">-360.000 đ</span></td>
-                                    <td class="amt-net">+ 240.000 đ</td>
-                                </tr>
-                                <tr>
-                                    <td><span class="trx-code">#TRX-8820</span><span class="trx-time">14/06/2026 • 09:15</span></td>
-                                    <td><span class="type-badge badge-comp"><i class="fa-solid fa-hand-holding-dollar"></i> Phạt khách hủy</span></td>
-                                    <td><a href="#" class="ref-link">#BK-1025</a></td>
-                                    <td class="amt-gross">150.000 đ</td>
-                                    <td><span class="badge bg-light text-muted">Miễn phí</span></td>
-                                    <td class="amt-net">+ 150.000 đ</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="timer-box warning" data-seconds="180">
+                  <i class="fa-regular fa-clock"></i>
+                  <span class="time-text">03:00</span>
                 </div>
-            </section>
-
-            <section id="tab-history" class="tab-section">
-                <div class="page-header animate-fade-up">
-                    <h1 class="page-title">Lịch sử Chuyến đi</h1>
-                    <div class="header-actions">
-                        <div class="filter-wrapper">
-                            <i class="fa-regular fa-calendar"></i>
-                            <select class="date-picker" onchange="triggerApiAction(this)">
-                                <option>Tháng này</option>
-                                <option>Tháng trước</option>
-                                <option>Tất cả thời gian</option>
-                            </select>
-                        </div>
-                    </div>
+              </div>
+              <div class="card-body-custom">
+                <div class="route-stepper">
+                  <div class="step-point step-pickup">
+                    Chợ Bến Thành, Quận 1
+                  </div>
+                  <div class="step-point step-dropoff">
+                    KDL Bửu Long, Biên Hòa
+                  </div>
                 </div>
-
-                <div class="row g-3 mb-4 animate-fade-up delay-1">
-                    <div class="col-6 col-md-4">
-                        <div class="stat-card p-3 d-flex align-items-center gap-3">
-                            <div class="setting-icon" style="background: #dcfce7; color: #166534; width: 40px; height: 40px;"><i class="fa-solid fa-check-double"></i></div>
-                            <div><div class="text-muted small fw-bold">Hoàn thành</div><div class="fs-4 fw-bold">142</div></div>
-                        </div>
-                    </div>
-                    <div class="col-6 col-md-4">
-                        <div class="stat-card p-3 d-flex align-items-center gap-3">
-                            <div class="setting-icon" style="background: #fee2e2; color: #ef4444; width: 40px; height: 40px;"><i class="fa-solid fa-ban"></i></div>
-                            <div><div class="text-muted small fw-bold">Đã hủy</div><div class="fs-4 fw-bold">3</div></div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="stat-card p-3 d-flex align-items-center gap-3">
-                            <div class="setting-icon" style="background: #fef3c7; color: #d97706; width: 40px; height: 40px;"><i class="fa-solid fa-star"></i></div>
-                            <div><div class="text-muted small fw-bold">Đánh giá TB</div><div class="fs-4 fw-bold">4.95</div></div>
-                        </div>
-                    </div>
+                <div class="tags-container">
+                  <span class="tag-pill">35 km</span
+                  ><span class="tag-pill">Xe 7 chỗ</span>
                 </div>
-
-                <div class="job-grid-pc animate-fade-up delay-2">
-                    
-                    <article class="broadcast-card history-card completed">
-                        <div class="card-header-custom pb-3">
-                            <div>
-                                <span class="bk-code">#BK-1028</span>
-                                <span class="bk-time">13/06/2026 • 09:30</span>
-                            </div>
-                            <div class="history-status status-completed"><i class="fa-solid fa-check"></i> Hoàn thành</div>
-                        </div>
-                        <div class="card-body-custom pb-0 pt-3">
-                            <div class="route-stepper mb-3">
-                                <div class="step-point step-pickup">KĐT Vinhomes Central Park</div>
-                                <div class="step-point step-dropoff">Sân bay Tân Sơn Nhất, Ga Quốc Nội</div>
-                            </div>
-                        </div>
-                        <div class="card-footer-custom border-0 pt-2">
-                            <div class="finance-row mb-3">
-                                <div>
-                                    <div class="finance-label mb-1">Cước phí</div>
-                                    <div class="finance-amount text-dark" style="font-size: 1.3rem;">210.000đ</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="finance-label mb-1">Đánh giá</div>
-                                    <div class="rating-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
-                                </div>
-                            </div>
-                            <button class="btn-details" onclick="triggerApiAction(this)">
-                                Xem chi tiết chuyến <i class="fa-solid fa-arrow-right fs-6"></i>
-                            </button>
-                        </div>
-                    </article>
-
-                    <article class="broadcast-card history-card cancelled">
-                        <div class="card-header-custom pb-3">
-                            <div>
-                                <span class="bk-code">#BK-1025</span>
-                                <span class="bk-time">12/06/2026 • 15:45</span>
-                            </div>
-                            <div class="history-status status-cancelled"><i class="fa-solid fa-xmark"></i> Đã hủy</div>
-                        </div>
-                        <div class="card-body-custom pb-0 pt-3">
-                            <div class="route-stepper mb-3">
-                                <div class="step-point step-pickup">Bitexco Financial Tower, Q1</div>
-                                <div class="step-point step-dropoff">Phố đi bộ Nguyễn Huệ</div>
-                            </div>
-                        </div>
-                        <div class="card-footer-custom border-0 pt-2">
-                            <div class="finance-row mb-3">
-                                <div>
-                                    <div class="finance-label mb-1">Phí đền bù</div>
-                                    <div class="finance-amount text-danger" style="font-size: 1.3rem;">+ 15.000đ</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="finance-label mb-1">Lý do</div>
-                                    <div class="text-dark fw-bold small mt-1">Khách không đến</div>
-                                </div>
-                            </div>
-                            <button class="btn-details" onclick="triggerApiAction(this)">
-                                Xem chi tiết chuyến <i class="fa-solid fa-arrow-right fs-6"></i>
-                            </button>
-                        </div>
-                    </article>
-
-                    <article class="broadcast-card history-card completed">
-                        <div class="card-header-custom pb-3">
-                            <div>
-                                <span class="bk-code">#BK-0998</span>
-                                <span class="bk-time">11/06/2026 • 18:15</span>
-                            </div>
-                            <div class="history-status status-completed"><i class="fa-solid fa-check"></i> Hoàn thành</div>
-                        </div>
-                        <div class="card-body-custom pb-0 pt-3">
-                            <div class="route-stepper mb-3">
-                                <div class="step-point step-pickup">Đại học Quốc gia TP.HCM</div>
-                                <div class="step-point step-dropoff">KDL Suối Tiên</div>
-                            </div>
-                        </div>
-                        <div class="card-footer-custom border-0 pt-2">
-                            <div class="finance-row mb-3">
-                                <div>
-                                    <div class="finance-label mb-1">Cước phí</div>
-                                    <div class="finance-amount text-dark" style="font-size: 1.3rem;">145.000đ</div>
-                                </div>
-                                <div class="text-end">
-                                    <div class="finance-label mb-1">Đánh giá</div>
-                                    <div class="rating-stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star text-muted"></i></div>
-                                </div>
-                            </div>
-                            <button class="btn-details" onclick="triggerApiAction(this)">
-                                Xem chi tiết chuyến <i class="fa-solid fa-arrow-right fs-6"></i>
-                            </button>
-                        </div>
-                    </article>
-
+              </div>
+              <div class="card-footer-custom">
+                <div class="finance-row">
+                  <span class="finance-label">Thu nhập thực nhận</span
+                  ><span class="finance-amount">450.000đ</span>
                 </div>
-            </section>
+                <button
+                  class="btn-accept"
+                  onclick="acceptJob(this, 'job-2', 'error409')"
+                >
+                  Nhận Chuyến (Test Mất Đơn)
+                </button>
+              </div>
+            </article>
 
-            <section id="tab-account" class="tab-section">
-                <div class="page-header animate-fade-up">
-                    <h1 class="page-title">Hồ sơ Tài khoản</h1>
-                    <button class="btn-withdraw" onclick="triggerApiAction(this)">
-                        <i class="fa-solid fa-money-bill-transfer me-2"></i> Rút tiền về Ngân hàng
-                    </button>
+            <article class="broadcast-card" id="job-3">
+              <div class="card-header-custom">
+                <div>
+                  <span class="bk-code">#BK-9911</span
+                  ><span class="bk-time">Khởi hành: 16:30 hôm nay</span>
                 </div>
+                <div class="timer-box danger" data-seconds="45">
+                  <i class="fa-solid fa-stopwatch"></i>
+                  <span class="time-text">00:45</span>
+                </div>
+              </div>
+              <div class="card-body-custom">
+                <div class="route-stepper">
+                  <div class="step-point step-pickup">
+                    Landmark 81, Bình Thạnh
+                  </div>
+                  <div class="step-point step-dropoff">Bãi Sau, Vũng Tàu</div>
+                </div>
+                <div class="tags-container">
+                  <span class="tag-pill">105 km</span
+                  ><span class="tag-pill">Xe 4 chỗ</span
+                  ><span class="tag-pill">Cao tốc LT-DG</span>
+                </div>
+              </div>
+              <div class="card-footer-custom">
+                <div class="finance-row">
+                  <span class="finance-label">Thu nhập thực nhận</span
+                  ><span class="finance-amount">1.250.000đ</span>
+                </div>
+                <button
+                  class="btn-accept"
+                  onclick="acceptJob(this, 'job-3', 'success')"
+                >
+                  Nhận Chuyến (Thành Công)
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
 
-                <div class="profile-header animate-fade-up delay-1">
-                    <img src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff" class="profile-avatar" alt="Avatar">
-                    <div class="profile-info">
-                        <h3>Nguyễn Quang</h3>
-                        <div class="d-flex gap-3 align-items-center flex-wrap">
-                            <span class="rating-badge"><i class="fa-solid fa-star"></i> 4.98 (245 đánh giá)</span>
-                            <span class="badge bg-light text-dark border p-2"><i class="fa-solid fa-car"></i> Mitsubishi Xpander (51H-123.45)</span>
-                        </div>
+        <section id="tab-income" class="tab-section">
+          <div class="page-header animate-fade-up">
+            <h1 class="page-title">Bảng điều khiển Tài chính</h1>
+            <div class="header-actions">
+              <div class="filter-wrapper">
+                <i class="fa-regular fa-calendar"></i>
+                <select class="date-picker" onchange="triggerApiAction(this)">
+                  <option value="this_week">Tuần này (14/06 - 20/06)</option>
+                  <option value="last_week">Tuần trước</option>
+                  <option value="this_month">Tháng này</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-3-col">
+            <div class="stat-card card-hero animate-fade-up delay-1">
+              <div class="card-header-flex">
+                <div class="card-label">Thu nhập ròng</div>
+                <div class="card-icon"><i class="fa-solid fa-wallet"></i></div>
+              </div>
+              <div class="card-value">4.250.000 đ</div>
+              <span class="trend-badge trend-up"
+                ><i class="fa-solid fa-arrow-trend-up"></i> +15% so với kỳ
+                trước</span
+              >
+            </div>
+
+            <div class="stat-card animate-fade-up delay-2">
+              <div class="card-header-flex">
+                <div class="card-label text-muted">Tổng chuyến xe</div>
+                <div class="card-icon">
+                  <i class="fa-solid fa-steering-wheel"></i>
+                </div>
+              </div>
+              <div class="card-value text-dark">
+                18 <span class="fs-5 text-muted fw-bold ms-2">Chuyến</span>
+              </div>
+              <span class="trend-badge trend-down"
+                ><i class="fa-solid fa-arrow-trend-down"></i> -2% so với kỳ
+                trước</span
+              >
+            </div>
+
+            <div class="stat-card animate-fade-up delay-3">
+              <div class="card-header-flex">
+                <div class="card-label text-muted">Thưởng & Đền bù</div>
+                <div class="card-icon icon-warning">
+                  <i class="fa-solid fa-gift"></i>
+                </div>
+              </div>
+              <div class="card-value text-dark">300.000 đ</div>
+              <span
+                class="trend-badge"
+                style="background: #f1f5f9; color: #475569"
+                ><i class="fa-solid fa-minus"></i> Không đổi</span
+              >
+            </div>
+          </div>
+
+          <div class="chart-container animate-fade-up delay-4">
+            <canvas id="incomeChart"></canvas>
+          </div>
+
+          <div class="data-section animate-fade-up delay-4">
+            <div class="table-header">
+              <h3 class="table-title">Chi tiết Giao dịch</h3>
+              <button class="btn-export" onclick="triggerApiAction(this)">
+                <i class="fa-solid fa-file-excel text-success fs-5"></i> Xuất dữ
+                liệu
+              </button>
+            </div>
+
+            <div class="desktop-table-wrapper">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Mã GD & Thời gian</th>
+                    <th>Loại giao dịch</th>
+                    <th>Tham chiếu</th>
+                    <th>Tiền phát sinh (Gross)</th>
+                    <th>Chiết khấu (60%)</th>
+                    <th>Thực nhận (Net)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>
+                      <span class="trx-code">#TRX-8821</span
+                      ><span class="trx-time">14/06/2026 • 14:30</span>
+                    </td>
+                    <td>
+                      <span class="type-badge badge-trip"
+                        ><i class="fa-solid fa-car-side"></i> Cước chuyến
+                        đi</span
+                      >
+                    </td>
+                    <td><a href="#" class="ref-link">#BK-1029</a></td>
+                    <td class="amt-gross">600.000 đ</td>
+                    <td><span class="amt-com">-360.000 đ</span></td>
+                    <td class="amt-net">+ 240.000 đ</td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <span class="trx-code">#TRX-8820</span
+                      ><span class="trx-time">14/06/2026 • 09:15</span>
+                    </td>
+                    <td>
+                      <span class="type-badge badge-comp"
+                        ><i class="fa-solid fa-hand-holding-dollar"></i> Phạt
+                        khách hủy</span
+                      >
+                    </td>
+                    <td><a href="#" class="ref-link">#BK-1025</a></td>
+                    <td class="amt-gross">150.000 đ</td>
+                    <td>
+                      <span class="badge bg-light text-muted">Miễn phí</span>
+                    </td>
+                    <td class="amt-net">+ 150.000 đ</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="tab-history" class="tab-section">
+          <div class="page-header animate-fade-up">
+            <h1 class="page-title">Lịch sử Chuyến đi</h1>
+            <div class="header-actions">
+              <div class="filter-wrapper">
+                <i class="fa-regular fa-calendar"></i>
+                <select class="date-picker" onchange="triggerApiAction(this)">
+                  <option>Tháng này</option>
+                  <option>Tháng trước</option>
+                  <option>Tất cả thời gian</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4 animate-fade-up delay-1">
+            <div class="col-6 col-md-4">
+              <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div
+                  class="setting-icon"
+                  style="
+                    background: #dcfce7;
+                    color: #166534;
+                    width: 40px;
+                    height: 40px;
+                  "
+                >
+                  <i class="fa-solid fa-check-double"></i>
+                </div>
+                <div>
+                  <div class="text-muted small fw-bold">Hoàn thành</div>
+                  <div class="fs-4 fw-bold">142</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-6 col-md-4">
+              <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div
+                  class="setting-icon"
+                  style="
+                    background: #fee2e2;
+                    color: #ef4444;
+                    width: 40px;
+                    height: 40px;
+                  "
+                >
+                  <i class="fa-solid fa-ban"></i>
+                </div>
+                <div>
+                  <div class="text-muted small fw-bold">Đã hủy</div>
+                  <div class="fs-4 fw-bold">3</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-4">
+              <div class="stat-card p-3 d-flex align-items-center gap-3">
+                <div
+                  class="setting-icon"
+                  style="
+                    background: #fef3c7;
+                    color: #d97706;
+                    width: 40px;
+                    height: 40px;
+                  "
+                >
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <div>
+                  <div class="text-muted small fw-bold">Đánh giá TB</div>
+                  <div class="fs-4 fw-bold">4.95</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="job-grid-pc animate-fade-up delay-2">
+            <article class="broadcast-card history-card completed">
+              <div class="card-header-custom pb-3">
+                <div>
+                  <span class="bk-code">#BK-1028</span>
+                  <span class="bk-time">13/06/2026 • 09:30</span>
+                </div>
+                <div class="history-status status-completed">
+                  <i class="fa-solid fa-check"></i> Hoàn thành
+                </div>
+              </div>
+              <div class="card-body-custom pb-0 pt-3">
+                <div class="route-stepper mb-3">
+                  <div class="step-point step-pickup">
+                    KĐT Vinhomes Central Park
+                  </div>
+                  <div class="step-point step-dropoff">
+                    Sân bay Tân Sơn Nhất, Ga Quốc Nội
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer-custom border-0 pt-2">
+                <div class="finance-row mb-3">
+                  <div>
+                    <div class="finance-label mb-1">Cước phí</div>
+                    <div
+                      class="finance-amount text-dark"
+                      style="font-size: 1.3rem"
+                    >
+                      210.000đ
                     </div>
-                </div>
-
-                <div class="row g-4 animate-fade-up delay-2">
-                    <div class="col-lg-6">
-                        <div class="setting-group h-100">
-                            <h5 class="fw-bold mb-4">Quản lý Dữ liệu</h5>
-                            <div class="setting-item">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="setting-icon"><i class="fa-solid fa-shield-halved"></i></div>
-                                    <div><div class="title">Định danh eKYC</div><div class="desc">Hồ sơ đã được xác thực</div></div>
-                                </div>
-                                <i class="fa-solid fa-circle-check text-success fs-4"></i>
-                            </div>
-                            <div class="setting-item">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="setting-icon"><i class="fa-solid fa-car-on"></i></div>
-                                    <div><div class="title">Giấy tờ Phương tiện</div><div class="desc">Đăng kiểm, Bảo hiểm bắt buộc</div></div>
-                                </div>
-                                <i class="fa-solid fa-chevron-right text-muted"></i>
-                            </div>
-                        </div>
+                  </div>
+                  <div class="text-end">
+                    <div class="finance-label mb-1">Đánh giá</div>
+                    <div class="rating-stars">
+                      <i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i>
                     </div>
-
-                    <div class="col-lg-6">
-                        <div class="setting-group h-100">
-                            <h5 class="fw-bold mb-4">Tùy chỉnh Ứng dụng</h5>
-                            <div class="setting-item">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="setting-icon" style="background: #eff6ff; color: #3b82f6;"><i class="fa-solid fa-bell-ring"></i></div>
-                                    <div><div class="title">Âm thanh thông báo</div><div class="desc">Đổ chuông lớn khi có chuyến</div></div>
-                                </div>
-                                <label class="switch"><input type="checkbox" checked><span class="slider"></span></label>
-                            </div>
-                            <div class="setting-item">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="setting-icon" style="background: #fef2f2; color: #ef4444;"><i class="fa-solid fa-location-dot"></i></div>
-                                    <div><div class="title">Chia sẻ Vị trí (GPS)</div><div class="desc">Bắt buộc để nhận chuyến đi</div></div>
-                                </div>
-                                <label class="switch"><input type="checkbox" checked disabled><span class="slider"></span></label>
-                            </div>
-                        </div>
-                    </div>
+                  </div>
                 </div>
-            </section>
+                <button class="btn-details" onclick="triggerApiAction(this)">
+                  Xem chi tiết chuyến
+                  <i class="fa-solid fa-arrow-right fs-6"></i>
+                </button>
+              </div>
+            </article>
 
-            
-        </main>
+            <article class="broadcast-card history-card cancelled">
+              <div class="card-header-custom pb-3">
+                <div>
+                  <span class="bk-code">#BK-1025</span>
+                  <span class="bk-time">12/06/2026 • 15:45</span>
+                </div>
+                <div class="history-status status-cancelled">
+                  <i class="fa-solid fa-xmark"></i> Đã hủy
+                </div>
+              </div>
+              <div class="card-body-custom pb-0 pt-3">
+                <div class="route-stepper mb-3">
+                  <div class="step-point step-pickup">
+                    Bitexco Financial Tower, Q1
+                  </div>
+                  <div class="step-point step-dropoff">
+                    Phố đi bộ Nguyễn Huệ
+                  </div>
+                </div>
+              </div>
+              <div class="card-footer-custom border-0 pt-2">
+                <div class="finance-row mb-3">
+                  <div>
+                    <div class="finance-label mb-1">Phí đền bù</div>
+                    <div
+                      class="finance-amount text-danger"
+                      style="font-size: 1.3rem"
+                    >
+                      + 15.000đ
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <div class="finance-label mb-1">Lý do</div>
+                    <div class="text-dark fw-bold small mt-1">
+                      Khách không đến
+                    </div>
+                  </div>
+                </div>
+                <button class="btn-details" onclick="triggerApiAction(this)">
+                  Xem chi tiết chuyến
+                  <i class="fa-solid fa-arrow-right fs-6"></i>
+                </button>
+              </div>
+            </article>
+
+            <article class="broadcast-card history-card completed">
+              <div class="card-header-custom pb-3">
+                <div>
+                  <span class="bk-code">#BK-0998</span>
+                  <span class="bk-time">11/06/2026 • 18:15</span>
+                </div>
+                <div class="history-status status-completed">
+                  <i class="fa-solid fa-check"></i> Hoàn thành
+                </div>
+              </div>
+              <div class="card-body-custom pb-0 pt-3">
+                <div class="route-stepper mb-3">
+                  <div class="step-point step-pickup">
+                    Đại học Quốc gia TP.HCM
+                  </div>
+                  <div class="step-point step-dropoff">KDL Suối Tiên</div>
+                </div>
+              </div>
+              <div class="card-footer-custom border-0 pt-2">
+                <div class="finance-row mb-3">
+                  <div>
+                    <div class="finance-label mb-1">Cước phí</div>
+                    <div
+                      class="finance-amount text-dark"
+                      style="font-size: 1.3rem"
+                    >
+                      145.000đ
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <div class="finance-label mb-1">Đánh giá</div>
+                    <div class="rating-stars">
+                      <i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i
+                      ><i class="fa-solid fa-star"></i
+                      ><i class="fa-regular fa-star text-muted"></i>
+                    </div>
+                  </div>
+                </div>
+                <button class="btn-details" onclick="triggerApiAction(this)">
+                  Xem chi tiết chuyến
+                  <i class="fa-solid fa-arrow-right fs-6"></i>
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section id="tab-account" class="tab-section">
+          <div class="page-header animate-fade-up">
+            <h1 class="page-title">Hồ sơ Tài khoản</h1>
+            <button class="btn-withdraw" onclick="triggerApiAction(this)">
+              <i class="fa-solid fa-money-bill-transfer me-2"></i> Rút tiền về
+              Ngân hàng
+            </button>
+          </div>
+
+          <div class="profile-header animate-fade-up delay-1">
+            <img
+              src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff"
+              class="profile-avatar"
+              alt="Avatar"
+            />
+            <div class="profile-info">
+              <h3>Nguyễn Quang</h3>
+              <div class="d-flex gap-3 align-items-center flex-wrap">
+                <span class="rating-badge"
+                  ><i class="fa-solid fa-star"></i> 4.98 (245 đánh giá)</span
+                >
+                <span class="badge bg-light text-dark border p-2"
+                  ><i class="fa-solid fa-car"></i> Mitsubishi Xpander
+                  (51H-123.45)</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <div class="row g-4 animate-fade-up delay-2">
+            <div class="col-lg-6">
+              <div class="setting-group h-100">
+                <h5 class="fw-bold mb-4">Quản lý Dữ liệu</h5>
+                <div class="setting-item">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="setting-icon">
+                      <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                      <div class="title">Định danh eKYC</div>
+                      <div class="desc">Hồ sơ đã được xác thực</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-circle-check text-success fs-4"></i>
+                </div>
+                <div class="setting-item">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="setting-icon">
+                      <i class="fa-solid fa-car-on"></i>
+                    </div>
+                    <div>
+                      <div class="title">Giấy tờ Phương tiện</div>
+                      <div class="desc">Đăng kiểm, Bảo hiểm bắt buộc</div>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-chevron-right text-muted"></i>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-6">
+              <div class="setting-group h-100">
+                <h5 class="fw-bold mb-4">Tùy chỉnh Ứng dụng</h5>
+                <div class="setting-item">
+                  <div class="d-flex align-items-center gap-3">
+                    <div
+                      class="setting-icon"
+                      style="background: #eff6ff; color: #3b82f6"
+                    >
+                      <i class="fa-solid fa-bell-ring"></i>
+                    </div>
+                    <div>
+                      <div class="title">Âm thanh thông báo</div>
+                      <div class="desc">Đổ chuông lớn khi có chuyến</div>
+                    </div>
+                  </div>
+                  <label class="switch"
+                    ><input type="checkbox" checked /><span
+                      class="slider"
+                    ></span
+                  ></label>
+                </div>
+                <div class="setting-item">
+                  <div class="d-flex align-items-center gap-3">
+                    <div
+                      class="setting-icon"
+                      style="background: #fef2f2; color: #ef4444"
+                    >
+                      <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                      <div class="title">Chia sẻ Vị trí (GPS)</div>
+                      <div class="desc">Bắt buộc để nhận chuyến đi</div>
+                    </div>
+                  </div>
+                  <label class="switch"
+                    ><input type="checkbox" checked disabled /><span
+                      class="slider"
+                    ></span
+                  ></label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
 
     <nav class="bottom-nav nav-menu">
-        <a onclick="switchTab('tab-job-board', this)" class="nav-item active"><i class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a>
-        <a onclick="switchTab('tab-income', this)" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Thu nhập</span></a>
-        <a onclick="switchTab('tab-history', this)" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
-        <a onclick="switchTab('tab-account', this)" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài khoản</span></a>
+      <a onclick="switchTab('tab-job-board', this)" class="nav-item active"
+        ><i class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a
+      >
+      <a onclick="switchTab('tab-income', this)" class="nav-item"
+        ><i class="fa-solid fa-chart-pie"></i><span>Thu nhập</span></a
+      >
+      <a onclick="switchTab('tab-history', this)" class="nav-item"
+        ><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a
+      >
+      <a onclick="switchTab('tab-account', this)" class="nav-item"
+        ><i class="fa-solid fa-circle-user"></i><span>Tài khoản</span></a
+      >
     </nav>
 
-    <div class="toast-container toast-system-container position-fixed top-0 start-50 translate-middle-x p-3" style="width: 100%; max-width: 400px; margin-top: 70px;">
-        <div id="systemErrorToast" class="toast align-items-center toast-premium-error w-100" role="alert">
-            <div class="d-flex"><div class="toast-body py-3 fw-bold fs-6"><i class="fa-solid fa-circle-xmark me-2 fs-5"></i> Cập nhật thất bại</div><button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button></div>
+    <div
+      class="toast-container toast-system-container position-fixed top-0 start-50 translate-middle-x p-3"
+      style="width: 100%; max-width: 400px; margin-top: 70px"
+    >
+      <div
+        id="systemErrorToast"
+        class="toast align-items-center toast-premium-error w-100"
+        role="alert"
+      >
+        <div class="d-flex">
+          <div class="toast-body py-3 fw-bold fs-6">
+            <i class="fa-solid fa-circle-xmark me-2 fs-5"></i> Cập nhật thất bại
+          </div>
+          <button
+            type="button"
+            class="btn-close btn-close-white me-3 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
         </div>
-        <div id="conflictToast" class="toast align-items-center toast-premium-warning w-100 mt-2" role="alert">
-            <div class="d-flex"><div class="toast-body py-3 fw-bold text-dark"><i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> Đơn hàng đã được tài xế khác nhận.</div><button type="button" class="btn-close me-3 m-auto" data-bs-dismiss="toast"></button></div>
+      </div>
+      <div
+        id="conflictToast"
+        class="toast align-items-center toast-premium-warning w-100 mt-2"
+        role="alert"
+      >
+        <div class="d-flex">
+          <div class="toast-body py-3 fw-bold text-dark">
+            <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> Đơn hàng
+            đã được tài xế khác nhận.
+          </div>
+          <button
+            type="button"
+            class="btn-close me-3 m-auto"
+            data-bs-dismiss="toast"
+          ></button>
         </div>
+      </div>
     </div>
 
-    <div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 360px; margin: 0 auto;">
-            <div class="modal-content shadow-lg">
-                <div class="check-circle"><i class="fa-solid fa-check"></i></div>
-                <h4 class="fw-bold mb-3 text-dark">Nhận chuyến thành công!</h4>
-                <p class="text-muted mb-4">Lộ trình đã được chuyển sang tab "Đã Nhận". Chúc bạn có một chuyến đi an toàn.</p>
-                <button type="button" class="btn btn-success w-100 fw-bold py-3 fs-6 rounded-3" onclick="location.reload()" style="background: var(--color-1); border: none;">Đến Chi tiết Hành trình</button>
-            </div>
+    <div
+      class="modal fade"
+      id="successModal"
+      tabindex="-1"
+      data-bs-backdrop="static"
+    >
+      <div
+        class="modal-dialog modal-dialog-centered"
+        style="max-width: 360px; margin: 0 auto"
+      >
+        <div class="modal-content shadow-lg">
+          <div class="check-circle"><i class="fa-solid fa-check"></i></div>
+          <h4 class="fw-bold mb-3 text-dark">Nhận chuyến thành công!</h4>
+          <p class="text-muted mb-4">
+            Lộ trình đã được chuyển sang tab "Đã Nhận". Chúc bạn có một chuyến
+            đi an toàn.
+          </p>
+          <button
+            type="button"
+            class="btn btn-success w-100 fw-bold py-3 fs-6 rounded-3"
+            onclick="location.reload()"
+            style="background: var(--color-1); border: none"
+          >
+            Đến Chi tiết Hành trình
+          </button>
         </div>
+      </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        let isChartInitialized = false;
-        let toastError, toastConflict, successModal;
+      let isChartInitialized = false;
+      let toastError, toastConflict, successModal;
 
-        // Xử lý Chuyển Tab Mượt mà
-        function switchTab(tabId, element) {
-            const menus = document.querySelectorAll('.nav-menu a');
-            menus.forEach(a => a.classList.remove('active'));
-            
-            menus.forEach(a => { 
-                if (a.getAttribute('onclick') && a.getAttribute('onclick').includes(tabId)) {
-                    a.classList.add('active'); 
-                }
-            });
-            
-            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
+      // Xử lý Chuyển Tab Mượt mà
+      function switchTab(tabId, element) {
+        const menus = document.querySelectorAll(".nav-menu a");
+        menus.forEach((a) => a.classList.remove("active"));
 
-            if (tabId === 'tab-income' && !isChartInitialized) {
-                renderIncomeChart();
-                isChartInitialized = true;
-            }
-        }
-
-        // Vẽ biểu đồ thu nhập
-        function renderIncomeChart() {
-            const chartEl = document.getElementById('incomeChart');
-            if(!chartEl) return;
-            const ctx = chartEl.getContext('2d');
-            let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientBlue.addColorStop(0, '#3b82f6'); gradientBlue.addColorStop(1, '#60a5fa');
-            let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
-            gradientOrange.addColorStop(0, '#f59e0b'); gradientOrange.addColorStop(1, '#fbbf24');
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
-                    datasets: [
-                        { label: 'Cước chuyến đi', data: [450000, 600000, 0, 800000, 1200000, 900000, 300000], backgroundColor: gradientBlue, borderRadius: 8, barThickness: 24 },
-                        { label: 'Thưởng / Phụ phí', data: [0, 150000, 0, 35000, 0, 115000, 0], backgroundColor: gradientOrange, borderRadius: 8, barThickness: 24 }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-                    plugins: { 
-                        legend: { position: 'top', align: 'end', labels: { usePointStyle: true, boxWidth: 10, padding: 20, font: {family: 'Inter', weight: '600'} } },
-                        tooltip: { backgroundColor: '#0f172a', titleFont: {family: 'Inter', size: 14}, bodyFont: {family: 'Inter', size: 13}, padding: 12, cornerRadius: 8 }
-                    },
-                    scales: {
-                        x: { stacked: true, grid: { display: false }, ticks: { font: {family: 'Inter', weight: '600'}, color: '#64748b' } },
-                        y: { stacked: true, border: { display: false }, grid: { color: '#f1f5f9' }, ticks: { font: {family: 'Inter'}, color: '#94a3b8', callback: function(value) { return value.toLocaleString('vi-VN') + ' đ'; } } }
-                    }
-                }
-            });
-        }
-
-        // Bắt đầu chạy Logic khi Load trang xong
-        document.addEventListener("DOMContentLoaded", () => {
-            // Khởi tạo Toast UI
-            toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
-            toastConflict = new bootstrap.Toast(document.getElementById('conflictToast'), { delay: 3000 });
-
-            // Kiểm tra ví (Mock BR-13)
-            const walletBalance = 100000;
-            const toggleInput = document.getElementById('navOnlineToggle');
-
-            if (walletBalance < 50000) {
-                toggleInput.checked = false; 
-                toggleInput.disabled = true;
-                document.getElementById('walletAlertBanner').style.display = "block";
-            } else {
-                toggleInput.disabled = false; 
-                toggleInput.checked = true; 
-            }
-            // Đồng hồ Đếm ngược từng đơn (Trạm Phát Sóng)
-            setInterval(() => {
-                document.querySelectorAll('.timer-box').forEach(box => {
-                    let seconds = parseInt(box.getAttribute('data-seconds'));
-                    if (seconds > 0) {
-                        seconds--; box.setAttribute('data-seconds', seconds);
-                        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-                        const s = (seconds % 60).toString().padStart(2, '0');
-                        const timeText = box.querySelector('.time-text');
-                        if(timeText) timeText.innerText = `${m}:${s}`;
-                        
-                        if (seconds <= 60) { box.className = "timer-box danger"; const i = box.querySelector('i'); if(i) i.className = "fa-solid fa-stopwatch"; } 
-                        else if (seconds <= 300) { box.className = "timer-box warning"; }
-                    } else {
-                        removeCardSmoothly(box.closest('.broadcast-card'));
-                    }
-                });
-            }, 1000);
+        menus.forEach((a) => {
+          if (
+            a.getAttribute("onclick") &&
+            a.getAttribute("onclick").includes(tabId)
+          ) {
+            a.classList.add("active");
+          }
         });
 
-        function handleOnlineToggle() {
-            // CSS đã lo hiệu ứng visual, JS chỉ kiểm tra logic ví tiền
-            const toggleInput = document.getElementById('navOnlineToggle');
-            const walletBalance = 100000; // Mock balance
-            
-            if (walletBalance < 50000 && toggleInput.checked) {
-                // Nếu cố tình bật khi hết tiền -> tự động ép tắt và hiện cảnh báo
-                toggleInput.checked = false; 
-                document.getElementById('walletAlertBanner').style.display = "block";
+        document
+          .querySelectorAll(".tab-section")
+          .forEach((sec) => sec.classList.remove("active"));
+        document.getElementById(tabId).classList.add("active");
+
+        if (tabId === "tab-income" && !isChartInitialized) {
+          renderIncomeChart();
+          isChartInitialized = true;
+        }
+      }
+
+      // Vẽ biểu đồ thu nhập
+      function renderIncomeChart() {
+        const chartEl = document.getElementById("incomeChart");
+        if (!chartEl) return;
+        const ctx = chartEl.getContext("2d");
+        let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientBlue.addColorStop(0, "#3b82f6");
+        gradientBlue.addColorStop(1, "#60a5fa");
+        let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
+        gradientOrange.addColorStop(0, "#f59e0b");
+        gradientOrange.addColorStop(1, "#fbbf24");
+
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: [
+              "Thứ 2",
+              "Thứ 3",
+              "Thứ 4",
+              "Thứ 5",
+              "Thứ 6",
+              "Thứ 7",
+              "CN",
+            ],
+            datasets: [
+              {
+                label: "Cước chuyến đi",
+                data: [450000, 600000, 0, 800000, 1200000, 900000, 300000],
+                backgroundColor: gradientBlue,
+                borderRadius: 8,
+                barThickness: 24,
+              },
+              {
+                label: "Thưởng / Phụ phí",
+                data: [0, 150000, 0, 35000, 0, 115000, 0],
+                backgroundColor: gradientOrange,
+                borderRadius: 8,
+                barThickness: 24,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: "index", intersect: false },
+            plugins: {
+              legend: {
+                position: "top",
+                align: "end",
+                labels: {
+                  usePointStyle: true,
+                  boxWidth: 10,
+                  padding: 20,
+                  font: { family: "Inter", weight: "600" },
+                },
+              },
+              tooltip: {
+                backgroundColor: "#0f172a",
+                titleFont: { family: "Inter", size: 14 },
+                bodyFont: { family: "Inter", size: 13 },
+                padding: 12,
+                cornerRadius: 8,
+              },
+            },
+            scales: {
+              x: {
+                stacked: true,
+                grid: { display: false },
+                ticks: {
+                  font: { family: "Inter", weight: "600" },
+                  color: "#64748b",
+                },
+              },
+              y: {
+                stacked: true,
+                border: { display: false },
+                grid: { color: "#f1f5f9" },
+                ticks: {
+                  font: { family: "Inter" },
+                  color: "#94a3b8",
+                  callback: function (value) {
+                    return value.toLocaleString("vi-VN") + " đ";
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Bắt đầu chạy Logic khi Load trang xong
+      document.addEventListener("DOMContentLoaded", () => {
+        // Khởi tạo Toast UI
+        toastError = new bootstrap.Toast(
+          document.getElementById("systemErrorToast"),
+          { delay: 3000 },
+        );
+        toastConflict = new bootstrap.Toast(
+          document.getElementById("conflictToast"),
+          { delay: 3000 },
+        );
+
+        // Kiểm tra ví (Mock BR-13)
+        const walletBalance = 100000;
+        const toggleInput = document.getElementById("navOnlineToggle");
+
+        if (walletBalance < 50000) {
+          toggleInput.checked = false;
+          toggleInput.disabled = true;
+          document.getElementById("walletAlertBanner").style.display = "block";
+        } else {
+          toggleInput.disabled = false;
+          toggleInput.checked = true;
+        }
+        // Đồng hồ Đếm ngược từng đơn (Trạm Phát Sóng)
+        setInterval(() => {
+          document.querySelectorAll(".timer-box").forEach((box) => {
+            let seconds = parseInt(box.getAttribute("data-seconds"));
+            if (seconds > 0) {
+              seconds--;
+              box.setAttribute("data-seconds", seconds);
+              const m = Math.floor(seconds / 60)
+                .toString()
+                .padStart(2, "0");
+              const s = (seconds % 60).toString().padStart(2, "0");
+              const timeText = box.querySelector(".time-text");
+              if (timeText) timeText.innerText = `${m}:${s}`;
+
+              if (seconds <= 60) {
+                box.className = "timer-box danger";
+                const i = box.querySelector("i");
+                if (i) i.className = "fa-solid fa-stopwatch";
+              } else if (seconds <= 300) {
+                box.className = "timer-box warning";
+              }
             } else {
-                document.getElementById('walletAlertBanner').style.display = "none";
+              removeCardSmoothly(box.closest(".broadcast-card"));
             }
+          });
+        }, 1000);
+      });
+
+      function handleOnlineToggle() {
+        // CSS đã lo hiệu ứng visual, JS chỉ kiểm tra logic ví tiền
+        const toggleInput = document.getElementById("navOnlineToggle");
+        const walletBalance = 100000; // Mock balance
+
+        if (walletBalance < 50000 && toggleInput.checked) {
+          // Nếu cố tình bật khi hết tiền -> tự động ép tắt và hiện cảnh báo
+          toggleInput.checked = false;
+          document.getElementById("walletAlertBanner").style.display = "block";
+        } else {
+          document.getElementById("walletAlertBanner").style.display = "none";
         }
+      }
 
-        // Logic Xử lý Bấm nút nhận chuyến
-        function acceptJob(btnElement, cardId, scenario) {
-            const originalText = btnElement.innerHTML;
-            btnElement.disabled = true;
-            btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> ĐANG XỬ LÝ...';
+      // Logic Xử lý Bấm nút nhận chuyến
+      function acceptJob(btnElement, cardId, scenario) {
+        const originalText = btnElement.innerHTML;
+        btnElement.disabled = true;
+        btnElement.innerHTML =
+          '<i class="fa-solid fa-circle-notch fa-spin"></i> ĐANG XỬ LÝ...';
 
-            setTimeout(() => {
-                if (scenario === 'error409') {
-                    removeCardSmoothly(document.getElementById(cardId));
-                    if(toastConflict) toastConflict.show();
-                } else if (scenario === 'error500') {
-                    btnElement.disabled = false;
-                    btnElement.innerHTML = originalText;
-                    if(toastError) toastError.show();
-                } else if (scenario === 'success') {
-                    removeCardSmoothly(document.getElementById(cardId));
-                    if(!successModal) successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                    successModal.show();
-                }
-            }, 1200);
-        }
+        setTimeout(() => {
+          if (scenario === "error409") {
+            removeCardSmoothly(document.getElementById(cardId));
+            if (toastConflict) toastConflict.show();
+          } else if (scenario === "error500") {
+            btnElement.disabled = false;
+            btnElement.innerHTML = originalText;
+            if (toastError) toastError.show();
+          } else if (scenario === "success") {
+            removeCardSmoothly(document.getElementById(cardId));
+            if (!successModal)
+              successModal = new bootstrap.Modal(
+                document.getElementById("successModal"),
+              );
+            successModal.show();
+          }
+        }, 1200);
+      }
 
-        // Logic Ẩn mượt mà các Card
-        function removeCardSmoothly(card) {
-            if(card) {
-                card.style.transform = 'scale(0.9)'; card.style.opacity = '0';
-                setTimeout(() => { 
-                    card.remove(); 
-                    const count = document.querySelectorAll('.broadcast-card').length;
-                    const badge = document.getElementById('jobBadge');
-                    if(badge) badge.innerText = count;
-                    if (count === 0) {
-                        if(badge) badge.style.display = 'none';
-                        document.getElementById('emptyState').style.display = 'flex';
-                    }
-                }, 400);
+      // Logic Ẩn mượt mà các Card
+      function removeCardSmoothly(card) {
+        if (card) {
+          card.style.transform = "scale(0.9)";
+          card.style.opacity = "0";
+          setTimeout(() => {
+            card.remove();
+            const count = document.querySelectorAll(".broadcast-card").length;
+            const badge = document.getElementById("jobBadge");
+            if (badge) badge.innerText = count;
+            if (count === 0) {
+              if (badge) badge.style.display = "none";
+              document.getElementById("emptyState").style.display = "flex";
             }
+          }, 400);
         }
+      }
 
-        // Logic Loading nút Tùy chọn (Rút tiền, xuất dữ liệu...)
-        function triggerApiAction(element) {
-            let originalHTML = '';
-            let isBtn = element.tagName === 'BUTTON';
+      // Logic Loading nút Tùy chọn (Rút tiền, xuất dữ liệu...)
+      function triggerApiAction(element) {
+        let originalHTML = "";
+        let isBtn = element.tagName === "BUTTON";
 
-            if(isBtn) {
-                originalHTML = element.innerHTML;
-                element.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải...';
-                element.disabled = true;
-            }
-            setTimeout(() => {
-                if(isBtn) { element.innerHTML = originalHTML; element.disabled = false; }
-                if(toastError) toastError.show();
-            }, 1200);
+        if (isBtn) {
+          originalHTML = element.innerHTML;
+          element.innerHTML =
+            '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải...';
+          element.disabled = true;
         }
+        setTimeout(() => {
+          if (isBtn) {
+            element.innerHTML = originalHTML;
+            element.disabled = false;
+          }
+          if (toastError) toastError.show();
+        }, 1200);
+      }
     </script>
-</body>
+  </body>
 </html>
