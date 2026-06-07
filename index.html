@@ -13,329 +13,376 @@
     <link rel="icon" type="image/jpeg" href="assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="style/base.css">
     <style>
+        :root {
+    /* Liquid Glass Variables */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-highlight: rgba(255, 255, 255, 0.6);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+    --liquid-easing: cubic-bezier(0.175, 0.885, 0.32, 1.2); /* Hiệu ứng nảy vật lý */
+}
 
-        html {
-            scroll-behavior: smooth;
-            scroll-padding-top: 90px; /* 70px navbar + 20px khoảng cách an toàn */
-        }
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
 
-        /* =========================================
-           HIỆU ỨNG REVEAL ON SCROLL KHI CUỘN TRANG (THÊM MỚI)
-        ========================================= */
-        .reveal-on-scroll {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 2s cubic-bezier(0.16, 1, 0.3, 1);
-            will-change: opacity, transform;
-        }
+/* =========================================
+    REVEAL ON SCROLL
+========================================= */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.5s var(--liquid-easing);
+    will-change: opacity, transform;
+}
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.delay-1 { transition-delay: 0.2s; }
+.delay-2 { transition-delay: 0.4s; }
+.delay-3 { transition-delay: 0.6s; }
+.delay-4 { transition-delay: 0.8s; }
 
-        .reveal-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+/* =========================================
+    LIQUID GLASS CƠ BẢN (Dùng chung)
+========================================= */
+/* Các thẻ áp dụng Glass phải có relative, isolate để filter không rò rỉ */
+.feature-card, .btn-login, .btn-hero, .btn-cta-outline, .social-icon-btn, .step-number {
+    position: relative;
+    isolation: isolate;
+    transform-style: preserve-3d;
+    background: transparent !important; /* Xóa nền cũ */
+    border: 1px solid var(--glass-border) !important;
+    backdrop-filter: blur(0px); /* Bật GPU */
+}
 
-        .delay-1 { transition-delay: 0.4s; }
-        .delay-2 { transition-delay: 0.6s; }
-        .delay-3 { transition-delay: 0.8s; }
-        .delay-4 { transition-delay: 1s; }
+/* Lớp dưới cùng: Hiệu ứng mờ & méo mó chất lỏng */
+.feature-card::after, .btn-login::after, .btn-hero::after, .btn-cta-outline::after, .social-icon-btn::after, .step-number::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    /* Gọi filter SVG được chèn từ JS */
+    filter: url(#liquid-distortion); 
+    transition: all 0.5s ease;
+}
 
-        /* =========================================
-           2. NAVBAR & LOGO TRÀN VIỀN
-        ========================================= */
+/* Lớp trên cùng: Hiệu ứng phản quang, viền sáng 3D */
+.feature-card::before, .btn-login::before, .btn-hero::before, .btn-cta-outline::before, .social-icon-btn::before, .step-number::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 
+        inset 2px 2px 4px 0 var(--glass-highlight),
+        inset -2px -2px 4px 0 rgba(255, 255, 255, 0.1);
+    transition: box-shadow 0.5s var(--liquid-easing);
+}
 
-        /* Định dạng tổng thể thanh điều hướng (Navbar) */
-        .custom-navbar {
-            background-color: var(--color-1); /* Lấy màu xanh 00B14F từ base.css */
-            height: 70px; /* Fix cứng chiều cao navbar */
-            padding: 0 !important; /* Xóa toàn bộ khoảng không mặc định */
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+/* Nội dung bên trong phải nổi lên trên lớp Glass */
+.feature-card > *, .btn-login > *, .btn-hero > *, .btn-cta-outline > *, .social-icon-btn > *, .step-number > * {
+    position: relative;
+    z-index: 3;
+}
 
-        /* Định dạng lưới Container cơ sở dùng chung */
-        .container-base {
-            width: 100%;
-            padding-right: 15px;
-            padding-left: 15px;
-            margin-right: auto;
-            margin-left: auto;
-        }
+/* =========================================
+    NAVBAR & DROPDOWN (FROSTED GLASS)
+========================================= */
+.custom-navbar {
+    background-color: var(--color-1) !important; /* Semi-transparent */
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    height: 70px;
+    padding: 0 !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-        /* Ép container của navbar căng tràn giới hạn bằng với container ở dưới */
-        .custom-navbar .container-base {
-            display: flex;
-            align-items: center;
-            justify-content: space-between; /* Đẩy logo ra mép trái, các link ra mép phải */
-            padding: 0 15px; /* Đảm bảo padding-left khớp với cột col-lg-6 */
-        }
+.container-base {
+    width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto;
+    display: flex; align-items: center; justify-content: space-between;
+}
 
-        /* Xử lý Logo (Nằm gọn trong Navbar, không làm thõng xuống) */
-        .brand-overflow {
-            position: relative; /* Trả logo về vị trí bình thường */
-            height: 70px; /* Chiều cao bằng chính xác chiều cao của .custom-navbar */
-            display: flex;
-            align-items: center;
-            padding: 0; /* Xóa khoảng trống để ảnh chạm sát viền trên dưới */
-            background-color: transparent; /* Xóa nền trắng dư thừa */
-            box-shadow: none; /* Xóa bóng đổ */
-        }
+.brand-overflow {
+    position: relative; height: 70px; display: flex; align-items: center; padding: 0;
+}
+.brand-overflow .logo-img { height: 100%; width: auto; object-fit: contain; padding: 5px 0; }
 
-        /* Định dạng hình ảnh Logo bên trong */
-        .brand-overflow .logo-img {
-            height: 100%; /* Ảnh sẽ lấy chiều cao tối đa 70px của thẻ a */
-            width: auto; /* Tự động co giãn chiều ngang để ảnh không bị méo */
-            object-fit: contain; /* Ép hình ảnh hiển thị trọn vẹn, không bị cắt xén */
-            padding: 5px 0; /* Thêm một chút lề trên dưới cho ảnh đỡ sát viền quá */
-        }
+.nav-link { transition: all 0.3s ease; }
+.nav-link:hover { opacity: 1; color: var(--color-3) !important; transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 222, 89, 0.6); }
 
-        /* Các link trên Navbar */
-        .nav-link {
-            transition: opacity var(--transition-speed) ease;
-        }
+/* Dropdown Glass */
+.custom-navbar .dropdown-menu {
+    border-radius: 12px;
+    padding: 8px 0;
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+}
+.custom-navbar .dropdown-item {
+    font-size: 0.95rem; padding: 10px 20px; background-color: transparent !important;
+    color: #333 !important; position: relative; display: inline-block; width: 100%;
+    transition: all 0.3s ease;
+}
+.custom-navbar .dropdown-item::after {
+    content: ""; position: absolute; left: 20px; bottom: 4px; height: 2px; width: calc(100% - 20px);
+    background-color: var(--color-3); transform: scaleX(0); transform-origin: bottom left; transition: transform 0.4s var(--liquid-easing);
+}
+.custom-navbar .dropdown-item:hover { font-weight: 700; background: rgba(255,255,255,0.5) !important;}
+.custom-navbar .dropdown-item:hover::after { transform: scaleX(1); }
+.custom-navbar .nav-item.dropdown:hover .dropdown-menu { display: block; margin-top: 0; }
 
-        .nav-link:hover {
-            opacity: 0.8;
-            color: var(--color-3) !important; /* Hover ra màu vàng FFDE59 */
-        }
+/* Dropdown Glass */
+/* =========================================
+   NAVBAR: ĐỘNG & LIQUID GLASS (HIỆU ỨNG NỔI)
+========================================= */
 
-        /* Nút Đăng nhập riêng biệt trên Nav */
-        /* =========================================
-           NÚT ĐĂNG NHẬP (SMOOTH & MODERN UI)
-        ========================================= */
-        .btn-login {
-            background-color: var(--color-2);
-            color: var(--color-1);
-            border: none;
-            border-radius: 50px;
-            padding: 8px 24px; /* Tăng padding 2 bên một chút để nút cân đối hơn */
-            font-size: 0.95rem;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            
-            /* 1. Dùng cubic-bezier thay vì ease-in-out để tạo độ nảy vật lý siêu mượt */
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            
-            /* 2. Kích hoạt render bằng GPU (Phần cứng) giúp triệt tiêu hoàn toàn giật lag */
-            will-change: transform, box-shadow, background-color;
-        }
+/* Ghi đè sticky-top của Bootstrap để tùy biến hoạt ảnh thu nhỏ mượt mà */
+.custom-navbar.sticky-top {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%); /* Căn giữa hoàn hảo */
+    width: 100%;
+    background-color: var(--color-1) !important; /* Màu xanh gốc khi ở trên đỉnh */
+    height: 70px;
+    padding: 0 !important;
+    
+    /* Chuyển động nảy vật lý mượt mà khi đổi hình dáng */
+    transition: all 0.6s var(--liquid-easing), background-color 0.4s ease;
+    isolation: isolate; /* Ngăn filter lan ra thẻ con */
+    border: 1px solid transparent;
+    z-index: 1030;
+}
 
-        /* Đảm bảo chữ và icon luôn ăn theo màu của nút mẹ */
-        .btn-login span, 
-        .btn-login i {
-            color: inherit; 
-            /* Thêm transition riêng cho icon để làm hiệu ứng */
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
+/* LỚP 1: Lớp Liquid Glass (Bị ẩn khi ở đỉnh trang) 
+  Sử dụng border-radius: inherit để tự động bo góc theo form của Navbar 
+*/
+.custom-navbar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    /* Pha màu xám bạc/kính tối theo y hệt ảnh demo */
+    background: rgba(140, 140, 140, 0.35); 
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    /* Gọi filter bẻ cong SVG để tạo cảm giác chất lỏng */
+    filter: url(#liquid-distortion); 
+    opacity: 0; /* Ẩn đi mặc định */
+    transition: opacity 0.6s ease;
+}
 
-        /* Trạng thái Hover (Di chuột) */
-        .btn-login:hover {
-            background-color: var(--color-3);
-            color: #333333;
-            transform: translateY(-3px); /* Nổi lên rõ hơn một chút */
-            /* Bóng đổ phân tán rộng và mềm hơn tạo cảm giác lơ lửng */
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12), 0 3px 6px rgba(0, 0, 0, 0.08); 
-        }
+/* LỚP 2: Viền sáng nổi 3D (Cũng bị ẩn khi ở đỉnh) */
+.custom-navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: 
+        inset 1px 1px 3px 0 rgba(255, 255, 255, 0.5),
+        inset -1px -1px 3px 0 rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
 
-        /* Trạng thái Active (Khi bấm chuột vào nút) */
-        .btn-login:active {
-            /* Ép nút lún thực sự xuống dưới vị trí ban đầu */
-            transform: translateY(1px); 
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-            /* Giảm thời gian transition xuống cực thấp để nút phản hồi ngay lập tức khi bấm */
-            transition-duration: 0.1s; 
-        }
+/* ===== TRẠNG THÁI KHI CUỘN XUỐNG (THÊM BẰNG JS) ===== */
+.custom-navbar.is-scrolled {
+    top: 15px; /* Tách khỏi mép trên của màn hình */
+    width: 95%; /* Thu hẹp 2 bên */
+    max-width: 1300px; /* Phù hợp với giao diện desktop như ảnh demo */
+    border-radius: 20px; /* Bo góc thành hình viên thuốc */
+    background-color: transparent !important; /* Xóa nền đặc màu xanh */
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    border-color: var(--glass-border) !important; /* Hiện viền khi cuộn */
+}
 
-        /* Trạng thái Focus (Hỗ trợ người dùng dùng phím Tab - Tiêu chuẩn Corporate) */
-        .btn-login:focus-visible {
-            outline: none;
-            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.25); /* Quầng sáng bao quanh nút (Giả sử màu xanh FleetFlow) */
-        }
+/* Bật lớp Liquid Glass và viền sáng lên khi cuộn */
+.custom-navbar.is-scrolled::after,
+.custom-navbar.is-scrolled::before {
+    opacity: 1;
+}
 
-        /* =========================================
-           3. CUSTOM DROPDOWN MENU & TRANSITION UNDERLINE
-        ========================================= */
+/* (Các CSS của Dropdown, Nav-link... vẫn giữ nguyên như cũ nhé) */
 
-        /* Định hình lại khung menu thả xuống */
-        .custom-navbar .dropdown-menu {
-            border-radius: 8px;
-            padding: 8px 0;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
+/* =========================================
+    BUTTONS (LIQUID HOVER)
+========================================= */
+.btn-login, .btn-hero, .btn-cta-outline {
+    border-radius: 50px;
+    padding: 10px 28px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px var(--glass-shadow);
+    transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease;
+    color: var(--color-dark);
+}
 
-        /* Cấu hình chữ cho các option ở trạng thái bình thường */
-        .custom-navbar .dropdown-item {
-            font-size: 0.95rem;
-            padding: 10px 20px;
-            background-color: transparent !important;
-            color: #333 !important; /* Màu chữ gốc mặc định */
-            position: relative; /* Bắt buộc phải có để làm điểm tựa cho đường gạch chạy */
-            display: inline-block;
-            width: 100%;
-            transition: color var(--transition-speed) ease;
-        }
+.btn-login { --glass-bg: rgba(255, 255, 255, 0.8); }
+.btn-hero { --glass-bg: rgba(89, 255, 114, 0.307); color: white;}
+.btn-cta-outline { --glass-bg: rgba(255, 222, 89, 0.2); color: white; border-color: var(--glass-border) !important;}
 
-        /* Tạo đường gạch chân ẩn sẵn nằm dưới chữ */
-        .custom-navbar .dropdown-item::after {
-            content: "";
-            position: absolute;
-            left: 20px; /* Thụt lề bằng đúng padding-left của dropdown-item */
-            bottom: 4px; /* Khoảng cách từ chân chữ xuống đường gạch */
+.btn-login:hover, .btn-hero:hover, .btn-cta-outline:hover {
+    transform: perspective(500px) translateZ(20px) translateY(-4px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
 
-            /* ĐỘ LỚN: Thay đổi độ dày của đường gạch tại đây */
-            height: 3px; 
+.btn-login:hover::after, .btn-hero:hover::after, .btn-cta-outline:hover::after {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(16px);
+}
 
-            /* ĐỘ DÀI: Tính toán độ dài đường gạch bằng chiều ngang chữ (trừ đi 2 bên lề padding 20px * 2) */
-            width: calc(100% - 40px);
+.btn-login:active, .btn-hero:active {
+    transform: translateY(2px) scale(0.95);
+    transition-duration: 0.1s;
+}
 
-            background-color: var(--color-3); /* Đường gạch màu vàng chuẩn */
+/* =========================================
+    HERO SECTION
+========================================= */
+.hero-section {
+    position: relative;
+    height: 100vh;
+    min-height: 600px;
 
-            /* HIỆU ỨNG: Thu nhỏ đường gạch về 0 và đặt tâm chuyển động ở bên trái */
-            transform: scaleX(0);
-            transform-origin: bottom left;
-            transition: transform var(--transition-speed) ease-in-out;
-        }
+    display: flex;
+    align-items: center;
 
-        /* Hiệu ứng Hover: Chữ đổi màu xanh và đường gạch kích hoạt chạy ra */
-        .custom-navbar .dropdown-item:hover {
-            font-weight: 700; /* Tăng độ đậm vừa phải để không bị lệch layout */
-        }
+    overflow: hidden;
+}
 
-        /* Khi hover vào item, đường gạch chân ::after sẽ phóng to lên kích thước đầy đủ (scaleX = 1) */
-        .custom-navbar .dropdown-item:hover::after {
-            transform: scaleX(1);
-        }
+/* Video */
+.hero-video {
+    position: absolute;
+    top: 0;
+    left: 0;
 
-        /* Đường kẻ phân chia */
-        .custom-navbar .dropdown-divider {
-            border-top: 1px solid rgba(0, 0, 0, 0.15) !important;
-            margin: 6px 0;
-        }
+    width: 100%;
+    height: 100%;
 
-        /* =========================================
-           HERO SECTION
-        ========================================= */
-        .hero-section {
-            background: linear-gradient(to right, rgba(26, 28, 26, 0.9) 0%, rgba(26, 28, 26, 0.6) 100%), url('assets/img/background_1.png') center/cover no-repeat;
-            height: calc(100vh - 70px);
-            min-height: 600px;
-            display: flex;
-            align-items: center;
-        }
-        .header-slogan { font-size: 4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
-        .header-slogan.highlight { color: var(--color-3); }
-        .description-text { font-size: 1.15rem; color: #d1d5db; max-width: 500px; line-height: 1.6; }
-        
-        .btn-hero {
-            background-color: var(--color-1); color: var(--color-2); padding: 14px 36px;
-            border-radius: 8px; font-weight: 600; font-size: 1.1rem; text-transform: uppercase;
-            text-decoration: none; transition: all 0.3s; display: inline-flex; align-items: center;
-        }
-        .btn-hero:hover { background-color: #009640; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 177, 79, 0.3); color: white;}
+    object-fit: cover;
 
-        /* =========================================
-           FEATURES SECTION
-        ========================================= */
-        .features-section { padding: 100px 0; background-color: var(--color-bg); }
-        .section-title { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); text-align: center; margin-bottom: 15px; letter-spacing: -0.5px;}
-        .section-subtitle { text-align: center; color: var(--text-color); font-size: 1.1rem; margin-bottom: 60px; opacity: 0.8;}
+    z-index: 0;
+}
 
-        .feature-card {
-            background: var(--color-2); padding: 40px 30px; border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04); transition: all 0.4s ease;
-            height: 100%; border: 1px solid #edf2f7; text-align: center;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s ease;
-            will-change: transform, box-shadow;
-        }
-        .feature-card:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.08); border-color: var(--color-1); }
-        .feature-icon-wrapper { width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 25px; }
-        .icon-green { background-color: rgba(0, 177, 79, 0.1); color: var(--color-1); }
-        .icon-yellow { background-color: rgba(255, 222, 89, 0.2); color: #d97706; }
-        .icon-blue { background-color: #ebf8ff; color: #3182ce; }
-        .icon-dark { background-color: #f1f5f9; color: var(--color-dark); }
-        .feature-card h4 { font-weight: 700; font-size: 1.25rem; margin-bottom: 15px; color: var(--color-dark); }
-        .feature-card p { color: var(--text-color); opacity: 0.75; font-size: 0.95rem; line-height: 1.6; margin: 0; }
+/* Lớp phủ tối */
+.hero-overlay {
+    position: absolute;
+    inset: 0;
 
-        /* =========================================
-           HOW IT WORKS SECTION
-        ========================================= */
-        .process-section { padding: 100px 0; background-color: var(--color-2); }
-        .step-box { text-align: center; position: relative; padding: 20px; }
-        .step-number {
-            width: 60px; height: 60px; background-color: var(--color-1); color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; font-weight: 800; margin: 0 auto 20px auto;
-            box-shadow: 0 0 0 10px rgba(0, 177, 79, 0.1);
-            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
-        }
+    background: linear-gradient(
+        to right,
+        rgba(0,0,0,0.7),
+        rgba(0,0,0,0.3)
+    );
 
-        .step-box:hover .step-number {
-            transform: scale(1.15) translateY(-5px);
-            box-shadow: 0 0 0 15px rgba(0, 177, 79, 0.15), 0 10px 20px rgba(0, 177, 79, 0.3);
-        }
-        .step-box h5 { font-weight: 700; font-size: 1.2rem; color: var(--color-dark); margin-bottom: 10px; }
-        .step-box p { color: var(--text-color); opacity: 0.75; font-size: 0.95rem; }
+    z-index: 1;
+}
 
-        /* =========================================
-           CTA SECTION
-        ========================================= */
-        .cta-section { background: var(--color-dark); padding: 80px 0; color: white; text-align: center; }
-        .cta-section h2 { font-weight: 800; font-size: 2.5rem; margin-bottom: 20px; }
-        .btn-cta-outline {
-            background-color: transparent; border: 2px solid var(--color-3); color: var(--color-3);
-            padding: 12px 32px; border-radius: 8px; font-weight: 600; text-decoration: none; transition: 0.3s;
-        }
-        .btn-cta-outline:hover { background-color: var(--color-3); color: var(--color-dark); }
+/* Nội dung nổi lên trên */
+.hero-section .container {
+    position: relative;
+    z-index: 2;
+}
+.header-slogan { font-size: 4rem; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+.header-slogan.highlight { color: var(--color-3); text-shadow: 0 0 20px rgba(255,222,89,0.4); }
+.description-text { font-size: 1.15rem; color: #d1d5db; max-width: 500px; line-height: 1.6; }
 
-        /* =========================================
-           FOOTER
-        ========================================= */
-        footer { background-color: #111111; color: #a0aec0; padding: 60px 0 20px 0; font-size: 0.9rem; }
-        footer h5 { color: white; font-weight: 700; margin-bottom: 20px; }
-        footer ul { list-style: none; padding: 0; }
-        footer ul li { margin-bottom: 10px; }
-        footer ul a { color: #a0aec0; text-decoration: none; transition: 0.3s; }
-        footer ul a:hover { color: var(--color-1); padding-left: 5px; }
-        .footer-bottom { border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; text-align: center; }
+/* =========================================
+    FEATURES SECTION (GLASS CARDS)
+========================================= */
+.features-section { padding: 100px 0; background-color: var(--color-bg); }
+.section-title { font-size: 2.5rem; font-weight: 800; color: var(--color-dark); text-align: center; margin-bottom: 15px; }
+.section-subtitle { text-align: center; color: var(--text-color); font-size: 1.1rem; margin-bottom: 60px; opacity: 0.8;}
 
-        /* Contact Buttons Floating */
-        .floating-contact-buttons {
-            position: fixed;
-            bottom: 40px;
-            right: 25px;
-            z-index: 999;
-        }
+.feature-card {
+    padding: 40px 30px;
+    border-radius: 24px; /* Bo góc tròn hơn cho giống giọt nước */
+    height: 100%; text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease;
+    --glass-bg: rgba(255, 255, 255, 0.4); /* Kính đục nhẹ */
+}
 
-        .social-icon-btn {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
-            transition: transform var(--transition-speed) ease;
-            background-color: var(--color-2);
-        }
+.feature-card:hover {
+    transform: perspective(1000px) translateY(-15px) scale(1.03);
+    box-shadow: 0 20px 40px rgba(0, 177, 79, 0.15);
+}
+.feature-card:hover::before {
+    box-shadow: 
+        inset 3px 3px 6px 0 rgba(255, 255, 255, 0.8),
+        inset -2px -2px 5px 0 rgba(255, 255, 255, 0.3);
+}
 
-        .social-icon-btn:hover {
-            transform: scale(1.5);
-        }
+.feature-icon-wrapper { width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.icon-green { background-color: var(--color-1); color: white; }
+.icon-yellow { background-color: var(--color-3); color: var(--color-dark); }
+.icon-blue { background-color: #3182ce; color: white; }
+.icon-dark { background-color: var(--color-dark); color: white; }
+.feature-card h4 { font-weight: 700; font-size: 1.25rem; margin-bottom: 15px; color: var(--color-dark); }
+.feature-card p { color: var(--text-color); opacity: 0.8; font-size: 0.95rem; line-height: 1.6; margin: 0; }
 
-        /* =========================================
-           HIỂN THỊ DROPDOWN KHI HOVER
-        ========================================= */
-        /* Khi trỏ chuột vào nav-item, ép thẻ dropdown-menu bên trong hiển thị */
-        .custom-navbar .nav-item.dropdown:hover .dropdown-menu {
-            display: block;
-            margin-top: 0; /* Xóa khoảng cách thừa để khi di chuột từ menu cha xuống menu con không bị ngắt quãng */
-        }
+/* =========================================
+    HOW IT WORKS (LIQUID DROPS)
+========================================= */
+.process-section { padding: 100px 0; background: linear-gradient(135deg, var(--color-2), #e0e5ec); }
+.step-box { text-align: center; padding: 20px; }
+.step-number {
+    width: 70px; height: 70px; 
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem; font-weight: 800; margin: 0 auto 25px auto;
+    color: var(--color-1);
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.6s var(--liquid-easing);
+}
+.step-box:hover .step-number {
+    transform: scale(1.2) translateY(-10px);
+    color: var(--color-dark);
+}
+.step-box:hover .step-number::after {
+    background: var(--color-3); /* Biến thành giọt nước vàng khi hover */
+}
+.step-box h5 { font-weight: 700; font-size: 1.2rem; color: var(--color-dark); margin-bottom: 10px; }
+.step-box p { color: var(--text-color); opacity: 0.8; font-size: 0.95rem; }
 
-        /* Tùy chọn: Giữ màu hover cho thẻ cha khi đang trỏ chuột vào menu con */
-        .custom-navbar .nav-item.dropdown:hover .dropdown-toggle {
-            opacity: 0.8;
-            color: var(--color-3) !important;
-        }
-    </style>
+/* =========================================
+    CTA & FOOTER & FLOATING
+========================================= */
+.cta-section { background: var(--color-dark); padding: 80px 0; color: white; text-align: center; }
+.cta-section h2 { font-weight: 800; font-size: 2.5rem; margin-bottom: 20px; }
+
+footer { background-color: #111111; color: #a0aec0; padding: 60px 0 20px 0; font-size: 0.9rem; }
+footer h5 { color: white; font-weight: 700; margin-bottom: 20px; }
+footer ul { list-style: none; padding: 0; }
+footer ul li { margin-bottom: 10px; }
+footer ul a { color: #a0aec0; text-decoration: none; transition: 0.3s; }
+footer ul a:hover { color: var(--color-1); padding-left: 5px; }
+.footer-bottom { border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; text-align: center; }
+
+.floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
+.social-icon-btn {
+    width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    --glass-bg: rgba(255,255,255,0.2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    transition: transform 0.5s var(--liquid-easing);
+}
+.social-icon-btn img { position: relative; z-index: 3; border-radius: 50%; }
+.social-icon-btn:hover { transform: scale(1.15) translateY(-10px); }
+        </style >
 </head>
 <body>
 
@@ -343,7 +390,7 @@
       <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
         <div class="container-base position-relative h-100">
           <a class="navbar-brand brand-overflow" href="#">
-            <img src="assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
+            <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
           </a>
 
           <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#fleetflowNav">
@@ -380,27 +427,48 @@
     </header>
 
     <main>
-        <section class="hero-section position-relative">
-            <div class="container z-1 reveal-on-scroll">
-                <div class="row align-items-center">
-                    <div class="col-lg-7 text-white">
-                        <h1 class="header-slogan mb-2">Di Chuyển <span class="highlight">Thông Minh.</span></h1>
-                        <h1 class="header-slogan mb-4">Trải Nghiệm An Tâm.</h1>
-                        <p class="description-text mb-5">
-                            FleetFlow là nền tảng đặt xe đường dài chuyên biệt, tích hợp Trợ lý AI tư vấn phương tiện và công nghệ giám sát Web-GPS thời gian thực. An toàn, minh bạch và không chi phí ẩn.
-                        </p>
-                        <div class="d-flex gap-3 flex-wrap">
-                            <a href="pages/findCar.html" class="btn-hero shadow">
-                                <i class="fa-solid fa-car-side me-2"></i> Đặt xe ngay
-                            </a>
-                            <a href="#how-it-works" class="btn-cta-outline d-inline-flex align-items-center" style="border-color: white; color: white;">
-                                Tìm hiểu thêm
-                            </a>
-                        </div>
-                    </div>
+        <section class="hero-section position-relative overflow-hidden">
+
+    <!-- Video Background -->
+    <video autoplay muted loop playsinline class="hero-video">
+        <source src="assets/video/intro-fleetFlow.mp4" type="video/mp4">
+    </video>
+
+    <!-- Overlay -->
+    <div class="hero-overlay"></div>
+
+    <div class="container z-1 reveal-on-scroll">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-white">
+                <h1 class="header-slogan mb-2">
+                    Di Chuyển <span class="highlight">Thông Minh.</span>
+                </h1>
+
+                <h1 class="header-slogan mb-4">
+                    Trải Nghiệm An Tâm.
+                </h1>
+
+                <p class="description-text mb-5">
+                    FleetFlow là nền tảng đặt xe đường dài chuyên biệt,
+                    tích hợp Trợ lý AI tư vấn phương tiện và công nghệ
+                    giám sát Web-GPS thời gian thực.
+                </p>
+
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="pages/findCar.html" class="btn-hero shadow">
+                        Đặt xe ngay
+                    </a>
+
+                    <a href="#how-it-works"
+                       class="btn-cta-outline d-inline-flex align-items-center"
+                       style="border-color: white; color: white;">
+                        Tìm hiểu thêm
+                    </a>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
 
         <section id="features" class="features-section">
             <div class="container">
@@ -410,8 +478,8 @@
                 <div class="row g-4">
                     <div class="col-lg-3 col-md-6 reveal-on-scroll delay-1">
                         <div class="feature-card">
-                            <div class="feature-icon-wrapper icon-blue">
-                                <i class="fa-solid fa-robot fs-2"></i>
+                            <div class="feature-icon-wrapper icon-blue" >
+                                <i class="fa-solid fa-robot fs-2 "></i>
                             </div>
                             <h4>Trợ Lý AI Tư Vấn</h4>
                             <p>Không cần đau đầu chọn xe. AI của chúng tôi phân tích ngôn ngữ tự nhiên và đưa ra 3 gợi ý xe hoàn hảo nhất cho hành trình của bạn trong vòng 3 giây.</p>
@@ -563,6 +631,21 @@
                 observer.observe(elem);
             });
         });
+
+        // ... (Các code JS trước đó của bạn)
+
+// 4. NAVBAR ĐỔI TRẠNG THÁI KHI CUỘN (THU NHỎ THÀNH LIQUID PILL)
+const navbar = document.querySelector('.custom-navbar');
+
+window.addEventListener('scroll', () => {
+    // Nếu cuộn xuống quá 50px, thêm class 'is-scrolled' để kích hoạt Liquid Glass
+    if (window.scrollY > 50) {
+        navbar.classList.add('is-scrolled');
+    } else {
+        // Nếu cuộn ngược lên lại đỉnh, gỡ bỏ class để trả về nguyên trạng
+        navbar.classList.remove('is-scrolled');
+    }
+});
     </script>
 </body>
 </html>
