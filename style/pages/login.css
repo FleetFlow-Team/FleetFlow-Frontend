@@ -1,154 +1,215 @@
 /* =========================================
-   WRAPPER & BACKGROUND TỔNG
+   1. WRAPPER & BACKGROUND TỔNG
 ========================================= */
 .login-wrapper {
-    min-height: 100vh;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    position: relative;
-    background-image: url('assests/img/'); /* Đường dẫn ảnh nền */
-    /* Nếu muốn nền tối hơn chút để nổi form, có thể dùng linear-gradient chèn vào background-image trong HTML, 
-       nhưng ảnh Index FF.jpg của bạn đã có lớp phủ xanh khá đẹp rồi nên tôi giữ nguyên */
+  min-height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  overflow: hidden;
 }
 
 /* =========================================
-   CỘT TRÁI (LOGO & TEXT)
+   VIDEO BACKGROUND
+========================================= */
+.bg-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    /* Dịch chuyển video để căn giữa chính xác */
+    transform: translateX(-50%) translateY(-50%);
+    object-fit: cover; /* Đảm bảo video luôn phủ kín màn hình không bị méo */
+    z-index: -2; /* Nằm dưới cùng */
+}
+
+/* Lớp phủ màu đen trong suốt để làm nổi bật nội dung */
+.bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(26, 28, 26, 0.5); /* Tùy chỉnh độ tối (0.5 là 50%) */
+    z-index: -1; /* Nằm trên video nhưng dưới nội dung */
+}
+
+/* =========================================
+   2. CỘT TRÁI (LOGO & TEXT)
 ========================================= */
 .login-logo {
-    max-width: 400px; /* Tăng số này lên (ví dụ: 450px, 500px) nếu bạn muốn to hơn nữa. Mặc định lúc trước là 280px */
-    width: 100%; /* Thêm dòng này để logo tự động co giãn không bị tràn màn hình trên điện thoại */
-    height: auto;
-    object-fit: contain;
+  max-width: 450px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
 }
 
 .login-heading {
-    font-size: 3.5rem;
-    letter-spacing: -1px;
+  font-size: 3.8rem;
+  letter-spacing: -1.5px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
-
 .login-subheading {
-    font-size: 2.5rem;
-    opacity: 0.9;
+  font-size: 2.5rem;
+  opacity: 0.9;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .forgot-pwd-link {
-    color: var(--color-2); /* Trắng */
-    font-size: 1.15rem;
-    font-weight: 600;
-    text-decoration: underline !important;
-    text-decoration-thickness: 2px !important;
-    text-underline-offset: 6px;
-    transition: color var(--transition-speed) ease;
+  color: var(--color-2);
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-decoration: underline !important;
+  text-decoration-thickness: 2px !important;
+  text-underline-offset: 6px;
+  transition: all var(--transition-speed) ease;
 }
-
 .forgot-pwd-link:hover {
-    color: var(--color-3) !important; /* Đổi sang vàng khi hover */
+  color: var(--color-3) !important;
+  text-shadow: 0 0 12px rgba(255, 222, 89, 0.6);
 }
 
 /* =========================================
-   CỘT PHẢI (FORM ĐĂNG NHẬP - DARK CARD)
-========================================= */
-/* =========================================
-   CỘT PHẢI (FORM ĐĂNG NHẬP - GLASSMORPHISM)
+   3. CỘT PHẢI (LIQUID GLASS FORM & FLOATING LABEL)
 ========================================= */
 .login-card {
-    /* Đổi mã màu #1a1c1a thành dạng rgba có độ trong suốt (chữ số cuối 0.65 là 65% độ đậm) */
-    background-color: rgba(26, 28, 26, 0.65); 
-    
-    /* Thuộc tính quan trọng nhất: Làm mờ ảnh nền phía sau khung đăng nhập */
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px); /* Hỗ trợ trình duyệt Safari của Apple */
-    
-    border-radius: 24px;
-    padding: 3.5rem 3rem;
-    
-    /* Tăng độ sáng của viền lên một chút để khung kính nổi bật hơn */
-    border: 1px solid rgba(255, 255, 255, 0.15); 
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); /* Thêm bóng đổ mờ xung quanh khung */
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  padding: 3.5rem 3rem;
+  position: relative;
+  isolation: isolate;
+  transform-style: preserve-3d;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  transition:
+    transform 0.6s var(--liquid-easing),
+    box-shadow 0.6s ease;
 }
 
+.login-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow:
+    inset 2px 2px 5px 0 rgba(255, 255, 255, 0.2),
+    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.5s ease;
+}
+
+.login-card:hover {
+  transform: perspective(1000px) translateY(-5px) translateZ(10px);
+  box-shadow: 0 25px 60px rgba(0, 177, 79, 0.15);
+}
+
+.login-card > * {
+  position: relative;
+  z-index: 3;
+}
 .login-card-title {
-    color: var(--color-2);
-    text-align: center;
-    font-size: 2.2rem;
-    line-height: 1.2;
+  color: var(--color-2);
+  text-align: center;
+  font-size: 2.4rem;
+  line-height: 1.2;
+  margin-bottom: 25px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 
-/* Nhãn (Label) của Form */
-.custom-label {
-    color: var(--color-2);
-    font-size: 0.85rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
-    margin-left: 15px; /* Thụt vào một chút để thẳng hàng với text trong ô input */
+/* --- CẤU HÌNH FLOATING LABEL --- */
+.form-floating-custom {
+  position: relative;
 }
 
-/* Ô nhập liệu (Input) */
+/* Ô Input chính */
 .custom-input {
-    background-color: #444743 !important; /* Màu xám tối */
-    border: 1px solid transparent !important;
-    border-radius: 50px !important; /* Bo tròn hoàn toàn */
-    color: var(--color-2) !important;
-    padding: 14px 24px !important;
-    font-size: 1rem;
-    transition: all var(--transition-speed) ease;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 50px !important; /* Bo góc 16px đẹp hơn cho dạng khối so với 50px */
+  color: var(--color-2) !important;
+  padding: 24px 20px 10px 20px !important; /* Dồn khoảng trống phía trên cho chữ nhỏ lại */
+  font-size: 1rem;
+  font-weight: 500;
+  height: 64px; /* Fix cứng chiều cao */
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease !important;
 }
 
-/* Đổi màu chữ Placeholder (những chữ mờ mờ trong ô input) */
+/* Ẩn placeholder gốc để dùng label thay thế */
 .custom-input::placeholder {
-    color: #9ba09b !important;
-    font-weight: 400;
+  color: transparent !important;
 }
 
-/* Hiệu ứng khi click vào ô Input */
+/* Trạng thái Label mặc định (To và nằm giữa ô) */
+.form-floating-custom label {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-weight: 500;
+  pointer-events: none; /* Tránh cản trở chuột khi click vào input */
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  margin: 0;
+}
+
+/* Hiệu ứng kích hoạt: Khi click (focus) HOẶC khi đã nhập chữ (:not(:placeholder-shown)) */
+.custom-input:focus ~ label,
+.custom-input:not(:placeholder-shown) ~ label {
+  top: 14px; /* Bay lên trên */
+  transform: translateY(-50%);
+  font-size: 0.75rem; /* Nhỏ lại */
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-3); /* Đổi sang màu vàng chủ đạo */
+}
+
+/* Viền phát sáng khi focus */
 .custom-input:focus {
-    background-color: #4e524d !important;
-    border: 1px solid var(--color-3) !important; /* Viền vàng khi focus */
-    box-shadow: 0 0 0 4px rgba(255, 222, 89, 0.15) !important; /* Vầng sáng vàng mờ */
+  background-color: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid var(--color-3) !important;
+  box-shadow:
+    0 0 0 4px rgba(255, 222, 89, 0.15),
+    inset 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Nút Submit Đăng nhập */
-.btn-login-submit {
-    background-color: var(--color-3); /* Màu vàng từ base.css */
-    color: #111 !important; /* Chữ màu đen đậm */
-    border: none;
-    border-radius: 50px;
-    font-weight: 700;
-    font-size: 1.15rem;
-    padding: 14px;
-    transition: all var(--transition-speed) ease;
-}
-
-.btn-login-submit:hover {
-    background-color: #f0ce42; /* Vàng sậm hơn chút khi hover */
-    transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 222, 89, 0.3);
+/* Nút Submit */
+.btn-login {
+  padding: 10px !important;
+  font-size: 1.15rem !important;
+  letter-spacing: 0.5px;
 }
 
 /* =========================================
-   RESPONSIVE (MOBILE & TABLET)
+   4. RESPONSIVE (MOBILE & TABLET)
 ========================================= */
 @media (max-width: 991.98px) {
-    .login-wrapper {
-        padding: 40px 0;
-        height: auto;
-    }
-    
-    .login-content-left {
-        text-align: center;
-    }
-    
-    .login-heading { font-size: 2.8rem; }
-    .login-subheading { font-size: 2rem; }
-    
-    .login-logo {
-        margin: 0 auto;
-        max-width: 280px; /* Thu nhỏ lại một chút trên điện thoại cho cân đối */
-    }
-    
-    .login-card {
-        padding: 2.5rem 1.5rem;
-    }
+  .login-wrapper {
+    padding: 50px 0;
+    height: auto;
+  }
+  .login-content-left {
+    text-align: center;
+    margin-bottom: 3rem !important;
+  }
+  .login-heading {
+    font-size: 3rem;
+  }
+  .login-subheading {
+    font-size: 2.2rem;
+  }
+  .login-logo {
+    margin: 0 auto;
+    max-width: 300px;
+  }
+  .login-card {
+    padding: 2.5rem 1.8rem;
+  }
 }
