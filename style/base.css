@@ -561,3 +561,52 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
     padding-top: 1.625rem;
     padding-bottom: 0.625rem;
 }
+
+/* =========================================
+   8. BỔ SUNG CHO SECTION TRANG CHỦ MỚI
+========================================= */
+
+/* Tùy chỉnh thanh cuộn ngang cho Danh mục xe */
+.fleet-scroll-container {
+    scroll-snap-type: x mandatory; 
+    scroll-behavior: smooth; 
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar Style cho Webkit (Chrome, Safari, Edge) */
+.fleet-scroll-container::-webkit-scrollbar {
+    height: 8px;
+}
+.fleet-scroll-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+.fleet-scroll-container::-webkit-scrollbar-thumb {
+    background: var(--color-1); /* Màu xanh FleetFlow */
+    border-radius: 10px;
+}
+.fleet-scroll-container::-webkit-scrollbar-thumb:hover {
+    background: var(--color-3); /* Màu vàng khi hover */
+}
+
+/* Hiệu ứng gõ chữ (Typing Dots) cho AI Demo */
+.typing-dots {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.typing-dots span {
+    width: 6px;
+    height: 6px;
+    background-color: white;
+    border-radius: 50%;
+    display: inline-block;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
