@@ -443,6 +443,7 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
       ========================================= */
 
       .nav-link-center {
+        display: flex;
         color: rgba(255, 255, 255, 0.85) !important;
         font-weight: 600;
         font-size: 1.05rem;
@@ -451,6 +452,9 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
         padding: 8px 16px;
         transition: all 0.4s var(--liquid-easing);
         border-radius: 50px;
+        width: 130px;
+        justify-content: center;
+        align-items: center;
       }
 
       .nav-link-center:hover {
