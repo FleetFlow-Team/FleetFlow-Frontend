@@ -111,35 +111,67 @@
           position: relative; z-index: 3;
       }
 
-      /* Nút bấm (Link) bên trong Sidebar */
-      .toc-list { list-style: none; padding: 0 15px 20px; margin: 0; position: relative; z-index: 3;}
-      
-      .toc-list a { 
-          display: block; padding: 12px 20px; color: #475569; 
-          text-decoration: none; font-weight: 600; font-size: 0.95rem;
-          border-radius: 50px; margin-bottom: 8px;
-          position: relative; isolation: isolate;
-          transition: all 0.4s var(--liquid-easing);
-          border: 1px solid transparent;
-      }
+      /* --- THAY THẾ CÁC CLASS CŨ CỦA TOC-LIST BẰNG ĐOẠN NÀY --- */
 
-      /* Hiệu ứng kính ngưng tụ khi Hover vào các dòng mục lục */
-      .toc-list a:hover { 
-          color: var(--color-dark); 
-          transform: translateX(8px);
-          background: rgba(255, 255, 255, 0.4); /* Sáng lên khi hover */
-          border: 1px solid rgba(255, 255, 255, 0.6);
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-      }
+/* Khung chứa danh mục */
+.toc-list { 
+    list-style: none; 
+    padding: 0 15px 20px; 
+    margin: 0; 
+    position: relative; 
+}
 
-      /* Đánh dấu mục lục đang đọc (Active) */
-      .toc-list a.active { 
-          color: var(--color-1); 
-          background: rgba(255, 255, 255, 0.6);
-          border: 1px solid var(--glass-border);
-          box-shadow: 0 4px 15px rgba(0, 177, 79, 0.1);
-          transform: translateX(5px);
-      }
+/* Các nút bấm chữ bên trong */
+.toc-list a { 
+    display: block; 
+    padding: 12px 20px; 
+    color: #475569; 
+    text-decoration: none; 
+    font-weight: 600; 
+    font-size: 0.95rem;
+    border-radius: 50px; 
+    margin-bottom: 8px;
+    position: relative; 
+    z-index: 2; /* Đẩy chữ lên trên cùng, cao hơn cục kính */
+    transition: color 0.3s ease, transform 0.4s var(--liquid-easing);
+    border: 1px solid transparent;
+}
+
+/* Hiệu ứng Hover chữ nhẹ nhàng */
+.toc-list a:hover { 
+    color: var(--color-dark);
+}
+
+/* Đánh dấu mục đang đọc - ĐÃ XÓA background, border, và box-shadow dư thừa */
+.toc-list a.active { 
+    color: var(--color-1); 
+    transform: translateX(5px);
+    
+}
+
+/* CỤC KÍNH TRƯỢT DỌC (The Vertical Glass Pill) */
+.toc-indicator {
+    position: absolute;
+    left: 15px; /* Khớp chính xác với padding-left của .toc-list */
+    width: calc(100% - 30px); /* Chiều rộng co giãn vừa khít với không gian của thẻ a */
+    height: 0; /* Sẽ được JS tự động tính toán và cập nhật */
+    top: 0; /* Sẽ được JS thay đổi qua thuộc tính transform translateY */
+    
+    /* Đồng bộ giao diện kính Glassmorphism từ file mẫu */
+    background: rgba(255, 255, 255, 0.4); 
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    border-radius: 50px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 
+                inset 1px 1px 2px rgba(255, 255, 255, 1);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    
+    /* Hiệu ứng trượt lỏng theo chiều dọc (Nảy cao su) */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
+                height 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+    z-index: 1; /* Nằm dưới lớp chữ của thẻ a */
+    pointer-events: none; /* Đảm bảo không cản trở sự kiện click chuột vào chữ */
+}
 
       /* Tinh chỉnh phần Text Nội dung */
       .policy-content-box { padding: 50px; z-index: 3; }
@@ -233,6 +265,7 @@
                 <i class="fa-solid fa-scale-balanced me-2 text-secondary"></i>Danh mục quy định
               </div>
               <ul class="toc-list" id="tocMenu">
+                <div id="tocIndicator" class="toc-indicator"></div>
                 <li><a href="#sec-dat-xe" class="active">1. Đặt xe & Thanh toán cọc</a></li>
                 <li><a href="#sec-huy-chuyen">2. Hủy chuyến & Bồi thường</a></li>
                 <li><a href="#sec-phu-phi">3. Quy định về Phụ phí</a></li>
@@ -394,43 +427,68 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        const sections = document.querySelectorAll(".policy-section");
-        const navLinks = document.querySelectorAll(".toc-list a");
+  const sections = document.querySelectorAll(".policy-section");
+  const navLinks = document.querySelectorAll(".toc-list a");
+  const indicator = document.getElementById('tocIndicator');
 
-        window.addEventListener("scroll", () => {
-          let current = "";
-          sections.forEach((section) => {
-            const sectionTop = section.offsetTop;
-            if (scrollY >= sectionTop - 120) {
-              current = section.getAttribute("id");
-            }
-          });
+  // Hàm tính toán và điều khiển cục kính trượt theo chiều dọc
+  function updateVerticalIndicator() {
+    const activeLink = document.querySelector('.toc-list a.active');
+    if (activeLink) {
+      // Trượt cục kính đến đúng vị trí đỉnh (Top) của thẻ a đang active
+      indicator.style.transform = `translateY(${activeLink.offsetTop}px)`;
+      // Tự động co giãn chiều cao (Height) vừa vặn với thẻ a
+      indicator.style.height = `${activeLink.offsetHeight}px`;
+    }
+  }
 
-          if (window.innerHeight + Math.round(window.scrollY) >= document.body.offsetHeight - 10) {
-            current = sections[sections.length - 1].getAttribute("id");
-          }
+  // Sự kiện cuộn trang
+  window.addEventListener("scroll", () => {
+    let current = "";
+    sections.forEach((section) => {
+      const sectionTop = section.offsetTop;
+      if (scrollY >= sectionTop - 120) {
+        current = section.getAttribute("id");
+      }
+    });
 
-          navLinks.forEach((link) => {
-            link.classList.remove("active");
-            if (link.getAttribute("href").includes(current)) {
-              link.classList.add("active");
-            }
-          });
-        });
+    if (window.innerHeight + Math.round(window.scrollY) >= document.body.offsetHeight - 10) {
+      current = sections[sections.length - 1].getAttribute("id");
+    }
 
-        navLinks.forEach((link) => {
-          link.addEventListener("click", function (e) {
-            e.preventDefault();
-            const targetId = this.getAttribute("href").substring(1);
-            const targetSection = document.getElementById(targetId);
+    navLinks.forEach((link) => {
+      link.classList.remove("active");
+      if (link.getAttribute("href").includes(current)) {
+        link.classList.add("active");
+      }
+    });
 
-            window.scrollTo({
-              top: targetSection.offsetTop - 90, 
-              behavior: "smooth",
-            });
-          });
-        });
+    // Cập nhật vị trí kính lỏng ngay khi class active thay đổi lúc cuộn
+    updateVerticalIndicator();
+  });
+
+  // Sự kiện nhấp chuột vào mục lục
+  navLinks.forEach((link) => {
+    link.addEventListener("click", function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute("href").substring(1);
+      const targetSection = document.getElementById(targetId);
+
+      window.scrollTo({
+        top: targetSection.offsetTop - 90, 
+        behavior: "smooth",
       });
+
+      // Kích hoạt hiệu ứng trượt kính ngay lập tức khi click thay vì chờ cuộn xong
+      navLinks.forEach(l => l.classList.remove("active"));
+      this.classList.add("active");
+      updateVerticalIndicator();
+    });
+  });
+
+  // Kích hoạt vị trí ban đầu cho cục kính sau khi trang tải xong ổn định
+  setTimeout(updateVerticalIndicator, 150);
+});
     </script>
   </body>
 </html>

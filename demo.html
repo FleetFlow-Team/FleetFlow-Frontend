@@ -1,122 +1,227 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang chủ</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Reset cơ bản */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carousel Xe - Liquid Glass Effect</title>
+  <style>
+    /* RESET CƠ BẢN */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
 
-body {
-    font-family: sans-serif;
-    overflow-x: hidden; /* Ẩn phần trang login đang nằm ngoài màn hình bên phải */
-}
+    /* SECTION VỚI BACKGROUND NỔI BẬT */
+    .car-showcase-section {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); /* Background sâu và sang trọng */
+      overflow: hidden;
+      position: relative;
+    }
 
-.main-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-}
+    /* Thêm chút hiệu ứng ánh sáng nền */
+    .car-showcase-section::before {
+      content: '';
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 255, 200, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+    .car-showcase-section::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(255, 100, 100, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
 
-/* Định dạng chung cho các trang */
-.page {
-    width: 100%;
-    height: 100%;
-}
+    /* CONTAINER CHỨA CAROUSEL */
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      height: 500px;
+    }
 
-/* Trang Index */
-.index-page {
-    background-color: #f0f2f5;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    /* LIQUID GLASS CARD */
+    .car-card {
+      position: absolute;
+      top: 50%;
+      width: 50%;
+      max-width: 600px;
+      height: 350px;
+      
+      /* Hiệu ứng kính lỏng (Liquid Glass) */
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4), inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+      
+      /* Căn giữa nội dung bên trong kính */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: #fff;
+      
+      /* Hiệu ứng chuyển động mượt mà */
+      transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
+      overflow: hidden;
+    }
 
-/* Trang Login - Ban đầu ẩn hoàn toàn bên phải màn hình */
-.login-page {
-    position: fixed;
-    top: 0;
-    left: 0;
-    background-color: #ffffff; /* Hoặc màu tối tùy giao diện của bạn */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    /* Đẩy toàn bộ trang login sang phải 100% chiều rộng màn hình */
-    transform: translateX(100%); 
-    
-    /* Tạo hiệu ứng mượt mà khi thay đổi transform trong 0.5 giây */
-    transition: transform 0.5s ease-in-out; 
-    z-index: 999; /* Đảm bảo nó đè lên trên trang index */
-}
+    .car-card img {
+      width: 100%;
+      height: 80%;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      transition: transform 0.5s ease;
+    }
 
-/* Class này sẽ được thêm vào bằng JavaScript để kích hoạt hiệu ứng trượt vào */
-.login-page.active {
-    transform: translateX(0);
-}
+    .car-card h3 {
+      margin-top: 15px;
+      font-size: 1.5rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    }
 
-/* Một vài CSS phụ cho nút bấm và form */
-.content {
-    text-align: center;
-}
-button {
-    padding: 10px 20px;
-    margin-top: 15px;
-    cursor: pointer;
-}
-.back-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-}
-    </style>
+    /* TRẠNG THÁI CỦA CÁC THẺ */
+
+    /* Thẻ ở giữa (Active) */
+    .car-card.active {
+      left: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      z-index: 10;
+      opacity: 1;
+      pointer-events: none; /* Không cần click vào thẻ đang active */
+    }
+
+    /* Thẻ bên phải (Chỉ hiện ~30%) */
+    .car-card.next {
+      left: 85%; /* Đẩy sang phải, chỉ lộ một phần */
+      transform: translate(-50%, -50%) scale(0.8);
+      z-index: 5;
+      opacity: 0.6;
+      cursor: pointer; /* Hiển thị con trỏ tay để báo hiệu có thể click */
+    }
+
+    /* Thẻ bên trái (Chỉ hiện ~30%) */
+    .car-card.prev {
+      left: 15%; /* Đẩy sang trái, chỉ lộ một phần */
+      transform: translate(-50%, -50%) scale(0.8);
+      z-index: 5;
+      opacity: 0.6;
+      cursor: pointer;
+    }
+
+    /* Hiệu ứng hover khi đưa chuột vào phần xe bị khuất */
+    .car-card.next:hover, .car-card.prev:hover {
+      opacity: 0.9;
+      transform: translate(-50%, -50%) scale(0.82);
+    }
+
+    /* Các thẻ ẩn hoàn toàn bên ngoài màn hình */
+    .car-card.hidden-right {
+      left: 120%;
+      transform: translate(-50%, -50%) scale(0.5);
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .car-card.hidden-left {
+      left: -20%;
+      transform: translate(-50%, -50%) scale(0.5);
+      z-index: 1;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <section class="page index-page">
-            <div class="content">
-                <h1>Chào mừng đến với Website</h1>
-                <p>Đây là trang index hiện tại của bạn.</p>
-                <button id="open-login-btn">Đăng nhập ngay</button>
-            </div>
-        </section>
-
-        <section class="page login-page" id="loginPage">
-            <div class="content">
-                <button id="close-login-btn" class="back-btn">← Quay lại</button>
-                
-                <h2>Đăng nhập</h2>
-                <form>
-                    <input type="text" placeholder="Tên đăng nhập"><br>
-                    <input type="password" placeholder="Mật khẩu"><br>
-                    <button type="submit">Xác nhận</button>
-                </form>
-            </div>
-        </section>
+  <section class="car-showcase-section">
+    <div class="carousel-container" id="carousel">
+      <div class="car-card" onclick="handleClick(0)">
+        <img src="https://images.unsplash.com/photo-1503376760367-13eea3625346?q=80&w=800&auto=format&fit=crop" alt="Xe số 1">
+        <h3>Sedan Đen</h3>
+      </div>
+      <div class="car-card" onclick="handleClick(1)">
+        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?q=80&w=800&auto=format&fit=crop" alt="Xe số 2">
+        <h3>Thể thao Đỏ</h3>
+      </div>
+      <div class="car-card" onclick="handleClick(2)">
+        <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=800&auto=format&fit=crop" alt="Xe số 3">
+        <h3>Siêu xe Xanh</h3>
+      </div>
+      <div class="car-card" onclick="handleClick(3)">
+        <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=800&auto=format&fit=crop" alt="Xe số 4">
+        <h3>Cổ điển Xám</h3>
+      </div>
+      <div class="car-card" onclick="handleClick(4)">
+        <img src="https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=800&auto=format&fit=crop" alt="Xe số 5">
+        <h3>SUV Trắng</h3>
+      </div>
     </div>
+  </section>
 
-    <script>
-        // Lấy các phần tử từ DOM
-const openLoginBtn = document.getElementById('open-login-btn');
-const closeLoginBtn = document.getElementById('close-login-btn');
-const loginPage = document.getElementById('loginPage');
+  <script>
+    const cards = document.querySelectorAll('.car-card');
+    let currentIndex = 0; // Vị trí xe đầu tiên
 
-// Khi click vào nút Đăng nhập trên trang index
-openLoginBtn.addEventListener('click', () => {
-    loginPage.classList.add('active'); // Thêm class để kích hoạt transform: translateX(0)
-});
+    function updateCarousel() {
+      cards.forEach((card, index) => {
+        // Reset tất cả các class
+        card.classList.remove('active', 'next', 'prev', 'hidden-left', 'hidden-right');
 
-// Khi click vào nút Quay lại trên trang login
-closeLoginBtn.addEventListener('click', () => {
-    loginPage.classList.remove('active'); // Xóa class để trang login trượt ngược về bên phải
-});
-    </script>
+        // Phân bổ lại class dựa trên khoảng cách tới currentIndex
+        if (index === currentIndex) {
+          card.classList.add('active');
+        } else if (index === currentIndex + 1 || (currentIndex === cards.length - 1 && index === 0)) {
+          // Xử lý cả trường hợp vòng lặp (chiếc cuối về chiếc đầu)
+          card.classList.add('next');
+        } else if (index === currentIndex - 1 || (currentIndex === 0 && index === cards.length - 1)) {
+          card.classList.add('prev');
+        } else {
+          // Các thẻ còn lại sẽ bị đẩy ra ngoài
+          if (index > currentIndex) {
+             card.classList.add('hidden-right');
+          } else {
+             card.classList.add('hidden-left');
+          }
+        }
+      });
+    }
+
+    // Hàm xử lý sự kiện click
+    function handleClick(index) {
+      // Chỉ cho phép chuyển nếu click vào thẻ next hoặc prev
+      const clickedCard = cards[index];
+      if (clickedCard.classList.contains('next') || clickedCard.classList.contains('prev')) {
+        currentIndex = index;
+        updateCarousel();
+      }
+    }
+
+    // Khởi tạo trạng thái ban đầu
+    updateCarousel();
+  </script>
+
 </body>
 </html>
