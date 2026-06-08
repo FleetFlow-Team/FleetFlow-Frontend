@@ -455,14 +455,13 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
         color: white !important;
         background: rgba(255, 255, 255, 0.15);
         box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
+        transform: translateY(-5px);
       }
 
-      .nav-link-center:hover, .nav-link-center.active { 
+      .nav-link-center.active { 
           color: white !important; 
           background: rgba(255, 255, 255, 0.15);
           box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-          transform: translateY(-2px);
       }
 
       /* =========================================
@@ -528,4 +527,37 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
 .notification-btn:active {
     transform: translateY(2px) scale(0.95); 
     transition-duration: 0.1s;
+}
+
+/* =========================================
+   FIX LỖI NỀN TRẮNG CỦA LABEL (FORM-FLOATING BOOTSTRAP)
+========================================= */
+
+/* 1. Xóa bỏ hoàn toàn lớp nền trắng ẩn phía sau label do Bootstrap tự tạo */
+.form-floating > .form-control:focus ~ label::after,
+.form-floating > .form-control:not(:placeholder-shown) ~ label::after,
+.form-floating > .form-control:-webkit-autofill ~ label::after {
+    background-color: transparent !important;
+}
+
+/* 2. Ép nền của chính thẻ label thành trong suốt */
+.form-floating > label {
+    background-color: transparent !important;
+    padding-left: 20px; /* Giữ nguyên lề để khớp với input */
+}
+
+/* 3. Tinh chỉnh lại vị trí và màu sắc khi label bay lên (Float state) */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--color-1, #00B14F) !important; /* Đổi sang màu xanh thương hiệu cho đẹp */
+    font-weight: 700;
+    opacity: 0.9;
+    /* Điều chỉnh tọa độ bay lên cho cân đối trong khung bo tròn 50px */
+    transform: scale(0.85) translateY(-0.6rem) translateX(0.5rem); 
+}
+
+/* Fix thêm: Đẩy chữ trong input dịch xuống một chút để không đụng label khi bay lên */
+.form-floating > .form-control {
+    padding-top: 1.625rem;
+    padding-bottom: 0.625rem;
 }
