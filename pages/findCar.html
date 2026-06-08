@@ -15,39 +15,88 @@
     <link rel="stylesheet" href="../style/base.css" />    
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="../style/pages/findCar.css" />
+
+    <style>
+      .nav-link-center-1 {
+        display: flex;
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-decoration: none;
+        position: relative;
+        padding: 8px 16px;
+        transition: all 0.4s var(--liquid-easing);
+        border-radius: 50px;
+      }
+
+      .nav-link-center-1:hover {
+        color: white !important;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px);
+      }
+
+      .nav-link-center-1.active { 
+          color: white !important; 
+          background: rgba(255, 255, 255, 0.15);
+          box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+      }
+    </style>
 </head>
 <body>
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <defs>
+        <filter id="liquid-distortion">
+            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+        </filter>
+    </defs>
+</svg>
     <header>
       <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
         <div class="container-base position-relative h-100">
-          <a class="navbar-brand brand-overflow" href="#">
-            <img src="../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
+          <a class="navbar-brand brand-overflow" href="index.html">
+            <img
+              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
+              alt="FleetFlow Logo"
+              class="logo-img"
+            />
           </a>
 
-          <button class="navbar-toggler border-0 ms-auto" type="button" data-bs-toggle="collapse" data-bs-target="#fleetflowNav">
+          <button
+            class="navbar-toggler border-0 ms-auto"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#fleetflowNav"
+          >
             <span class="navbar-toggler-icon"></span>
           </button>
 
           <div class="collapse navbar-collapse" id="fleetflowNav">
-            <ul class="navbar-nav ms-auto align-items-center gap-4 mt-3 mt-lg-0">
-              <li class="nav-item dropdown">
-                <a class="nav-link text-white fw-medium dropdown-toggle" href="#" id="partnerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Trở thành Đối tác của FleetFlow
-                </a>
-                <ul class="dropdown-menu shadow border-0" aria-labelledby="partnerDropdown">
-                  <li><a class="dropdown-item py-2" href="#">Đăng kí trở thành tài xế FleetFlow</a></li>
-                  <li><a class="dropdown-item py-2" href="#">Đăng kí trở thành kĩ thuật viên FleetFlow</a></li>
-                  <li><hr class="dropdown-divider" /></li>
-                  <li><a class="dropdown-item py-2" href="#">Đăng kí cho thuê xe</a></li>
-                </ul>
+            <ul
+              class="navbar-nav ms-auto align-items-center gap-4 mt-3 mt-lg-0"
+            >
+              <li class="nav-item">
+                <div class="navbar-center-links-1 d-none d-lg-flex">
+                  <a href="pages/login.html" class="nav-link-center-1">Trở thành tài xế FleetFlow</a>
+                </div>
               </li>
 
               <li class="nav-item">
-                <a class="nav-link text-white fw-medium" href="#support">Trung tâm hỗ trợ</a>
+                <div class="navbar-center-links-1 d-none d-lg-flex">
+            <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
+          </div>
               </li>
               <li class="nav-item ms-lg-2">
-                <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
-                  <span><a href="login.html" class="text-decoration-none">Đăng nhập</a></span>
+                <button
+                  class="btn-login d-flex align-items-center gap-2"
+                  id="btnLogin"
+                >
+                  <span
+                    ><a href="pages/login.html" class="text-decoration-none"
+                      >Đăng nhập</a
+                    ></span
+                  >
                   <i class="fa-regular fa-user-circle fs-5"></i>
                 </button>
               </li>
@@ -709,7 +758,7 @@
         <div class="ai-fab-container">
             <div class="ai-fab-glow"></div>
             <button class="ai-chat-fab" id="aiChatFab" aria-label="Mở Trợ lý AI">
-                <i class="fa-solid fa-robot"></i>
+                <img src="../assets/img/">
                 <span class="ai-chat-badge" id="aiUnreadBadge">1</span>
             </button>
         </div>
