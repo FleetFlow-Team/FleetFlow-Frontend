@@ -80,7 +80,7 @@ a {
 /* Container chuẩn có giới hạn chiều rộng, luôn canh giữa */
 .container-base {
     width: 100%;
-    max-width: 1200px; /* Kích thước chuẩn cho màn hình Desktop */
+    max-width: 1300px; /* Kích thước chuẩn cho màn hình Desktop */
     margin: 0 auto;
     padding: 0 15px; /* Giữ khoảng cách 2 bên trên mobile */
 }
