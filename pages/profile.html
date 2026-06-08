@@ -9,87 +9,319 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
-    <link rel="stylesheet" href="../style/pages/profile.css" />
     <link rel="stylesheet" href="../style/base.css" />
+
+    <style>
+      /* =========================================
+         1. NỀN TRANG 
+      ========================================= */
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #e8f0eb 0%, #d5e0da 50%, #e2e8f0 100%);
+        color: var(--text-color);
+        min-height: 100vh;
+      }
+
+      /* =========================================
+         2. BỘ FIX VIỀN LIQUID (BUFFER & CLIP) 
+      ========================================= */
+      .glass-panel, .upload-box, .custom-navbar.is-scrolled {
+          border-radius: 50px;
+          border: 1px solid rgba(255, 255, 255, 0.4) !important;
+          overflow: visible;
+          position: relative;
+          z-index: 1;
+      }
+
+      .glass-panel::after, .upload-box::after, .custom-navbar::after {
+          content: ''; position: absolute;
+          inset: -12px !important; z-index: -1;
+          background: rgba(255, 255, 255, 0.15);
+          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+          filter: url(#liquid-distortion);
+          clip-path: inset(12px round 50px) !important;
+          transform: translateZ(0); will-change: transform, filter;
+      }
+
+      .glass-panel::before, .upload-box::before, .custom-navbar::before {
+          content: ''; position: absolute; inset: 0; z-index: -1;
+          border-radius: inherit; pointer-events: none;
+          box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
+                      inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      /* Đẩy nội dung lên trên mặt kính */
+      .glass-panel > *, .upload-box > * {
+          position: relative;
+          z-index: 2;
+      }
+
+      /* =========================================
+         3. GIAO DIỆN NAVBAR (Đồng bộ với Policy)
+      ========================================= */
+      .navbar-center-links { 
+          position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 35px; 
+      }
+      
+      .nav-link-center {
+          color: rgba(255, 255, 255, 0.85) !important; 
+          font-weight: 600; font-size: 1.05rem; text-decoration: none; 
+          position: relative; padding: 8px 16px; 
+          transition: all 0.4s var(--liquid-easing);
+          border-radius: 50px;
+      }
+      
+      .nav-link-center:hover { 
+          color: white !important; 
+          background: rgba(255, 255, 255, 0.15);
+          box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
+      }
+
+      .user-profile-btn {
+          background: rgba(255, 255, 255, 0.2);
+          padding: 6px 16px 6px 6px;
+          border-radius: 50px;
+          border: 1px solid rgba(255,255,255,0.4);
+          color: white;
+          transition: 0.3s;
+      }
+      .user-profile-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+      /* =========================================
+         4. COMPONENT HỒ SƠ 
+      ========================================= */
+      /* Sidebar Menu */
+      .profile-sidebar { padding: 40px 20px; }
+      
+
+      /* Khung Nhập Liệu (Inputs) */
+      .custom-input {
+          border-radius: 50px;
+          background: rgba(255, 255, 255, 0.5);
+          border: 1px solid rgba(255, 255, 255, 0.6);
+          padding: 15px 20px;
+          box-shadow: inset 1px 1px 3px rgba(0,0,0,0.02);
+          transition: all 0.3s ease;
+      }
+      .custom-input:focus {
+          background: rgba(255, 255, 255, 0.8);
+          box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15);
+          border-color: var(--color-1);
+      }
+      .form-floating-custom label { margin-left: 10px; color: #64748b; }
+
+      /* Avatar */
+      .avatar-img {
+          width: 130px; height: 130px; border-radius: 50%;
+          border: 4px solid rgba(255,255,255,0.7);
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          object-fit: cover;
+      }
+      .avatar-edit-btn {
+          bottom: 5px; right: 5px;
+          background: var(--color-1); color: white;
+          width: 40px; height: 40px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; transition: 0.3s;
+          border: 2px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      }
+      .avatar-edit-btn:hover { transform: scale(1.15) rotate(10deg); }
+
+      /* Upload Box (eKYC) */
+      .upload-box {
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          padding: 50px 20px; cursor: pointer; text-align: center;
+          color: #475569; font-weight: 600;
+          transition: transform 0.4s var(--liquid-easing), box-shadow 0.4s;
+      }
+      .upload-box i { font-size: 3rem; color: var(--color-1); transition: 0.3s; }
+      .upload-box:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      }
+      .upload-box:hover i { transform: scale(1.1); }
+      
+      /* =========================================
+         TÙY CHỈNH SIDEBAR BUTTON (GHI ĐÈ BASE.CSS)
+      ========================================= */
+      .nav-pills .btn-hero {
+          background: rgba(255, 255, 255, 0.4) !important; /* Dùng !important để phá vỡ transparent của base.css */
+          border: 1px solid rgba(255, 255, 255, 0.6) !important;
+          color: var(--color-dark) !important;
+          padding: 14px 20px;
+          margin-bottom: 12px;
+          border-radius: 50px;
+          font-weight: 600;
+          transition: all 0.4s var(--liquid-easing);
+          width: 100%;
+          text-align: left;
+          justify-content: flex-start; /* Ép icon và chữ căn trái thay vì giữa */
+      }
+
+      /* Hiệu ứng kính ngưng tụ khi Hover */
+      .nav-pills .btn-hero:hover {
+          background: rgba(255, 255, 255, 0.7) !important;
+          transform: translateX(15px); /* Trượt nhẹ sang phải */
+      }
+
+      /* Hiệu ứng Active (Đang chọn) */
+      .nav-pills .btn-hero.active  {
+          background: var(--glass-green) !important; /* Bật nền xanh */
+          box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1), 0 8px 20px rgba(0, 177, 79, 0.25) !important;
+      }
+
+      /* Tối ưu Mobile */
+      @media (max-width: 991px) {
+          .navbar-center-links {
+              position: static; transform: none; flex-direction: column;
+              background: var(--color-1); padding: 20px; border-radius: 20px;
+          }
+          .glass-panel { padding: 30px 20px !important; border-radius: 30px; }
+          .glass-panel::after, .upload-box::after { clip-path: inset(12px round 30px) !important; }
+      }
+    </style>
   </head>
   <body>
-    <nav class="navbar custom-navbar sticky-top">
-        <div class="container-base">
-            <a class="navbar-brand brand-overflow" href="index.html">
-                <img src="../assets/img/logo1.jpg" alt="Logo" class="logo-img" />
-            </a>
-            <div class="user-profile">
-                <div class="notification-bell"><i class="fa-regular fa-bell"></i></div>
-                <div class="fw-bold ms-2">Tiến Dũng</div>
-            </div>
-        </div>
-    </nav>
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="liquid-distortion">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
 
-    <main class="container my-5">
-      <div class="row g-4">
+    <header>
+      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+        <div class="container-base position-relative h-100 d-flex justify-content-between align-items-center">
+          
+          <a class="navbar-brand brand-overflow" href="index.html">
+            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+          </a>
+
+          <button class="navbar-toggler border-0 d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+            <i class="fa-solid fa-bars text-white fs-3"></i>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="navbar-center-links mx-auto d-flex">
+                <a href="../index.html" class="nav-link-center">Trang chủ</a>
+                <a href="findCar.html" class="nav-link-center">Đặt xe</a>
+                <a href="tripHistory.html" class="nav-link-center">Chuyến đi</a>
+                <a href="policy.html" class="nav-link-center">Chính sách</a>
+            </div>
+
+            <div class="nav-right-actions d-flex align-items-center gap-3 mt-3 mt-lg-0">
+                <div class="position-relative text-white" style="cursor: pointer;">
+                    <i class="fa-regular fa-bell fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                </div>
+                <div class="user-profile-btn d-flex align-items-center gap-2">
+                    <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" style="width: 30px; height: 30px; border-radius: 50%;">
+                    <span class="fw-bold" style="font-size: 0.9rem;">Tiến Dũng</span>
+                </div>
+            </div>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container my-5" style="margin-top: 100px !important;">
+      <div class="row g-5">
+        
         <aside class="col-lg-3">
-          <div class="glass-panel profile-sidebar p-4 reveal-on-scroll delay-1">
-            <div class="user-avatar-box text-center mb-4">
-              <div class="avatar-wrapper position-relative d-inline-block">
+          <div class="glass-panel profile-sidebar text-center reveal-on-scroll delay-1">
+            <div class="user-avatar-box mb-4">
+              <div class="position-relative d-inline-block">
                 <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" class="avatar-img" />
                 <label for="avatarInput" class="avatar-edit-btn position-absolute"><i class="fa-solid fa-camera"></i></label>
+                <input type="file" id="avatarInput" class="d-none">
               </div>
-              <h6 class="fw-bold mt-3">Tiến Dũng</h6>
+              <h5 class="fw-bold mt-3 mb-0 text-dark">Tiến Dũng</h5>
+              <p class="text-muted small">Khách hàng Thân thiết</p>
             </div>
 
-            <div class="nav flex-column nav-pills gap-2" id="v-pills-tab" role="tablist">
-              <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#content-profile"><i class="fa-regular fa-user me-2"></i> Thông tin cá nhân</button>
-              <button class="nav-link" data-bs-toggle="pill" data-bs-target="#content-ekyc"><i class="fa-solid fa-shield-halved me-2"></i> Xác thực eKYC</button>
-              <button class="nav-link" data-bs-toggle="pill" data-bs-target="#content-security"><i class="fa-solid fa-lock me-2"></i> Đổi mật khẩu</button>
+            <div class="nav flex-column nav-pills text-start" id="v-pills-tab" role="tablist">
+              <button class="btn-hero shadow active" data-bs-toggle="pill" data-bs-target="#content-profile"><i class="fa-regular fa-user me-2"></i> Thông tin cá nhân</button>
+              <button class="btn-hero shadow" data-bs-toggle="pill" data-bs-target="#content-ekyc"><i class="fa-solid fa-shield-halved me-2"></i> Xác thực eKYC</button>
+              <button class="btn-hero shadow" data-bs-toggle="pill" data-bs-target="#content-security"><i class="fa-solid fa-lock me-2"></i> Đổi mật khẩu</button>
             </div>
           </div>
         </aside>
 
         <section class="col-lg-9">
-          <div class="glass-panel profile-content tab-content p-4 reveal-on-scroll delay-2" id="v-pills-tabContent">
+          <div class="glass-panel p-5 tab-content reveal-on-scroll delay-2" id="v-pills-tabContent">
             
             <div class="tab-pane fade show active" id="content-profile">
-              <h4 class="fw-bold mb-4">Thông tin cá nhân</h4>
-              <form class="row g-4">
+              <h3 class="fw-bold mb-4 text-dark"><i class="fa-regular fa-address-card me-2 text-success"></i> Thông tin cá nhân</h3>
+              <form class="row g-4 mt-2">
                 <div class="col-md-6 form-floating-custom">
-                    <input type="text" class="form-control custom-input" id="name" value="Trần Tiến Dũng" placeholder=" ">
-                    <label for="name">Họ và tên</label>
+                    <label class="mb-2 fw-semibold">Họ và tên</label>
+                    <input type="text" class="form-control custom-input" id="name" value="Trần Tiến Dũng">
                 </div>
                 <div class="col-md-6 form-floating-custom">
-                    <input type="tel" class="form-control custom-input" value="0987654321" readonly placeholder=" ">
-                    <label>Số điện thoại</label>
+                    <label class="mb-2 fw-semibold">Số điện thoại</label>
+                    <input type="tel" class="form-control custom-input text-muted" value="0987654321" readonly>
                 </div>
                 <div class="col-md-6 form-floating-custom">
-                    <input type="email" class="form-control custom-input" id="email" value="dungtt@example.com" placeholder=" ">
-                    <label for="email">Email</label>
+                    <label class="mb-2 fw-semibold">Email</label>
+                    <input type="email" class="form-control custom-input" id="email" value="dungtt@example.com">
                 </div>
                 <div class="col-md-6 form-floating-custom">
-                    <input type="date" class="form-control custom-input" id="dob" value="2005-01-01" placeholder=" ">
-                    <label for="dob">Ngày sinh</label>
+                    <label class="mb-2 fw-semibold">Ngày sinh</label>
+                    <input type="date" class="form-control custom-input" id="dob" value="2005-01-01">
                 </div>
-                <div class="col-12 text-end">
-                    <button type="submit" class="btn-login px-5">Lưu thay đổi</button>
+                <div class="col-12 text-end mt-5">
+                    <button type="submit" class="btn-login px-5 py-3 fs-6">Lưu thay đổi</button>
                 </div>
               </form>
             </div>
 
             <div class="tab-pane fade" id="content-ekyc">
-                <h4 class="fw-bold mb-4">Xác minh danh tính (eKYC)</h4>
-                <div class="row g-4">
+                <h3 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-user-check me-2 text-success"></i> Xác minh danh tính</h3>
+                <p class="text-muted mb-4">Vui lòng tải lên ảnh chụp 2 mặt Căn cước công dân của bạn để kích hoạt đầy đủ quyền lợi chuyến đi.</p>
+                <div class="row g-4 mt-2">
                     <div class="col-md-6">
                         <div class="upload-box" onclick="document.getElementById('idFront').click()">
-                            <i class="fa-regular fa-id-card mb-2"></i> <div>CCCD Mặt trước</div>
+                            <i class="fa-regular fa-id-card mb-3"></i> 
+                            <div class="fs-5">Mặt trước CCCD</div>
+                            <small class="text-muted mt-2">Nhấn để tải ảnh lên</small>
                         </div>
                         <input type="file" id="idFront" class="d-none">
                     </div>
                     <div class="col-md-6">
                         <div class="upload-box" onclick="document.getElementById('idBack').click()">
-                            <i class="fa-solid fa-address-card mb-2"></i> <div>CCCD Mặt sau</div>
+                            <i class="fa-solid fa-address-card mb-3"></i> 
+                            <div class="fs-5">Mặt sau CCCD</div>
+                            <small class="text-muted mt-2">Nhấn để tải ảnh lên</small>
                         </div>
                         <input type="file" id="idBack" class="d-none">
                     </div>
                 </div>
             </div>
+            
+            <div class="tab-pane fade" id="content-security">
+                <h3 class="fw-bold mb-4 text-dark"><i class="fa-solid fa-key me-2 text-success"></i> Đổi mật khẩu</h3>
+                <form class="row g-4 mt-2">
+                    <div class="col-md-12 form-floating-custom">
+                        <label class="mb-2 fw-semibold">Mật khẩu hiện tại</label>
+                        <input type="password" class="form-control custom-input">
+                    </div>
+                    <div class="col-md-6 form-floating-custom">
+                        <label class="mb-2 fw-semibold">Mật khẩu mới</label>
+                        <input type="password" class="form-control custom-input">
+                    </div>
+                    <div class="col-md-6 form-floating-custom">
+                        <label class="mb-2 fw-semibold">Xác nhận mật khẩu mới</label>
+                        <input type="password" class="form-control custom-input">
+                    </div>
+                    <div class="col-12 text-end mt-5">
+                        <button type="submit" class="btn-login px-5 py-3 fs-6">Cập nhật mật khẩu</button>
+                    </div>
+                </form>
+            </div>
+
           </div>
         </section>
       </div>

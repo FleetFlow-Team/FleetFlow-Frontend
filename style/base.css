@@ -287,3 +287,61 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
         padding: 0 20px;
     }
 }
+
+/* =========================================
+   BỘ FIX TRIỆT ĐỂ LỖI VIỀN LIQUID GLASS 
+========================================= */
+
+/* 1. Đảm bảo viền (border) và khung chuẩn nằm ở thẻ Cha, tuyệt đối KHÔNG chứa filter */
+.custom-navbar.is-scrolled,
+.btn-login, .btn-hero, .btn-cta-outline,
+.feature-card,
+.policy-sidebar .glass-panel {
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important; /* Giữ viền sáng ở ngoài cùng */
+    overflow: visible; /* Để phần ::after có thể mở rộng trước khi bị cắt */
+}
+
+/* 2. Lớp kính lỏng (Liquid Layer) */
+.custom-navbar::after,
+.btn-login::after, 
+.btn-hero::after, 
+.btn-cta-outline::after,
+.feature-card::after,
+.policy-sidebar .glass-panel::after {
+    content: ''; 
+    position: absolute; 
+    
+    /* BƯỚC 1: Mở rộng vùng ảo ra ngoài 12px để đẩy phần viền bị méo ra khỏi tầm nhìn */
+    inset: -12px !important; 
+    z-index: -1; 
+    
+    /* BƯỚC 2: Thêm nền, độ mờ và áp dụng hiệu ứng méo mó */
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); 
+    
+    /* BƯỚC 3: Cắt gọt chính xác 12px phần thừa bao quanh, ép lại viền chuẩn 50px */
+    clip-path: inset(12px round 50px) !important;
+    
+    /* Khắc phục lỗi nhấp nháy trên Safari/Chrome */
+    transform: translateZ(0); 
+    will-change: transform, filter;
+}
+
+/* 3. Lớp bóng đổ bên trong (Bóng nổi 3D - không bị ảnh hưởng bởi liquid) */
+.custom-navbar::before,
+.btn-login::before, 
+.btn-hero::before, 
+.btn-cta-outline::before,
+.feature-card::before,
+.policy-sidebar .glass-panel::before {
+    content: ''; 
+    position: absolute; 
+    inset: 0; /* Khớp 100% với thẻ cha */
+    z-index: 2; 
+    border-radius: inherit; 
+    pointer-events: none;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+}

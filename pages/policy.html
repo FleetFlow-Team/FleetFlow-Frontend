@@ -15,7 +15,6 @@
     <script src="../js/base.js" defer></script>
 
     <style>
-      
       /* =========================================
          1. NỀN TRANG (BACKGROUND GRADIENT)
       ========================================= */
@@ -119,7 +118,7 @@
 
       /* Phần Header chữ và Icon bên trong */
       .toc-header { 
-          padding: 30px 30px 15px; font-weight: 800; 
+          padding: 20px 20px 15px; font-weight: 800; 
           color: var(--color-dark); /* Trả về màu tối để dễ đọc trên kính trong */
           font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; 
           position: relative; z-index: 3;
@@ -173,7 +172,7 @@
       /* Bảng và Alert cũng được làm mờ nhẹ */
       .alert-box { 
           background: rgba(255, 235, 204, 0.4); backdrop-filter: blur(10px);
-          border-left: 4px solid #dd6b20; padding: 18px 24px; border-radius: 0 25px 25px 0; 
+          border-left: 4px solid #dd6b20; padding: 18px 24px; border-radius: 50px; 
           margin: 24px 0; font-size: 1rem; color: #9c4221; font-weight: 500;
           border: 1px solid rgba(255, 255, 255, 0.5);
       }
@@ -200,8 +199,8 @@
     </svg>
 
     <header>
-      <nav class="navbar custom-navbar sticky-top">
-        <div class="container h-100 position-relative d-flex justify-content-between align-items-center">
+      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+        <div class="container-base position-relative h-100">
           <a class="navbar-brand brand-overflow" href="index.html">
             <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
           </a>
@@ -214,10 +213,17 @@
             </div>
 
           <div class="nav-right-actions">
-            <a href="login.html" class="btn-login navbar-login-btn d-flex align-items-center gap-2">
-              <span>Đăng nhập</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </a>
+            <button
+                  class="btn-login d-flex align-items-center gap-2"
+                  id="btnLogin"
+                >
+                  <span
+                    ><a href="login.html" class="text-decoration-none"
+                      >Đăng nhập</a
+                    ></span
+                  >
+                  <i class="fa-regular fa-user-circle fs-5"></i>
+                </button>
           </div>
         </div>
       </nav>
@@ -244,7 +250,7 @@
                 <li><a href="#sec-huy-chuyen">2. Hủy chuyến & Bồi thường</a></li>
                 <li><a href="#sec-phu-phi">3. Quy định về Phụ phí</a></li>
                 <li><a href="#sec-bao-mat">4. Quyền riêng tư & Dữ liệu</a></li>
-                <li><a href="#sec-danh-gia">5. Đánh giá & Xử lý Tranh chấp</a></li>
+                <li><a href="#sec-danh-gia">5. Đánh giá & Tranh chấp</a></li>
               </ul>
             </div>
           </div>
