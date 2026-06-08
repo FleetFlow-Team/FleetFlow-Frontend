@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="../style/pages/findCar.css" />
 
     <style>
+
+      
       .nav-link-center-1 {
         display: flex;
         color: rgba(255, 255, 255, 0.85) !important;
@@ -86,20 +88,17 @@
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-.glass-content {
-    position: relative;
-    z-index: 2;
-    padding: 28px;
-    height: 100%;
-}
-
 /* --- TÙY CHỈNH CHO SIDEBAR & SORTBAR --- */
 .filter-sidebar { border-radius: 35px; }
 .filter-sidebar::after { clip-path: inset(10px round 35px); }
 
+.filter-sidebar {
+  top: 120px !important;
+}
+
 .sort-bar { border-radius: 50px; }
 .sort-bar::after { clip-path: inset(10px round 50px); }
-.sort-bar .glass-content { padding: 15px 30px; }
+.sort-bar .glass-content { padding: 10px 30px; }
 
 /* --- FORM CONTROLS (Sáng sủa, bo tròn) --- */
 .glass-select {
@@ -112,12 +111,31 @@
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.02), 0 2px 5px rgba(0,0,0,0.02);
     cursor: pointer;
     transition: all 0.3s ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+  background-image: none !important;
 }
+
 .glass-select:focus {
     box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.2);
     border-color: var(--color-1, #00B14F) !important;
     outline: none;
+    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.2), 
+                0 8px 25px rgba(0, 177, 79, 0.25), 
+                inset 0 3px 6px rgba(0, 177, 79, 0.15) !important;
+    outline: none;
+    
 }
+
+.glass-select:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 177, 79, 0.4) !important;
+    background-color: rgba(255, 255, 255, 0.85) !important;
+    /* Đổ bóng râm màu xanh nhạt xung quanh */
+    box-shadow: 0 6px 15px rgba(0, 177, 79, 0.15), inset 0 2px 5px rgba(255, 255, 255, 1);
+}
+
 .glass-select option { background-color: #ffffff; color: #333; }
 
 /* Liquid Checkbox/Radio Trắng */
@@ -156,17 +174,21 @@
 /* --- VEHICLE CARDS --- */
 .vehicle-img-box {
     position: relative;
-    border-radius: 25px; 
+    border-radius: 40px 40px 0px 0px; 
     overflow: hidden; 
     height: 180px;
     margin-bottom: 20px; 
     box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
 }
 
 .vehicle-badge-discount {
     position: absolute; 
-    top: 12px; 
-    right: 12px; /* Căn góc phải, cách viền 12px chuẩn chỉ */
+    top: 20px; 
+    right: 20px; /* Căn góc phải, cách viền 12px chuẩn chỉ */
     z-index: 10;
     padding: 6px 14px; 
     border-radius: 50px; /* Bo tròn tuyệt đối như viên thuốc */
@@ -183,16 +205,23 @@
 .badge-red { background: rgba(239, 68, 68, 0.95); color: #fff; }
 .badge-blue { background: rgba(59, 130, 246, 0.95); color: #fff; }
 
-.v-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+.v-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    /* Thay đổi tốc độ và độ nảy để zoom êm ái hơn */
+    transition: transform 0.6s ease-out; 
+    will-change: transform;
+}
 .glass-card:hover .v-img { transform: scale(1.08); }
 
 /* Nảy 3D và phát sáng viền xanh khi hover */
 .glass-card:hover {
-    transform: perspective(1000px) translateY(-10px) scale(1.02);
     box-shadow: 0 20px 40px rgba(0, 177, 79, 0.08);
 }
+
 .glass-card:hover::before {
-    border: 1px solid rgba(0, 177, 79, 0.3);
+    border: 1px solid rgba(0, 177, 79, 0.3); /* Phát sáng viền xanh tĩnh */
 }
 
 
@@ -201,8 +230,8 @@
 .btn-liquid-book {
     position: relative;
     isolation: isolate;
-    background: rgba(255, 255, 255, 0.3); /* Trong suốt nhẹ */
-    border: 1px solid rgba(255, 255, 255, 0.8);
+    background: rgba(89, 255, 114, 0.307);
+    border: 3px solid rgba(255, 255, 255, 0.514);
     border-radius: 50px; 
     color: #1e293b; 
     padding: 10px 24px;
@@ -230,10 +259,11 @@
 /* Hiệu ứng khi Hover: Lớp xanh loang ra, nút nảy lên */
 .glass-card:hover .btn-liquid-book, 
 .btn-liquid-book:hover {
-    border-color: rgba(89, 255, 114, 0.6);
-    color: #00B14F; /* Đổi màu chữ tiệp với màu xanh */
+    border-color: var(--glass-border);
+    background-color: var(--color-1);
+    color: var(--color-2);
     box-shadow: 0 8px 25px rgba(89, 255, 114, 0.25); 
-    transform: translateY(-3px);
+    transform: translateY(-5px);
 }
 
 .glass-card:hover .btn-liquid-book::before, 
@@ -263,6 +293,117 @@
 
 .col-md-6, .col-xl-4 {
   padding-right: 0px !important;
+}
+
+/* Giá hiện tại - Text Gradient tạo độ bóng */
+.price-container .price-current {
+    font-size: 1.3rem; /* Phóng to để làm điểm nhấn */
+    font-weight: 800; /* In đậm cực đại */
+    /* Dùng gradient xanh lá sáng để chữ có độ sâu như kính */
+    background: linear-gradient(135deg, var(--color-1, #00B14F) 0%, #00d25e 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+    display: inline-block;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), filter 0.4s ease;
+}
+
+/* Ký hiệu (đ) - Căn trên đỉnh giống thẻ giá quốc tế */
+.price-container .currency {
+    font-size: 0.9rem;
+    font-weight: 700;
+    vertical-align: text-top; /* Đẩy chữ đ lên cao */
+    margin-left: 2px;
+}
+
+/* Giá cũ gạch ngang */
+.price-container .price-old {
+    font-size: 0.8rem;
+    color: #94a3b8; /* Xám nhạt hơn */
+    text-decoration: line-through;
+    font-weight: 500;
+}
+
+/* --- MOTION UX: HIỆU ỨNG KHI HOVER THẺ XE --- */
+.glass-card:hover .price-current {
+    transform: scale(1.08) translateX(2px) translateY(-2px);
+    /* Dùng filter: drop-shadow vì text đang dùng background-clip */
+    filter: drop-shadow(0 6px 10px rgba(0, 177, 79, 0.35));
+}
+
+/* =========================================
+   FOOTER LIQUID GLASS (Corporate Style)
+========================================= */
+.footer-corporate {
+    position: relative;
+    padding: 80px 0 30px;
+    background: rgb(88, 88, 88); /* Nền trắng xám nhẹ để không bị chói */
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.footer-title {
+    font-weight: 800;
+    font-size: 1.1rem;
+    color: var(--color-2);
+    margin-bottom: 25px;
+    letter-spacing: -0.2px;
+}
+
+.footer-text {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-2);
+}
+
+.footer-links li a {
+    color:  var(--color-2);
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    display: inline-block;
+}
+
+.footer-links li a:hover {
+    color: var(--color-1, #00B14F);
+    transform: translateX(5px);
+}
+
+.footer-contact p {
+    color: #475569;
+    font-weight: 500;
+}
+
+.contact-time {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.footer-divider {
+    margin: 40px 0;
+    border: 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.footer-bottom {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Hiệu ứng icon nhỏ */
+.footer-contact i {
+    width: 20px;
+    color: var(--color-1, #00B14F);
+}
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) {
+    .footer-corporate { padding: 50px 0 20px; }
+    .footer-title { margin-top: 20px; }
 }
     </style>
 </head>
@@ -392,6 +533,31 @@
                                 <span class="label-text">Số sàn (MT)</span>
                             </label>
                         </div>
+
+                        <div class="filter-section mb-4">
+                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Nhiên liệu</h6>
+                <label class="liquid-checkbox-wrapper">
+                    <input type="checkbox" id="fuelGas" checked />
+                    <span class="checkmark"></span>
+                    <span class="label-text">Xe Xăng/Dầu</span>
+                </label>
+                <label class="liquid-checkbox-wrapper">
+                    <input type="checkbox" id="fuelElectric" checked />
+                    <span class="checkmark"></span>
+                    <span class="label-text">Xe Điện thông minh</span>
+                </label>
+            </div>
+
+            <div class="filter-section mb-2">
+                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Mức giá (/ngày)</h6>
+                <select class="form-select glass-select">
+                    <option value="" selected>Mọi mức giá</option>
+                    <option value="range1">Dưới 500.000đ</option>
+                    <option value="range2">500.000đ - 1.000.000đ</option>
+                    <option value="range3">1.000.000đ - 2.000.000đ</option>
+                    <option value="range4">Trên 2.000.000đ (Xe sang)</option>
+                </select>
+            </div>
                     </div>
                 </div>
             </aside>
@@ -405,7 +571,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <span class="text-nowrap small fw-bold text-uppercase text-secondary">Sắp xếp:</span>
                             <select class="form-select glass-select border-0 fw-semibold text-dark">
-                                <option value="near" selected>Khoảng cách gần nhất</option>
+                                <option value="near" selected>Khoảng cách gần nhất   </option>
                                 <option value="priceAsc">Giá từ thấp đến cao</option>
                                 <option value="priceDesc">Giá từ cao đến thấp</option>
                             </select>
@@ -439,8 +605,8 @@
                           <div class="d-flex align-items-baseline gap-2">
                               <span class="price-current">540.000<span class="currency">đ</span></span>
                           </div>
-                      </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        </div>
+                      <button class="btn-liquid-book">Đặt xe</button>
                     </div>
                 </div>
             </div>
@@ -466,9 +632,11 @@
                         <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
-                        <div class="price-container">
-                            <span class="text-muted text-decoration-line-through me-2 small">1.100K</span>
-                            <span class="fw-bold highlight-text fs-5">990K<span class="fs-6 text-secondary fw-normal">/ngày</span></span>
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
                         </div>
                         <button class="btn-liquid-book">Đặt xe</button>
                     </div>
@@ -496,8 +664,203 @@
                         <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
-                        <div class="price-container">
-                            <span class="fw-bold highlight-text fs-5">850K<span class="fs-6 text-secondary fw-normal">/ngày</span></span>
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book">Đặt xe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2 small">
+                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
+                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book">Đặt xe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2 small">
+                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
+                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book">Đặt xe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2 small">
+                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
+                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book">Đặt xe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2 small">
+                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
+                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book">Đặt xe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2 small">
+                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
+                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book">Đặt xe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <div class="d-flex align-items-center justify-content-between mb-2 small">
+                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
+                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    </div>
+                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">540.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                          </div>
                         </div>
                         <button class="btn-liquid-book">Đặt xe</button>
                     </div>
