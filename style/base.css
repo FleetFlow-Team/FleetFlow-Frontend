@@ -345,3 +345,85 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
     box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
                 inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
 }
+
+/* =========================================
+         NÚT PROFILE KẾ THỪA LIQUID TỪ NÚT ĐĂNG NHẬP
+      ========================================= */
+      .user-profile-btn {
+          position: relative;
+          isolation: isolate;
+          transform-style: preserve-3d;
+          background: transparent !important;
+          border: 1px solid rgba(255, 255, 255, 0.6) !important;
+          border-radius: 50px;
+          padding: 6px 20px 6px 6px; /* Căn chỉnh lại cho vừa ảnh đại diện */
+          color: var(--color-dark); /* Chữ màu tối để nổi bật trên nền kính sáng */
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease;
+          overflow: visible; /* Bắt buộc để dùng Buffer & Clip */
+          text-decoration: none;
+      }
+
+      /* Lớp kính lỏng nền sáng (Giống hệt .btn-login) */
+      .user-profile-btn::after {
+          content: ''; position: absolute; 
+          inset: -12px !important; z-index: -1; 
+          background: rgba(255, 255, 255, 0.85); /* Tạo độ sáng rực rỡ */
+          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+          filter: url(#liquid-distortion); 
+          clip-path: inset(12px round 50px) !important;
+          transform: translateZ(0); will-change: transform, filter;
+          transition: all 0.5s ease;
+      }
+
+      /* Bóng đổ 3D bên trong viền */
+      .user-profile-btn::before {
+          content: ''; position: absolute; inset: 0; z-index: -1; 
+          border-radius: inherit; pointer-events: none;
+          box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.8), 
+                      inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
+      }
+      
+      /* Đẩy ảnh avatar và chữ lên mặt trên cùng */
+      .user-profile-btn > * {
+          position: relative;
+          z-index: 2;
+      }
+
+      /* Hiệu ứng Hover - Nảy 3D không gian */
+      .user-profile-btn:hover {
+          transform: perspective(500px) translateZ(20px) translateY(-4px); 
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+      }
+      
+      .user-profile-btn:hover::after {
+          background: rgba(255, 255, 255, 1); /* Sáng hẳn lên khi trỏ chuột */
+      }
+
+      /* Hiệu ứng Nhấn - Lún xuống */
+      .user-profile-btn:active {
+          transform: translateY(2px) scale(0.95); 
+          transition-duration: 0.1s;
+      }
+
+      .user-profile-btn {
+          position: relative;
+          isolation: isolate;
+          transform-style: preserve-3d;
+          background: transparent !important;
+          border: 1px solid rgba(255, 255, 255, 0.6) !important;
+          border-radius: 50px;
+          height: 44px; /* Chốt cứng chiều cao bằng với notification-btn */
+          padding: 0 16px 0 5px; /* Ép lề trong để căn giữa ảnh và chữ */
+          color: var(--color-dark); 
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+          transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease;
+          overflow: visible; 
+          text-decoration: none;
+      }
+
+      input {
+        border-radius: 50px;
+      }

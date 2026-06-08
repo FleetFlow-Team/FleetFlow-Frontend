@@ -5,650 +5,417 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FleetFlow - Thanh toán</title>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
-    <link
-      rel="icon"
-      type="image/png" 
-      href="../../assets/img/FleetFlow - Logo.png"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <link rel="icon" type="image/png" href="../../assets/img/FleetFlow - Logo.png" />
 
     <link rel="stylesheet" href="../../style/base.css" />
 
     <style>
       /* =========================================
-           1. ENCLOSED CHECKOUT HEADER (PREMIUM NAVBAR)
-        ========================================= */
-      .custom-navbar {
-        background-color: var(--color-1);
-        height: 70px;
-        padding: 0 5%;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        top: 0;
-        left: 0;
-        width: 100%;
-        z-index: 1050;
-
-        display: flex;
-        position: sticky;
+         1. NỀN TRANG (BACKGROUND GRADIENT)
+      ========================================= */
+      body {
+        font-family: "Inter", sans-serif;
+        background: linear-gradient(135deg, #e8f0eb 0%, #d5e0da 50%, #e2e8f0 100%);
+        color: var(--text-color);
+        min-height: 100vh;
       }
 
-      /* Triệt tiêu mọi giới hạn của container */
-      .custom-navbar .container-base {
-        display: flex;
-        align-items: center;
-        justify-content: space-between; /* Đẩy mạnh về 2 phía */
-        width: 100%;
-        max-width: 100% !important; /* Phá vỡ max-width có thể có trong base.css */
-        padding: 0 !important; /* Xóa sạch lề trái/phải */
-        margin: 0 !important;
-        height: 100%;
-        position: sticky;
+      /* =========================================
+         2. NAVBAR LIQUID EFFECT
+      ========================================= */
+      
+      .navbar-center-links { 
+          position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 35px; 
+      }
+      
+      .nav-link-center {
+          color: rgba(255, 255, 255, 0.85) !important; 
+          font-weight: 600; font-size: 1.05rem; text-decoration: none; 
+          position: relative; padding: 8px 16px; 
+          transition: all 0.4s var(--liquid-easing);
+          border-radius: 50px;
+      }
+      
+      .nav-link-center:hover, .nav-link-center.active { 
+          color: white !important; 
+          background: rgba(255, 255, 255, 0.15);
+          box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+          transform: translateY(-2px);
       }
 
-      .navbar-slogan {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(
-          -50%,
-          -50%
-        ); /* Kéo tâm của chữ vào chính giữa màn hình */
-        color: rgba(255, 255, 255, 0.95);
-        font-size: 1.5rem;
-        font-weight: 600;
-        letter-spacing: 0.5px;
-        text-transform: uppercase;
-        white-space: nowrap; /* Ngăn chữ bị rớt dòng */
-        pointer-events: none; /* Chống click nhầm vào chữ làm mất focus của các nút bên dưới */
+      .navbar-login-btn {
+          padding: 10px 24px;
+          font-size: 0.95rem;
       }
 
-
-      /* Xử lý Logo sát mép trái */
-      .brand-overflow {
-        position: relative;
-        height: 70px;
-        display: flex;
-        align-items: center;
-        padding: 0 !important;
-        padding-left: 20px !important; /* Đẩy logo sát mép trái, có thể điều chỉnh nếu cần */
-        margin: 0 !important;
-        background-color: transparent;
-        text-decoration: none;
+      /* =========================================
+         2. BỘ FIX VIỀN LIQUID (BUFFER & CLIP 50px) 
+      ========================================= */
+      .glass-panel, .payment-card, .btn-submit, .btn-back {
+          border-radius: 50px;
+          border: 1px solid rgba(255, 255, 255, 0.5) !important;
+          overflow: visible;
+          position: relative;
+          z-index: 1;
       }
 
-      .brand-overflow .logo-img {
-        height: 100%;
-        width: auto;
-        object-fit: contain;
-        padding: 0 !important; /* Bỏ khoảng lề trên/dưới/trái/phải của chính bức ảnh */
-        margin: 0 !important;
+      .glass-panel::after, .custom-navbar::after, .payment-card::after, .btn-submit::after, .btn-back::after {
+          content: ''; position: absolute;
+          inset: -12px !important; z-index: -1;
+          background: rgba(255, 255, 255, 0.2);
+          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+          filter: url(#liquid-distortion);
+          clip-path: inset(12px round 50px) !important;
+          transform: translateZ(0); will-change: transform, filter;
+          transition: all 0.4s ease;
+          border-radius: inherit; pointer-events: none;
       }
 
-      /* NÚT QUAY LẠI - HIỆU ỨNG HOVER SANG VÀNG CAO CẤP */
+      .glass-panel::before, .custom-navbar::before, .payment-card::before, .btn-submit::before, .btn-back::before {
+          content: ''; position: absolute; inset: 0; z-index: -1;
+          border-radius: inherit; pointer-events: none;
+          box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.6), 
+                      inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+          transition: all 0.4s ease;
+      }
+
+      .glass-panel > *, .custom-navbar > *, .payment-card > *, .btn-submit > *, .btn-back > * {
+          position: relative;
+          z-index: 2;
+      }
+      
+      .navbar-slogan { 
+
+        color: var(--color-2); font-size: 1.2rem; font-weight: 700;
+        text-transform: uppercase; letter-spacing: 1px; pointer-events: none;
+      }
+
+      /* Nút Quay Lại Liquid */
       .btn-back {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 24px;
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--color-dark);
-        background-color: #ffffff;
-        border: 5px solid #e2e8f0;
-        border-radius: 50px;
-        text-decoration: none;
-        position: relative;
-        overflow: hidden;
-        z-index: 1;
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 10px 24px; font-weight: 700; color: var(--color-dark);
+        margin-left: 20px; border: 1px solid rgba(255, 255, 255, 0.6) !important;
+        background: rgba(255, 255, 255, 0.4); text-decoration: none;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        transition: transform 0.4s var(--liquid-easing);
       }
-
-      /* Lớp nền ảo màu xanh lá để làm animation lướt */
-      .btn-back::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: var(--color-3);
-        z-index: -1;
-        transform: translateX(-101%);
-        transition: transform 1s cubic-bezier(0.16, 1, 0.3, 1);
-      }
-
-      .btn-back i {
-        transition: transform 0.4s ease;
-      }
-
-      .btn-back:hover {
-        color: #ffffff;
-        border-color: var(--color-3);
-        box-shadow: 0 8px 20px rgba(0, 177, 79, 0.25);
-
-        font-weight: 800;
-        transform: translateY(-2px);
-      }
-
-      .btn-back:hover::before {
-        transform: translateX(0);
-      } /* Phủ xanh nút */
-      .btn-back:hover i {
-        transform: translateX(-4px);
-      } /* Mũi tên lùi nhẹ về trái */
-
-      /* =========================================
-           2. SPLIT-SCREEN LAYOUT
-        ========================================= */
-      .split-layout {
-        display: flex;
-        flex-wrap: wrap;
-        min-height: calc(100vh - 80px);
-      }
-
-      /* CỘT TRÁI (Form thao tác) */
-      .left-col {
-        flex: 0 0 100%;
-        max-width: 100%;
-        padding: 50px 20px 80px 20px;
-        background-color: var(--color-2); /* Màu trắng từ base.css */
-      }
-
-      /* CỘT PHẢI (Tóm tắt đơn hàng) */
-      .right-col {
-        flex: 0 0 100%;
-        max-width: 100%;
-        background-color: var(--color-bg); /* Màu xám nhạt từ base.css */
-        padding: 50px 20px 80px 20px;
-        border-top: 1px solid #e2e8f0;
-      }
-
-      @media (min-width: 992px) {
-        .left-col {
-          flex: 0 0 55%;
-          max-width: 55%;
-          padding: 60px 8% 80px 10%;
-        }
-        .right-col {
-          flex: 0 0 45%;
-          max-width: 45%;
-          padding: 60px 10% 80px 6%;
-          border-top: none;
-          border-left: 1px solid #e2e8f0;
-        }
+      .btn-back::after { background: rgba(255, 255, 255, 0.5); }
+      .btn-back:hover { 
+          transform: translateX(-10px); color: var(--color-1); 
+          border-color: var(--color-1) !important; 
       }
 
       /* =========================================
-           3. UI COMPONENTS (Form, Floating Label)
-        ========================================= */
-      .section-title {
-        font-size: 1.25rem;
-        font-weight: 800;
-        margin-bottom: 24px;
-        margin-top: 40px;
-        color: var(--color-dark);
+         4. GIAO DIỆN FORM & INPUTS (LIQUID)
+      ========================================= */
+      .section-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 24px; color: var(--color-dark); display: flex; align-items: center; gap: 10px;}
+      
+      .custom-input {
+          border-radius: 30px !important;
+          background: rgba(255, 255, 255, 0.5) !important;
+          border: 1px solid rgba(255, 255, 255, 0.6) !important;
+          padding: 15px 20px; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.02) !important;
+          transition: all 0.3s ease;
       }
-      .section-title:first-child {
-        margin-top: 0;
+      .custom-input:focus {
+          background: rgba(255, 255, 255, 0.8) !important;
+          box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15) !important;
+          border-color: var(--color-1) !important;
       }
+      .form-floating label { margin-left: 10px; color: #64748b; }
 
-      /* Floating Labels theo chuẩn Material */
-      .form-floating > .form-control {
-        border-radius: 8px;
-        border: 1px solid #cbd5e1;
-        box-shadow: none;
-        font-weight: 500;
-      }
-      .form-floating > .form-control:focus {
-        border-color: var(--color-1);
-        box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.1);
-      }
-      .form-floating > label {
-        color: #94a3b8;
-      }
-
-      /* Trạng thái Lỗi Real-time */
-      .form-control.is-invalid {
-        border-color: #e53e3e;
-        background-image: none;
-      }
-      .form-control.is-invalid:focus {
-        box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.1);
-      }
-      .invalid-feedback {
-        font-size: 0.85rem;
-        font-weight: 500;
-        color: #e53e3e;
-        margin-top: 4px;
-      }
-
-      /* Payment Radio Cards */
-      .payment-options {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
+      /* Payment Cards */
+      .payment-options { display: flex; flex-direction: column; gap: 16px; }
       .payment-card {
-        border: 1px solid #cbd5e1;
-        border-radius: 10px;
-        padding: 16px 20px;
-        cursor: pointer;
-        transition: all 0.2s;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        background: var(--color-2);
+        padding: 18px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+        background: rgba(255, 255, 255, 0.3); transition: transform 0.4s var(--liquid-easing);
         margin: 0;
       }
-      .payment-card:hover {
-        border-color: #94a3b8;
+      .payment-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+      .payment-card.active { 
+          border-color: var(--color-1) !important; 
+          background: rgba(255, 255, 255, 0.7); 
       }
-      .payment-card.active {
-        border-color: var(--color-1);
-        background-color: rgba(0, 177, 79, 0.04);
-        box-shadow: 0 0 0 1px var(--color-1);
-      }
-      .pay-logo {
-        height: 24px;
-        object-fit: contain;
-      }
+      .payment-card.active::before { box-shadow: inset 0 0 0 2px var(--color-1); }
+      .pay-logo { height: 28px; object-fit: contain; }
 
-      /* Custom Radio Button */
-      .custom-radio {
-        width: 20px;
-        height: 20px;
-        border: 2px solid #cbd5e1;
-        border-radius: 50%;
-        margin-right: 12px;
-        position: relative;
-        display: inline-block;
-        transition: all 0.2s;
-      }
-      .payment-card.active .custom-radio {
-        border-color: var(--color-1);
-      }
+      .custom-radio { width: 22px; height: 22px; border: 2px solid #94a3b8; border-radius: 50%; margin-right: 15px; position: relative; transition: all 0.2s; }
+      .payment-card.active .custom-radio { border-color: var(--color-1); }
       .payment-card.active .custom-radio::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 10px;
-        height: 10px;
-        background-color: var(--color-1);
-        border-radius: 50%;
+        content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+        width: 12px; height: 12px; background-color: var(--color-1); border-radius: 50%;
       }
 
       /* =========================================
-           4. ORDER SUMMARY & VOUCHER
-        ========================================= */
-      .sticky-summary {
-        position: sticky;
-        top: 100px;
-      }
+         5. ORDER SUMMARY & NÚT SUBMIT
+      ========================================= */
+      .sticky-summary { position: sticky; top: 100px; }
+      
+      .summary-car { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px dashed rgba(0,0,0,0.1); }
+      .summary-car img { width: 100px; height: 65px; object-fit: cover; border-radius: 15px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
 
-      /* Thông tin xe */
-      .summary-car {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        margin-bottom: 24px;
-        padding-bottom: 24px;
-        border-bottom: 1px solid #e2e8f0;
-      }
-      .summary-car img {
-        width: 90px;
-        height: 60px;
-        object-fit: cover;
-        border-radius: 8px;
-        border: 1px solid #e2e8f0;
-      }
+      .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; color: #475569; align-items: center; }
+      .breakdown-row.discount { color: var(--color-1); display: none; }
+      .breakdown-total { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(0,0,0,0.1); }
+      .breakdown-total .label { font-size: 1.15rem; font-weight: 800; color: var(--color-dark); }
+      .breakdown-total .amount { font-size: 1.6rem; font-weight: 800; color: var(--color-1); }
 
-      /* Bóc tách hóa đơn */
-      .breakdown-row {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 12px;
-        font-size: 0.95rem;
-        color: #475569;
-        align-items: center;
-      }
-      .breakdown-row.discount {
-        color: var(--color-1);
-        display: none;
-      }
-      .breakdown-total {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid #e2e8f0;
-      }
-      .breakdown-total .label {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: var(--color-dark);
-      }
-      .breakdown-total .amount {
-        font-size: 1.5rem;
-        font-weight: 800;
-        color: var(--color-dark);
-      }
-
-      /* Nút Submit CTA (Kế thừa base.css và nâng cấp độ lớn) */
+      /* Nút Thanh Toán (Green Liquid Effect) */
+      /* =========================================
+         Nút Thanh Toán (Green Premium Glass)
+      ========================================= */
       .btn-submit {
-        width: 100%;
-        padding: 18px;
-        border-radius: 12px;
-        background-color: var(--color-1);
-        color: var(--color-2);
-        font-size: 1.15rem;
-        font-weight: 700;
-        border: none;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 24px;
-        box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
+        width: 100%; 
+        padding: 18px; 
+        margin-top: 30px;
+        background: rgba(0, 177, 79, 0.9); /* Nền xanh lục trong suốt nhẹ */
+        color: white; 
+        font-size: 1.2rem; 
+        font-weight: 800;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 50px; /* Bo góc mượt mà tự nhiên không cần clip-path */
+        display: flex; align-items: center; justify-content: center;
+        
+        /* Hiệu ứng kính và bóng đổ nổi */
+        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 8px 20px rgba(0, 177, 79, 0.25),
+                    inset 2px 2px 5px 0 rgba(255, 255, 255, 0.4), 
+                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
+        
+        transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease, background 0.4s ease;
+        cursor: pointer;
       }
+      
       .btn-submit:hover:not(:disabled) {
-        background-color: var(--color-3);
-        transform: translateY(-3px);
-        box-shadow: 0 10px 24px rgba(238, 174, 102, 0.904);
+        transform: perspective(500px) translateZ(20px) translateY(-5px); 
+        box-shadow: 0 15px 30px rgba(0, 177, 79, 0.4),
+                    inset 3px 3px 6px 0 rgba(255, 255, 255, 0.6), 
+                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
+        background: rgba(0, 177, 79, 1); /* Sáng hẳn lên khi hover */
+        color: white; 
       }
-      .btn-submit:disabled {
-        background-color: #94a3b8;
-        cursor: not-allowed;
-        transform: none;
-        box-shadow: none;
-      }
-
-      /* Khung nhập Voucher */
-      .voucher-box {
-        margin-bottom: 24px;
-        padding-bottom: 24px;
-        border-bottom: 1px solid #e2e8f0;
-      }
-      .voucher-input-group {
-        display: flex;
-        gap: 10px;
-      }
-      .voucher-input-group .form-control {
-        border-radius: 8px;
-        text-transform: uppercase;
-      }
-      .btn-apply {
-        background: #e2e8f0;
-        color: var(--color-dark);
-        border: none;
-        border-radius: 8px;
-        padding: 0 20px;
-        font-weight: 600;
-        transition: 0.2s;
-      }
-      .btn-apply:hover {
-        background: #cbd5e1;
-      }
-      .voucher-msg {
-        font-size: 0.85rem;
-        font-weight: 600;
-        margin-top: 8px;
-        display: none;
-      }
-      .voucher-msg.success {
-        color: var(--color-1);
-        display: block;
-      }
-      .voucher-msg.error {
-        color: #e53e3e;
-        display: block;
+      
+      .btn-submit:disabled { 
+        filter: grayscale(100%); opacity: 0.7; transform: none; cursor: not-allowed; 
       }
 
-      /* Trust Note & Badges */
-      .note-text {
-        font-size: 0.85rem;
-        color: #64748b;
-        text-align: center;
-        margin-top: 16px;
+      /* Voucher Box */
+      .voucher-box { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px dashed rgba(0,0,0,0.1); }
+     .btn-apply {
+        background: var(--color-3); /* Dùng biến màu vàng #ffde59 có sẵn của hệ thống */
+        color: #333333; /* Chữ màu tối để nổi bật trên nền vàng */
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        border-radius: 30px; 
+        padding: 0 24px; 
+        font-weight: 800; 
+        
+        /* Đổ bóng 3D: Viền sáng bên trên, viền tối bên dưới và hào quang vàng hắt ra ngoài */
+        box-shadow: 0 4px 10px rgba(255, 222, 89, 0.3),
+                    inset 2px 2px 5px 0 rgba(255, 255, 255, 0.7), 
+                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+                    
+        transition: transform 0.4s var(--liquid-easing), box-shadow 0.4s ease, background 0.3s;
+        cursor: pointer;
       }
-      .trust-badges {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 16px;
-        color: #94a3b8;
-        font-size: 0.85rem;
+
+      /* Hiệu ứng Hover - Sáng lên và nảy nhẹ */
+      .btn-apply:hover { 
+        background: #ffeb85; /* Vàng sáng rực rỡ hơn khi trỏ chuột */
+        color: #111111;
+        transform: translateY(-3px); 
+        box-shadow: 0 8px 18px rgba(255, 222, 89, 0.5),
+                    inset 3px 3px 6px 0 rgba(255, 255, 255, 0.9), 
+                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+      }
+
+      /* Hiệu ứng Active - Lún xuống khi click */
+      .btn-apply:active {
+        transform: translateY(1px);
+        box-shadow: 0 2px 5px rgba(255, 222, 89, 0.3),
+                    inset 2px 2px 5px 0 rgba(0, 0, 0, 0.05);
+      }
+      .trust-badges { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 20px; color: #64748b; font-size: 0.9rem; font-weight: 500; }
+
+      /* Responsive */
+      @media (max-width: 991px) {
+        .navbar-slogan { display: none; } /* Ẩn slogan trên đt để tiết kiệm chỗ */
+        .glass-panel { padding: 30px 20px !important; }
       }
     </style>
   </head>
   <body>
-    <header>
-      <nav class="navbar custom-navbar fixed-top">
-        <div class="container-base h-100 position-relative">
-          <a class="navbar-brand brand-overflow" href="../index.html">
-            <img
-              src="../assets/img/logo1.jpg"
-              alt="FleetFlow Logo"
-              class="logo-img"
-            />
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <defs>
+            <filter id="liquid-distortion">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+        </defs>
+    </svg>
+
+    <!-- <header>
+      <nav class="custom-navbar sticky-top">
+          <a class="brand-overflow" href="../index.html">
+            <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
           </a>
 
           <div class="navbar-slogan d-none d-md-block">
-            Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng
-            <span class="text-warning mx-1">•</span> An tâm
+            Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
           </div>
 
           <a href="javascript:history.back()" class="btn-back">
             <i class="fa-solid fa-arrow-left"></i> <span>Trở về</span>
           </a>
+      </nav>
+    </header> -->
+
+    <header>
+      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+        <div class="container-base position-relative h-100">
+          <a class="navbar-brand brand-overflow" href="index.html">
+            <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+          </a>
+
+          <div class="navbar-center-links d-none d-lg-flex">
+                <a href="../index.html" class="nav-link-center">Trang chủ</a>
+                <a href="findCar.html" class="nav-link-center active">Đặt xe</a>
+                <a href="tripHistory.html" class="nav-link-center">Chuyến đi</a>
+                <a href="policy.html" class="nav-link-center">Chính sách</a>
+            </div>
+
+          <div class="nav-right-actions">
+            <a href="javascript:history.back()" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> <span>Trở về</span>
+          </a>
+          </div>
         </div>
       </nav>
     </header>
 
-    <main class="split-layout">
-      <div class="left-col">
-        <h2 class="section-title">Thông tin liên lạc</h2>
-        <div class="row g-3 mb-5">
-          <div class="col-md-6">
-            <div class="form-floating">
-              <input
-                type="email"
-                class="form-control"
-                id="emailInput"
-                placeholder="Email"
-                onblur="validateEmail()"
-              />
-              <label>Email (Nhận hóa đơn điện tử)</label>
-              <div class="invalid-feedback" id="emailError">
-                Vui lòng nhập định dạng email hợp lệ.
+    <main class="container mb-5" style="margin-top: 80px !important;">
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="glass-panel p-5 h-100">
+            <h2 class="section-title"><i class="fa-regular fa-envelope text-success"></i> Thông tin liên lạc</h2>
+            <div class="row g-4 mb-5 mt-1">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="email" class="form-control custom-input" id="emailInput" placeholder="Email" onblur="validateEmail()" />
+                  <label>Email (Nhận hóa đơn điện tử)</label>
+                  <div class="invalid-feedback ms-3" id="emailError">Vui lòng nhập định dạng email hợp lệ.</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="tel" class="form-control custom-input" id="phoneInput" placeholder="Số điện thoại" inputmode="numeric" onblur="validatePhone()" />
+                  <label>Số điện thoại</label>
+                  <div class="invalid-feedback ms-3" id="phoneError">Số điện thoại phải từ 10 chữ số.</div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-floating">
-              <input
-                type="tel"
-                class="form-control"
-                id="phoneInput"
-                placeholder="Số điện thoại"
-                inputmode="numeric"
-                onblur="validatePhone()"
-              />
-              <label>Số điện thoại</label>
-              <div class="invalid-feedback" id="phoneError">
-                Số điện thoại phải từ 10 chữ số.
+
+            <h2 class="section-title"><i class="fa-regular fa-user text-success"></i> Thông tin hành khách</h2>
+            <div class="row g-4 mb-5 mt-1">
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control custom-input" id="fullName" placeholder="Họ và tên" />
+                  <label>Họ và tên</label>
+                </div>
               </div>
+              <div class="col-md-6">
+                <div class="form-floating">
+                  <input type="text" class="form-control custom-input" id="address" placeholder="Địa chỉ" />
+                  <label>Địa điểm đón chi tiết</label>
+                </div>
+              </div>
+            </div>
+
+            <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán (Cọc 30%)</h2>
+            <div class="payment-options mt-3">
+              <label class="payment-card active" onclick="selectPayment(this)">
+                <div class="d-flex align-items-center">
+                  <div class="custom-radio"></div>
+                  <span class="fw-bold fs-5 text-dark">Ví điện tử MoMo</span>
+                </div>
+                <img src="../../assets/img/MOMO-Logo-App.png" alt="MoMo" class="pay-logo" />
+              </label>
+
+              <label class="payment-card" onclick="selectPayment(this)">
+                <div class="d-flex align-items-center">
+                  <div class="custom-radio"></div>
+                  <span class="fw-bold fs-5 text-dark">Tiền mặt (Giao cho tài xế)</span>
+                </div>
+                <i class="fa-solid fa-money-bill-wave text-success fs-3"></i>
+              </label>
             </div>
           </div>
         </div>
 
-        <h2 class="section-title">Thông tin hành khách</h2>
-        <div class="row g-3 mb-5">
-          <div class="col-md-6">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                id="fullName"
-                placeholder="Họ và tên"
-              />
-              <label>Họ và tên</label>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="form-floating">
-              <input
-                type="text"
-                class="form-control"
-                id="address"
-                placeholder="Địa chỉ"
-              />
-              <label>Địa chỉ</label>
-            </div>
-          </div>
-        </div>
-
-        <h2 class="section-title">
-          <i class="fa-solid fa-lock text-success me-2 fs-5"></i> Phương thức
-          thanh toán (Cọc 30%)
-        </h2>
-        <div class="payment-options">
-          <label class="payment-card active" onclick="selectPayment(this)">
-            <div class="d-flex align-items-center">
-              <div class="custom-radio"></div>
-              <span class="fw-semibold text-dark">Ví điện tử MoMo</span>
-            </div>
-            <img
-              src="../assets/img/MOMO-Logo-App.png"
-              alt="MoMo"
-              class="pay-logo"
-            />
-          </label>
-
-          <label class="payment-card" onclick="selectPayment(this)">
-            <div class="d-flex align-items-center">
-              <div class="custom-radio"></div>
-              <span class="fw-semibold text-dark"
-                >Tiền mặt (Giao cho tài xế)</span
-              >
-            </div>
-            <i class="fa-solid fa-money-bill-wave text-success fs-4"></i>
-          </label>
-        </div>
-      </div>
-
-      <div class="right-col">
-        <div class="sticky-summary">
-          <div class="summary-car">
-            <img
-              src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=300"
-              alt="VinFast VF8"
-            />
-            <div>
-              <h6 class="fw-bold mb-1 text-dark">VinFast VF8 Plus 2023</h6>
-              <div class="text-muted small">
-                Tuyến: Quận 1, HCM
-                <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu
-              </div>
-              <div class="text-muted small mt-1">
-                Khởi hành: 14:00 - Chủ Nhật, 15/08
+        <div class="col-lg-5">
+          <div class="glass-panel p-5 sticky-summary">
+            <div class="summary-car">
+              <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=300" alt="VinFast VF8" />
+              <div>
+                <h5 class="fw-bold mb-1 text-dark">VinFast VF8 Plus 2023</h5>
+                <div class="text-muted fw-medium">Quận 1, HCM <i class="fa-solid fa-arrow-right mx-2 text-success"></i> Vũng Tàu</div>
+                <div class="text-muted small mt-2"><i class="fa-regular fa-clock me-1"></i> Khởi hành: 14:00 - Chủ Nhật, 15/08</div>
               </div>
             </div>
-          </div>
 
-          <div class="voucher-box">
-            <div class="voucher-input-group">
-              <div class="form-floating flex-grow-1">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="voucherCode"
-                  placeholder="Mã giảm giá"
-                />
-                <label>Nhập mã giảm giá</label>
+            <div class="voucher-box">
+              <div class="d-flex gap-2">
+                <div class="form-floating flex-grow-1">
+                  <input type="text" class="form-control custom-input text-uppercase fw-bold" id="voucherCode" placeholder="Mã giảm giá" />
+                  <label>Nhập mã giảm giá</label>
+                </div>
+                <button class="btn-apply" id="btnApplyVoucher" onclick="applyVoucher()">Áp dụng</button>
               </div>
-              <button
-                class="btn-apply"
-                id="btnApplyVoucher"
-                onclick="applyVoucher()"
-              >
-                Áp dụng
-              </button>
-            </div>
-            <div id="voucherMsg" class="voucher-msg"></div>
-          </div>
-
-          <div class="breakdown-list">
-            <div class="breakdown-row">
-              <span>Giá cơ bản (110 km)</span>
-              <span class="fw-medium text-dark" id="basePrice"
-                >1.000.000 đ</span
-              >
+              <div id="voucherMsg" class="mt-2 ms-2 fw-semibold" style="font-size: 0.9rem; display: none;"></div>
             </div>
 
-            <div class="breakdown-row">
-              <span
-                >Phụ phí cuối tuần (10%)
-                <i
-                  class="fa-regular fa-circle-question ms-1"
-                  title="Áp dụng cho Thứ 7, Chủ Nhật"
-                ></i
-              ></span>
-              <span class="fw-medium text-dark" id="surcharge">100.000 đ</span>
+            <div class="breakdown-list">
+              <div class="breakdown-row">
+                <span class="fw-medium">Giá cơ bản (110 km)</span>
+                <span class="fw-bold text-dark fs-5" id="basePrice">1.000.000 đ</span>
+              </div>
+
+              <div class="breakdown-row">
+                <span class="fw-medium">Phụ phí cuối tuần (10%) <i class="fa-regular fa-circle-question ms-1 text-muted" title="Áp dụng cho Thứ 7, Chủ Nhật"></i></span>
+                <span class="fw-bold text-dark fs-5" id="surcharge">100.000 đ</span>
+              </div>
+
+              <div class="breakdown-row discount" id="discountRow">
+                <span class="fw-bold"><i class="fa-solid fa-tag me-2"></i>Mã giảm giá (<span id="discountName"></span>)</span>
+                <span class="fw-bold fs-5">- <span id="discountAmount">0</span> đ</span>
+              </div>
             </div>
 
-            <div class="breakdown-row discount" id="discountRow">
-              <span
-                ><i class="fa-solid fa-tag me-1"></i> Mã giảm giá (<span
-                  id="discountName"
-                ></span
-                >)</span
-              >
-              <span class="fw-bold"
-                >- <span id="discountAmount">0</span> đ</span
-              >
+            <div class="breakdown-total">
+              <span class="label">Tổng cộng</span>
+              <span class="amount" id="totalAmount">1.100.000 đ</span>
             </div>
-          </div>
 
-          <div class="breakdown-total">
-            <span class="label">Tổng cộng</span>
-            <span class="amount" id="totalAmount">1.100.000 đ</span>
-          </div>
+            <div class="text-center text-muted mt-3" style="font-size: 0.85rem;">
+              <i class="fa-solid fa-circle-info me-1"></i> Giá chưa bao gồm phụ phí phát sinh dọc đường (BOT, phà).
+            </div>
 
-          <div class="note-text mt-3">
-            <i class="fa-solid fa-circle-info me-1"></i> Giá chưa bao gồm phụ
-            phí phát sinh dọc đường (BOT, phà).
-          </div>
+            <button class="btn-submit" id="btnSubmitCheckout" onclick="processCheckout()">
+              Thanh toán cọc 330.000 đ
+            </button>
 
-          <button
-            class="btn-submit"
-            id="btnSubmitCheckout"
-            onclick="processCheckout()"
-          >
-            Thanh toán cọc 330.000 đ
-          </button>
-
-          <div class="trust-badges">
-            <i class="fa-solid fa-shield-halved"></i> Mọi thông tin được mã hóa
-            SSL 256-bit an toàn.
+            <div class="trust-badges">
+              <i class="fa-solid fa-shield-halved text-success fs-5"></i> Mọi thông tin được mã hóa SSL 256-bit an toàn.
+            </div>
           </div>
         </div>
       </div>
     </main>
+
+    <script src="../../js/base.js">
+      </script>
 
     <script>
       const invoiceState = {
@@ -668,8 +435,7 @@
       const elVoucherMsg = document.getElementById("voucherMsg");
       const inputVoucher = document.getElementById("voucherCode");
 
-      const formatVND = (num) =>
-        new Intl.NumberFormat("vi-VN").format(num) + " đ";
+      const formatVND = (num) => new Intl.NumberFormat("vi-VN").format(num) + " đ";
 
       function applyVoucher() {
         const code = inputVoucher.value.trim().toUpperCase();
@@ -677,28 +443,24 @@
 
         if (code === "SUMMER26") {
           invoiceState.discount = 100000;
-          elVoucherMsg.className = "voucher-msg success";
-          elVoucherMsg.innerHTML =
-            '<i class="fa-solid fa-circle-check me-1"></i> Áp dụng mã thành công!';
+          elVoucherMsg.style.display = "block";
+          elVoucherMsg.style.color = "var(--color-1)";
+          elVoucherMsg.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Áp dụng mã thành công!';
           document.getElementById("discountName").innerText = code;
-          elDiscountAmount.innerText = formatVND(invoiceState.discount).replace(
-            " đ",
-            "",
-          );
+          elDiscountAmount.innerText = formatVND(invoiceState.discount).replace(" đ", "");
           elDiscountRow.style.display = "flex";
         } else {
           invoiceState.discount = 0;
-          elVoucherMsg.className = "voucher-msg error";
-          elVoucherMsg.innerHTML =
-            '<i class="fa-solid fa-circle-xmark me-1"></i> Mã giảm giá không hợp lệ hoặc đã hết hạn.';
+          elVoucherMsg.style.display = "block";
+          elVoucherMsg.style.color = "#e53e3e";
+          elVoucherMsg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã giảm giá không hợp lệ hoặc đã hết hạn.';
           elDiscountRow.style.display = "none";
         }
         updateTotal();
       }
 
       function updateTotal() {
-        invoiceState.total =
-          invoiceState.base + invoiceState.surcharge - invoiceState.discount;
+        invoiceState.total = invoiceState.base + invoiceState.surcharge - invoiceState.discount;
         const deposit = invoiceState.total * invoiceState.depositRatio;
 
         elTotal.innerText = formatVND(invoiceState.total);
@@ -708,10 +470,10 @@
       function validateEmail() {
         const el = document.getElementById("emailInput");
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regex.test(el.value)) {
+        if (!regex.test(el.value) && el.value !== "") {
           el.classList.add("is-invalid");
           formState.emailValid = false;
-        } else {
+        } else if(el.value !== "") {
           el.classList.remove("is-invalid");
           formState.emailValid = true;
         }
@@ -720,37 +482,34 @@
       function validatePhone() {
         const el = document.getElementById("phoneInput");
         const regex = /^[0-9]{10,11}$/;
-        if (!regex.test(el.value)) {
+        if (!regex.test(el.value) && el.value !== "") {
           el.classList.add("is-invalid");
           formState.phoneValid = false;
-        } else {
+        } else if(el.value !== "") {
           el.classList.remove("is-invalid");
           formState.phoneValid = true;
         }
       }
 
       function selectPayment(element) {
-        document
-          .querySelectorAll(".payment-card")
-          .forEach((card) => card.classList.remove("active"));
+        document.querySelectorAll(".payment-card").forEach((card) => card.classList.remove("active"));
         element.classList.add("active");
-        element.querySelector("input").checked = true;
       }
 
       function processCheckout() {
+        // Kích hoạt blur để check lại toàn bộ nếu khách ấn submit khi chưa điền
+        validateEmail(); validatePhone();
+        
         if (!formState.emailValid || !formState.phoneValid) {
           alert("Vui lòng điền đúng định dạng Email và Số điện thoại.");
           return;
         }
 
         elBtnSubmit.disabled = true;
-        elBtnSubmit.innerHTML =
-          '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý giao dịch...';
+        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý giao dịch...';
 
         setTimeout(() => {
-          alert(
-            "Thanh toán thành công! Chuẩn bị chuyển hướng đến trang theo dõi chuyến đi.",
-          );
+          alert("Thanh toán thành công! Chuẩn bị chuyển hướng đến trang theo dõi chuyến đi.");
           window.location.href = "index.html";
         }, 2000);
       }
