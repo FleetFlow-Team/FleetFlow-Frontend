@@ -331,80 +331,7 @@
     filter: drop-shadow(0 6px 10px rgba(0, 177, 79, 0.35));
 }
 
-/* =========================================
-   FOOTER LIQUID GLASS (Corporate Style)
-========================================= */
-.footer-corporate {
-    position: relative;
-    padding: 80px 0 30px;
-    background: rgb(88, 88, 88); /* Nền trắng xám nhẹ để không bị chói */
-    border-top: 1px solid rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
 
-.footer-title {
-    font-weight: 800;
-    font-size: 1.1rem;
-    color: var(--color-2);
-    margin-bottom: 25px;
-    letter-spacing: -0.2px;
-}
-
-.footer-text {
-    font-size: 0.95rem;
-    line-height: 1.7;
-    color: var(--color-2);
-}
-
-.footer-links li a {
-    color:  var(--color-2);
-    text-decoration: none;
-    font-size: 0.95rem;
-    transition: all 0.3s ease;
-    display: inline-block;
-}
-
-.footer-links li a:hover {
-    color: var(--color-1, #00B14F);
-    transform: translateX(5px);
-}
-
-.footer-contact p {
-    color: #475569;
-    font-weight: 500;
-}
-
-.contact-time {
-    font-size: 0.8rem;
-    color: #94a3b8;
-    background: #f1f5f9;
-    padding: 2px 8px;
-    border-radius: 4px;
-}
-
-.footer-divider {
-    margin: 40px 0;
-    border: 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-}
-
-.footer-bottom {
-    font-size: 0.85rem;
-    color: #94a3b8;
-    font-weight: 500;
-}
-
-/* Hiệu ứng icon nhỏ */
-.footer-contact i {
-    width: 20px;
-    color: var(--color-1, #00B14F);
-}
-
-/* --- RESPONSIVE --- */
-@media (max-width: 768px) {
-    .footer-corporate { padding: 50px 0 20px; }
-    .footer-title { margin-top: 20px; }
-}
     </style>
 </head>
 <body>
@@ -883,512 +810,171 @@
                 </nav>
 
             </section>
+
+            
         </div>
     </div>
 </main>
 
-    <footer class="footer-corporate">
-      <div class="container-base">
-        <div class="row g-4">
-          <div class="col-lg-4 col-md-6">
-            <h5 class="footer-title">Hệ thống FleetFlow</h5>
-            <p class="footer-text">
-              Hệ thống nền tảng công nghệ kết nối đặt xe thông minh, tối ưu hiệu suất và mang lại sự an tâm tuyệt đối cho khách hàng trên từng chặng hành trình.
-            </p>
-          </div>
-          <div class="col-lg-4 col-md-6">
-            <h5 class="footer-title">Chính sách & Quy định</h5>
-            <ul class="footer-links list-unstyled d-flex flex-column gap-2">
-              <li><a href="#">Chính sách bảo mật thông tin</a></li>
-              <li><a href="#">Quy chế vận hành và tranh chấp</a></li>
-              <li><a href="#">Thỏa thuận sử dụng dịch vụ đối tác</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-4 col-md-12">
-            <h5 class="footer-title">Tổng đài hỗ trợ</h5>
-            <div class="footer-contact d-flex flex-column gap-2">
-              <p class="m-0"><i class="fa-solid fa-headset me-2"></i>Hotline CSKH: 1900 5335 <span class="contact-time">(7:00 - 22:00)</span></p>
-              <p class="m-0"><i class="fa-solid fa-envelope me-2"></i>Email: support@fleetflow.vn</p>
+<aside class="ai-floating-widget">
+    <div class="ai-liquid-chat-container" id="ai-chat-window">
+        <div class="chat-glass-messages" id="chat-messages">
+            <div class="d-flex gap-3 mb-4 w-100">
+                <div class="avatar-glass flex-shrink-0">
+                    <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
+                </div>
+                <div class="chat-glass-bubble ai-bubble w-100">
+                    <p class="mb-0 text-dark">Xin chào! Tôi là FleetFlow AI. Bạn cần tìm xe với tiêu chí như thế nào?</p>
+                </div>
             </div>
-          </div>
         </div>
-        <hr class="footer-divider" />
-        <div class="footer-bottom text-center">
-          &copy; 2026 FleetFlow Corporation
+
+        <div class="chat-glass-suggestions mb-2" id="chat-suggestions">
+            <button class="glass-suggestion-chip" onclick="sendSuggestion('Xe 4 chỗ ngồi')">Xe 4 chỗ ngồi</button>
+            <button class="glass-suggestion-chip" onclick="sendSuggestion('Cốp rộng để nhiều vali')">Cốp rộng để nhiều vali</button>
         </div>
-      </div>
-    </footer>
 
-    <style>
-        /* Container Tối Tượng */
-        .ai-chat-widget {
-            font-family: 'Inter', sans-serif;
-            position: fixed;
-            bottom: 30px;
-            right: 30px; 
-            z-index: 1060; 
-        }
-
-        /* --- 1. FAB BUTTON (NÚT NỔI) --- */
-        .ai-fab-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Vòng hào quang nhịp tim phía sau */
-        .ai-fab-glow {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: var(--color-1, #00B14F);
-            border-radius: 50%;
-            z-index: 1;
-            animation: pulse-glow 2s infinite;
-        }
-
-        @keyframes pulse-glow {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.4); opacity: 0; }
-            100% { transform: scale(1); opacity: 0; }
-        }
-
-        .ai-chat-fab {
-            position: relative;
-            z-index: 2;
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            /* Gradient Xanh - Lục bảo hiện đại */
-            background: linear-gradient(135deg, #00B14F 0%, #05d564 100%);
-            color: #ffffff;
-            border: none;
-            box-shadow: 0 8px 24px rgba(0, 177, 79, 0.4);
-            font-size: 1.8rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s;
-        }
-
-        .ai-chat-fab:hover {
-            transform: scale(1.1) translateY(-2px);
-            box-shadow: 0 12px 28px rgba(0, 177, 79, 0.5);
-        }
-
-        /* Chấm đỏ thông báo */
-        .ai-chat-badge {
-            position: absolute;
-            top: 0;
-            right: -2px;
-            background: #ff4757;
-            color: white;
-            font-size: 0.75rem;
-            font-weight: 800;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid #ffffff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            z-index: 3;
-        }
-
-        /* --- 2. CHAT WINDOW (CỬA SỔ CHAT) --- */
-        .ai-chat-window {
-            position: absolute;
-            bottom: 85px;
-            right: 0; 
-            width: 380px; /* Tăng độ rộng chút cho thoáng */
-            height: 580px; /* Tăng chiều cao */
-            background: #fdfdfd;
-            border-radius: 24px; /* Bo góc mềm mại kiểu iOS */
-            box-shadow: 0 12px 40px -10px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0,0,0,0.05);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            
-            /* Hiệu ứng Pop-up kiểu lò xo */
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(30px) scale(0.9);
-            transform-origin: bottom right;
-            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-        
-        .ai-chat-window.active {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0) scale(1);
-        }
-
-        /* Glassmorphism Header */
-        .ai-chat-header {
-            padding: 16px 20px;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px); /* Kính mờ */
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.06);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 10;
-        }
-        
-        .ai-header-left {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-        
-        .ai-avatar-wrapper {
-            position: relative;
-        }
-        
-        .ai-avatar {
-            width: 44px;
-            height: 44px;
-            background: linear-gradient(135deg, #00B14F 0%, #05d564 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.3rem;
-            box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
-        }
-        
-        .ai-online-dot {
-            position: absolute;
-            bottom: 2px;
-            right: 0;
-            width: 12px;
-            height: 12px;
-            background: #10b981;
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-        }
-        
-        .ai-header-title h5 {
-            margin: 0 0 2px 0;
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #111827;
-            letter-spacing: -0.3px;
-        }
-        .ai-header-title p {
-            margin: 0;
-            font-size: 0.8rem;
-            color: #10b981;
-            font-weight: 600;
-        }
-        
-        .ai-header-actions button {
-            background: #f1f5f9;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: none;
-            color: #64748b;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-left: 6px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ai-header-actions button:hover {
-            background: #e2e8f0;
-            color: #0f172a;
-        }
-
-        /* --- 3. MESSAGE BODY --- */
-        .ai-chat-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px 20px;
-            background: #f4f7f9; /* Nền xanh xám cực nhạt, sang trọng */
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            scroll-behavior: smooth;
-        }
-        .ai-chat-body::-webkit-scrollbar { width: 5px; }
-        .ai-chat-body::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 10px; }
-
-        .ai-msg-row {
-            display: flex;
-            gap: 12px;
-            max-width: 90%;
-            animation: aiFadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-        @keyframes aiFadeInUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .ai-msg-row.user {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-        .ai-msg-row.ai { align-self: flex-start; }
-
-        .ai-msg-bubble {
-            padding: 12px 18px;
-            border-radius: 20px;
-            font-size: 0.95rem;
-            line-height: 1.55;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        
-        .ai-msg-row.user .ai-msg-bubble {
-            background: linear-gradient(135deg, #00B14F 0%, #05d564 100%);
-            color: white;
-            border-bottom-right-radius: 4px;
-            box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2);
-        }
-        
-        .ai-msg-row.ai .ai-msg-bubble {
-            background: #ffffff;
-            color: #1f2937;
-            border-bottom-left-radius: 4px;
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-        
-        .ai-msg-avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: var(--color-1, #00B14F);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            flex-shrink: 0;
-            margin-top: auto;
-            box-shadow: 0 2px 6px rgba(0, 177, 79, 0.3);
-        }
-
-        /* Modern Typing Indicator */
-        .ai-typing-dots {
-            display: flex;
-            align-items: center;
-            height: 20px;
-            padding: 0 4px;
-        }
-        .ai-typing-dots span {
-            display: block;
-            width: 6px;
-            height: 6px;
-            background: #94a3b8;
-            border-radius: 50%;
-            margin: 0 3px;
-            animation: typingWave 1.2s infinite ease-in-out;
-        }
-        .ai-typing-dots span:nth-child(1) { animation-delay: 0s; }
-        .ai-typing-dots span:nth-child(2) { animation-delay: 0.15s; }
-        .ai-typing-dots span:nth-child(3) { animation-delay: 0.3s; }
-        
-        @keyframes typingWave {
-            0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
-            30% { transform: translateY(-4px); opacity: 1; background: var(--color-1); }
-        }
-
-        /* Rich UI - Vehicle Carousel Enhancement */
-        .ai-carousel-wrapper { width: 100%; margin-top: 4px; }
-        .ai-carousel {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            width: 290px;
-            scroll-snap-type: x mandatory;
-        }
-        .ai-carousel::-webkit-scrollbar { height: 0; display: none; } /* Hide scrollbar for clean look */
-        
-        .ai-v-card {
-            min-width: 240px;
-            background: white;
-            border-radius: 16px;
-            border: 1px solid rgba(0,0,0,0.04);
-            overflow: hidden;
-            scroll-snap-align: start;
-            flex-shrink: 0;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            transition: transform 0.2s;
-        }
-        .ai-v-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
-        
-        .ai-v-card-img {
-            width: 100%;
-            height: 130px;
-            object-fit: cover;
-        }
-        .ai-v-card-body { padding: 14px; }
-        .ai-v-card-title {
-            font-size: 1rem; font-weight: 700; margin: 0 0 6px 0; color: #111827;
-        }
-        .ai-v-card-price {
-            font-size: 1.05rem; font-weight: 800; color: var(--color-1); margin-bottom: 12px;
-        }
-        .ai-v-card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-        .ai-v-card-tag {
-            font-size: 0.7rem; background: #f1f5f9; padding: 4px 8px; border-radius: 6px; color: #475569; font-weight: 600;
-        }
-        .ai-v-card-btn {
-            width: 100%; padding: 10px; border: none; border-radius: 8px;
-            background: #f1f5f9; color: var(--color-1); font-weight: 700; font-size: 0.9rem;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .ai-v-card-btn:hover { background: var(--color-1); color: white; }
-
-        /* --- 4. CHAT FOOTER (INPUT) --- */
-        .ai-chat-footer {
-            padding: 14px 20px 20px 20px;
-            background: #ffffff;
-            border-top: 1px solid rgba(0,0,0,0.05);
-            z-index: 10;
-        }
-        
-        /* Quick Replies - Pill Design */
-        .ai-quick-replies {
-            display: flex; gap: 8px; overflow-x: auto; margin-bottom: 14px; padding-bottom: 2px;
-        }
-        .ai-quick-replies::-webkit-scrollbar { display: none; }
-        .ai-chip {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            color: #475569;
-            padding: 8px 16px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 500;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .ai-chip:hover {
-            background: var(--color-1); color: white; border-color: var(--color-1);
-            transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 177, 79, 0.2);
-        }
-
-        /* Input Area - Modern Pill */
-        .ai-input-wrapper {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            background: #f8fafc;
-            padding: 8px 12px 8px 18px;
-            border-radius: 24px;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-        .ai-input-wrapper:focus-within {
-            background: #ffffff;
-            border-color: var(--color-1);
-            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.1);
-        }
-
-        .ai-input-wrapper textarea {
-            flex: 1; border: none; background: transparent; outline: none; resize: none;
-            max-height: 96px; font-size: 0.95rem; font-family: inherit; line-height: 1.5;
-            padding: 6px 0; color: #1f2937;
-        }
-        .ai-input-wrapper textarea::placeholder { color: #94a3b8; }
-        
-        /* Send Button Animation */
-        .ai-btn-send {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: var(--color-1); border: none; color: white;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            margin-bottom: 2px; flex-shrink: 0;
-        }
-        .ai-btn-send i { font-size: 1rem; transition: transform 0.3s; }
-        
-        .ai-btn-send:not(:disabled):hover {
-            transform: scale(1.1); box-shadow: 0 4px 12px rgba(0, 177, 79, 0.3);
-        }
-        .ai-btn-send:not(:disabled):active i {
-            transform: translate(24px, -24px); /* Hiệu ứng máy bay bay đi */
-            opacity: 0;
-        }
-        
-        .ai-btn-send:disabled {
-            background: #e2e8f0; color: #94a3b8; cursor: not-allowed; transform: scale(1); box-shadow: none;
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 576px) {
-            .ai-chat-widget { bottom: 20px; right: 20px; }
-            .ai-chat-window {
-                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-                width: 100%; height: 100%; border-radius: 0; z-index: 1070;
-            }
-        }
-    </style>
-
-    <div class="ai-chat-widget">
-        <div class="ai-fab-container">
-            <div class="ai-fab-glow"></div>
-            <button class="ai-chat-fab" id="aiChatFab" aria-label="Mở Trợ lý AI">
-                <img src="../assets/img/">
-                <span class="ai-chat-badge" id="aiUnreadBadge">1</span>
+        <div class="chat-glass-input-area">
+            <input type="text" id="chat-input" class="glass-input" placeholder="Nhập yêu cầu...">
+            <button class="glass-send-btn" onclick="sendMessage()">
+                <i class="fa-solid fa-paper-plane"></i>
             </button>
-        </div>
-
-        <div class="ai-chat-window" id="aiChatWindow">
-            <div class="ai-chat-header">
-                <div class="ai-header-left">
-                    <div class="ai-avatar-wrapper">
-                        <div class="ai-avatar"><i class="fa-solid fa-robot"></i></div>
-                        <div class="ai-online-dot"></div>
-                    </div>
-                    <div class="ai-header-title">
-                        <h5>FleetFlow AI Consultant</h5>
-                        <p>Luôn sẵn sàng hỗ trợ</p>
-                    </div>
-                </div>
-                <div class="ai-header-actions">
-                    <button id="aiMinBtn" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
-                    <button id="aiCloseBtn" title="Đóng"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-            </div>
-
-            <div class="ai-chat-body" id="aiChatBody">
-                <div class="ai-msg-row ai">
-                    <div class="ai-msg-avatar"><i class="fa-solid fa-robot"></i></div>
-                    <div class="ai-msg-bubble">
-                        Xin chào! 👋 Tôi là Trợ lý AI của FleetFlow. Bạn cần tìm phương tiện di chuyển nào hôm nay?
-                    </div>
-                </div>
-            </div>
-
-            <div class="ai-chat-footer">
-                <div class="ai-quick-replies">
-                    <div class="ai-chip">Tư vấn xe gia đình</div>
-                    <div class="ai-chip">Xe 4 chỗ chở 8 người</div>
-                    <div class="ai-chip">Xe đi liên tỉnh</div>
-                </div>
-                
-                <div class="ai-input-wrapper">
-                    <textarea id="aiInputText" rows="1" placeholder="Nhắn tin cho AI..."></textarea>
-                    <button class="ai-btn-send" id="aiSendBtn" disabled>
-                        <i class="fa-solid fa-paper-plane"></i>
-                    </button>
-                </div>
-            </div>
         </div>
     </div>
 
+        <img class="ai-img" src="../assets/img/AI Logo.png" alt="Mở AI Chat" onclick="toggleChat()">
+   
+</aside>
+
+
+
+
+    <footer>
+      <div class="container reveal-on-scroll">
+        <div class="row g-4">
+          <div class="col-lg-4 pe-lg-5">
+            <img
+              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
+              alt="Logo"
+              style="height: 80px; margin-bottom: 20px; object-fit: contain"
+            />
+            <p>
+              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
+              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
+              liên tỉnh.
+            </p>
+          </div>
+          <div class="col-lg-2 col-6">
+            <h5>Dịch Vụ</h5>
+            <ul>
+              <li><a href="pages/findCar.html">Đặt xe đường dài</a></li>
+              <li><a href="pages/findCar.html">Thuê xe sân bay</a></li>
+              <li><a href="pages/findCar.html">Tư vấn xe AI</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-6">
+            <h5>Hỗ Trợ</h5>
+            <ul>
+              <li><a href="#">Trung tâm trợ giúp</a></li>
+              <li><a href="pages/policy.html">Chính sách & Điều khoản</a></li>
+              <li><a href="pages/policy.html">Giải quyết khiếu nại</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <h5>Liên Hệ (Hotline)</h5>
+            <ul class="text-white-50">
+              <li class="mb-2">
+                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
+                (24/7)
+              </li>
+              <li class="mb-2">
+                <i class="fa-solid fa-envelope me-2 text-success"></i>
+                support@fleetflow.vn
+              </li>
+              <li>
+                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
+                University, Ho Chi Minh City
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>  
+
     <script>
+function toggleChat() {
+    document.getElementById('ai-chat-window').classList.toggle('show');
+}
+
+// Hàm xử lý khi bấm vào các chip gợi ý
+function sendSuggestion(text) {
+    const input = document.getElementById('chat-input');
+    input.value = text;
+    sendMessage(); // Bấm gợi ý xong thì gửi luôn
+}
+
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const messagesContainer = document.getElementById('chat-messages');
+    const text = input.value.trim();
+
+    if (text === '') return;
+
+    const userHtml = `
+        <div class="d-flex gap-3 mb-4 w-100 flex-row-reverse">
+            <div class="avatar-glass flex-shrink-0">
+                <i class="fa-solid fa-user"></i>
+            </div>
+            <div class="chat-glass-bubble user-bubble">
+                <p class="mb-0 text-dark">${text}</p>
+            </div>
+        </div>
+    `;
+    messagesContainer.insertAdjacentHTML('beforeend', userHtml);
+    input.value = '';
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    const typingId = 'typing-' + Date.now();
+    const typingHtml = `
+        <div id="${typingId}" class="d-flex gap-3 mb-4 w-100">
+            <div class="avatar-glass flex-shrink-0">
+                <img src="assets/img/ai-avatar.png" alt="AI">
+            </div>
+            <div class="chat-glass-bubble ai-bubble d-flex align-items-center">
+                <p class="mb-0 text-muted fst-italic">Đang phân tích dữ liệu...</p>
+            </div>
+        </div>
+    `;
+    messagesContainer.insertAdjacentHTML('beforeend', typingHtml);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    setTimeout(() => {
+        document.getElementById(typingId).remove();
+        
+        const aiHtml = `
+            <div class="d-flex gap-3 mb-4 w-100">
+                <div class="avatar-glass flex-shrink-0">
+                    <img src="assets/img/ai-avatar.png" alt="AI Avatar">
+                </div>
+                <div class="chat-glass-bubble ai-bubble w-100">
+                    <p class="mb-0 text-dark">Hệ thống đã nhận yêu cầu: <strong>"${text}"</strong>. FleetFlow đang quét các tài xế và dòng xe phù hợp nhất trên hệ thống.</p>
+                </div>
+            </div>
+        `;
+        messagesContainer.insertAdjacentHTML('beforeend', aiHtml);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }, 1200);
+}
+
+document.getElementById('chat-input').addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
         document.addEventListener('DOMContentLoaded', function() {
             const fab = document.getElementById('aiChatFab');
             const windowEl = document.getElementById('aiChatWindow');
