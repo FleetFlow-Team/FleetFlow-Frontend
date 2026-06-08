@@ -163,17 +163,17 @@
         font-size: 1.8rem;
         font-weight: 800;
         margin: 0 auto 25px auto;
-        color: var(--color-1);
-        --glass-bg: rgba(255, 255, 255, 0.6);
+        color: var(--text-color);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         transition: transform 0.6s var(--liquid-easing);
       }
       .step-box:hover .step-number {
         transform: scale(1.2) translateY(-10px);
-        color: var(--color-dark);
       }
       .step-box:hover .step-number::after {
-        background: var(--color-3);
+        color: white !important;
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
       }
       .step-box h5 {
         font-weight: 700;
@@ -926,43 +926,52 @@
         </div>
       </section>
 
-      <section class="process-section">
-        <div class="container">
-          <h2 class="section-title reveal-on-scroll">
-            Quy Trình 3 Bước Đơn Giản
-          </h2>
-          <p class="section-subtitle reveal-on-scroll delay-1">
-            Chỉ vài thao tác, sẵn sàng cho một hành trình xuyên Việt.
-          </p>
+      <section class="process-section py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="section-title reveal-on-scroll">
+        Quy Trình 3 Bước Đơn Giản
+      </h2>
+      <p class="section-subtitle reveal-on-scroll delay-1">
+        Chỉ vài thao tác, sẵn sàng cho một hành trình xuyên Việt.
+      </p>
+    </div>
 
-          <div class="row position-relative z-1 mt-5">
-            <div class="col-lg-4 step-box reveal-on-scroll delay-1">
-              <div class="step-number">1</div>
-              <h5>Tìm Xe Cùng AI</h5>
-              <p>
-                Nhập điểm đến và mô tả nhu cầu (vd: xe êm cho người già). Trợ lý
-                AI sẽ gợi ý dòng xe tối ưu nhất.
-              </p>
-            </div>
-            <div class="col-lg-4 step-box reveal-on-scroll delay-2">
-              <div class="step-number">2</div>
-              <h5>Đặt Cọc 30%</h5>
-              <p>
-                Thanh toán bảo đảm qua cổng điện tử MoMo. Đơn của bạn sẽ được
-                phát sóng trực tiếp tới tài xế gần nhất.
-              </p>
-            </div>
-            <div class="col-lg-4 step-box reveal-on-scroll delay-3">
-              <div class="step-number">3</div>
-              <h5>An Tâm Khởi Hành</h5>
-              <p>
-                Theo dõi xe đến đón qua bản đồ GPS trực tiếp. Hóa đơn điện tử
-                chốt chính xác sau chuyến đi.
-              </p>
-            </div>
-          </div>
+    <div class="row g-4 position-relative z-1">
+      
+      <div class="col-lg-4 reveal-on-scroll delay-1">
+        <div class="feature-card step-box h-100 p-4 text-center">
+          <div class="step-number mb-3 mx-auto">1</div>
+          <h5 class="mb-3 text-dark fw-bold">Tìm Xe Cùng AI</h5>
+          <p class="mb-0 text-muted">
+            Nhập điểm đến và mô tả nhu cầu (vd: xe êm cho người già). Trợ lý AI sẽ gợi ý dòng xe tối ưu nhất.
+          </p>
         </div>
-      </section>
+      </div>
+
+      <div class="col-lg-4 reveal-on-scroll delay-2">
+        <div class="feature-card step-box h-100 p-4 text-center">
+          <div class="step-number mb-3 mx-auto">2</div>
+          <h5 class="mb-3 text-dark fw-bold">Đặt Cọc 30%</h5>
+          <p class="mb-0 text-muted">
+            Thanh toán bảo đảm qua cổng điện tử MoMo. Đơn của bạn sẽ được phát sóng trực tiếp tới tài xế gần nhất.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-lg-4 reveal-on-scroll delay-3">
+        <div class="feature-card step-box h-100 p-4 text-center">
+          <div class="step-number mb-3 mx-auto">3</div>
+          <h5 class="mb-3 text-dark fw-bold">An Tâm Khởi Hành</h5>
+          <p class="mb-0 text-muted">
+            Theo dõi xe đến đón qua bản đồ GPS trực tiếp. Hóa đơn điện tử chốt chính xác sau chuyến đi.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
       <section id="testimonials" class="py-5 position-relative overflow-hidden" style="background: var(--color-bg);">
         <div class="position-absolute top-0 start-0 w-100 h-100" style="pointer-events: none; z-index: 0; opacity: 0.4;">
             <div style="position: absolute; top: 10%; left: -5%; width: 300px; height: 300px; background: var(--color-3); filter: blur(100px); border-radius: 50%;"></div>
@@ -1194,7 +1203,7 @@
         title="Chat Zalo"
       >
         <img
-          src="assets/img/zalo.jpg"
+          src="assets/img/zalo.png"
           alt="Zalo"
           style="width: 35px; height: 35px"
         />
@@ -1207,7 +1216,7 @@
         title="Chat Messenger"
       >
         <img
-          src="assets/img/messenger.jpg"
+          src="assets/img/messenger.png"
           alt="Messenger"
           style="width: 35px; height: 35px"
         />
@@ -1219,7 +1228,7 @@
         title="Gọi hotline"
       >
         <img
-          src="assets/img/calling.jpg"
+          src="assets/img/calling.png"
           alt="Phone"
           style="width: 35px; height: 35px"
         />

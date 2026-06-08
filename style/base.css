@@ -117,15 +117,7 @@ html {
 /* =========================================
    3. NAVBAR & DROPDOWN HEADER
 ========================================= */
-.custom-navbar {
-    background-color: var(--color-1) !important;
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    height: 70px;
-    padding: 0 !important;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
+
 
 .container-base { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; display: flex; align-items: center; justify-content: space-between; }
 .brand-overflow { position: relative; height: 70px; display: flex; align-items: center; padding: 0; }
@@ -133,23 +125,6 @@ html {
 
 .nav-link { transition: all 0.3s ease; }
 .nav-link:hover { opacity: 1; color: var(--color-3) !important; transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 222, 89, 0.6); }
-
-/* Dropdown Glass */
-.custom-navbar .dropdown-menu {
-    border-radius: 12px; padding: 8px 0; background: var(--glass-highlight) !important;
-    backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.5); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-}
-.custom-navbar .dropdown-item {
-    font-size: 0.95rem; padding: 10px 20px; background-color: transparent !important;
-    color: #333 !important; position: relative; display: inline-block; width: 100%; transition: all 0.3s ease;
-}
-.custom-navbar .dropdown-item::after {
-    content: ""; position: absolute; left: 20px; bottom: 4px; height: 2px; width: calc(100% - 20px);
-    background-color: var(--color-3); transform: scaleX(0); transform-origin: bottom left; transition: transform 0.4s var(--liquid-easing);
-}
-.custom-navbar .dropdown-item:hover { font-weight: 700; background: rgba(255,255,255,0.5) !important;}
-.custom-navbar .dropdown-item:hover::after { transform: scaleX(1); }
-.custom-navbar .nav-item.dropdown:hover .dropdown-menu { display: block; margin-top: 0; }
 
 /* Trạng thái Navbar dính và cuộn */
 .custom-navbar.sticky-top {
@@ -777,7 +752,7 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
 }
 
 .ai-img {
-    width: 15rem;
+    width: 8rem;
     height: auto;
     cursor: pointer;
     transition: transform 0.3s ease;
