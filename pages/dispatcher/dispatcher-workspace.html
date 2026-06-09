@@ -39,32 +39,64 @@
 </svg>
 
     <header>
-        <nav class="navbar custom-navbar dispatcher-navbar fixed-top transition-all">
+        <nav class="navbar dispatcher-navbar transition-all">
         <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
             
             <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="../../assets/img/FleetFlow - Logo.png" alt="FleetFlow" height="40" class="me-2">
-                <span class="fw-bold fs-4 text-white nav-brand-text">FleetFlow</span>
+                <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" height="60px" class="me-2">
             </a>
 
             <div class="navbar-slogan d-none d-md-block text-white fw-medium fs-5 fst-italic">
                 "Điều phối thông minh, Vận hành tối ưu"
             </div>
 
-            <div class="d-flex align-items-center gap-3">
-                <div class="avatar-glass" style="width: 45px; height: 45px;">
-                    <img src="../../assets/img/ai-avatar.png" alt="Admin" style="width: 100%; border-radius: 50%;">
-                </div>
-            </div>
+            <div class="user-profile-dropdown ms-auto">
+    <div class="user-profile-trigger d-flex align-items-center">
+        
+        <div class="user-info-block text-end d-none d-sm-block me-3">
+            <div class="fw-bold fs-6 lh-1 text-white profile-name">Nguyễn Quản Trị</div>
+            <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75rem;">Administrator</div>
+        </div>
+        
+        <div class="glass-avatar">
+            <img src="https://ui-avatars.com/api/?name=Quan+Tri&background=00b14f&color=fff" alt="Avatar" />
+        </div>
+        
+        <i class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon" style="font-size: 0.75rem;"></i>
+    </div>
+    
+    <div class="dropdown-menu-modern shadow-lg">
+        <div class="dropdown-header-custom px-4 py-3">
+            <div class="fw-bold text-white fs-6">Nguyễn Quản Trị</div>
+            <div class="small text-white-50">admin@fleetflow.vn</div>
+        </div>
+        <hr class="dropdown-divider-custom">
+        
+        <a href="#profile" class="dropdown-item-custom">
+            <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
+        </a>
+        <a href="#settings" class="dropdown-item-custom">
+            <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
+        </a>
+        
+        <hr class="dropdown-divider-custom">
+        
+        <a href="login.html" class="dropdown-item-custom text-danger fw-bold logout-item">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+        </a>
+    </div>
+</div>
         </div>
     </nav>
+    <div class="line-bra"></div>
     </header>
+    <main>
 
-    <div class="container-fluid" style="padding-top: 120px; padding-bottom: 50px;">
+    <div class="container-fluid" style="padding-top: 40px; padding-bottom: 50px;">
         <div class="row px-xl-4">
             
             <div class="col-lg-3 mb-4">
-                <div class="glass-panel sticky-top" style="top: 100px;">
+                <div class="sticky-top" style="top: 100px; width: 20rem;">
                     <div class="toc-header border-bottom border-light pb-3 mb-4">
                         <i class="fa-solid fa-layer-group me-2"></i> Bảng Điều Khiển
                     </div>
@@ -73,11 +105,11 @@
                         <div class="toc-indicator" id="vertical-indicator"></div>
                         
                         <ul class="toc-list" id="dispatcher-nav">
-                            <li><a href="#overview" class="toc-link active"><i class="fa-solid fa-chart-pie me-2"></i> Tổng quan</a></li>
-                            <li><a href="#map-tracking" class="toc-link"><i class="fa-solid fa-map-location-dot me-2"></i> Bản đồ trực tuyến</a></li>
-                            <li><a href="#trip-management" class="toc-link"><i class="fa-solid fa-route me-2"></i> Quản lý chuyến đi</a></li>
-                            <li><a href="#driver-status" class="toc-link"><i class="fa-solid fa-id-card me-2"></i> Trạng thái tài xế</a></li>
-                            <li><a href="#disputes" class="toc-link"><i class="fa-solid fa-triangle-exclamation me-2"></i> Xử lý khiếu nại</a></li>
+                            <li><a href="#overview" class="toc-link active"><i class="fa-solid fa-chart-pie text-light me-2"></i> Tổng quan</a></li>
+                            <li><a href="#map-tracking" class="toc-link"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Bản đồ trực tuyến</a></li>
+                            <li><a href="#trip-management" class="toc-link"><i class="fa-solid fa-route text-success me-2"></i> Quản lý chuyến đi</a></li>
+                            <li><a href="#driver-status" class="toc-link"><i class="fa-solid fa-id-card text-info me-2"></i> Trạng thái tài xế</a></li>
+                            <li><a href="#disputes" class="toc-link"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Xử lý khiếu nại</a></li>
                         </ul>
                     </div>
                 </div>
@@ -92,19 +124,19 @@
                 <div class="col-md-4">
                     <div class="glass-panel text-center p-4">
                         <h2 class="text-success fw-bold mb-1">128</h2>
-                        <span class="text-white-50 fw-medium">Chuyến hoàn thành</span>
+                        <span class="text-success fw-medium">Chuyến hoàn thành</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="glass-panel text-center p-4">
                         <h2 class="text-warning fw-bold mb-1">15</h2>
-                        <span class="text-white-50 fw-medium">Đang chờ điều phối</span>
+                        <span class="text-warning fw-medium">Đang chờ điều phối</span>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="glass-panel text-center p-4">
                         <h2 class="text-danger fw-bold mb-1">2</h2>
-                        <span class="text-white-50 fw-medium">Khiếu nại mới</span>
+                        <span class="text-danger fw-medium">Khiếu nại mới</span>
                     </div>
                 </div>
             </div>
@@ -139,7 +171,7 @@
     <div id="map-tracking" class="dashboard-section">
         <div class="glass-panel">
             <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Bản đồ trực tuyến</h4>
-            <div class="map-container" style="height: 50rem; border-radius: 40px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);">
+            <div class="map-container" style="height: 40rem; border-radius: 40px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.324285885265!2d106.69741231462252!3d10.786445992314811!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3f3129e64d%3A0x8d6b2d79522c7f30!2zQ2jhu6MgQuG6v24gVGjDoG5o!5e0!3m2!1svi!2s!4v1680000000000!5m2!1svi!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
             </div>
         </div>
@@ -227,7 +259,7 @@
 
     <div id="disputes" class="dashboard-section">
         <div class="glass-panel">
-            <h4 class="fw-bold mb-4 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> Phòng xử lý khiếu nại & tranh chấp</h4>
+            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Phòng xử lý khiếu nại & tranh chấp</h4>
             <div class="glass-panel" style="background: rgba(255, 99, 71, 0.05); border-color: rgba(255, 99, 71, 0.2);">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold text-white mb-0">Khiếu nại chuyến #TR-8080</h5>
@@ -245,6 +277,9 @@
 </div>
         </div>
     </div>
+    </main>
+
+    
 
     <script>
        /**
