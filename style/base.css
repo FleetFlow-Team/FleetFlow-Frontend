@@ -90,6 +90,425 @@ a {
     padding: 0 15px;
 }
 
+.navbar-slogan {
+    
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    white-space: nowrap; /* Đảm bảo chữ không bị rớt dòng */
+    pointer-events: none; /* Tránh việc slogan đè lên cản trở click chuột vào các phần tử khác nếu màn hình nhỏ */
+}
+
+/* Ẩn slogan trên màn hình điện thoại/tablet nhỏ để tránh đè vào logo/avatar */
+@media (max-width: 991px) {
+    .navbar-slogan {
+        display: none !important;
+    }
+}
+
+/* =========================================
+   5. NAVBAR & DROPDOWN HEADER
+========================================= */
+.brand-overflow { 
+    position: relative; height: 70px; display: flex; align-items: center; padding: 0; 
+}
+.brand-overflow .logo-img { 
+    height: 100%; width: auto; object-fit: contain; padding: 5px 0; 
+}
+
+.nav-link { transition: all 0.3s ease; }
+.nav-link:hover { 
+    opacity: 1; color: var(--color-3) !important; 
+    transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 222, 89, 0.6); 
+}
+
+/* Navbar Center Links */
+.navbar-center-links { 
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 20px; 
+}
+
+.nav-link-center {
+    display: flex; color: rgba(255, 255, 255, 0.85); font-weight: 600; font-size: 1.05rem;
+    padding: 8px 16px; transition: all 0.4s var(--liquid-easing); border-radius: 50px;
+    width: 130px; justify-content: center; align-items: center; 
+}
+
+.nav-link-center:hover, .nav-link-center.active {
+    color: white; background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+.nav-link-center:hover { transform: translateY(-5px); }
+
+/* Trạng thái Navbar dính */
+.custom-navbar.sticky-top {
+    position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%;
+    background-color: var(--color-1); height: 70px; padding: 0;
+    transition: all 0.6s var(--liquid-easing), background-color 0.4s ease; 
+    isolation: isolate; border: 0.5px solid transparent; z-index: 1030;
+}
+.custom-navbar::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+    background: rgba(140, 140, 140, 0.35); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    opacity: 0; transition: opacity 0.6s ease;
+}
+.custom-navbar::before {
+    content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.6s ease;
+}
+
+/* Fix viền Liquid Glass cho Navbar Scrolled */
+.custom-navbar.is-scrolled {
+    top: 15px; width: 95%; max-width: 1300px; border-radius: 50px;
+    background-color: transparent; border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 2px var(--glass-border), 0 15px 35px rgba(0, 0, 0, 0.2); 
+    overflow: visible; 
+}
+.custom-navbar.is-scrolled::after { 
+    inset: -12px; opacity: 1; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); clip-path: inset(12px round 50px);
+    transform: translateZ(0); will-change: transform, filter; background: transparent;
+}
+.custom-navbar.is-scrolled::before { opacity: 1; }
+
+/* =========================================
+   6. BUTTONS & UI COMPONENTS
+========================================= */
+/* Standard Button */
+.btn-base {
+    display: inline-flex; align-items: center; justify-content: center;
+    background-color: var(--color-1); color: var(--color-2);
+    padding: 10px 24px; font-size: 1rem; font-weight: 600;
+    border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+}
+.btn-base:hover {
+    background-color: var(--color-3); color: #333333;
+    transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
+}
+.btn-base:active { transform: translateY(0); }
+
+/* Liquid Glass Buttons */
+.btn-login, .btn-hero, .btn-cta-outline, .social-icon-btn, .step-number {
+    position: relative; isolation: isolate; transform-style: preserve-3d;
+    background: transparent; border: 1px solid var(--glass-border);
+}
+
+.btn-login::after, .btn-hero::after, .btn-cta-outline::after, .social-icon-btn::after, .step-number::after {
+    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+    background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.5s ease;
+}
+
+.btn-login::before, .btn-hero::before, .btn-cta-outline::before, .social-icon-btn::before, .step-number::before {
+    content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 2px 2px 4px 0 var(--glass-highlight), inset -2px -2px 4px 0 rgba(255, 255, 255, 0.1);
+    transition: box-shadow 0.5s var(--liquid-easing);
+}
+
+.btn-login > *, .btn-hero > *, .btn-cta-outline > *, .social-icon-btn > *, .step-number > * { position: relative; z-index: 3; }
+
+.btn-login, .btn-hero, .btn-cta-outline {
+    border-radius: 50px; padding: 10px 28px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 8px 20px var(--glass-shadow); transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease; 
+}
+
+.btn-login { --glass-bg: rgba(255, 255, 255, 0.8); color: var(--color-dark); }
+.btn-hero, .btn-cta-outline { --glass-bg: rgba(255, 255, 255, 0.12); color: white; border: 1px solid rgba(255,255,255,0.35); }
+.btn-hero:hover, .btn-cta-outline:hover { transform: translateY(-5px); }
+
+/* Clean Glass Buttons (Profile & Notification) */
+.notification-btn, .user-profile-btn {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.8);
+    color: var(--color-dark); text-decoration: none; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease; height: 46px; z-index: 1;
+}
+
+.notification-btn { width: 46px; border-radius: 50%; font-size: 1.15rem; }
+/* =========================================
+   NEW USER PROFILE STYLE (SEPARATED GLASS AVATAR)
+========================================= */
+
+.user-profile-dropdown {
+    position: relative;
+    padding: 5px 0;
+}
+
+/* Vùng trigger bọc ngoài không nền để làm nổi bật khối avatar riêng lẻ */
+.user-profile-trigger {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover gián tiếp lên text khi trỏ chuột vào vùng trigger */
+.user-profile-dropdown:hover .profile-name {
+    color: var(--color-3) !important; /* Đổi nhẹ sang sắc vàng gold sang trọng */
+}
+
+/* Khối Kính Avatar Tách Biệt Độc Lập (Chuẩn Liquid Glass 50px) */
+.glass-avatar {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50px; /* Bo tròn đều 50px */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 
+                inset 1.5px 1.5px 4px rgba(255, 255, 255, 0.4);
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
+                border-color 0.3s ease, 
+                box-shadow 0.3s ease;
+}
+
+/* Hiệu ứng bóp bóng kính nhẹ khi hover cụm profile */
+.user-profile-dropdown:hover .glass-avatar {
+    transform: scale(1.08);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 
+                inset 2px 2px 6px rgba(255, 255, 255, 0.6);
+}
+
+.glass-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50px;
+}
+
+/* Xoay mũi tên mượt mà */
+.transition-icon {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), color 0.3s ease;
+}
+
+.user-profile-dropdown:hover .transition-icon {
+    transform: rotate(180deg);
+    color: #ffffff !important;
+}
+
+/* -------------------------------------
+   DROPDOWN MENU DI CHUYỂN THEO LAYOUT MỚI
+------------------------------------- */
+.dropdown-menu-modern {
+    position: absolute;
+    top: 115%;
+    right: 0;
+    min-width: 260px;
+    
+    /* Hạ màu nền xuống mức cực thấp để đạt độ trong suốt tinh khiết */
+    background: rgba(255, 255, 255, 0.387); 
+    
+    /* Giữ độ blur ở mức 30px-40px để khuếch tán vệt sáng ngầm hoàn hảo */
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    
+    /* Tăng độ sáng viền một chút để định hình rõ khối kính trên nền tối */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 30px;
+    padding: 15px 8px;
+    
+    /* Đổ bóng sâu để tách biệt khối kính trong suốt ra khỏi các panel phía sau */
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5), 
+                inset 1px 1px 4px rgba(255, 255, 255, 0.2);
+    
+    /* Hiệu ứng đóng/mở mượt mà */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px) scale(0.96);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    z-index: 1100;
+}
+
+/* Kích hoạt mượt mà khi hover */
+.user-profile-dropdown:hover .dropdown-menu-modern {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Các thành phần chi tiết trong thực đơn điều hướng dropdown */
+.divider-custom {
+    margin: 8px 12px;
+    border-top: 2px solid black;
+}
+
+.dropdown-item-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    color: var(--text-color); /* Tăng độ sáng chữ mặc định */
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.92rem;
+    transition: all 0.25s ease;
+}
+.dropdown-item-custom i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.dropdown-item-custom:hover {
+    background: rgba(59, 59, 59, 0.12); /* Tạo vệt kính sáng rõ khi hover */
+    color: var(--text-color);
+    transform: translateX(4px);
+    box-shadow: inset 3px 0 0 var(--color-1);
+}
+
+.logout-item {
+    color: #ff6b6b !important;
+}
+
+.logout-item:hover {
+    background: rgba(255, 107, 107, 0.12) !important;
+    color: #ff4757 !important;
+    box-shadow: inset 3px 0 0 #ff4757;
+}
+
+/* =========================================
+   7. FEATURE CARDS & PANELS (LIQUID GLASS MESH 3D)
+========================================= */
+.feature-card {
+    background: rgba(255, 255, 255, 0.05); padding: 40px 30px; border-radius: 50px; height: 100%; text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.4); position: relative; isolation: isolate; transform-style: preserve-3d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0,0,0,0.05); 
+    transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease; overflow: visible; 
+}
+
+.feature-card::after{
+    content: ''; position: absolute; inset: -12px; z-index: -1; 
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); clip-path: inset(12px round 50px);
+    transform: translateZ(0); will-change: transform, filter;
+}
+
+.feature-card::before {
+    content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05); transition: box-shadow 0.5s ease;
+}
+
+.feature-card > * { position: relative; z-index: 3; transform: translateZ(20px); }
+
+.feature-card:hover { transform: perspective(1000px) translateY(-12px) scale(1.02); box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 20px 40px rgba(0, 177, 79, 0.1); }
+.feature-card:hover::before { box-shadow: inset 4px 4px 8px 0 rgba(255, 255, 255, 0.9), inset -2px -2px 6px 0 rgba(0, 0, 0, 0.05); }
+.feature-card:hover .feature-icon-wrapper { transform: scale(1.15) translateZ(30px); }
+
+.feature-icon-wrapper { 
+    width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; 
+    margin-bottom: 25px; background: rgba(255, 255, 255, 0.4); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted); 
+    border: 2px solid transparent; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 8px 16px rgba(0,0,0,0.05); transition: transform 0.5s var(--liquid-easing);
+}
+
+.icon-blue i { color: #3182ce; }
+.icon-green i { color: var(--color-1); }
+.icon-yellow i { color: #d97706; }
+.icon-dark i { color: var(--color-dark); }
+
+.feature-card h4 { font-weight: 700; font-size: 1.25rem; margin-bottom: 15px; color: var(--color-dark); }
+.feature-card p { color: var(--text-color); opacity: 0.85; font-size: 0.95rem; line-height: 1.6; margin: 0; }
+
+/* =========================================
+   1. ROOT VARIABLES (HỆ MÀU CHUẨN)
+========================================= */
+:root {
+    --color-1: #00b14f;       
+    --color-2: #f4f7f6;       
+    --color-3: #ffde59;       
+    --color-dark: #111111;    
+    --color-bg: #ffffff;      
+    --text-color: #4b5563;    
+
+    /* Liquid Glass Variables */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-highlight: rgba(255, 255, 255, 0.6);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+    --liquid-easing: cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    
+    /* New Glass Colors */
+    --glass-green: rgba(89, 255, 114, 0.307);
+    --glass-yellow: rgba(255, 222, 89, 0.2);
+    --bg-gradient-dark: linear-gradient(135deg, #0b0f17 0%, #1a2639 100%);
+    --bg-pleasant: #0f172a;
+
+    /* Demo Glass Variables */
+    --glass-demo-bg: rgba(255, 255, 255, 0.08);
+    --glass-demo-stroke: rgba(255, 255, 255, 0.6);
+    --glass-demo-shadow: rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================
+   2. GLOBAL RESET & TYPOGRAPHY
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    background-color: var(--color-2);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+/* =========================================
+   3. REVEAL ON SCROLL (HIỆU ỨNG XUẤT HIỆN)
+========================================= */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.5s var(--liquid-easing);
+    will-change: opacity, transform;
+}
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.delay-1 { transition-delay: 0.2s; }
+.delay-2 { transition-delay: 0.4s; }
+.delay-3 { transition-delay: 0.6s; }
+.delay-4 { transition-delay: 0.8s; }
+
+/* =========================================
+   4. CONTAINERS (KHUNG CHỨA NỘI DUNG)
+========================================= */
+.container-base {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+}
+
+.container-fluid-base {
+    width: 100%;
+    padding: 0 15px;
+}
+
 /* =========================================
    5. NAVBAR & DROPDOWN HEADER
 ========================================= */
@@ -234,7 +653,7 @@ a {
     transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease; overflow: visible; 
 }
 
-.feature-card::after{
+.feature-card::after {
     content: ''; position: absolute; inset: -12px; z-index: -1; 
     backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
     filter: url(#liquid-distortion); clip-path: inset(12px round 50px);
@@ -244,6 +663,46 @@ a {
 .feature-card::before {
     content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
     box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05); transition: box-shadow 0.5s ease;
+}
+/* =========================================
+   LIQUID GLASS CHO POLICY SIDEBAR (DANH MỤC QUY ĐỊNH)
+========================================= */
+
+/* Khung Glass Panel gốc (Trả lại form tự do, không ép padding/center) */
+.policy-sidebar .glass-panel {
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    position: relative; 
+    isolation: isolate; 
+    transform-style: preserve-3d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0,0,0,0.05); 
+    overflow: visible; 
+}
+
+/* Lớp kính lỏng (Liquid Layer) trào ra ngoài 12px */
+.policy-sidebar .glass-panel::after {
+    content: ''; 
+    position: absolute; 
+    inset: -12px !important; 
+    z-index: -1; 
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); 
+    clip-path: inset(12px round 50px) !important;
+    transform: translateZ(0); 
+    will-change: transform, filter;
+}
+
+/* Lớp bóng đổ 3D bên trong */
+.policy-sidebar .glass-panel::before {
+    content: ''; 
+    position: absolute; 
+    inset: 0; 
+    z-index: 2; 
+    border-radius: inherit; 
+    pointer-events: none;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
 }
 
 .feature-card > * { position: relative; z-index: 3; transform: translateZ(20px); }
@@ -301,15 +760,145 @@ body .form-floating > .form-control { padding-top: 1.625rem; padding-bottom: 0.6
 /* =========================================
    10. AI CHAT LIQUID GLASS (findCar.html)
 ========================================= */
+.ai-liquid-chat-container {
+    position: relative; isolation: isolate; transform-style: preserve-3d;
+    background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 50px; padding: 40px; max-width: 900px; width: 500px; margin-bottom: 20px;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 20px 50px rgba(0, 0, 0, 0.05);
+    overflow: visible; display: none; opacity: 0; transform: translateY(20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ai-liquid-chat-container::after {
+    content: ''; position: absolute; inset: -12px; z-index: -1;
+    background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); clip-path: inset(12px round 50px); transform: translateZ(0);
+}
+
+.ai-liquid-chat-container::before {
+    content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 2px 2px 8px rgba(255, 255, 255, 0.8), inset -2px -2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.ai-liquid-chat-container.show { display: block; animation: popUpGlass 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards; }
+@keyframes popUpGlass { to { opacity: 1; transform: translateY(0); } }
+
+.chat-glass-messages { max-height: 380px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; }
+.chat-glass-messages::-webkit-scrollbar { width: 0px; }
+
+/* AI Avatar & Bubbles */
+.avatar-glass {
+    position: relative; width: 60px; height: 60px; border-radius: 50px; border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.4); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 5px 15px rgba(0, 0, 0, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 0.8);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 4px; 
+}
+.avatar-glass img { width: 100%; height: 100%; object-fit: cover; border-radius: 50px; }
+.avatar-glass i { font-size: 20px; color: var(--color-1); }
+
+.chat-glass-bubble {
+    position: relative; border-radius: 50px; padding: 15px 25px; border: 2px solid transparent;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.03), inset 2px 2px 6px rgba(255, 255, 255, 0.7);
+    backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+}
+
+.user-bubble { background: rgba(255, 255, 255, 0.4); border-top-left-radius: 15px; border-top-right-radius: 15px; }
+.ai-bubble { background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 222, 89, 0.15) 100%); border-top-left-radius: 15px; }
+.typing-bubble { background: rgba(255, 255, 255, 0.3); padding: 15px 30px; border-top-left-radius: 15px; display: inline-flex; width: auto; }
+
+/* Typing Dots */
+.typing-dots { display: flex; align-items: center; gap: 4px; }
+.typing-dots span { width: 6px; height: 6px; background-color: white; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+/* AI Badges & Car Suggestions */
+.car-suggestion-glass {
+    background: rgba(255, 255, 255, 0.5); border: 2px solid transparent; border-radius: 50px;
+    padding: 10px 25px 10px 10px; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), inset 2px 2px 5px rgba(255, 255, 255, 0.9);
+}
+.car-img-wrapper {
+    width: 65px; height: 65px; border-radius: 50px; background: rgba(255, 255, 255, 0.9);
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); padding: 10px;
+}
+.car-img-wrapper img { width: 100%; height: auto; object-fit: contain; }
+
+.glass-badge {
+    display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 700;
+    border: 2px solid transparent; margin-right: 8px; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+.glass-badge.highlight { background: rgba(0, 177, 79, 0.15); color: var(--color-1); }
+.glass-badge.normal { background: rgba(255, 255, 255, 0.6); color: var(--text-color); }
+
+/* Suggestions Chips */
+.chat-glass-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 0 5px; }
+.glass-suggestion-chip {
+    border-radius: 50px; padding: 8px 16px; font-size: 0.8rem; font-weight: 500; color: var(--text-color);
+    background: rgba(255, 255, 255, 0.3); border: 2px solid transparent;
+    backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.3s ease;
+}
+.glass-suggestion-chip:hover {
+    background: var(--glass-green); color: black; transform: translateY(-2px);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 177, 79, 0.2);
+}
+
+/* AI Input & Float Widget */
+.chat-glass-input-area { display: flex; gap: 10px; align-items: center; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.3); }
+.glass-input {
+    flex-grow: 1; border-radius: 50px; padding: 15px 20px; border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.3); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.6); outline: none; color: var(--text-color);
+}
+.glass-send-btn {
+    width: 50px; height: 50px; border-radius: 50px; border: 2px solid transparent; background: var(--color-1); color: white;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 4px 15px rgba(0, 177, 79, 0.3); transition: transform 0.2s ease; flex-shrink: 0;
+}
+.glass-send-btn:hover { transform: scale(1.05); }
+
+.ai-floating-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
+.ai-img { width: 8rem; height: auto; cursor: pointer; transition: transform 0.3s ease; }
+.ai-img:hover { transform: scale(1.3); }
+.ai-trigger-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50px; }
+
+/* =========================================
+   11. FLOATING CONTACT
+========================================= */
+.floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
+.social-icon-btn {
+    width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    --glass-bg: rgba(255,255,255,0.2); box-shadow: 0 0 0 1px var(--glass-border), 0 8px 10px rgba(0,0,0,0.2); transition: transform 0.5s var(--liquid-easing);
+}
+.social-icon-btn img { position: relative; z-index: 3; border-radius: 50%; }
+.social-icon-btn:hover { transform: scale(1.15) translateY(-10px); }
+
+/* =========================================
+   12. FOOTER 
+========================================= */
+footer { background-color: #111111; color: #a0aec0; padding: 60px 0 20px 0; font-size: 0.9rem; }
+footer h5 { color: white; font-weight: 700; margin-bottom: 20px; }
+footer ul { list-style: none; padding: 0; }
+footer ul li { margin-bottom: 10px; }
+footer ul a { color: #a0aec0; text-decoration: none; transition: 0.3s; }
+footer ul a:hover { color: var(--color-1); padding-left: 5px; }
+.footer-bottom { border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; text-align: center; }
+
+/* CSS cho thiết bị di động */
+@media (max-width: 768px) {
+    .container-base { max-width: 100%; padding: 0 20px; }
+}
+
 /* Container chính ôm toàn bộ đoạn chat */
 .ai-liquid-chat-container {
   position: relative;
   isolation: isolate;
   transform-style: preserve-3d;
   /* Tăng độ đục của nền và thêm blur mạnh để dễ đọc chữ */
-  background: rgba(255, 255, 255, 0.057) !important;
-  backdrop-filter: blur(50px) !important;
-  -webkit-backdrop-filter: blur(30px) !important;
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(25px) !important;
+  -webkit-backdrop-filter: blur(25px) !important;
   
   border: 2px solid transparent !important;
   border-radius: 50px;
@@ -338,6 +927,7 @@ body .form-floating > .form-control { padding-top: 1.625rem; padding-bottom: 0.6
   clip-path: inset(12px round 50px) !important;
   transform: translateZ(0);
 }
+
 
 .ai-liquid-chat-container::before {
     content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
@@ -427,6 +1017,7 @@ body .form-floating > .form-control { padding-top: 1.625rem; padding-bottom: 0.6
 .ai-img:hover { transform: scale(1.3); }
 .ai-trigger-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50px; }
 
+
 /* =========================================
    11. FLOATING CONTACT
 ========================================= */
@@ -480,6 +1071,7 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
     opacity: 1;
     visibility: visible;
 }
+
 
 /* KHUNG BOX KÍNH MỜ APPLE STYLE */
 .glass-login-container {
@@ -591,4 +1183,119 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
 .forget-p:hover {
     color: var(--color-3) !important;
     
+}
+
+/* --- ĐỊNH DẠNG INTRO OVERLAY --- */
+#intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: #000; /* Nền đen trong lúc video chưa load kịp */
+    z-index: 9999; /* Luôn nằm trên cùng */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.8s ease, visibility 0.8s ease; /* Hiệu ứng mờ dần */
+}
+
+#intro-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Đảm bảo video full màn hình không bị méo */
+}
+
+
+#skip-btn {
+    /* Không cần position: absolute và left/right nữa */
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 
+                inset 2px 2px 6px rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    border-radius: 50px;
+    transition: 0.3s;
+}
+
+#skip-btn:hover {
+    transform: scale(1.5);
+}
+
+/* Class này sẽ được JS thêm vào khi video kết thúc */
+#intro-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* --- ĐỊNH DẠNG TRANG WEB CHÍNH --- */
+#main-content {
+    padding: 40px;
+    text-align: center;
+}
+
+/* =========================================
+   CHUÔNG THÔNG BÁO (NOTIFICATION GLASS BUTTON)
+========================================= */
+.notification-glass {
+    width: 46px;
+    height: 46px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.05); /* Nền kính mỏng */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), inset 1px 1px 4px rgba(255, 255, 255, 0.1);
+}
+
+.notification-glass:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.08);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), inset 2px 2px 6px rgba(255, 255, 255, 0.3);
+}
+
+.notification-glass i {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Lắc nhẹ chuông và đổi màu vàng Gold khi trỏ chuột */
+.notification-glass:hover i {
+    transform: rotate(15deg) scale(1.1);
+    color: var(--color-3) !important; 
+}
+
+/* Chấm đỏ hiển thị số đếm */
+.notification-badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #ef4444; /* Đỏ cảnh báo */
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    /* Viền tiệp với màu nền tối để tạo khoảng hở (cut-out effect) */
+    border: 2px solid #0b0f17; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.container-btn {
+    position: absolute;
+    bottom: 5%;
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
 }

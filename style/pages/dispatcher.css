@@ -1,504 +1,348 @@
 /* =========================================
-   1. ROOT VARIABLES & LAYOUT CƠ SỞ
-   Mục đích: Thiết lập các biến màu sắc, kích thước và định dạng thanh cuộn chung cho toàn bộ trang web.
+   DISPATCHER - LIQUID GLASS THEME
 ========================================= */
-:root {
-    --color-1: #00B14F; 
-    --color-2: #FFFFFF; 
-    --color-3: #FFDE59; 
-    --color-primary: #00B14F;
-    --color-dark: #1a1c1a;
-    --color-bg: #f4f6f8;
-    --text-color: #333333;
-    --color-text-muted: #64748b;
-    --danger: #EF4444;
-    --warning: #F59E0B;
-    --frozen: #06B6D4;
-    --map-bg: #1e1e1e;
-    --sidebar-width: 260px;
-    --header-height: 70px;
+body {
+  background-color: #0b0f17;
+  font-family: "Inter", sans-serif;
+  position: relative;
+  overflow-x: hidden;
 }
 
-body { 
-    font-family: 'Inter', sans-serif; 
-    background-color: var(--color-bg); 
-    overflow-x: hidden; 
-}
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-
-
-/* =========================================
-   2. TOP NAVBAR
-   Mục đích: Định dạng thanh điều hướng phía trên, bao gồm logo, slogan, avatar, chuông thông báo và menu dropdown thông minh.
-========================================= */
-.custom-navbar {
-    background-color: var(--color-1);
-    height: 70px;
-    padding: 0 !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.custom-navbar .container-base {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    max-width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-    height: 100%;
-    position: relative;
-}
-
-.brand-overflow {
-    position: relative;
-    height: 70px;
-    display: flex;
-    align-items: center;
-    padding: 0 !important;
-    padding-left: 20px !important;
-    margin: 0 !important;
-    background-color: transparent;
-    text-decoration: none;
-}
-
-.brand-overflow .logo-img {
-    height: 100%;
-    width: auto;
-    object-fit: contain;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-.navbar-slogan {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    color: rgba(255, 255, 255, 0.95);
-    font-size: 1.5rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    white-space: nowrap;
+.luxury-glow-bg {
+    position: fixed; /* Dùng fixed để ánh sáng luôn ở đó khi scroll */
+    inset: 0;
+    z-index: -1; /* Nằm dưới cùng */
+    overflow: hidden;
     pointer-events: none;
 }
 
-.user-profile {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    color: white;
-    cursor: pointer;
-    padding-right: 50px !important;
-    margin: 0 !important;
-}
-
-.user-profile img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    border: 2px solid #ffffff;
-    background-color: #ffffff;
-    object-fit: cover;
-    display: block;
-}
-
-.notification-bell { color: white; position: relative; cursor: pointer; font-size: 1.3rem; margin-right: 8px; }
-.notification-badge { position: absolute; top: -5px; right: -8px; background-color: #e27a7a; color: white; font-size: 0.65rem; font-weight: bold; padding: 1px 6px; border-radius: 50%; }
-
-.notification-bell i:hover {
-    color: #e27a7a;
-    transform: scale(1.5);
-    transition: transform 0.3s ease;
-}
-
-.user-profile-dropdown {
-    position: relative;
-    padding: 10px 0;
-}
-
-.user-profile-trigger {
-    cursor: pointer;
-    transition: opacity 0.3s ease;
-}
-
-.user-profile-trigger:hover {
-    opacity: 0.8;
-}
-
-.avatar-img {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.8);
-    object-fit: cover;
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s;
-}
-
-.transition-icon {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.user-profile-dropdown:hover .transition-icon {
-    transform: rotate(-180deg);
-}
-
-.user-profile-dropdown:hover .avatar-img {
-    transform: scale(1.1);
-    border-color: var(--color-3);
-}
-
-.dropdown-menu-modern {
+.glow-sphere {
     position: absolute;
-    top: 100%;
-    right: 0;
-    width: 240px;
-    background-color: #ffffff;
-    border-radius: 16px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.35; /* Tăng nhẹ opacity để xuyên qua kính rõ hơn */
+    mix-blend-mode: screen;
+}
+
+.sphere-1 {
+    top: -10%;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-1); /* Xanh thương hiệu */
+}
+
+.sphere-2 {
+    bottom: -10%;
+    right: 0px;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-3); /* Vàng Gold */
+}
+/* 1. Kính Lỏng (Glass Panel) - Áp dụng từ Policy */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  box-shadow:
+    0 15px 40px rgba(0, 0, 0, 0.05),
+    inset 2px 2px 8px rgba(255, 255, 255, 0.8);
+  padding: 30px;
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+    box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.08),
+    inset 2px 2px 10px rgba(255, 255, 255, 0.95);
+}
+
+/* Avatar trên Navbar */
+.avatar-glass {
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.1),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.8);
+  padding: 2px;
+}
+
+
+
+/* 3. TOC SIDEBAR (Mục lục điều hướng trượt dọc) */
+.toc-header {
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-2);
+}
+
+.toc-list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.toc-list li {
+  margin-bottom: 8px;
+}
+
+.toc-link {
+  display: block;
+  padding: 12px 20px;
+  color: var(--color-2);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 20px;
+  transition: color 0.3s ease;
+}
+
+.toc-link.active {
+  color: var(--color-dark);
+  font-size: larger;
+}
+
+/* Cục kính trượt dọc (Vertical Indicator) */
+.toc-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 48px; /* Khớp với padding của toc-link */
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.05),
+    inset 2px 2px 5px rgba(255, 255, 255, 1);
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+    height 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* =========================================
+   THÀNH PHẦN CHI TIẾT (BẢNG, SWITCH, BUTTON)
+========================================= */
+
+/* Tab Switcher - Lõm 3D */
+.sliding-tabs-container {
+  position: relative;
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 6px;
+  border-radius: 50px;
+  box-shadow:
+    inset 2px 2px 8px rgba(0, 0, 0, 0.05),
+    inset -2px -2px 6px rgba(255, 255, 255, 0.8);
+  margin-bottom: 25px;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.tab-indicator {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  height: calc(100% - 12px);
+  width: 90px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.08),
+    inset 2px 2px 5px rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+    width 0.4s ease;
+  z-index: -1;
+}
+
+.tab-pill {
+  background: transparent;
+  border: none;
+  padding: 10px 25px;
+  font-weight: 600;
+  color: var(--text-color);
+  border-radius: 50px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  outline: none;
+  z-index: 2;
+}
+
+.tab-pill.active {
+  color: var(--color-1);
+}
+
+/* Bảng Kính (Glass Table) */
+.table-glass-wrapper {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 40px;
+  backdrop-filter: blur(20px);
+  padding: 10px 20px;
+  box-shadow: inset 2px 2px 10px rgba(255, 255, 255, 0.6);
+  overflow-x: auto;
+}
+
+.table-glass {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+}
+
+.table-glass th {
+  padding: 15px 20px;
+  color: var(--text-color);
+  border: none;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.table-glass td {
+  padding: 15px 20px;
+  background: rgba(255, 255, 255, 0.4);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  vertical-align: middle;
+  transition: background 0.3s ease;
+}
+
+.table-glass td:first-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.6);
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+}
+
+.table-glass td:last-child {
+  border-right: 1px solid rgba(255, 255, 255, 0.6);
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+}
+
+.table-glass tbody tr:hover td {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* Glass Badges & Buttons */
+.glass-badge {
+  padding: 6px 15px;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 700;
+  box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+.btn-glass-action {
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  padding: 8px 20px;
+  font-weight: 600;
+  color: var(--text-color);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.btn-glass-action:hover {
+  background: var(--color-1);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Nút Bóp Méo SVG Kính Lỏng */
+.glass-liquid-btn {
+  padding: 12px 25px;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.glass-liquid-btn:hover {
+  /* Kích hoạt bộ lọc SVG khi hover */
+  filter: url(#frosted);
+  background: rgba(255, 99, 71, 0.2);
+  border-color: rgba(255, 99, 71, 0.5);
+}
+
+/* Nút Toggle Switch 50px Glass */
+.switch-glass {
+  position: relative;
+  display: inline-block;
+  width: 54px;
+  height: 30px;
+  margin: 0;
+}
+.switch-glass input {
+  display: none;
+}
+.slider-glass {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50px;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+.slider-glass:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  border-radius: 50%;
+  transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.switch-glass input:checked + .slider-glass {
+  background-color: var(--color-1);
+  border-color: var(--color-1);
+}
+.switch-glass input:checked + .slider-glass:before {
+  transform: translateX(24px);
+}
+
+/* =========================================
+   QUẢN LÝ HIỂN THỊ SECTION DẠNG TAB 
+========================================= */
+.dashboard-section {
+    display: none;
     opacity: 0;
-    visibility: hidden;
-    transform: translateY(15px);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-    z-index: 1060;
-    overflow: hidden;
+    transform: scale(0.98) translateY(10px);
+    transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), 
+                transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
-.user-profile-dropdown:hover .dropdown-menu-modern {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+/* Kích hoạt section được chọn */
+.dashboard-section.active {
+    display: block;
+    animation: transitionSection 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
 }
 
-.dropdown-divider-custom {
-    margin: 0;
-    border-color: #edf2f7;
-    opacity: 1;
+@keyframes transitionSection {
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
 }
-
-.dropdown-item-custom {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 14px 24px;
-    color: #4a5568;
-    text-decoration: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    position: relative;
-}
-
-.dropdown-item-custom i {
-    font-size: 1.1rem;
-    color: #a0aec0;
-    transition: color 0.2s ease;
-}
-
-.dropdown-item-custom:hover {
-    background-color: #f8fafc;
-    color: var(--color-1);
-    padding-left: 28px;
-}
-
-.dropdown-item-custom:hover i {
-    color: var(--color-1);
-}
-
-.logout-item:hover {
-    background-color: #fff5f5 !important;
-    color: #e53e3e !important;
-}
-.logout-item:hover i {
-    color: #e53e3e !important;
-}
-
-
-/* =========================================
-   3. SIDEBAR & TABS CƠ BẢN
-   Mục đích: Bố cục thanh menu điều hướng bên trái, chia vùng nội dung tab và các hiệu ứng chuyển tab mượt mà.
-========================================= */
-.wrapper { display: flex; margin-top: var(--header-height); min-height: calc(100vh - var(--header-height)); }
-.sidebar { width: var(--sidebar-width); background-color: #fff; border-right: 1px solid #e2e8f0; position: fixed; top: var(--header-height); bottom: 0; left: 0; padding: 20px 0; z-index: 1000; }
-.sidebar-menu { list-style: none; padding: 0; margin: 0; }
-.sidebar-menu a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: #4a5568; text-decoration: none; font-weight: 600; font-size: 0.95rem; border-left: 4px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-.sidebar-menu a:hover { background-color: #f8fafc; color: var(--color-dark); padding-left: 30px; }
-.sidebar-menu a.active { background-color: rgba(0, 177, 79, 0.08); color: var(--color-primary); border-left-color: var(--color-primary); }
-.sidebar-menu a.active i { transform: scale(1.15); }
-.sidebar-menu i { font-size: 1.1rem; width: 24px; text-align: center; transition: 0.3s; }
-
-.main-content { flex: 1; margin-left: var(--sidebar-width); padding: 30px; position: relative; display: flex; flex-direction: column;}
-.tab-section { display: none; }
-.tab-section.active { display: flex; flex-direction: column; animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; flex: 1;}
-@keyframes slideUpFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-
-
-/* =========================================
-   4. DASHBOARD COMPONENTS
-   Mục đích: Thiết kế thẻ thống kê (Stat Card) hiển thị số liệu nổi bật.
-========================================= */
-.stat-card { background: #fff; border-radius: 12px; padding: 20px; border: 1px solid #edf2f7; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);}
-.stat-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.06); }
-.stat-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; transition: 0.3s;}
-.stat-card:hover .stat-icon { transform: scale(1.1); }
-.bg-icon-green { background-color: #e6fffa; color: var(--color-primary); }
-.bg-icon-blue { background-color: #ebf8ff; color: #3182ce; }
-.bg-icon-red { background-color: #fff5f5; color: #e53e3e; }
-
-
-/* =========================================
-   5. DATA GRID & FLOATING ROWS (TAB APPROVALS)
-   Mục đích: Định dạng cho các bảng dữ liệu quản lý chuyến đi (Pending, Active, Frozen), hiệu ứng hover nổi (floating) trên từng dòng, badge và progress bar.
-========================================= */
-.grid-container { width: 100%; max-width: 1600px; display: flex; flex-direction: column; }
-.tabs-header { display: flex; gap: 40px; border-bottom: 2px solid #e2e8f0; margin-bottom: 30px; }
-.tab-btn { background: none; border: none; font-size: 1.05rem; font-weight: 800; color: #94a3b8; padding: 16px 0; cursor: pointer; position: relative; transition: 0.3s; display: flex; align-items: center; gap: 8px; }
-.tab-btn:hover { color: var(--color-dark); }
-.tab-btn.active { color: var(--color-1); }
-.tab-btn::after { content: ''; position: absolute; bottom: -2px; left: 0; width: 100%; height: 3px; background: transparent; border-radius: 3px 3px 0 0; transition: 0.3s; transform: scaleX(0); }
-.tab-btn.active::after { background: var(--color-1); transform: scaleX(1); }
-.tab-btn.frozen-tab.active { color: var(--frozen); }
-.tab-btn.frozen-tab.active::after { background: var(--frozen); }
-.tab-badge { background: var(--danger); color: white; padding: 2px 10px; border-radius: 50px; font-size: 0.8rem; }
-
-.grid-tab-content { display: none; animation: fadeIn 0.4s ease; }
-.grid-tab-content.active { display: block; }
-
-.enterprise-table { width: 100%; border-collapse: separate; border-spacing: 0 12px; min-width: 1100px; }
-.enterprise-table th { position: sticky; top: 0; padding: 0 24px 10px 24px; text-align: left; font-size: 0.8rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1px; z-index: 10; border: none; }
-.enterprise-table td { padding: 20px 24px; vertical-align: middle; background: white; border-top: 1px solid transparent; border-bottom: 1px solid transparent; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-.enterprise-table td:first-child { border-left: 1px solid transparent; border-radius: 16px 0 0 16px; }
-.enterprise-table td:last-child { border-right: 1px solid transparent; border-radius: 0 16px 16px 0; }
-.enterprise-table tbody tr { box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: default; }
-
-.enterprise-table tbody tr:hover { transform: scale(1.008) translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.06); z-index: 5; position: relative; }
-.enterprise-table tbody tr:hover td { border-color: var(--color-1); background: #fcfcfc;}
-.enterprise-table tbody tr:hover td:first-child { border-left-color: var(--color-1); }
-.enterprise-table tbody tr:hover td:last-child { border-right-color: var(--color-1); }
-
-.bk-id { font-weight: 800; font-size: 1.1rem; color: #2563eb; display: block; cursor: pointer; transition: 0.2s;}
-.bk-id:hover { text-decoration: underline; color: #1d4ed8; }
-.bk-route { font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500; margin-top: 4px; display: inline-flex; align-items: center; gap: 6px; }
-
-.time-urgent { color: var(--danger); font-weight: 800; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fef2f2; border-radius: 8px; animation: pulse-red 2s infinite; }
-@keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 50% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0.2); } }
-
-.person-info { display: flex; align-items: center; gap: 12px; font-weight: 700; color: var(--color-dark); }
-.icon-avatar { width: 40px; height: 40px; border-radius: 12px; background: #f1f5f9; display: flex; align-items: center; justify-content: center; color: var(--color-1); font-size: 1.1rem; overflow: hidden;}
-.icon-avatar img { width: 100%; height: 100%; object-fit: cover;}
-
-.trip-progress { display: flex; flex-direction: column; gap: 6px; width: 180px; }
-.progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; color: var(--color-text-muted); }
-.progress-bar-bg { width: 100%; height: 8px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: var(--color-1); border-radius: 10px; transition: width 1s ease; }
-
-.pill-badge { padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.bg-pending { background: #fef3c7; color: #b45309; }
-.bg-active { background: #dcfce7; color: #166534; }
-.bg-frozen { background: #cffafe; color: #0891b2; border: 1px solid #a5f3fc;}
-
-.action-group { display: flex; gap: 10px; justify-content: flex-end; }
-.btn-act { width: 44px; height: 44px; border-radius: 12px; border: none; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; overflow: hidden;}
-.btn-act::after { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.2); opacity: 0; transition: 0.3s; }
-.btn-act:hover::after { opacity: 1; }
-.act-approve { background: var(--color-1); color: white; }
-.act-approve:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,177,79,0.3); }
-.act-dispute { background: white; color: var(--warning); border: 2px solid #fde68a; }
-.act-dispute:hover { background: var(--warning); color: white; border-color: var(--warning); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(245,158,11,0.3); }
-.act-resolve { background: var(--frozen); color: white; }
-.act-resolve:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(6,182,212,0.3); }
-
-.frozen-reason { color: var(--frozen); font-weight: 600; font-size: 0.9rem; line-height: 1.4; }
-.frozen-row td { background: #f8fafc; border-top: 1px dashed #cbd5e1; border-bottom: 1px dashed #cbd5e1; }
-.frozen-row:hover td { border-color: var(--frozen) !important; background: white;}
-.frozen-row .bk-id { color: var(--frozen); }
-
-
-/* =========================================
-   6. GPS TRACKING MAP (MODERN OPTIMIZED)
-   Mục đích: Thiết kế khu vực bản đồ hiển thị toạ độ xe mô phỏng, radar chuyển động, thanh sidebar danh sách xe bên cạnh.
-========================================= */
-.map-layout { display: flex; gap: 20px; flex: 1; min-height: 500px; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; width: 100%;}
-
-.map-area { 
-    flex: 3; background: var(--map-bg); 
-    background-image: 
-        radial-gradient(rgba(0, 177, 79, 0.15) 2px, transparent 2px),
-        radial-gradient(rgba(0, 177, 79, 0.08) 1px, transparent 1px);
-    background-size: 60px 60px, 30px 30px;
-    background-position: 0 0, 15px 15px;
-    position: relative; overflow: hidden; 
-    animation: panBackground 30s linear infinite;
-}
-@keyframes panBackground { from { background-position: 0 0, 15px 15px; } to { background-position: -60px -60px, -45px -45px; } }
-
-.vehicle-marker { 
-    position: absolute; width: 42px; height: 42px; 
-    background: rgba(0, 177, 79, 0.15); border-radius: 50%; 
-    display: flex; align-items: center; justify-content: center; 
-    transition: left 2.5s cubic-bezier(0.25, 1, 0.5, 1), 
-                top 2.5s cubic-bezier(0.25, 1, 0.5, 1),
-                transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                box-shadow 0.3s ease, background 0.3s ease; 
-    cursor: pointer; border: 2px solid rgba(0, 177, 79, 0.6); 
-    backdrop-filter: blur(2px); z-index: 5;
-    transform: translate(-50%, -50%);
-}
-
-.vehicle-marker:not(.lost)::before {
-    content: ''; position: absolute; inset: -50%; 
-    border-radius: 50%; border: 1px solid var(--color-1);
-    animation: radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-    z-index: -1; pointer-events: none;
-}
-@keyframes radar-ping { 0% { transform: scale(0.6); opacity: 0.8; } 80%, 100% { transform: scale(2.2); opacity: 0; } }
-
-.vehicle-marker::after { 
-    content: '\f0b1'; font-family: 'Font Awesome 6 Free'; font-weight: 900; 
-    color: var(--color-1); font-size: 1.3rem; 
-    transform: rotate(var(--heading, -45deg)); 
-    transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1);
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4)); 
-}
-
-.vehicle-marker:hover, .vehicle-marker.focused { 
-    transform: translate(-50%, -50%) scale(1.3) !important; 
-    background: var(--color-1); border-color: #fff; 
-    box-shadow: 0 10px 25px rgba(0, 177, 79, 0.5); z-index: 100; 
-}
-.vehicle-marker:hover::after, .vehicle-marker.focused::after { color: white; filter: drop-shadow(0 2px 5px rgba(0,0,0,0.5)); }
-
-.marker-tooltip { 
-    position: absolute; bottom: calc(100% + 15px); left: 50%; 
-    background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); 
-    color: var(--color-dark); padding: 8px 16px; border-radius: 12px; 
-    font-size: 0.8rem; font-weight: 700; white-space: nowrap; 
-    pointer-events: none; opacity: 0; visibility: hidden; 
-    transform: translateX(-50%) translateY(10px) scale(0.9); 
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.6); 
-    display: flex; flex-direction: column; align-items: center;
-}
-.marker-tooltip::after { 
-    content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); 
-    border-width: 6px 6px 0; border-style: solid; border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent; 
-}
-.vehicle-marker:hover .marker-tooltip, .vehicle-marker.focused .marker-tooltip { 
-    opacity: 1; visibility: visible; transform: translateX(-50%) translateY(0) scale(1); 
-}
-.tooltip-speed { font-size: 0.7rem; color: var(--color-text-muted); font-weight: 500; margin-top: 3px; display: flex; align-items: center; gap: 5px; }
-
-.vehicle-marker.lost { background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.4); box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
-.vehicle-marker.lost::after { color: var(--danger); animation: glitch-skew 1s infinite linear alternate-reverse; }
-.vehicle-marker.lost::before { border-color: var(--danger); animation: lost-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite; }
-@keyframes lost-ping { 0% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0.7); } 70% { transform: scale(1.6); opacity: 0; box-shadow: 0 0 0 15px rgba(239,68,68,0); } 100% { transform: scale(1.6); opacity: 0; box-shadow: 0 0 0 0 rgba(239,68,68,0); } }
-
-.map-sidebar { flex: 1; min-width: 320px; max-width: 400px; background: #fff; display: flex; flex-direction: column; border-left: 1px solid #e2e8f0; }
-.map-sidebar-header { padding: 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; z-index: 10; }
-.search-box { display: flex; align-items: center; background: white; padding: 12px 16px; border-radius: 10px; border: 1px solid #e2e8f0; transition: 0.3s; }
-.search-box:focus-within { border-color: var(--color-1); box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.1); }
-.search-box input { border: none; background: transparent; outline: none; margin-left: 10px; width: 100%; font-weight: 500; }
-
-.vehicle-list { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 10px; }
-.vehicle-card { 
-    padding: 16px; border-radius: 12px; border: 1px solid #f1f5f9; border-left: 4px solid #cbd5e1;
-    cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-    display: flex; justify-content: space-between; align-items: center; background: white; position: relative; overflow: hidden;
-}
-
-.vehicle-card::before {
-    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-    transform: translateX(-100%); transition: 0.5s; pointer-events: none;
-}
-.vehicle-card:hover { transform: translateY(-2px) translateX(2px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); border-color: var(--color-1); }
-.vehicle-card:hover::before { transform: translateX(100%); }
-
-.vehicle-card.active-card { border-color: var(--color-1); border-left-color: var(--color-1); background: #f0fdf4; transform: translateX(4px); }
-.v-plate { font-weight: 800; font-size: 1.05rem; color: var(--color-dark); margin-bottom: 4px; }
-.v-driver { font-size: 0.85rem; color: var(--color-text-muted); font-weight: 500; display: flex; align-items: center; gap: 5px;}
-.v-status { width: 12px; height: 12px; border-radius: 50%; background: var(--color-1); box-shadow: 0 0 8px rgba(0, 177, 79, 0.5); flex-shrink: 0;}
-
-.vehicle-card.lost-card { background: #fef2f2; border-color: #fecaca; border-left-color: var(--danger); order: -1; }
-.vehicle-card.lost-card.active-card { background: #fee2e2; }
-.vehicle-card.lost-card .v-status { background: var(--danger); box-shadow: 0 0 10px rgba(239, 68, 68, 0.6); animation: pulse-status 1.5s infinite; }
-@keyframes pulse-status { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-
-
-/* =========================================
-   7. INCIDENTS (SOS)
-   Mục đích: Khung cảnh báo nhấp nháy khi có sự cố khẩn cấp.
-========================================= */
-.sos-alert { background-color: #fff5f5; border: 2px solid #e53e3e; border-radius: 16px; padding: 24px; animation: flashRedBorder 1.5s infinite; width: 100%; max-width: 1600px;}
-@keyframes flashRedBorder { 0% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(229, 62, 62, 0); } 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0); } }
-.btn-sos { background: var(--danger); color: white; border: none; padding: 12px 24px; font-weight: 800; border-radius: 10px; transition: 0.3s; }
-.btn-sos:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(239,68,68,0.4); }
-
-
-/* =========================================
-   8. MODALS & TOASTS
-   Mục đích: Thiết kế hộp thoại Modal nổi lên (Dispute, Giải quyết) và thông báo góc trên màn hình (Toast Error).
-========================================= */
-.modal-blur { backdrop-filter: blur(8px); background: rgba(15, 23, 42, 0.4); }
-.modal-content-custom { border-radius: 24px; border: none; box-shadow: 0 25px 50px rgba(0,0,0,0.2); overflow: hidden; }
-.textarea-custom { border: 2px solid #e2e8f0; border-radius: 16px; padding: 20px; font-size: 1rem; font-weight: 500; resize: none; transition: 0.3s; background: #f8fafc;}
-.textarea-custom:focus { border-color: var(--danger); outline: none; box-shadow: 0 0 0 5px rgba(239,68,68,0.1); background: white;}
-.btn-base { font-weight: 800; border: none; border-radius: 12px; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; align-items: center; justify-content: center;}
-.btn-base:hover:not(:disabled) { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
-
-.toast-system-container { z-index: 9999; }
-.toast-premium { border-radius: 16px; border: none; padding: 20px; font-weight: 800; color: white; display: flex; align-items: center; gap: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.25); font-size: 1.05rem;}
-.toast-error { background: var(--danger); }
-
-
-/* =========================================
-   9. ULTRA-WIDE SCREENS (>2300px)
-   Mục đích: Scale tỷ lệ cho màn hình siêu lớn.
-========================================= */
-@media (min-width: 2300px) {
-    :root { --sidebar-width: 340px; --header-height: 90px; }
-    body { font-size: 1.1rem; }
-    .sidebar-menu a { font-size: 1.15rem; padding: 20px 32px; }
-    .sidebar-menu a i { font-size: 1.5rem; }
-    .grid-container, .sos-alert { max-width: 2200px; }
-    .enterprise-table th { font-size: 1rem; padding: 0 32px 16px 32px; }
-    .enterprise-table td { padding: 32px; font-size: 1.15rem; }
-    .bk-id { font-size: 1.3rem; }
-    .icon-avatar { width: 50px; height: 50px; font-size: 1.4rem; }
-    .pill-badge { font-size: 1rem; padding: 12px 24px; }
-    .btn-act { width: 56px; height: 56px; font-size: 1.5rem; }
-    .trip-progress { width: 250px; }
-}
-
-/* =========================================
-   10. STYLES CHO RBAC, BÁO CÁO & AUDIT LOG
-   Mục đích: Thiết kế phân quyền, công tắc Switch và bảng báo cáo.
-========================================= */
-.role-badge { padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;}
-.role-super { background: #f3e8ff; color: #4338ca; border: 1px solid #bae6fd;}
-.role-dispatcher { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd;}
-.role-cs { background: #fef3c7; color: #b45309; border: 1px solid #fde68a;}
-
-.matrix-table th { text-align: center !important; }
-.matrix-table td { text-align: center; vertical-align: middle; }
-.matrix-table td:first-child { text-align: left; font-weight: 700; color: var(--color-dark); }
-
-.switch { position: relative; display: inline-block; width: 40px; height: 22px; margin: 0;}
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 34px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-.slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s cubic-bezier(0.34, 1.56, 0.64, 1); border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-input:checked + .slider { background-color: var(--color-1); box-shadow: 0 0 10px rgba(0, 177, 79, 0.3); }
-input:checked + .slider:before { transform: translateX(18px); }
-
-.table-dense thead th { padding: 12px 16px; font-size: 0.7rem; }
-.table-dense tbody td { padding: 10px 16px; font-size: 0.85rem; }
-
-.diff-container { display: flex; gap: 16px; font-family: 'Courier New', Courier, monospace; font-size: 0.9rem; line-height: 1.6;}
-.diff-box { flex: 1; padding: 16px; border-radius: 12px; }
-.diff-old { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-.diff-old del { background: #fecaca; padding: 2px 4px; border-radius: 4px;}
-.diff-new { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
-.diff-new ins { background: #bbf7d0; padding: 2px 4px; border-radius: 4px; text-decoration: none;}

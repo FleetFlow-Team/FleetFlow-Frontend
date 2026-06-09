@@ -73,3 +73,26 @@ if (btnLogin && loginModal && closeLoginModal) {
         }
     });
 }
+
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const introOverlay = document.getElementById("intro-overlay");
+    const introVideo = document.getElementById("intro-video");
+    const skipBtn = document.getElementById("skip-btn");
+
+    // Hàm xử lý việc ẩn intro và hiện trang web chính
+    function hideIntro() {
+        introOverlay.classList.add("fade-out");
+        
+        // Sau khi hiệu ứng transition của CSS chạy xong (0.8s), dừng hẳn video
+        setTimeout(() => {
+            introVideo.pause();
+        }, 800);
+    }
+
+    // Sự kiện 1: Khi video chạy hết (ended)
+    introVideo.addEventListener("ended", hideIntro);
+
+    // Sự kiện 2: Khi người dùng bấm nút "Bỏ qua"
+    skipBtn.addEventListener("click", hideIntro);
+});

@@ -1,200 +1,357 @@
-// ==========================================
-// KHỞI TẠO BIỂU ĐỒ BÁO CÁO CHẤT LƯỢNG (REPORT TAB)
-// ==========================================
+/**
+ * FleetFlow - Master Admin Workspace Core Engine
+ * Architecture: Liquid Glass Interactive Controller & Data Visualization
+ */
 
-// 1. Khởi tạo Radar Chart (Đo lường điểm đánh giá tài xế)
-if(document.getElementById('qualityRadarChart')) {
-    const ctxRadar = document.getElementById('qualityRadarChart').getContext('2d');
-    new Chart(ctxRadar, {
-        type: 'radar',
-        data: {
-            labels: ['Đúng giờ', 'Thái độ', 'Lái xe an toàn', 'Vệ sinh xe', 'Hỗ trợ khách'],
-            datasets: [{
-                label: 'Điểm TB Hệ thống',
-                data: [4.5, 4.2, 4.8, 4.6, 4.1],
-                backgroundColor: 'rgba(0, 177, 79, 0.2)',
-                borderColor: '#00B14F',
-                pointBackgroundColor: '#00B14F',
-                borderWidth: 2
-            }]
-        },
-        options: { 
-            responsive: true, 
-            maintainAspectRatio: false, 
-            scales: { 
-                r: { 
-                    angleLines: { color: '#e2e8f0' }, 
-                    grid: { color: '#e2e8f0' }, 
-                    pointLabels: { font: { family: 'Inter', weight: '600' } } 
-                } 
-            } 
-        }
-    });
-}
+document.addEventListener("DOMContentLoaded", function () {
+    // === 1. ĐIỀU HƯỚNG SIDEBAR SINGLE-PAGE & KHỐI KÍNH TRƯỢT DỌC ===
+    const tocLinks = document.querySelectorAll(".toc-link");
+    const verticalIndicator = document.getElementById("vertical-indicator");
+    const sections = document.querySelectorAll(".dashboard-section");
 
-// 2. Khởi tạo Stacked Bar Chart (Phân tích lý do hủy chuyến)
-if(document.getElementById('cancelReasonChart')) {
-    const ctxBar = document.getElementById('cancelReasonChart').getContext('2d');
-    new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-            labels: ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4'],
-            datasets: [
-                { label: 'Khách đổi ý', data: [120, 90, 100, 80], backgroundColor: '#F59E0B', borderRadius: 4 },
-                { label: 'Tài xế đến trễ', data: [40, 30, 20, 15], backgroundColor: '#EF4444', borderRadius: 4 },
-                { label: 'Lỗi hệ thống', data: [10, 5, 2, 0], backgroundColor: '#64748b', borderRadius: 4 }
-            ]
-        },
-        options: {
-            responsive: true, 
-            maintainAspectRatio: false,
-            scales: { 
-                x: { stacked: true, grid: { display: false } }, 
-                y: { stacked: true, border: { display: false } } 
-            },
-            plugins: { 
-                legend: { position: 'top', labels: { usePointStyle: true, boxWidth: 8 } } 
+    function updateVerticalIndicator(activeLink) {
+        if (!activeLink || !verticalIndicator) return;
+        
+        const linkRect = activeLink.getBoundingClientRect();
+        const containerRect = activeLink.closest(".toc-list").getBoundingClientRect();
+        const topPos = linkRect.top - containerRect.top;
+        
+        // Tịnh tiến khối kính và co giãn chiều cao tương thích với mục lục tương tự Dispatcher
+        verticalIndicator.style.transform = `translateY(${topPos}px)`;
+        verticalIndicator.style.height = `${linkRect.height}px`;
+    }
+
+    // Khởi tạo vị trí thanh kính trượt ban đầu sau khi layout ổn định
+    const initialActiveLink = document.querySelector(".toc-link.active");
+    if (initialActiveLink) {
+        setTimeout(() => updateVerticalIndicator(initialActiveLink), 150);
+    }
+
+    // Đăng ký sự kiện click chuyển tab Single-Page mượt mà
+    tocLinks.forEach(link => {
+        link.addEventListener("click", function (e) {
+            // Chỉ chặn sự kiện nếu href liên kết đến tab ID nội bộ
+            if (this.getAttribute("href").startsWith("#")) {
+                e.preventDefault();
+                
+                if (this.classList.contains("active")) return;
+                
+                // Cập nhật trạng thái Active trên Sidebar
+                tocLinks.forEach(l => l.classList.remove("active"));
+                this.classList.add("active");
+                updateVerticalIndicator(this);
+                
+                // Trượt và hoán đổi hiển thị các Section nội dung chính
+                const targetId = this.getAttribute("href").substring(1);
+                sections.forEach(section => {
+                    section.classList.remove("active");
+                });
+                
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add("active");
+                    // Cuộn nhẹ nhàng lên đỉnh nội dung làm việc mới
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }
             }
-        }
+        });
     });
-}
 
-// ==========================================
-// ĐIỀU KHIỂN MODAL DIFF VIEW (XEM LỊCH SỬ THAY ĐỔI DỮ LIỆU)
-// ==========================================
-let diffModalInstance;
-function openDiffModal() {
-    // Nếu modal chưa được khởi tạo thì tiến hành tạo mới
-    if(!diffModalInstance) diffModalInstance = new bootstrap.Modal(document.getElementById('diffModal'));
-    diffModalInstance.show();
-}
+    // Tự động căn chỉnh lại thanh kính trượt khi resize màn hình
+    window.addEventListener("resize", () => {
+        const currentActiveSidebar = document.querySelector(".toc-link.active");
+        if (currentActiveSidebar) updateVerticalIndicator(currentActiveSidebar);
+    });
 
-// ==========================================
-// CHỨC NĂNG CHUYỂN TAB (NAVIGATION TAB SWITCHER)
-// ==========================================
-function switchTab(tabId, element) {
-    // 1. Xóa class 'active' khỏi toàn bộ các link ở Sidebar menu
-    document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
-    // 2. Thêm class 'active' vào link vừa được click
-    element.classList.add('active');
-    
-    // 3. Xóa class 'active' khỏi toàn bộ các Tab Sections đang hiển thị
-    document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
-    // 4. Tìm và kích hoạt Tab Section tương ứng với tabId được truyền vào
-    document.getElementById(tabId).classList.add('active');
-}
+    // === 2. XỬ LÝ ĐỔI TRẠNG THÁI NAVBAR KHI SCROLL (IS-SCROLLED) ===
+    const navbar = document.querySelector(".dispatcher-navbar");
+    function handleNavbarScroll() {
+        if (!navbar) return;
+        if (window.scrollY > 50) {
+            navbar.classList.add("is-scrolled");
+        } else {
+            navbar.classList.remove("is-scrolled");
+        }
+    }
+    window.addEventListener("scroll", handleNavbarScroll);
+    handleNavbarScroll();
 
-// ==========================================
-// KHỞI TẠO CÁC BIỂU ĐỒ DASHBOARD KHI TRANG LOAD XONG
-// ==========================================
-document.addEventListener('DOMContentLoaded', function() {
-    // 1. Khởi tạo Biểu đồ Doanh Thu (Line Chart)
-    if (document.getElementById('revenueChart')) {
-        const ctxRev = document.getElementById('revenueChart').getContext('2d');
-        // Tạo dải màu gradient mờ dần cho đồ thị line
-        let gradientRev = ctxRev.createLinearGradient(0, 0, 0, 300);
-        gradientRev.addColorStop(0, 'rgba(0, 177, 79, 0.4)');
-        gradientRev.addColorStop(1, 'rgba(0, 177, 79, 0)');
+    // === 3. KHỞI TẠO HỆ THỐNG BIỂU ĐỒ DATA VISUALIZATION (CHART.JS Premium) ===
+    // Định hình font và màu sắc chung hòa hợp với theme kính tối
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = "rgba(255, 255, 255, 0.7)";
+    Chart.defaults.scale.grid.color = "rgba(255, 255, 255, 0.08)";
 
-        new Chart(ctxRev, {
-            type: 'line',
+    // 3.1 Biểu đồ doanh thu (Revenue Chart) - Khuếch tán vệt sáng Neon
+    const ctxRevenue = document.getElementById("revenueChart");
+    if (ctxRevenue) {
+        new Chart(ctxRevenue, {
+            type: "line",
             data: {
-                labels: ['1/6', '5/6', '10/6', '15/6', '20/6', '25/6', '30/6'],
+                labels: Array.from({length: 15}, (_, i) => `Ngày ${i*2 + 1}`),
                 datasets: [{
-                    label: 'Doanh thu',
-                    data: [120, 150, 140, 200, 180, 250, 220],
-                    borderColor: '#00B14F',
-                    backgroundColor: gradientRev,
-                    borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#fff', pointBorderColor: '#00B14F'
+                    label: "Doanh thu (Triệu VNĐ)",
+                    data: [45, 52, 49, 62, 58, 75, 80, 72, 88, 95, 89, 102, 115, 110, 125],
+                    borderColor: "#00b14f",
+                    borderWidth: 3,
+                    pointBackgroundColor: "#ffffff",
+                    pointBorderColor: "#00b14f",
+                    pointHoverRadius: 7,
+                    tension: 0.35,
+                    fill: true,
+                    backgroundColor: function(context) {
+                        const chart = context.chart;
+                        const {ctx, chartArea} = chart;
+                        if (!chartArea) return null;
+                        const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                        gradient.addColorStop(0, "rgba(0, 177, 79, 0.25)");
+                        gradient.addColorStop(1, "rgba(0, 177, 79, 0.0)");
+                        return gradient;
+                    }
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
         });
     }
 
-    // 2. Khởi tạo Biểu đồ Trạng thái chuyến đi (Doughnut Chart)
-    if(document.getElementById('statusChart')) {
-        const ctxStatus = document.getElementById('statusChart').getContext('2d');
+    // 3.2 Biểu đồ trạng thái chuyến đi (Status Chart) - Doughnut Ring khuyết kính
+    const ctxStatus = document.getElementById("statusChart");
+    if (ctxStatus) {
         new Chart(ctxStatus, {
-            type: 'doughnut',
+            type: "doughnut",
             data: {
-                labels: ['Hoàn thành', 'Hủy', 'Tranh chấp'],
+                labels: ["Hoàn thành", "Đang chạy", "Đang chờ", "Hủy chuyến"],
                 datasets: [{
-                    data: [85, 10, 5],
-                    backgroundColor: ['#10B981', '#EF4444', '#F59E0B'],
-                    borderWidth: 0, cutout: '75%'
+                    data: [75, 15, 7, 3],
+                    backgroundColor: [
+                        "rgba(0, 177, 79, 0.75)", 
+                        "rgba(0, 122, 255, 0.75)", 
+                        "rgba(255, 222, 89, 0.75)", 
+                        "rgba(239, 68, 68, 0.75)"
+                    ],
+                    borderColor: "rgba(255, 255, 255, 0.15)",
+                    borderWidth: 2,
+                    hoverOffset: 10
                 }]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: "bottom", labels: { padding: 15, boxWidth: 12 } }
+                }
+            }
+        });
+    }
+
+    // 3.3 Biểu đồ Phổ điểm đánh giá tài xế (Quality Radar Chart)
+    const ctxQuality = document.getElementById("qualityRadarChart");
+    if (ctxQuality) {
+        new Chart(ctxQuality, {
+            type: "radar",
+            data: {
+                labels: ["Đúng giờ", "Thái độ", "An toàn", "Sạch sẽ", "Ứng xử"],
+                datasets: [{
+                    label: "Điểm trung bình",
+                    data: [4.8, 4.6, 4.9, 4.7, 4.5],
+                    backgroundColor: "rgba(255, 222, 89, 0.15)",
+                    borderColor: "#ffde59",
+                    borderWidth: 2,
+                    pointBackgroundColor: "#ffffff"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: { color: "rgba(255, 255, 255, 0.1)" },
+                        grid: { color: "rgba(255, 255, 255, 0.1)" },
+                        pointLabels: { color: "rgba(255, 255, 255, 0.8)", font: { size: 11 } },
+                        suggestedMin: 3,
+                        suggestedMax: 5
+                    }
+                }
+            }
+        });
+    }
+
+    // 3.4 Biểu đồ phân tích lý do hủy chuyến (Cancel Reason Chart)
+    const ctxCancel = document.getElementById("cancelReasonChart");
+    if (ctxCancel) {
+        new Chart(ctxCancel, {
+            type: "bar",
+            data: {
+                labels: ["Khách đổi ý", "Đợi quá lâu", "Sai vị trí", "Thời tiết", "Tài xế hủy"],
+                datasets: [{
+                    data: [45, 28, 14, 8, 5],
+                    backgroundColor: "rgba(239, 68, 68, 0.4)",
+                    borderColor: "#ef4444",
+                    borderWidth: 1.5,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false } }, y: { beginAtZero: true } }
+            }
+        });
+    }
+
+    // === 4. CẤU HÌNH KANBAN BOARD DRAG & DROP (AI TAGS INTERACTIVE) ===
+    const dragItems = document.querySelectorAll(".kanban-card-item[draggable='true']");
+    const dropzone = document.querySelector(".target-dropzone");
+
+    dragItems.forEach(item => {
+        item.addEventListener("dragstart", function () {
+            this.classList.add("dragging");
+        });
+        item.addEventListener("dragend", function () {
+            this.classList.remove("dragging");
+        });
+    });
+
+    if (dropzone) {
+        dropzone.addEventListener("dragover", function (e) {
+            e.preventDefault(); // Cho phép thả
+            this.style.background = "rgba(0, 177, 79, 0.05)";
+            this.style.borderColor = "var(--color-1)";
+        });
+
+        dropzone.addEventListener("dragleave", function () {
+            this.style.background = "";
+            this.style.borderColor = "";
+        });
+
+        dropzone.addEventListener("drop", function () {
+            this.style.background = "";
+            this.style.borderColor = "";
+            const draggingCard = document.querySelector(".dragging");
+            if (draggingCard) {
+                // Nhân bản hoặc di chuyển thẻ tag vào cấu trúc xe tương ứng
+                const newTag = draggingCard.cloneNode(true);
+                newTag.removeAttribute("draggable");
+                newTag.className = "badge bg-white bg-opacity-10 text-white border border-secondary p-2 m-1";
+                // Chèn lên trước khối hiển thị biển số xe ổn định
+                this.appendChild(newTag);
+                showSystemToast("Đã gán thuộc tính AI vào phương tiện thành công!", "success");
+            }
         });
     }
 });
 
-// ==========================================
-// ĐIỀU KHIỂN MODAL eKYC (HỒ SƠ TÀI XẾ) VÀ TRÌNH XEM ẢNH
-// ==========================================
+// === 5. CÁC HÀM TƯƠNG TÁC TOÀN CỤC (GLOBAL SCOPE FUNCTIONS - BIND TO WINDOW) ===
 
-// Biến điều khiển Modal eKYC
-let ekycModal;
-function openEkycModal() { 
-    if(!ekycModal) ekycModal = new bootstrap.Modal(document.getElementById('ekycModal'));
-    ekycModal.show(); 
-}
-
-// Các hàm xử lý phóng to, thu nhỏ và xoay ảnh chụp CCCD trong Modal
-let currentScale = 1; 
+// 5.1 Xử lý xem tài liệu eKYC nâng cao (Zoom & Rotate Image Physics)
+let currentScale = 1.0;
 let currentRotation = 0;
 
-function zoomImg(factor) { 
-    currentScale *= factor; 
-    applyImgTransform(); 
+window.zoomImg = function (factor) {
+    const img = document.getElementById("cccdImg");
+    if (!img) return;
+    currentScale *= factor;
+    // Giới hạn zoom từ 0.5x đến 3x tránh vỡ layout
+    if (currentScale < 0.5) currentScale = 0.5;
+    if (currentScale > 3.0) currentScale = 3.0;
+    applyTransformations(img);
+};
+
+window.rotateImg = function () {
+    const img = document.getElementById("cccdImg");
+    if (!img) return;
+    currentRotation = (currentRotation + 90) % 360;
+    applyTransformations(img);
+};
+
+function applyTransformations(element) {
+    element.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
 }
 
-function rotateImg() { 
-    currentRotation += 90; 
-    applyImgTransform(); 
-}
-
-// Cập nhật lại style transform của thẻ <img>
-function applyImgTransform() { 
-    document.getElementById('cccdImg').style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`; 
-}
-
-// ==========================================
-// GIẢ LẬP LỖI HỆ THỐNG VÀ XỬ LÝ NÚT BẤM (TOAST CONTROLLER)
-// ==========================================
-
-let toastError;
-
-// Hàm giả lập kiểm tra lỗi mạng ở mục Chọn thời gian của Dashboard
-function testGlobalError(selectObj) {
-    if(!toastError) toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
+// 5.2 Mở các Modals chương trình bằng Bootstrap API
+window.openEkycModal = function () {
+    // Reset thông số ảnh mỗi lần mở modal thẩm định mới
+    currentScale = 1.0;
+    currentRotation = 0;
+    const img = document.getElementById("cccdImg");
+    if (img) applyTransformations(img);
     
-    // Nếu chọn Option giả lập lỗi
-    if(selectObj.value === 'Test Lỗi Mạng') {
-        selectObj.disabled = true; // Khóa dropdown
-        setTimeout(() => {
-            selectObj.disabled = false; // Mở lại dropdown sau 1s
-            selectObj.selectedIndex = 0; // Đặt lại về option mặc định
-            toastError.show(); // Hiển thị Toast báo lỗi góc màn hình
-        }, 1000);
+    const ekycModalEl = document.getElementById("ekycModal");
+    if (ekycModalEl) {
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(ekycModalEl);
+        modalInstance.show();
     }
-}
+};
 
-// Hàm giả lập xử lý khi ấn nút Lưu/Phê duyệt
-function simulateSaveConfig(btn) {
-    if(!toastError) toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
+window.openDiffModal = function () {
+    const diffModalEl = document.getElementById("diffModal");
+    if (diffModalEl) {
+        const modalInstance = bootstrap.Modal.getOrCreateInstance(diffModalEl);
+        modalInstance.show();
+    }
+};
+
+// 5.3 Giả lập Lưu cấu hình hệ thống & Tạo hiệu ứng Loading (UX Feedback)
+window.simulateSaveConfig = function (button) {
+    if (!button) return;
+    const originalContent = button.innerHTML;
     
-    // Lưu lại nội dung gốc của nút
-    const originalHTML = btn.innerHTML;
-    // Đổi nội dung thành hiệu ứng loading xoay
-    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Xử lý...';
-    btn.disabled = true;
-
-    // Giả lập xử lý tác vụ trong 1 giây, sau đó trả lại trạng thái gốc và bắn ra lỗi (test UI)
+    button.disabled = true;
+    button.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang ghi dữ liệu...`;
+    
     setTimeout(() => {
-        btn.innerHTML = originalHTML;
-        btn.disabled = false;
-        toastError.show(); 
-    }, 1000);
-}
+        button.disabled = false;
+        button.innerHTML = originalContent;
+        showSystemToast("Hệ thống đã đồng bộ cấu hình bất biến hoàn tất!", "success");
+        
+        // Tự động đóng modal bọc ngoài (nếu hành động xuất phát từ modal)
+        const activeModal = button.closest(".modal");
+        if (activeModal) {
+            const modalInstance = bootstrap.Modal.getInstance(activeModal);
+            if (modalInstance) modalInstance.hide();
+        }
+    }, 1300);
+};
+
+// 5.4 Giả lập Test Lỗi Mạng khi thay đổi Select Combobox
+window.testGlobalError = function (selectElement) {
+    if (!selectElement) return;
+    if (selectElement.value === "Test Lỗi Mạng") {
+        showSystemToast("Mất kết nối API Gateway. Vui lòng kiểm tra lại cấu hình định tuyến (BR-17).", "error");
+        // Trả select về lựa chọn đầu tiên sau khi test
+        selectElement.selectedIndex = 0;
+    } else {
+        showSystemToast(`Đã lọc dữ liệu theo bộ lọc: "${selectElement.value}"`, "success");
+    }
+};
+
+// 5.5 Hiển thị Thông báo Hệ thống Cao cấp (Premium Toast Controller)
+window.showSystemToast = function (message, type = "success") {
+    const toastContainer = document.getElementById("systemErrorToast");
+    const toastMessageSpan = document.getElementById("toastMsg");
+    
+    if (!toastContainer || !toastMessageSpan) return;
+    
+    toastMessageSpan.textContent = message;
+    const iconElement = toastContainer.querySelector("i");
+    
+    // Tự động hoán đổi class và icon tùy theo ngữ cảnh Success / Error giống Dispatcher
+    if (type === "error") {
+        toastContainer.className = "toast align-items-center toast-premium border border-danger shadow-lg show";
+        if (iconElement) iconElement.className = "fa-solid fa-circle-xmark fs-3 text-danger";
+    } else {
+        toastContainer.className = "toast align-items-center toast-premium border border-success shadow-lg show";
+        if (iconElement) iconElement.className = "fa-solid fa-circle-check fs-3 text-success";
+    }
+    
+    // Tự động ẩn Toast sau 4 giây phóng chiếu hiển thị
+    setTimeout(() => {
+        toastContainer.classList.remove("show");
+    }, 4000);
+};

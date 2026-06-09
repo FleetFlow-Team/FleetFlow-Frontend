@@ -1,153 +1,463 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en" data-bounce="true" data-mapped="false">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Đăng Nhập Tối Giản</title>
-    <style>
-        /* --- Reset cơ bản --- */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Liquid Button - Red & Green Smooth Transition</title>
+  <style>
+    @import url('https://unpkg.com/normalize.css') layer(normalize);
+    @layer normalize, base, toggle, transitions;
+
+    @layer transitions {
+      :root {
+        --transition: 0.2s;
+        --ease: ease-out;
+      }
+      [data-pressed=true] .liquid__track {
+        min-height: 30px;
+      }
+      [data-bounce='true']:has(:is(button:active, [data-pressed="true"])) {
+        --transition: 0.6s;
+        --ease: linear(
+          0 0%, 0.6091 3.69%, 1.0259 7.24%, 1.1733 9.05%, 1.283 10.92%, 
+          1.3562 12.87%, 1.3948 14.95%, 1.4014 16.03%, 1.3999 17.16%, 
+          1.3731 19.64%, 1.3202 22.27%, 1.1394 29.39%, 1.0582 33.17%, 
+          0.9943 37.45%, 0.9734 39.64%, 0.9593 41.92%, 0.9505 45.08%, 
+          0.9517 48.7%, 0.9924 63.02%, 1.0046 71.2%, 1.0061 78.24%, 1 100%
+        );
+      }
+      .indicator--masked .mask {
+        translate: calc((var(--complete) / 100) * (100cqi - 60cqi - (0 * var(--border)))) -50%;
+        transition-property: height, width, margin, scale;
+        transition-duration: var(--transition);
+        transition-timing-function: var(--ease);
+        will-change: height, width, margin;
+      }
+      .wrapper {
+        clip-path: inset(0 0 0 0 round 100px);
+        filter: blur(6px);
+        transition: filter var(--transition) var(--ease);
+      }
+      [aria-pressed='true']:not([data-active='true']) .liquid__track {
+        left: calc(var(--border) * 6);
+      }
+      .liquid__track {
+        left: 0;
+        translate: calc((var(--complete) / 100) * (100cqi - 100% - (6 * var(--border)))) -50%;
+      }
+      .indicator__liquid {
+        translate: calc((var(--complete) / 100) * (100cqi - 100% - (2 * var(--border)))) -50%;
+        transition-property: scale;
+        transition-duration: var(--transition);
+        transition-timing-function: var(--ease);
+      }
+      .indicator__liquid :is(.cover, .shadow) {
+        transition: opacity var(--transition) var(--ease);
+      }
+      
+      [data-active='true'] .indicator--masked .mask,
+      .liquid-toggle:active .indicator--masked .mask {
+        height: calc((100% - (2 * var(--border))) * (1.65 - (var(--delta, 0) * 0.025)));
+        width: calc((60% - (2 * var(--border))) * (1.65 + (var(--delta, 0) * 0.025)));
+        margin-left: calc((60% - (2 * var(--border))) * ((.65 + (var(--delta, 0) * 0.025)) * -0.5));
+      }
+      [data-active='true'] .indicator__liquid,
+      .liquid-toggle:active .indicator__liquid {
+        scale: calc(1.65 + (var(--delta, 0) * 0.025)) calc(1.65 - (var(--delta, 0) * 0.025));
+      }
+      [data-active='true'] .wrapper,
+      .liquid-toggle:active .wrapper {
+        filter: blur(0px);
+      }
+      [data-active='true'] .indicator__liquid .shadow,
+      .liquid-toggle:active .indicator__liquid .shadow {
+        opacity: 1;
+      }
+      [data-active='true'] .indicator__liquid .cover,
+      .liquid-toggle:active .indicator__liquid .cover {
+        opacity: 0;
+      }
+      [data-active='true'] .indicator__liquid .liquid__track,
+      .liquid-toggle:active .indicator__liquid .liquid__track {
+        left: calc(var(--border) * 3);
+        height: calc((var(--height) * 1px) - (6 * var(--border)));
+      }
+    }
+
+    @layer toggle {
+      .liquid-toggle {
+        /* Định nghĩa Đỏ & Xanh nguyên bản */
+        --color-off: #ef4444; /* Đỏ tắt */
+        --color-on: #22c55e;  /* Xanh bật */
+        --checked: var(--color-off);
+
+        --border: 5px;
+        --width: 140;
+        --height: 60;
+        height: calc(var(--height) * 1px);
+        width: calc(var(--width) * 1px);
+        border-radius: 100px;
+        border: 0;
+        padding: 0;
+        cursor: pointer;
+        position: relative;
+        overflow: visible;
+        container-type: inline-size;
+        background: #0000;
+        
+        transition: outline var(--transition) var(--ease), 
+                    transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                    opacity 0.3s ease;
+        outline-offset: 2px;
+        
         * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+          pointer-events: none;
+        }
+      }
+
+      /* Khi state = "on" (vượt quá 50%), đổi sang Xanh */
+      .liquid-toggle[data-state="on"] {
+        --checked: var(--color-on);
+      }
+
+      .liquid-toggle:hover {
+        transform: translateY(-4px) scale(1.02);
+        opacity: 0.85; 
+      }
+
+      .liquid-toggle:focus-visible { outline: 4px solid color-mix(in oklch, var(--checked), #0000); }
+      
+      .liquid-toggle:active { 
+        outline: none; 
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+      
+      .liquid-toggle[data-active='true']:focus-visible { outline: 4px solid #0000; }
+
+      .indicator {
+        border-radius: 100px;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        background-color: var(--checked);
+        /* Thêm thời gian chuyển màu chậm một chút để có độ mềm mại */
+        transition: background-color 0.4s ease;
+        position: absolute;
+        top: 50%;
+        scale: 1;
+        left: 50%;
+        translate: -50% -50%;
+      }
+
+      .knockout {
+        height: calc(var(--height) * 1px);
+        width: calc(var(--width) * 1px);
+        border-radius: 100px;
+        filter: url(#remove-black);
+        position: absolute;
+        inset: 0;
+        will-change: filter, scale;
+        transform: translate3d(0, 0, 0);
+      }
+      .indicator--masked {
+        background-color: var(--checked);
+        transition: background-color 0.4s ease;
+        z-index: 12;
+        height: 100%;
+        width: 100%;
+        translate: -50% -50%;
+        container-type: inline-size;
+
+        .mask {
+          position: absolute;
+          height: calc(100% - (2 * var(--border)));
+          width: calc(60% - (2 * var(--border)));
+          top: 50%;
+          background: #000;
+          left: var(--border);
+          border-radius: 100px;
+        }
+      }
+
+      .wrapper {
+        position: absolute;
+        inset: 0;
+        border-radius: 100px;
+      }
+
+      .liquids {
+        position: absolute;
+        inset: 0;
+        transform: translate3d(0, 0, 0);
+        border-radius: 100px;
+        overflow: hidden;
+        filter: url(#goo);
+
+        .liquid__shadow {
+          position: absolute;
+          inset: 0;
+          box-shadow: inset 0px 0px 3px 4px var(--checked), inset calc(((var(--complete) / 100) * 8px) + -4px) 0px 3px 4px var(--checked);
+          transition: box-shadow 0.4s ease;
+          border-radius: 100px;
         }
 
-        /* --- Nền trang web (Background) --- */
-        body {
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            /* Dùng ảnh hoặc gradient làm nền để thấy rõ hiệu ứng blur */
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        .liquid__track {
+          content: '';
+          height: calc((var(--height) * 1px) - (0 * var(--border)));
+          width: calc((var(--width) * 1px) - (0 * var(--border)));
+          background-color: var(--checked);
+          /* Transition riêng để hiệu ứng di chuyển GSAP và chuyển màu không xung đột */
+          transition: background-color 0.4s ease, height var(--transition) var(--ease), width var(--transition) var(--ease), left var(--transition) var(--ease);
+          border-radius: 100px;
+          position: absolute;
+          top: 50%;
+        }
+      }
+
+      .indicator__liquid {
+        position: absolute;
+        height: calc(100% - (2 * var(--border)));
+        width: calc(60% - (2 * var(--border)));
+        container-type: inline-size;
+        top: 50%;
+        background: #0000;
+        left: var(--border);
+        border-radius: 100px;
+
+        .shadow {
+          opacity: 0;
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 100px;
+          box-shadow: 1px -1px 2px hsl(0 0% 100% / 0.5) inset,
+            0px -1px 2px hsl(0 0% 100% / 0.5) inset,
+            -1px -1px 2px hsl(0 0% 100% / 0.5) inset,
+            1px 1px 2px hsl(0 0% 30% / 0.5) inset,
+            -8px 4px 10px -6px hsl(0 0% 30% / 0.25) inset,
+            -1px 1px 6px hsl(0 0% 30% / 0.25) inset,
+            -1px -1px 8px hsl(0 0% 60% / 0.15), 1px 1px 2px hsl(0 0% 30% / 0.15),
+            2px 2px 6px hsl(0 0% 30% / 0.15),
+            -2px -1px 2px hsl(0 0% 100% / 0.25) inset,
+            3px 6px 16px -6px hsl(0 0% 30% / 0.5);
+          z-index: 20;
         }
 
-        /* Nút mở đăng nhập ở ngoài cùng */
-        .btn-open {
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            color: white;
-            background-color: #333;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.3s;
+        .cover {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: white;
+          border-radius: 100px;
         }
-        .btn-open:hover { background-color: #555; }
+      }
+    }
 
-        /* --- Lớp phủ làm mờ (Overlay Blur) --- */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            background-color: rgba(0, 0, 0, 0.3); /* Nền đen mờ */
-            backdrop-filter: blur(8px); /* HIỆU ỨNG BLUR BACKGROUND Ở ĐÂY */
-            
-            /* Căn giữa hộp đăng nhập */
-            display: flex;
-            justify-content: center;
-            align-items: center;
+    @layer base {
+      *, *:after, *:before {
+        box-sizing: border-box;
+      }
+      
+      body {
+        margin: 0;
+        background: #ffffff;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+      }
 
-            /* Trạng thái ẩn mặc định */
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        /* Class được thêm vào bằng JS để hiện Modal */
-        .modal-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* --- Hộp thoại Đăng nhập --- */
-        .login-box {
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            width: 320px;
-            text-align: center;
-            
-            /* Hiệu ứng trượt nhẹ từ trên xuống khi hiện */
-            transform: translateY(-20px);
-            transition: transform 0.3s ease;
-        }
-
-        .modal-overlay.active .login-box {
-            transform: translateY(0);
-        }
-
-        .login-box h2 { margin-bottom: 20px; color: #333; }
-
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .btn-submit {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .btn-submit:hover { background-color: #0056b3; }
-
-        .btn-close {
-            display: inline-block;
-            margin-top: 15px;
-            color: #888;
-            cursor: pointer;
-            text-decoration: underline;
-            font-size: 14px;
-        }
-    </style>
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+    }
+  </style>
 </head>
 <body>
 
-    <button class="btn-open" id="openBtn">Đăng Nhập</button>
-
-    <div class="modal-overlay" id="loginModal">
-        <div class="login-box">
-            <h2>Đăng Nhập</h2>
-            <input type="text" placeholder="Tên đăng nhập" required>
-            <input type="password" placeholder="Mật khẩu" required>
-            <button class="btn-submit">Vào</button>
-            <span class="btn-close" id="closeBtn">Đóng</span>
+  <main>
+    <button aria-label="toggle" aria-pressed="false" class="liquid-toggle" data-state="off">
+      <div class="knockout">
+        <div class="indicator indicator--masked">
+          <div class="mask"></div>
         </div>
-    </div>
+      </div>
+      <div class="indicator__liquid">
+        <div class="shadow"></div>
+        <div class="wrapper">
+          <div class="liquids">
+            <div class="liquid__shadow"></div>
+            <div class="liquid__track"></div>
+          </div>
+        </div>
+        <div class="cover"></div>
+      </div>
+    </button>
+  </main>
+  
+  <svg class="sr-only" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="goo">
+        <feGaussianBlur id="SvgjsFeGaussianBlur1000" result="SvgjsFeGaussianBlur1000" in="SourceGraphic" stdDeviation="2"></feGaussianBlur>
+        <feColorMatrix id="SvgjsFeColorMatrix1001" result="SvgjsFeColorMatrix1001" in="SvgjsFeGaussianBlur1000" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 16 -10" type="matrix"></feColorMatrix>
+        <feComposite id="SvgjsFeComposite1002" result="SvgjsFeComposite1002" in="SvgjsFeColorMatrix1001" operator="atop"></feComposite>
+      </filter>
+      <filter id="knockout" colorInterpolationFilters="sRGB">
+        <feColorMatrix result="knocked" type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 -1 -1 -1 1 0" />
+        <feComponentTransfer>
+          <feFuncR type="linear" slope="3" intercept="-1" />
+          <feFuncG type="linear" slope="3" intercept="-1" />
+          <feFuncB type="linear" slope="3" intercept="-1" />
+        </feComponentTransfer>
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0 0 0 0 0 1 1 1 1 1" />
+          <feFuncG type="table" tableValues="0 0 0 0 0 1 1 1 1 1" />
+          <feFuncB type="table" tableValues="0 0 0 0 0 1 1 1 1 1" />
+        </feComponentTransfer>
+      </filter>
+      <filter id="remove-black" color-interpolation-filters="sRGB">
+        <feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 -255 -255 -255 0 1" result="black-pixels" />
+        <feMorphology in="black-pixels" operator="dilate" radius="0.5" result="smoothed" />
+        <feComposite in="SourceGraphic" in2="smoothed" operator="out" />
+      </filter>
+    </defs>
+  </svg>
 
-    <script>
-        const openBtn = document.getElementById('openBtn');
-        const closeBtn = document.getElementById('closeBtn');
-        const modal = document.getElementById('loginModal');
+  <script type="module">
+    import gsap from 'https://esm.sh/gsap@3.13.0'
+    import Draggable from 'https://esm.sh/gsap@3.13.0/Draggable'
 
-        // Bắt sự kiện click vào nút Đăng nhập -> Thêm class 'active'
-        openBtn.addEventListener('click', () => {
-            modal.classList.add('active');
-        });
+    gsap.registerPlugin(Draggable)
 
-        // Bắt sự kiện click vào nút Đóng -> Xóa class 'active'
-        closeBtn.addEventListener('click', () => {
-            modal.classList.remove('active');
-        });
+    const toggle = document.querySelector('.liquid-toggle')
+    
+    // Khởi tạo ban đầu
+    toggle.style.setProperty('--complete', 0)
+    toggle.dataset.state = 'off' // Bắt đầu ở màu Đỏ
 
-        // Tính năng phụ: Click ra ngoài vùng trắng (click vào background) cũng đóng form
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.classList.remove('active');
-            }
-        });
-    </script>
+    const toggleState = async () => {
+      toggle.dataset.pressed = true
+      toggle.dataset.active = true
+      
+      await Promise.allSettled(
+        toggle.getAnimations({ subtree: true }).map((a) => a.finished)
+      )
+      
+      const pressed = toggle.matches('[aria-pressed=true]')
+      
+      // Khi click, đổi State màu ngay lập tức
+      toggle.dataset.state = pressed ? 'off' : 'on'
 
+      gsap
+        .timeline({
+          onComplete: () => {
+            gsap.delayedCall(0.05, () => {
+              toggle.dataset.active = false
+              toggle.dataset.pressed = false
+              toggle.setAttribute('aria-pressed', !pressed)
+            })
+          },
+        })
+        .to(toggle, {
+          '--complete': pressed ? 0 : 100,
+          duration: 0.12,
+          delay: 0.18,
+        })
+    }
+    
+    const proxy = document.createElement('div')
+    Draggable.create(proxy, {
+      allowContextMenu: true,
+      handle: '.liquid-toggle',
+      onDragStart: function () {
+        const toggleBounds = toggle.getBoundingClientRect()
+        const pressed = toggle.matches('[aria-pressed=true]')
+        const bounds = pressed
+          ? toggleBounds.left - this.pointerX
+          : toggleBounds.left + toggleBounds.width - this.pointerX
+        this.dragBounds = bounds
+        toggle.dataset.active = true
+      },
+      onDrag: function () {
+        const pressed = toggle.matches('[aria-pressed=true]')
+        const dragged = this.x - this.startX
+        const complete = gsap.utils.clamp(
+          0,
+          100,
+          pressed
+            ? gsap.utils.mapRange(this.dragBounds, 0, 0, 100, dragged)
+            : gsap.utils.mapRange(0, this.dragBounds, 0, 100, dragged)
+        )
+        this.complete = complete
+        gsap.set(toggle, { '--complete': complete, '--delta': Math.min(Math.abs(this.deltaX), 12) })
+        
+        // Khi kéo quá 50%, kích hoạt chuyển thành Xanh, dưới 50% là Đỏ
+        toggle.dataset.state = complete >= 50 ? 'on' : 'off';
+      },
+      onDragEnd: function () {
+        const isTargetOn = this.complete >= 50;
+        toggle.dataset.state = isTargetOn ? 'on' : 'off';
+        
+        gsap.fromTo(
+          toggle,
+          {
+            '--complete': this.complete,
+          },
+          {
+            '--complete': isTargetOn ? 100 : 0,
+            duration: 0.15,
+            onComplete: () => {
+              gsap.delayedCall(0.05, () => {
+                toggle.dataset.active = false
+                toggle.setAttribute('aria-pressed', isTargetOn)
+              })
+            },
+          }
+        )
+      },
+      onPress: function () {
+        this.__pressTime = Date.now()
+        toggle.dataset.active = 'true'
+        toggle.dataset.pressed = 'true'
+      },
+      onRelease: function () {
+        this.__releaseTime = Date.now()
+        gsap.set(toggle, { '--delta': 0 })
+
+        if (this.__releaseTime - this.__pressTime <= 150) {
+          toggleState()
+          return
+        }
+
+        if (!this.isDragging) {
+          toggle.dataset.active = 'false'
+          toggle.dataset.pressed = 'false'
+        }
+      },
+    })
+
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        toggleState()
+      }
+      if (e.key === ' ') {
+        e.preventDefault()
+      }
+    })
+
+    toggle.addEventListener('keyup', (e) => {
+      if (e.key === ' ') {
+        toggleState()
+      }
+    })
+  </script>
 </body>
 </html>

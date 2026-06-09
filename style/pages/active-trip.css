@@ -1,0 +1,431 @@
+/* =========================================
+   1. NỀN TẢNG LIGHT GLASS THEME
+========================================= */
+body {
+  background-color: #0b0f17;
+  font-family: "Inter", sans-serif;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Ẩn thanh cuộn cho khu vực Sidebar */
+.hide-scrollbar::-webkit-scrollbar { width: 0; background: transparent; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* =========================================
+   2. HỆ THỐNG ÁNH SÁNG NGẦM (LIGHT GLOW)
+========================================= */
+.luxury-glow-bg {
+    position: fixed; 
+    inset: 0;
+    z-index: -1; 
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.glow-sphere {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.35; 
+    mix-blend-mode: screen;
+}
+
+.sphere-1 {
+    bottom: -10%;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-1); 
+}
+
+.sphere-2 {
+    bottom: -10%;
+    right: 0px;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-1); 
+}
+
+.sphere-3 {
+    top: 10%;
+    right: 0px;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-2); 
+}
+
+/* =========================================
+   3. NAVBAR KÍNH TRONG SUỐT (TOP BAR)
+========================================= */
+.custom-navbar {
+    background: rgba(0, 177, 79, 0.85) !important; /* Xanh lá trong suốt */
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+    height: 80px;
+    z-index: 1050;
+}
+
+#tripStatusText {
+    color: #ffffff !important;
+}
+
+/* =========================================
+   NÚT TRỞ VỀ (FIX LỖI HIỆU ỨNG KÍNH LỎNG)
+========================================= */
+.btn-back {
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+    
+    /* FIX LỖI: Nhốt các lớp ::after/::before không bị chui ra sau Navbar */
+    isolation: isolate; 
+    transform-style: preserve-3d;
+    
+    /* Căn chỉnh text và icon */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+.btn-back:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.9) !important;
+    transform: translateX(-5x); /* Thêm nảy nhẹ khi hover cho đẹp */
+}
+
+.btn-back:active {
+    transform: scale(0.95);
+}
+
+.btn-back::after {
+    content: ''; 
+    position: absolute;
+    inset: -12px !important; 
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.15); /* Chỉnh nền dịu lại để nổi trên màu xanh */
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion);
+    clip-path: inset(12px round 50px) !important;
+    transform: translateZ(0); 
+    will-change: transform, filter;
+    transition: all 0.4s ease;
+    border-radius: inherit; 
+    pointer-events: none;
+}
+
+.btn-back::before {
+    content: ''; 
+    position: absolute; 
+    inset: 0; 
+    z-index: -1;
+    border-radius: inherit; 
+    pointer-events: none;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.6), 
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.4s ease;
+}
+
+/* Đảm bảo text và icon mũi tên luôn nổi lên trên cùng */
+.btn-back > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* Vòng tròn nhấp nháy trạng thái */
+.pulse-live {
+    width: 14px; height: 14px; background: var(--color-1); border-radius: 50%; position: relative;
+    border: 2px solid #ffffff;
+}
+.pulse-live::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    border: 2px solid var(--color-1); 
+    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+@keyframes pulse-ring {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(2.5); opacity: 0; }
+}
+
+/* =========================================
+   4. APPLE LIQUID GLASS PANELS (THẺ KÍNH SÁNG)
+========================================= */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: 35px;
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    /* Bóng đổ siêu mềm + viền highlight trắng tinh phía trong */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04), 
+                inset 2px 2px 8px rgba(255, 255, 255, 1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-panel:hover {
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.06), 
+                inset 2px 2px 10px rgba(255, 255, 255, 1);
+}
+
+/* Cụm thông số nhỏ bên trong Panel */
+.metric-glass-box {
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: inset 1px 1px 4px rgba(255, 255, 255, 0.8),
+                0 4px 10px rgba(0,0,0,0.02);
+}
+
+/* =========================================
+   5. NÚT BẤM (BUTTONS) - SẮC SẢO & CÓ CHIỀU SÂU
+========================================= */
+.btn-glass-action {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04), 
+                inset 1px 1px 3px rgba(255, 255, 255, 1);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    display: inline-flex; justify-content: center; align-items: center;
+}
+
+.btn-glass-action:hover:not(.btn-disabled) {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08), 
+                inset 2px 2px 5px rgba(255, 255, 255, 1);
+}
+
+.btn-glass-action:active:not(.btn-disabled) {
+    transform: scale(0.97);
+}
+
+/* Nút Primary (Màu xanh thương hiệu) */
+.btn-glass-action.bg-primary {
+    background: rgba(0, 177, 79, 0.9) !important;
+    border-color: rgba(0, 177, 79, 0.4) !important;
+    color: #ffffff !important;
+    box-shadow: 0 8px 20px rgba(0, 177, 79, 0.25), 
+                inset 1px 1px 4px rgba(255, 255, 255, 0.4);
+}
+
+.btn-glass-action.bg-primary:hover:not(.btn-disabled) {
+    background: var(--color-1) !important;
+    box-shadow: 0 12px 30px rgba(0, 177, 79, 0.35), 
+                inset 2px 2px 5px rgba(255, 255, 255, 0.5);
+}
+
+.btn-disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* Nút thu phóng bản đồ */
+.btn-recenter {
+    position: absolute; top: 20px; right: 20px; z-index: 5;
+    width: 50px; height: 50px; padding: 0; font-size: 1.2rem; color: #475569;
+}
+.btn-recenter:hover { color: var(--blue); }
+
+/* =========================================
+   6. BẢN ĐỒ TRÀN MÀN HÌNH (FULLSCREEN MAP)
+========================================= */
+.fullscreen-map-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1; /* Nằm dưới cùng */
+    background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000') center/cover no-repeat;
+}
+
+.map-overlay {
+    position: absolute; inset: 0; 
+    background: linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.5) 100%);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+}
+
+.map-vehicle-marker {
+    width: 80px; opacity: 0.95; transition: transform 0.3s; cursor: pointer; 
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+}
+.map-vehicle-marker:hover { transform: scale(1.15) translateY(-5px); opacity: 1; }
+
+.btn-recenter {
+    position: absolute; top: 100px; right: 20px; z-index: 5;
+    width: 50px; height: 50px; padding: 0; font-size: 1.2rem; color: #475569;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1), inset 1px 1px 3px rgba(255,255,255,1);
+}
+
+/* =========================================
+   7. THANH ĐIỀU KHIỂN TRÔI LƠ LỬNG (FLOATING PANEL)
+========================================= */
+.floating-trip-panel {
+    position: fixed;
+    top: 95px; /* Cách navbar một chút */
+    right: 24px; /* Trôi lơ lửng bên trái màn hình */
+    width: 380px; /* Nhỏ gọn lại */
+    z-index: 10; /* Đè lên map */
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* Khoảng cách giữa các thẻ con hẹp lại */
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+    padding-bottom: 20px;
+    pointer-events: none; /* Cho phép click xuyên qua khoảng trống */
+}
+
+/* Kích hoạt lại sự kiện click cho các thẻ con bên trong thanh trôi */
+.floating-trip-panel > * {
+    pointer-events: auto;
+}
+
+/* Thẻ kính con hẹp lại, góc bo nhỏ hơn để tạo cảm giác Widget */
+.compact-glass-card {
+    border-radius: 24px !important; /* Bo góc gọn hơn bản dashboard */
+    background: rgba(255, 255, 255, 0.75);
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), inset 1px 1px 5px rgba(255, 255, 255, 1);
+}
+
+/* Route Stepper thu nhỏ lại */
+.route-stepper::before {
+    content: ''; position: absolute; left: 4px; top: 10px; bottom: 10px; width: 2px; 
+    border-left: 2px dashed #cbd5e1;
+}
+
+.step-point::before {
+    content: ''; position: absolute; left: -22px; top: 2px; width: 12px; height: 12px; 
+    border-radius: 50%; background: #FFF; border: 3px solid; z-index: 2; 
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.8);
+}
+.step-pickup::before { border-color: var(--color-1); }
+.step-dropoff::before { border-color: #ef4444; }
+
+/* =========================================
+   8. RESPONSIVE MOBILE (FLOATING BOTTOM SHEET)
+========================================= */
+@media (max-width: 991px) {
+    .floating-trip-panel {
+        top: auto;
+        bottom: 15px; /* Neo xuống đáy màn hình điện thoại */
+        left: 15px;
+        right: 15px;
+        width: auto; /* Tràn ra 2 bên */
+        max-height: 60vh; /* Tối đa nửa dưới màn hình để chừa chỗ map */
+    }
+    
+    .btn-recenter {
+        top: 90px; /* Đẩy nút center map lên trên cùng bên phải */
+    }
+
+    .mobile-drag-handle {
+        width: 40px; height: 5px; background: rgba(0,0,0,0.15); 
+        border-radius: 5px; 
+        pointer-events: auto;
+    }
+}
+/* =========================================
+   7. MODALS, INPUTS & TOASTS (LIGHT MODE)
+========================================= */
+.glass-modal-blur {
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.glass-modal-content-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    border-radius: 35px !important;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1), inset 2px 2px 10px rgba(255,255,255,1);
+}
+
+.glass-input {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.03);
+    border-radius: 16px;
+    transition: all 0.3s;
+}
+
+.glass-input:focus {
+    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15), inset 2px 2px 5px rgba(0,0,0,0.03);
+    border-color: rgba(0, 177, 79, 0.5) !important;
+}
+
+.glass-upload-box {
+    background: rgba(255, 255, 255, 0.5);
+    border: 2px dashed rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease;
+}
+
+.glass-upload-box:hover {
+    border-color: var(--color-1) !important; 
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.toast-premium-light {
+    background: rgba(255, 255, 255, 0.9) !important;
+    backdrop-filter: blur(25px);
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 1) !important;
+}
+
+/* =========================================
+   8. CẢNH BÁO BẢN ĐỒ VÀ MẠNG
+========================================= */
+.gps-alert-glass {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(248, 250, 252, 0.7); /* Lớp phủ sương mù sáng */
+    backdrop-filter: blur(8px);
+    animation: fadeIn 0.5s ease;
+}
+
+.network-banner-glass {
+    background-color: rgba(254, 243, 199, 0.85); /* Nền vàng nhạt trong suốt */
+    backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(253, 230, 138, 1);
+    color: #b45309;
+    padding: 14px; font-weight: 700; font-size: 0.95rem;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    position: fixed; top: 80px; left: 0; width: 100%; z-index: 1040;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.1);
+    animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+}
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideDown { from { transform: translateY(-20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* =========================================
+   9. RESPONSIVE MOBILE
+========================================= */
+@media (max-width: 991px) {
+    .main-trip-container { height: auto !important; }
+    
+    .map-glass-panel {
+        height: 50vh;
+        border-radius: 0 0 35px 35px; /* Giữ bo góc dưới cho map trên mobile */
+    }
+
+    .mobile-drag-handle {
+        width: 40px; height: 5px; background: rgba(0,0,0,0.15); 
+        border-radius: 5px; margin-bottom: 10px;
+    }
+}

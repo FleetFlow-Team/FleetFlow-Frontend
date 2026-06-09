@@ -1,786 +1,525 @@
 /* =========================================
-   1. CÁC BIẾN TOÀN CỤC & BASE (ROOT VARIABLES)
+   14. DARK LIQUID GLASS BASE (ADMIN & DISPATCHER)
+   (Đã tích hợp Clean Typography)
 ========================================= */
-:root {
-  --color-1: #00b14f;
-  --color-dark: #1e293b;
-  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.03);
-  --danger: #ef4444;
-  --blue: #2563eb;
-  /* --color-2, --color-3 sẽ lấy từ file base.css nếu có */
-}
 
 body {
+  background-color: #0b0f17;
   font-family: "Inter", sans-serif;
-  background-color: var(
-    --color-2,
-    #f4f7fe
-  ); /* Fallback màu nền nếu base chưa có */
+  position: relative;
   overflow-x: hidden;
 }
 
-/* =========================================
-   2. BỐ CỤC CHÍNH (MAIN LAYOUT & TABS)
-========================================= */
-.wrapper {
-  display: flex;
-  margin-top: 70px;
-  min-height: calc(100vh - 70px);
+.luxury-glow-bg {
+    position: fixed; 
+    inset: 0;
+    z-index: -1; 
+    overflow: hidden;
+    pointer-events: none;
 }
 
-.main-content {
-  margin-left: 280px;
-  padding: 30px;
-  width: calc(100% - 280px);
-  background-color: #f4f7fe;
+.glow-sphere {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(140px);
+    opacity: 0.35; 
+    mix-blend-mode: screen;
 }
 
-/* Hiệu ứng chuyển Tab */
-.tab-section {
-  display: none;
+.sphere-1 {
+    top: -10%;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-1); 
 }
 
-.tab-section.active {
-  display: block;
-  animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+.sphere-2 {
+    bottom: -10%;
+    right: 0px;
+    width: 1200px;
+    height: 1000px;
+    background: var(--color-3); 
 }
 
-@keyframes slideUpFade {
-  from {
-    opacity: 0;
-    transform: translateY(15px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+/* --- HOÁN ĐỔI SECTION (SINGLE-PAGE ENGINE) --- */
+.dashboard-section {
+    display: none !important; 
+    opacity: 0; 
+    transform: scale(0.98) translateY(10px);
+    transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
+                transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.dashboard-section.active {
+    display: block !important; 
+    animation: transitionSection 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
 }
 
-.fade-in-up {
-  animation: slideUpFade 0.4s forwards;
-  opacity: 0;
-  transform: translateY(15px);
+@keyframes transitionSection {
+    to { 
+        opacity: 1; 
+        transform: scale(1) translateY(0); 
+    }
 }
 
-/* =========================================
-   3. THANH ĐIỀU HƯỚNG TRÊN (TOP NAVBAR)
-========================================= */
-.custom-navbar {
-  background-color: var(--color-1);
-  height: 70px;
-  padding: 0 !important; /* Xóa lề navbar */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+/* --- CÁC PANEL KÍNH LỎNG APPLE (GLASS PANELS) --- */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.15); 
+    border-radius: 35px; 
+    border: 1px solid rgba(255, 255, 255, 0.6); 
+    backdrop-filter: blur(40px);
+    -webkit-backdrop-filter: blur(40px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 
+                inset 2px 2px 8px rgba(255, 255, 255, 0.8);
+    padding: 30px;
+    color: #ffffff;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.3s ease;
 }
 
-.custom-navbar .container-base {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Đẩy mạnh về 2 phía */
-  width: 100%;
-  max-width: 100% !important; /* Phá vỡ max-width có thể có trong base.css */
-  padding: 0 !important;
-  margin: 0 !important;
-  height: 100%;
-  position: relative; /* Bắt buộc để căn giữa absolute cho Slogan */
+.glass-panel:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 
+                inset 2px 2px 12px rgba(255, 255, 255, 1);
 }
 
-/* Xử lý Logo sát mép trái */
-.brand-overflow {
-  position: relative;
-  height: 70px;
-  display: flex;
-  align-items: center;
-  padding: 0 !important;
-  padding-left: 20px !important;
-  margin: 0 !important;
-  background-color: transparent;
-  text-decoration: none;
+/* Tab Pricing: Khối cảnh báo nội suy giá */
+#tab-pricing .glass-panel[style*="background"] {
+    background: rgba(245, 158, 11, 0.08) !important; 
+    border: 1px solid rgba(245, 158, 11, 0.5) !important; 
+    border-radius: 24px !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 
+                inset 1px 1px 4px rgba(255, 255, 255, 0.2) !important;
 }
 
-.brand-overflow .logo-img {
-  height: 100%;
-  width: auto;
-  object-fit: contain;
-  padding: 0 !important;
-  margin: 0 !important;
+/* --- ĐỒNG BỘ MÀU CHỮ & TYPOGRAPHY --- */
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.55) !important; 
+    font-weight: 400 !important;
+    opacity: 1 !important; 
 }
 
-/* Dòng Slogan ở giữa Navbar */
-.navbar-slogan {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(
-    -50%,
-    -50%
-  ); /* Kéo tâm của chữ vào chính giữa màn hình */
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  white-space: nowrap; /* Ngăn chữ bị rớt dòng */
-  pointer-events: none; /* Chống click nhầm */
+h3.text-white, h3.text-success, h3.text-danger {
+    font-weight: 700 !important;
+    letter-spacing: -0.5px !important; 
 }
 
-/* =========================================
-   4. THÔNG TIN NGƯỜI DÙNG & MENU DROPDOWN
-========================================= */
-.user-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: white;
-  cursor: pointer;
-  padding-right: 50px !important;
-  margin: 0 !important;
-}
+.text-success { color: #10b981 !important; font-weight: 600 !important; }
+.text-danger  { color: #f43f5e !important; font-weight: 600 !important; }
+.text-info    { color: #38bdf8 !important; font-weight: 600 !important; }
+.text-warning { color: #fbbf24 !important; font-weight: 600 !important; }
 
-.user-profile img,
-.avatar-img {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  background-color: #ffffff;
-  object-fit: cover;
-  display: block;
-  transition:
-    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
-    border-color 0.3s;
-}
-
-.badge-admin {
-  background-color: #e53e3e;
-  font-size: 0.7rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  margin-left: 8px;
-  letter-spacing: 1px;
-}
-
-/* Chuông thông báo */
-.notification-bell {
-  color: white;
-  position: relative;
-  cursor: pointer;
+/* 3. TOC SIDEBAR (Mục lục điều hướng trượt dọc) */
+.toc-header {
   font-size: 1.3rem;
-  margin-right: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-2);
 }
 
-.notification-badge {
-  position: absolute;
-  top: -5px;
-  right: -8px;
-  background-color: #e27a7a;
-  color: white;
-  font-size: 0.65rem;
-  font-weight: bold;
-  padding: 1px 6px;
-  border-radius: 50%;
-}
-
-.notification-bell i:hover {
-  color: #e27a7a;
-  transform: scale(1.2);
-  transition: transform 0.3s ease;
-}
-
-/* Dropdown Menu Hiện Đại */
-.user-profile-dropdown {
-  position: relative;
-  padding: 10px 0; /* Vùng đệm ảo chống mất hover */
-}
-
-.user-profile-trigger {
-  cursor: pointer;
-  transition: opacity 0.3s ease;
-}
-
-.user-profile-trigger:hover {
-  opacity: 0.8;
-}
-
-.transition-icon {
-  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.user-profile-dropdown:hover .transition-icon {
-  transform: rotate(-180deg);
-}
-
-.user-profile-dropdown:hover .avatar-img {
-  transform: scale(1.1);
-  border-color: var(--color-3, #f1c40f);
-}
-
-.dropdown-menu-modern {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  width: 240px;
-  background-color: #ffffff;
-  border-radius: 16px;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(15px);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 1060;
-  overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-}
-
-.user-profile-dropdown:hover .dropdown-menu-modern {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.dropdown-divider-custom {
-  margin: 0;
-  border-color: #edf2f7;
-  opacity: 1;
-}
-
-.dropdown-item-custom {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 24px;
-  color: #4a5568;
-  text-decoration: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  position: relative;
-}
-
-.dropdown-item-custom i {
-  font-size: 1.1rem;
-  color: #a0aec0;
-  transition: color 0.2s ease;
-}
-
-.dropdown-item-custom:hover {
-  background-color: #f8fafc;
-  color: var(--color-1);
-  padding-left: 28px; /* Trượt nhẹ tạo cảm giác động */
-}
-
-.dropdown-item-custom:hover i {
-  color: var(--color-1);
-}
-
-.logout-item:hover {
-  background-color: #fff5f5 !important;
-  color: #e53e3e !important;
-}
-
-.logout-item:hover i {
-  color: #e53e3e !important;
-}
-
-/* =========================================
-   5. MENU BÊN TRÁI (SIDEBAR)
-========================================= */
-.sidebar {
-  width: 280px;
-  background-color: #fff;
-  border-right: 1px solid #e2e8f0;
-  position: fixed;
-  top: 70px;
-  bottom: 0;
-  left: 0;
-  padding: 20px 0;
-  z-index: 1000;
-  overflow-y: auto;
-}
-
-.sidebar-menu {
+.toc-list {
   list-style: none;
-  padding: 0;
+  padding-left: 0;
   margin: 0;
+  position: relative;
+  z-index: 2;
 }
 
-.sidebar-menu a {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 24px;
-  color: #4a5568;
+.toc-list li { margin-bottom: 8px; }
+
+.toc-link {
+  display: block;
+  padding: 12px 20px;
+  color: var(--color-2);
+  font-weight: 600;
   text-decoration: none;
-  font-weight: 500;
-  border-left: 4px solid transparent;
-  transition: 0.2s;
-  font-size: 0.95rem;
-}
-
-.sidebar-menu a:hover,
-.sidebar-menu a.active {
-  background-color: rgba(0, 177, 79, 0.05);
-  color: var(--color-1);
-  border-left-color: var(--color-1);
-  font-weight: 600;
-}
-
-.sidebar-menu i {
-  font-size: 1.1rem;
-  width: 24px;
-  text-align: center;
-}
-
-.menu-header {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #a0aec0;
-  font-weight: 700;
-  padding: 10px 24px;
-  margin-top: 10px;
-  letter-spacing: 0.5px;
-}
-
-/* =========================================
-   6. GIAO DIỆN BẢNG DỮ LIỆU (TABLES)
-========================================= */
-.table-custom {
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f1f5f9;
-  overflow: visible; /* Giữ visible để bóng hover dòng không bị cắt */
-}
-
-.table-custom table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-}
-
-.table-custom th,
-.table-custom thead th {
-  background-color: #f8fafc;
-  color: #64748b;
-  padding: 16px 24px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-bottom: 2px solid #e2e8f0;
-}
-
-.table-custom td,
-.table-custom tbody td {
-  padding: 16px 24px;
-  vertical-align: middle;
-  border-bottom: 1px solid #edf2f7;
-  font-size: 0.95rem;
-  transition: background-color 0.3s ease;
-}
-
-.table-hover-custom tbody tr {
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  background-color: #ffffff;
-}
-
-.table-hover-custom tbody tr:hover {
-  transform: translateY(-3px) scale(1.002);
-  box-shadow: 0 10px 25px rgba(0, 177, 79, 0.08);
-  background-color: #fcfcfc;
-  z-index: 10;
-  position: relative;
-  border-radius: 12px;
-}
-
-.table-hover-custom tbody tr:hover td {
-  border-bottom-color: transparent; /* Ẩn viền khi dòng nổi lên */
-}
-
-/* Dropdown trạng thái xe */
-.status-select {
-  border-radius: 50px;
-  padding: 6px 30px 6px 16px;
-  font-size: 0.8rem;
-  font-weight: 700;
-  border: 1px solid #e2e8f0;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.status-select:focus {
-  box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.15);
-  border-color: var(--color-1);
-}
-
-.status-ready {
-  background-color: #ecfdf5;
-  color: #059669;
-}
-.status-maintenance {
-  background-color: #fffbeb;
-  color: #d97706;
-}
-.status-locked {
-  background-color: #fef2f2;
-  color: #dc2626;
-}
-
-/* =========================================
-   7. CÁC THÀNH PHẦN CHUNG (COMPONENTS)
-========================================= */
-/* Các loại Buttons */
-.btn-action,
-.btn-table-action {
-  padding: 8px 16px;
-  font-weight: 600;
-  font-size: 0.85rem;
-  border-radius: 10px;
-  border: none;
-  transition: all 0.2s ease;
-}
-
-.btn-action:hover,
-.btn-table-action:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.btn-primary-custom {
-  background-color: var(--color-1);
-  color: white;
-}
-.btn-primary-custom:hover {
-  background-color: #009640;
-}
-.btn-outline-custom {
-  background-color: transparent;
-  border: 1px solid #cbd5e0;
-  color: #4a5568;
-}
-.btn-outline-custom:hover {
-  background-color: #f7fafc;
-  border-color: #a0aec0;
-}
-.btn-danger-custom {
-  background-color: #fff5f5;
-  color: #e53e3e;
-  border: 1px solid #fed7d7;
-}
-.btn-danger-custom:hover {
-  background-color: #fed7d7;
-}
-
-/* Config Cards (Cấu hình hệ thống) */
-.config-card {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-  height: 100%;
-}
-
-.config-card-title {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--color-dark);
-  border-bottom: 2px solid #f0f2f5;
-  padding-bottom: 12px;
-  margin-bottom: 20px;
-}
-
-.config-alert {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-left: 4px solid var(--blue);
-  padding: 16px 20px;
-  border-radius: 8px;
-  display: flex;
-  gap: 16px;
-  margin-bottom: 32px;
-  color: #1e3a8a;
-  font-weight: 500;
-}
-
-/* Thẻ Tag & Thông báo Audit */
-.tag-badge {
-  background-color: #edf2f7;
-  color: #4a5568;
-  border: 1px solid #cbd5e0;
-  padding: 5px 10px;
-  border-radius: 50px;
-  font-size: 0.8rem;
-  margin-right: 5px;
-  display: inline-block;
-  margin-bottom: 5px;
-}
-
-.log-audit-text {
-  font-family: monospace;
-  font-size: 0.85rem;
-  color: #d53f8c;
-  background: #fff5f7;
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: 1px solid #fed7e2;
-}
-
-/* Khu vực Upload (Kéo & Thả file) */
-.upload-area {
-  border: 2px dashed #cbd5e0;
-  border-radius: 8px;
-  padding: 20px;
-  text-align: center;
-  background: #f8fafc;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.upload-area:hover {
-  border-color: var(--color-1);
-  background: #e6fffa;
-}
-
-/* =========================================
-   8. DASHBOARD & BIỂU ĐỒ (CHARTS & KPIS)
-========================================= */
-.kpi-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
-}
-.kpi-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: var(--shadow-card);
-  transition: 0.3s;
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-.kpi-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
-}
-.kpi-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-.kpi-title {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #64748b;
-}
-.kpi-value {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--color-dark);
-  margin-bottom: 8px;
-}
-.kpi-trend {
-  font-size: 0.8rem;
-  font-weight: 700;
-  padding: 4px 8px;
   border-radius: 20px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
+  transition: color 0.3s ease;
 }
 
-.trend-up {
-  background: #d1fae5;
-  color: #10b981;
-}
-.trend-down {
-  background: #fee2e2;
-  color: #ef4444;
-}
-
-/* Stat Icons dùng kèm trong Dashboard */
-.stat-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 20px;
-  border: 1px solid #edf2f7;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
-}
-.stat-icon,
-.kpi-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-}
-.bg-icon-primary {
-  background-color: #e6fffa;
-  color: var(--color-1);
-}
-.bg-icon-warning {
-  background-color: #fffaf0;
-  color: #dd6b20;
-}
-.bg-icon-info {
-  background-color: #ebf8ff;
-  color: #3182ce;
-}
-.bg-icon-purple {
-  background-color: #faf5ff;
-  color: #805ad5;
-}
-
-.charts-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 24px;
-  margin-bottom: 32px;
-}
-@media (max-width: 1200px) {
-  .charts-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.chart-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  box-shadow: var(--shadow-card);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-}
-.chart-title {
-  font-weight: 800;
-  font-size: 1.1rem;
-  margin-bottom: 20px;
+.toc-link.active {
   color: var(--color-dark);
+  font-size: larger;
+}
+
+/* Cục kính trượt dọc (Vertical Indicator) */
+.toc-indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 48px; 
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 1);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), height 0.4s ease;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.menu-section-title {
+    font-size: 0.8rem; 
+    font-weight: 800; 
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    color: var(--color-3); 
+    margin-top: 25px; 
+    margin-bottom: 15px;
+    padding-left: 20px; 
+    pointer-events: none; 
+    user-select: none;
+}
+.toc-link .badge { font-size: 0.7rem; padding: 4px 8px; box-shadow: 0 2px 5px rgba(255, 222, 89, 0.3) !important; }
+
+/* --- KPI CARDS (DASHBOARD) --- */
+.kpi-glass-card {
+    padding: 24px;
+    border-radius: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.2); 
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 
+                inset 2px 2px 6px rgba(255, 255, 255, 0.9);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.kpi-glass-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.kpi-icon-glass {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1); 
 }
 
 /* =========================================
-   9. MODAL HỒ SƠ TÀI XẾ (eKYC)
+   TABLE GLASS: TỪNG HÀNG BO TRÒN (ROW CARDS)
 ========================================= */
-.ekyc-modal .modal-content {
-  border-radius: 24px;
-  border: none;
-  overflow: hidden;
+
+/* 1. Tách các hàng ra khỏi nhau để góc bo không bị đè lên nhau */
+.table-glass {
+    border-collapse: separate;
+    border-spacing: 0 12px; 
+    margin-top: -12px; /* Kéo bảng lên một chút để bù lại khoảng cách thead */
 }
-.ekyc-layout {
-  display: flex;
-  min-height: 500px;
+
+/* 2. Căn chỉnh lại viền dưới của phần Tiêu đề (Thead) */
+.table-glass thead th {
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2); 
 }
-.ekyc-info {
-  flex: 1;
-  padding: 32px;
-  background: #f8fafc;
-  border-right: 1px solid #e2e8f0;
+
+/* 3. Giữ nguyên viền ngang trên/dưới cho toàn bộ các ô trong hàng */
+.table-glass td {
+    background: rgba(255, 255, 255, 0.06);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 16px 18px;
+    vertical-align: middle;
 }
-.ekyc-image-viewer {
-  flex: 1.5;
-  padding: 32px;
-  background: #1e293b;
-  display: flex;
-  flex-direction: column;
+
+/* 4. Bo góc trái và thêm viền trái cho ô đầu tiên của mỗi hàng */
+.table-glass td:first-child { 
+    border-left: 1px solid rgba(255, 255, 255, 0.2); 
+    border-top-left-radius: 20px; 
+    border-bottom-left-radius: 20px; 
 }
-.ekyc-img-container {
-  flex: 1;
-  background: #0f172a;
-  border-radius: 16px;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+
+/* 5. Bo góc phải và thêm viền phải cho ô cuối cùng của mỗi hàng */
+.table-glass td:last-child { 
+    border-right: 1px solid rgba(255, 255, 255, 0.2); 
+    border-top-right-radius: 20px; 
+    border-bottom-right-radius: 20px; 
+}
+
+/* Hiệu ứng trượt sáng mượt mà khi hover vào từng hàng */
+.table-glass tbody tr {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.table-glass tbody tr:hover td { 
+    background: rgba(255, 255, 255, 0.15); 
+    border-top-color: rgba(255, 255, 255, 0.4);
+    border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.table-glass tbody tr:hover td:first-child { 
+    border-left-color: rgba(255, 255, 255, 0.4); 
+}
+
+.table-glass tbody tr:hover td:last-child { 
+    border-right-color: rgba(255, 255, 255, 0.4); 
+}
+
+/* Badge thông tin AI Tags */
+.badge.border-secondary {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    color: #ffffff !important;
+    padding: 6px 12px;
+    border-radius: 50px;
+    font-weight: 600;
+    box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+/* Cải tiến Badge Chờ thẩm định eKYC click được */
+.glass-badge-hover {
+    background: rgba(245, 158, 11, 0.25) !important; 
+    border: 1px solid rgba(245, 158, 11, 0.8) !important;
+    color: #fbbf24 !important; 
+    padding: 8px 16px !important;
+    border-radius: 50px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2), inset 1px 1px 3px rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.glass-badge-hover:hover {
+    background: rgba(245, 158, 11, 0.4) !important;
+    transform: scale(1.05) translateY(-1px);
+    box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4), inset 1px 1px 4px rgba(255, 255, 255, 0.6);
+}
+
+/* --- CÁC THÀNH PHẦN INPUT KÍNH ĐẶC BIỆT --- */
+
+/* Select Options Dropdown */
+.glass-select {
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 20px; 
+    padding: 6px 35px 6px 16px !important;
+    font-size: 0.85rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 1px 1px 5px rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-shadow: none;
+}
+.glass-select:hover {
+    background-color: rgba(255, 255, 255, 0.3) !important;
+    border-color: rgba(255, 255, 255, 0.9) !important;
+}
+.glass-select option {
+    background-color: #1a1e29; 
+    color: #ffffff;
+}
+
+/* Thanh tìm kiếm (Search Bar) & Form Inputs */
+.glass-input {
+    background: rgba(0, 0, 0, 0.25) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+    border-radius: 50px !important;
+    padding: 10px 20px !important;
+    font-weight: 500;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
+    text-shadow: none !important;
+}
+.glass-input::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
+.glass-input:focus {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border-color: var(--color-1) !important;
+    box-shadow: 0 0 12px rgba(0, 177, 79, 0.4), inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+.glass-input-addon {
+    background: rgba(0, 0, 0, 0.25) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    border-radius: 50px 0 0 50px !important;
+    color: #ffffff !important;
+}
+.glass-input-addon + .glass-input { border-radius: 0 50px 50px 0 !important; }
+
+/* Number Input (Pricing) */
+.form-label {
+    color: rgba(255, 255, 255, 0.7) !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    margin-bottom: 8px;
+}
+input[type="number"].glass-input {
+    border-radius: 16px !important; 
+    padding: 12px 20px !important;
+    font-weight: 700 !important;
+    font-size: 1.25rem !important; 
+    box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* --- NÚT BẤM KÍNH (GLASS BUTTONS) --- */
+.btn-glass-action {
+    background: rgba(255, 255, 255, 0.15) !important;
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 50px;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 1px 1px 3px rgba(255, 255, 255, 0.6);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 8px 22px;
+}
+.btn-glass-action:hover {
+    background: var(--color-1) !important; 
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 20px rgba(0, 177, 79, 0.3), inset 1px 1px 4px rgba(255, 255, 255, 0.8);
+}
+.btn-glass-action.bg-primary {
+    background: rgba(0, 177, 79, 0.3) !important; 
+    border-color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.glass-liquid-btn {
+    padding: 12px 24px; border-radius: 50px; background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; transition: all 0.3s ease;
+}
+.glass-liquid-btn:hover { filter: url(#liquid-distortion); background: rgba(0, 177, 79, 0.25); border-color: var(--color-1); }
+
+/* Nút lưu cấu hình lớn */
+.btn-glass-action.w-100 {
+    background: var(--color-1) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    box-shadow: 0 10px 25px rgba(0, 177, 79, 0.4), inset 2px 2px 6px rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    border-radius: 16px !important;
+}
+.btn-glass-action.w-100:hover {
+    background: #02c75a !important; 
+    transform: translateY(-3px);
+    box-shadow: 0 14px 30px rgba(0, 177, 79, 0.5), inset 2px 2px 8px rgba(255, 255, 255, 0.6);
+}
+
+/* --- EKYC VIEWER (TRÌNH SOI ẢNH) --- */
+.ekyc-viewer-frame {
+    position: relative; width: 100%; height: 280px; background: rgba(0, 0, 0, 0.4);
+    border-radius: 30px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex; align-items: center; justify-content: center;
 }
 .ekyc-img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  cursor: grab;
-  transition: transform 0.3s;
+    max-width: 90%; max-height: 85%; object-fit: contain; border-radius: 12px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
-
 .img-controls {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 10px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 8px;
-  border-radius: 50px;
-  backdrop-filter: blur(5px);
+    position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 12px; background: rgba(11, 15, 23, 0.6);
+    padding: 8px 20px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
 }
 .img-controls button {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
-  transition: 0.2s;
+    width: 36px; height: 36px; border-radius: 50%; border: none;
+    background: rgba(255, 255, 255, 0.1); color: white; transition: all 0.2s;
 }
-.img-controls button:hover {
-  background: var(--color-1);
+.img-controls button:hover { background: var(--color-1); transform: scale(1.1); }
+
+/* Viền Avatar tài xế */
+img.rounded-circle.border-white {
+    border: 2px solid rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* =========================================
-   10. KANBAN AI TAGS (Kéo thả gán thuộc tính xe)
-========================================= */
-.kanban-board {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: 24px;
+/* --- KANBAN BOARD GLASS (KÉO THẢ AI TAGS) --- */
+.kanban-board { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 15px; }
+.kb-column-glass {
+    background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px; padding: 20px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    box-shadow: inset 1px 1px 5px rgba(255, 255, 255, 0.05);
 }
-.kb-column {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  border: 1px solid #e2e8f0;
-  box-shadow: var(--shadow-card);
-  min-height: 400px;
+.kb-cards-container { min-height: 200px; display: flex; flex-direction: column; gap: 12px; }
+.kanban-card-item {
+    background: rgba(255, 255, 255, 0.479); border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50px; padding: 12px 20px; color: var(--text-color); cursor: grab; font-size: 1rem; font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
-.tag-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: grab;
-  margin-bottom: 8px;
-  transition: 0.2s;
+.kanban-card-item:active { cursor: grabbing; }
+.kanban-card-item:hover { 
+    background: rgba(255, 255, 255, 0.12); transform: translateX(5px); 
+    border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 6px 15px rgba(0,0,0,0.2);
 }
-.tag-pill:hover {
-  border-color: var(--color-1);
-  background: #f0fdf4;
-  color: var(--color-1);
-  transform: translateY(-2px);
+.kanban-card-item.stable-tag { 
+    border: 1px dashed rgba(0, 177, 79, 0.5); background: rgba(0, 177, 79, 0.05); 
+    cursor: default; color: rgba(255, 255, 255, 0.8);
 }
-.vehicle-dropzone {
-  background: #f8fafc;
-  border: 2px dashed #cbd5e1;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 16px;
-  transition: 0.3s;
+.kanban-card-item.stable-tag:hover { transform: none; background: rgba(0, 177, 79, 0.1); border-style: solid; }
+
+/* --- RBAC & SWITCH TOGGLE (GLASS STYLE) --- */
+.switch-glass { position: relative; display: inline-block; width: 48px; height: 26px; margin: 0; }
+.switch-glass input { display: none; }
+.slider-glass {
+    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50px;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
+.slider-glass:before {
+    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
+    background-color: rgba(255, 255, 255, 0.8); border-radius: 50%;
+    transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+.switch-glass input:checked + .slider-glass { background-color: rgba(0, 177, 79, 0.4); border-color: var(--color-1); }
+.switch-glass input:checked + .slider-glass:before {
+    transform: translateX(22px); background-color: #ffffff; box-shadow: 0 0 10px rgba(0, 177, 79, 0.8);
+}
+.switch-glass input:disabled + .slider-glass { opacity: 0.4; cursor: not-allowed; }
+
+.rbac-user-item { transition: background 0.3s ease, transform 0.2s ease; cursor: pointer; }
+.rbac-user-item:hover { background: rgba(255, 255, 255, 0.05); }
+.rbac-user-item.active-user { background: rgba(0, 177, 79, 0.1); border-left: 4px solid var(--color-1); }
+
+/* --- BẢNG AUDIT LOG KÍNH LỎNG --- */
+.table-audit thead th {
+    background: rgba(11, 15, 23, 0.85); 
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+.table-audit td {
+    padding: 10px 15px !important; 
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.table-audit tbody tr:hover td { background: rgba(180, 9, 9, 0.476); }
+.table-audit .badge { letter-spacing: 0.5px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+
+/* --- MODALS & TOASTS (GLASS SYSTEM) --- */
+.glass-modal-blur {
+    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    background: rgba(0, 0, 0, 0.4);
+}
+.glass-modal-content .text-white, .toast-premium .text-white { color: #ffffff !important; }
+.glass-modal-content .text-white-50, .toast-premium .text-white-50 { color: rgba(255, 255, 255, 0.5) !important; }
+
+/* Modal Diff View */
+.diff-container-glass { width: 100%; }
+.diff-box-glass {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px; font-size: 0.95rem;
+    box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.2); overflow-x: auto;
+}
+.diff-old { border-left: 3px solid #ef4444; }
+.diff-new { border-left: 3px solid var(--color-1); background: rgba(0, 177, 79, 0.03); }
+
+.btn-close-white { opacity: 0.5; transition: all 0.3s ease; }
+.btn-close-white:hover { opacity: 1; transform: rotate(90deg) scale(1.1); }
+
+/* Toast Premium */
+.toast-premium {
+    background: rgba(11, 15, 23, 0.8) !important;
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border-radius: 20px !important;
+}
+.toast-premium.border-success { box-shadow: 0 10px 30px rgba(0, 177, 79, 0.2), inset 1px 1px 3px rgba(0, 177, 79, 0.5) !important; }
+.toast-premium.border-danger { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2), inset 1px 1px 3px rgba(239, 68, 68, 0.5) !important; }
