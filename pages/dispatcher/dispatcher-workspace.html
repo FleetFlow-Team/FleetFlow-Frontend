@@ -3,345 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FleetFlow - Dispatcher Dashboard</title>
+    <title>FleetFlow - Dispatcher Workspace (Liquid Glass)</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
     <link rel="stylesheet" href="../../style/base.css">
     <link rel="stylesheet" href="../../style/pages/dispatcher.css">
-    <link rel="script" href="../../js/dispatcher.js">    
-    <script src="../../js/dispatcher.js"></script>
-    <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
-    
-    
 </head>
 <body>
+    <div class="luxury-glow-bg">
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
+    </div>
+
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <defs>
+            <filter id="liquid-distortion">
+                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+            </filter>
+            <filter id="frosted">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="5" />
+            </filter>
+        </defs>
+    </svg>
+
+    <svg style="position:absolute; width:0; height:0;">
+  <filter id="frosted">
+    <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
+    <feGaussianBlur in="noise" stdDeviation="0.02" result="blur" />
+    <feDisplacementMap in="SourceGraphic" in2="blur" scale="30" xChannelSelector="R" yChannelSelector="G" />
+  </filter>
+</svg>
 
     <header>
-        <nav class="navbar custom-navbar fixed-top">
-            <div class="container-base h-100 position-relative">
-                
-                <a class="navbar-brand brand-overflow" href="#">
-                    <img src="../../assets/img/logo1.jpg" alt="FleetFlow Logo" class="logo-img" />
-                </a>
+        <nav class="navbar custom-navbar dispatcher-navbar fixed-top transition-all">
+        <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
+            
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <img src="../../assets/img/FleetFlow - Logo.png" alt="FleetFlow" height="40" class="me-2">
+                <span class="fw-bold fs-4 text-white nav-brand-text">FleetFlow</span>
+            </a>
 
-                <div class="navbar-slogan d-none d-md-block">
-                    Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
-                </div>
-
-                <div class="user-profile">
-                    <div class="nav-right-actions d-flex align-items-center gap-4 pe-3">
-                    
-                    <div class="notification-bell" title="Thông báo">
-                        <i class="fa-regular fa-bell"></i>
-                        <span class="notification-badge" id="notiCount">3</span>
-                    </div>
-                    
-                    <div class="user-profile-dropdown">
-                        <div class="user-profile-trigger d-flex align-items-center">
-                            <div class="d-none d-sm-block text-end me-2">
-                                <div class="fw-bold fs-6 lh-1 text-white">Nguyễn Điều Phối</div>
-                                <div class="text-white-50 small mt-1" style="font-size: 0.75rem">Dispatcher</div>
-                            </div>
-                            <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=1a1c1a&color=fff" alt="Avatar" class="avatar-img" />
-                            <i class="fa-solid fa-chevron-down text-white-50 ms-2 transition-icon" style="font-size: 0.8rem;"></i>
-                        </div>
-                        
-                        <div class="dropdown-menu-modern shadow-lg">
-                            <div class="dropdown-header-custom px-4 py-3">
-                                <div class="fw-bold text-dark fs-6">Nguyễn Điều Phối</div>
-                                <div class="small text-muted">dieuphoi@fleetflow.vn</div>
-                            </div>
-                            <hr class="dropdown-divider-custom">
-                            
-                            <a href="#" class="dropdown-item-custom">
-                                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
-                            </a>
-                            <a href="#" class="dropdown-item-custom">
-                                <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
-                            </a>
-                            
-                            <hr class="dropdown-divider-custom">
-                            
-                            <a href="login.html" class="dropdown-item-custom text-danger fw-bold logout-item">
-                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                </div>
-                
+            <div class="navbar-slogan d-none d-md-block text-white fw-medium fs-5 fst-italic">
+                "Điều phối thông minh, Vận hành tối ưu"
             </div>
-        </nav>
+
+            <div class="d-flex align-items-center gap-3">
+                <div class="avatar-glass" style="width: 45px; height: 45px;">
+                    <img src="../../assets/img/ai-avatar.png" alt="Admin" style="width: 100%; border-radius: 50%;">
+                </div>
+            </div>
+        </div>
+    </nav>
     </header>
 
-    <div class="wrapper">
-        <aside class="sidebar shadow-sm">
-            <ul class="sidebar-menu">
-                <li><a href="#" class="active" onclick="switchTab('tab-dashboard', this)"><i class="fa-solid fa-chart-pie"></i> Tổng quan</a></li>
-                <li><a href="#" onclick="switchTab('tab-approvals', this)"><i class="fa-solid fa-clipboard-list"></i> Quản lý Đơn <span class="badge bg-danger ms-auto rounded-pill" id="approvalCount">12</span></a></li>
-                <li><a href="#" onclick="switchTab('tab-gps', this)"><i class="fa-solid fa-map-location-dot"></i> Giám sát Bản đồ</a></li>
-                <li><a href="#" onclick="switchTab('tab-incidents', this)"><i class="fa-solid fa-triangle-exclamation"></i> Kênh Sự cố <span class="badge bg-danger ms-auto rounded-pill">1</span></a></li>
-            </ul>
-        </aside>
-
-        <main class="main-content">            
+    <div class="container-fluid" style="padding-top: 120px; padding-bottom: 50px;">
+        <div class="row px-xl-4">
             
-            <section id="tab-dashboard" class="tab-section active">
-                <h4 class="fw-bold mb-4 text-dark">Tổng quan vận hành</h4>
-                <div class="row g-4 mb-4">
-                    <div class="col-md-4"><div class="stat-card border-success border-start border-4"><div><p class="text-muted small fw-bold text-uppercase mb-1">Xe đang chạy</p><h3 class="fw-bold m-0 text-dark">24</h3></div><div class="stat-icon bg-icon-green"><i class="fa-solid fa-car"></i></div></div></div>
-                    <div class="col-md-4"><div class="stat-card border-primary border-start border-4"><div><p class="text-muted small fw-bold text-uppercase mb-1">Đơn chờ duyệt</p><h3 class="fw-bold m-0 text-dark">02</h3></div><div class="stat-icon bg-icon-blue"><i class="fa-solid fa-clipboard-check"></i></div></div></div>
-                    <div class="col-md-4"><div class="stat-card border-danger border-start border-4"><div><p class="text-muted small fw-bold text-uppercase mb-1">Sự cố & Tranh chấp</p><h3 class="fw-bold m-0 text-danger">01</h3></div><div class="stat-icon bg-icon-red"><i class="fa-solid fa-triangle-exclamation"></i></div></div></div>
-                </div>
-            </section>
-
-            <section id="tab-approvals" class="tab-section">
-                <div class="grid-container">
-                    
-                    <div class="tabs-header">
-                        <button class="tab-btn active" id="btn-tab-pending" onclick="switchGridTab('pending')">
-                            <i class="fa-solid fa-hourglass-half me-2"></i> Chờ duyệt <span class="tab-badge ms-2">2</span>
-                        </button>
-                        <button class="tab-btn" id="btn-tab-active" onclick="switchGridTab('active')">
-                            <i class="fa-solid fa-route me-2"></i> Đang di chuyển (85)
-                        </button>
-                        <button class="tab-btn frozen-tab" id="btn-tab-frozen" onclick="switchGridTab('frozen')">
-                            <i class="fa-solid fa-snowflake me-2"></i> Tranh chấp/Đóng băng <span class="tab-badge ms-2" style="background: var(--frozen);" id="frozenCountBadge">1</span>
-                        </button>
-                    </div>
-
-                    <div class="grid-tab-content active" id="grid-pending">
-                        <table class="enterprise-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã Yêu Cầu</th>
-                                    <th>Giờ Khởi hành</th>
-                                    <th>Hành khách</th>
-                                    <th>Tài xế nhận</th>
-                                    <th>Trạng thái</th>
-                                    <th class="text-end">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <span class="bk-id">#BK-9012</span>
-                                        <span class="bk-route">HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</span>
-                                    </td>
-                                    <td><span class="time-urgent"><i class="fa-solid fa-fire"></i> 14:00 (Sát giờ)</span></td>
-                                    <td><div class="person-info"><div class="icon-avatar"><i class="fa-regular fa-user"></i></div>Trần V. Khách</div></td>
-                                    <td class="text-muted fw-bold">Chưa có</td>
-                                    <td><span class="pill-badge bg-pending"><i class="fa-solid fa-radar me-1"></i> Đang rà quét</span></td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn-act act-approve" title="Phát sóng / Ép chuyến" onclick="simulateAction(this)"><i class="fa-solid fa-satellite-dish"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <span class="bk-id">#BK-9013</span>
-                                        <span class="bk-route">Đà Nẵng <i class="fa-solid fa-arrow-right mx-1"></i> Huế</span>
-                                    </td>
-                                    <td><span class="fw-bold text-dark">16:00 (Hôm nay)</span></td>
-                                    <td><div class="person-info"><div class="icon-avatar"><i class="fa-regular fa-user"></i></div>Lê Minh Tú</div></td>
-                                    <td class="text-muted fw-bold">Chưa có</td>
-                                    <td><span class="pill-badge bg-pending"><i class="fa-solid fa-radar me-1"></i> Đang rà quét</span></td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn-act act-approve" title="Phát sóng / Ép chuyến" onclick="simulateAction(this)"><i class="fa-solid fa-satellite-dish"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="grid-tab-content" id="grid-active">
-                        <table class="enterprise-table">
-                            <thead>
-                                <tr>
-                                    <th>Mã Chuyến</th>
-                                    <th>Khởi hành</th>
-                                    <th>Hành khách</th>
-                                    <th>Tài xế chạy</th>
-                                    <th>Tiến trình</th>
-                                    <th class="text-end">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr id="row-bk-9014">
-                                    <td>
-                                        <span class="bk-id">#BK-9014</span>
-                                        <span class="bk-route">Biên Hòa <i class="fa-solid fa-arrow-right mx-1"></i> Q1, HCM</span>
-                                    </td>
-                                    <td><span class="fw-bold text-dark">12:30 hôm nay</span></td>
-                                    <td><div class="person-info"><div class="icon-avatar"><img src="https://ui-avatars.com/api/?name=KH&background=e2e8f0" alt="Avatar"></div>Lê T. Nga</div></td>
-                                    <td><div class="person-info"><div class="icon-avatar" style="background: #dcfce7; color: var(--color-1);"><i class="fa-solid fa-car-side"></i></div>Tài xế Bằng</div></td>
-                                    <td>
-                                        <div class="trip-progress">
-                                            <div class="progress-info"><span>Còn 12km</span><span>60%</span></div>
-                                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 60%;"></div></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn-act act-dispute" title="Xử lý Tranh chấp (BR-28)" onclick="openDisputeModal('row-bk-9014', '#BK-9014')"><i class="fa-solid fa-exclamation"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="row-bk-9015">
-                                    <td>
-                                        <span class="bk-id">#BK-9015</span>
-                                        <span class="bk-route">Nha Trang <i class="fa-solid fa-arrow-right mx-1"></i> Hội An</span>
-                                    </td>
-                                    <td><span class="fw-bold text-dark">09:00 hôm nay</span></td>
-                                    <td><div class="person-info"><div class="icon-avatar"><img src="https://ui-avatars.com/api/?name=K+A&background=e2e8f0" alt="Avatar"></div>Khách VIP A</div></td>
-                                    <td><div class="person-info"><div class="icon-avatar" style="background: #dcfce7; color: var(--color-1);"><i class="fa-solid fa-car-side"></i></div>Tài xế Cường</div></td>
-                                    <td>
-                                        <div class="trip-progress">
-                                            <div class="progress-info"><span>Còn 5km</span><span>95%</span></div>
-                                            <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: 95%;"></div></div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn-act act-dispute" title="Xử lý Tranh chấp (BR-28)" onclick="openDisputeModal('row-bk-9015', '#BK-9015')"><i class="fa-solid fa-exclamation"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="grid-tab-content" id="grid-frozen">
-                        <table class="enterprise-table" id="table-frozen">
-                            <thead>
-                                <tr>
-                                    <th>Mã Chuyến</th>
-                                    <th>Hành khách</th>
-                                    <th>Tài xế</th>
-                                    <th>Lý do Đóng băng / Khiếu nại</th>
-                                    <th class="text-end">Giải quyết</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="frozen-row" id="row-bk-9000">
-                                    <td>
-                                        <span class="bk-id">#BK-9000</span>
-                                        <div class="mt-2"><span class="pill-badge bg-frozen"><i class="fa-solid fa-snowflake me-1"></i> Bị đóng băng</span></div>
-                                    </td>
-                                    <td><div class="person-info"><div class="icon-avatar"><i class="fa-regular fa-user"></i></div>Nguyễn T. Oanh</div></td>
-                                    <td><div class="person-info"><div class="icon-avatar"><i class="fa-solid fa-car"></i></div>Hoàng Tài Xế</div></td>
-                                    <td class="frozen-reason">
-                                        <i class="fa-solid fa-lock me-1"></i> Khách báo tài xế cố tình đi đường xa để tăng cước, thu thêm 50k phụ phí không rõ ràng.
-                                    </td>
-                                    <td>
-                                        <div class="action-group">
-                                            <button class="btn-act act-resolve" title="Giải quyết & Mở khóa" onclick="resolveDispute('row-bk-9000')"><i class="fa-solid fa-gavel"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-            </section>
-
-            <section id="tab-gps" class="tab-section">
-                <div class="d-flex justify-content-between align-items-end mb-4">
-                    <h4 class="fw-bold m-0 text-dark">Trung tâm Giám sát Hành trình</h4>
-                </div>
-                <div class="map-layout">
-                    <div class="map-area" id="simulatedMap">
-                        </div>
-                    <div class="map-sidebar">
-                        <div class="map-sidebar-header">
-                            <div class="search-box">
-                                <i class="fa-solid fa-magnifying-glass text-muted"></i>
-                                <input type="text" id="mapSearchInput" placeholder="Tìm biển số, tên tài xế...">
-                            </div>
-                        </div>
-                        <div class="vehicle-list" id="vehicleList">
-                            </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tab-incidents" class="tab-section">
-                <h4 class="fw-bold mb-4 text-dark">Kênh Tiếp nhận Sự cố Khẩn cấp</h4>
-
-                <div class="sos-alert shadow-sm" id="sosBox">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h4 class="fw-bold text-danger mb-2"><i class="fa-solid fa-bell-concierge fa-shake me-2"></i>Cuộc gọi khẩn cấp (Hotline)!</h4>
-                            <p class="m-0 text-dark fs-5"><strong>Hành trình: #BK-888 (Xe 51G-987.65)</strong> | Tài xế báo cáo nổ lốp trên cao tốc.</p>
-                            <p class="m-0 text-muted small mt-2">Thời gian phát tín hiệu: 10:05 AM (Vừa xong)</p>
-                        </div>
-                        <button class="btn-sos shadow-sm"><i class="fa-solid fa-headset me-2"></i> Tiếp nhận xử lý ngay</button>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-    </div>
-
-    <div class="modal fade modal-blur" id="disputeModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 550px;">
-            <div class="modal-content modal-content-custom">
-                <div class="modal-header border-0 px-4 pt-4 pb-2">
-                    <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-snowflake text-info me-2"></i> Đóng Băng Dòng Tiền</h3>
-                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body px-4 pb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded-4" style="background: #f1f5f9; border: 1px solid #e2e8f0;">
-                        <span class="fw-bold text-muted fs-6">Tham chiếu chuyến đi:</span>
-                        <span class="fw-bold text-dark fs-4" id="disputeBookingId">#BK-xxxx</span>
+            <div class="col-lg-3 mb-4">
+                <div class="glass-panel sticky-top" style="top: 100px;">
+                    <div class="toc-header border-bottom border-light pb-3 mb-4">
+                        <i class="fa-solid fa-layer-group me-2"></i> Bảng Điều Khiển
                     </div>
                     
-                    <label class="fw-bold text-dark mb-2 fs-6">Chi tiết Khiếu nại <span class="text-danger">*</span></label>
-                    <textarea class="form-control textarea-custom w-100 mb-4" rows="4" id="disputeReason" placeholder="Ghi chú lý do khách phàn nàn. Hệ thống sẽ tạm khóa thanh toán của tài xế..." oninput="validateDisputeForm()"></textarea>
-                    
-                    <div class="d-flex gap-3">
-                        <button class="btn-base w-50 py-3" style="background: var(--text-color); color: white;" onclick="submitDispute(true)" id="btnTestError" disabled>Test Lỗi "Update failed"</button>
-                        <button class="btn-base w-50 py-3" style="background: var(--frozen);" onclick="submitDispute(false)" id="btnFreeze" disabled><i class="fa-solid fa-lock me-2"></i> Khóa Hóa Đơn</button>
+                    <div class="toc-container position-relative">
+                        <div class="toc-indicator" id="vertical-indicator"></div>
+                        
+                        <ul class="toc-list" id="dispatcher-nav">
+                            <li><a href="#overview" class="toc-link active"><i class="fa-solid fa-chart-pie me-2"></i> Tổng quan</a></li>
+                            <li><a href="#map-tracking" class="toc-link"><i class="fa-solid fa-map-location-dot me-2"></i> Bản đồ trực tuyến</a></li>
+                            <li><a href="#trip-management" class="toc-link"><i class="fa-solid fa-route me-2"></i> Quản lý chuyến đi</a></li>
+                            <li><a href="#driver-status" class="toc-link"><i class="fa-solid fa-id-card me-2"></i> Trạng thái tài xế</a></li>
+                            <li><a href="#disputes" class="toc-link"><i class="fa-solid fa-triangle-exclamation me-2"></i> Xử lý khiếu nại</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-9">
+    
+    <div id="overview" class="dashboard-section active">
+        <div class="glass-panel mb-4">
+            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-chart-line text-success me-2"></i> Chỉ Số Vận Hành Hôm Nay</h4>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="glass-panel text-center p-4">
+                        <h2 class="text-success fw-bold mb-1">128</h2>
+                        <span class="text-white-50 fw-medium">Chuyến hoàn thành</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-panel text-center p-4">
+                        <h2 class="text-warning fw-bold mb-1">15</h2>
+                        <span class="text-white-50 fw-medium">Đang chờ điều phối</span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="glass-panel text-center p-4">
+                        <h2 class="text-danger fw-bold mb-1">2</h2>
+                        <span class="text-white-50 fw-medium">Khiếu nại mới</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="glass-panel h-100">
+                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-bell text-danger me-2"></i> Sự Cố Hệ Thống Cần Xử Lý</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="text-white-50 small mb-2"><i class="fa-solid fa-circle-exclamation text-danger me-2"></i> Chuyến đi <strong>#TR-8080</strong> bị đóng băng do tài xế đi muộn.</li>
+                        <li class="text-white-50 small"><i class="fa-solid fa-circle-exclamation text-warning me-2"></i> Yêu cầu Phân tài cho chuyến <strong>#TR-8091</strong> đang quá hạn phản hồi.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="glass-panel h-100">
+                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-bolt text-warning me-2"></i> Trạng Thái Đội Xe Tóm Tắt</h5>
+                    <div class="d-flex justify-content-between text-white-50 small mb-2">
+                        <span>Tài xế đang trực tuyến:</span>
+                        <strong class="text-success">42 xe</strong>
+                    </div>
+                    <div class="d-flex justify-content-between text-white-50 small">
+                        <span>Tài xế đang bận chuyến:</span>
+                        <strong class="text-warning">35 xe</strong>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="modal fade modal-blur" id="resolveModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 500px;">
-            <div class="modal-content modal-content-custom">
-                <div class="modal-header border-0 px-4 pt-4 pb-2">
-                    <h3 class="fw-bold text-dark m-0"><i class="fa-solid fa-gavel text-success me-2"></i> Phán Quyết Hệ Thống</h3>
-                    <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
+    <div id="map-tracking" class="dashboard-section">
+        <div class="glass-panel">
+            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Bản đồ trực tuyến</h4>
+            <div class="map-container" style="height: 50rem; border-radius: 40px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15);">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.324285885265!2d106.69741231462252!3d10.786445992314811!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f3f3129e64d%3A0x8d6b2d79522c7f30!2zQ2jhu6MgQuG6v24gVGjDoG5o!5e0!3m2!1svi!2s!4v1680000000000!5m2!1svi!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div id="trip-management" class="dashboard-section">
+        <div class="glass-panel">
+            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-route text-success me-2"></i> Quản lý chi tiết chuyến đi</h4>
+            
+            <div class="sliding-tabs-container">
+                <div id="tripTabIndicator" class="tab-indicator"></div>
+                <button class="tab-pill active" onclick="switchTripTab(this)">Tất cả</button>
+                <button class="tab-pill" onclick="switchTripTab(this)">Đang chờ</button>
+                <button class="tab-pill" onclick="switchTripTab(this)">Đang chạy</button>
+                <button class="tab-pill" onclick="switchTripTab(this)">Hoàn thành</button>
+            </div>
+
+            <div class="table-glass-wrapper">
+                <table class="table-glass w-100">
+                    <thead>
+                        <tr>
+                            <th>Mã Chuyến</th>
+                            <th>Khách Hàng</th>
+                            <th>Lộ Trình</th>
+                            <th>Trạng Thái</th>
+                            <th>Thao Tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>#TR-8091</strong></td>
+                            <td>Nguyễn Văn A</td>
+                            <td>HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</td>
+                            <td><span class="glass-badge bg-warning text-dark">Đang chờ</span></td>
+                            <td><button class="btn-glass-action">Phân tài</button></td>
+                        </tr>
+                        <tr>
+                            <td><strong>#TR-8092</strong></td>
+                            <td>Trần Thị B</td>
+                            <td>Hà Nội <i class="fa-solid fa-arrow-right mx-1"></i> Hải Phòng</td>
+                            <td><span class="glass-badge bg-primary text-white">Đang chạy</span></td>
+                            <td><button class="btn-glass-action">Theo dõi</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="driver-status" class="dashboard-section">
+        <div class="glass-panel">
+            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-id-card text-info me-2"></i> Danh sách trạng thái tài xế</h4>
+            <div class="table-glass-wrapper">
+                <table class="table-glass w-100">
+                    <thead>
+                        <tr>
+                            <th>Tài Xế</th>
+                            <th>Phương Tiện</th>
+                            <th>Đánh Giá</th>
+                            <th>Hoạt Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="avatar-glass" style="width: 40px; height: 40px;"><img src="../../assets/img/user-avatar.png" alt="TX"></div>
+                                    <span class="fw-bold">Lê Văn C</span>
+                                </div>
+                            </td>
+                            <td>Sedan Hạng D (51G-123.45)</td>
+                            <td><i class="fa-solid fa-star text-warning"></i> 4.9</td>
+                            <td>
+                                <label class="switch-glass">
+                                    <input type="checkbox" checked>
+                                    <span class="slider-glass"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="disputes" class="dashboard-section">
+        <div class="glass-panel">
+            <h4 class="fw-bold mb-4 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> Phòng xử lý khiếu nại & tranh chấp</h4>
+            <div class="glass-panel" style="background: rgba(255, 99, 71, 0.05); border-color: rgba(255, 99, 71, 0.2);">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold text-white mb-0">Khiếu nại chuyến #TR-8080</h5>
+                    <span class="fw-bold text-danger">Đóng băng: 500,000 VNĐ</span>
                 </div>
-                <div class="modal-body px-4 pb-4">
-                    <p class="text-muted fw-medium mb-4">Bạn đang thực hiện thao tác gỡ băng dòng tiền cho chuyến đi bị khiếu nại.</p>
-                    <select class="form-control textarea-custom w-100 mb-4" style="cursor: pointer;">
-                        <option>Bác bỏ khiếu nại (Trả tiền cho tài xế)</option>
-                        <option>Đồng ý khiếu nại (Hoàn phụ phí cho khách)</option>
-                        <option>Phạt cảnh cáo tài xế & Hoàn tiền</option>
-                    </select>
-                    <button class="btn-base w-100 py-3 text-white" style="background: var(--color-1);" onclick="simulateAction(this, true)"><i class="fa-solid fa-unlock-keyhole me-2"></i> Thi Hành & Mở Khóa</button>
+                <p class="text-white-50"><strong>Lý do:</strong> Tài xế đến muộn 45 phút so với giờ hẹn, thái độ không tốt với hành khách lớn tuổi.</p>
+                <div class="d-flex gap-3 mt-4">
+                    <button class="glass-liquid-btn fw-bold text-danger">Đồng ý khiếu nại (Phạt TX)</button>
+                    <button class="btn-glass-action">Bác bỏ khiếu nại</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3 toast-system-container" style="margin-top: 20px;">
-        <div id="systemErrorToast" class="toast align-items-center toast-premium toast-error w-100" role="alert">
-            <div class="d-flex">
-                <div class="toast-body"><i class="fa-solid fa-circle-xmark me-2 fs-5"></i> <span id="toastMsg">Update failed</span></div>
-                <button type="button" class="btn-close btn-close-white me-3 m-auto" data-bs-dismiss="toast"></button>
-            </div>
+</div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+       /**
+ * FleetFlow - Dispatcher Workspace Core Engine
+ * Architecture: Single-Page Dashboard & Liquid Glass Animation Controls
+ */
+
+document.addEventListener("DOMContentLoaded", function () {
+    // === 1. KHỞI TẠO CÁC PHẦN TỬ ĐẦU VÀO ===
+    const navbar = document.querySelector('.dispatcher-navbar') || document.querySelector('.custom-navbar');
+    const navTextElements = document.querySelectorAll('.nav-brand-text, .navbar-slogan');
+    const tocLinks = document.querySelectorAll(".toc-link");
+    const verticalIndicator = document.getElementById("vertical-indicator");
+    const sections = document.querySelectorAll('.dashboard-section');
+
+    // === 2. XỬ LÝ ĐỔI TRẠNG THÁI NAVBAR KHI SCROLL (IS-SCROLLED) ===
+    function handleNavbarScroll() {
+        if (!navbar) return;
+        if (window.scrollY > 50) {
+            navbar.classList.add('is-scrolled');
+            // Chuyển màu chữ sang tối để tương phản tốt trên nền kính sáng
+            navTextElements.forEach(el => {
+                if (el.classList.contains('text-white')) {
+                    el.classList.remove('text-white');
+                    el.classList.add('text-dark');
+                }
+            });
+        } else {
+            navbar.classList.remove('is-scrolled');
+            // Khôi phục chữ màu trắng khi quay về đỉnh nền đặc màu xanh
+            navTextElements.forEach(el => {
+                if (el.classList.contains('text-dark')) {
+                    el.classList.remove('text-dark');
+                    el.classList.add('text-white');
+                }
+            });
+        }
+    }
+    window.addEventListener('scroll', handleNavbarScroll);
+    handleNavbarScroll(); // Thực thi kiểm tra ngay khi tải lại trang
+
+    // === 3. ĐIỀU HƯỚNG TABS SINGLE-PAGE & DI CHUYỂN KÍNH DỌC (SIDEBAR) ===
+    function updateVerticalIndicator(activeLink) {
+        if (!activeLink || !verticalIndicator) return;
+        
+        const linkRect = activeLink.getBoundingClientRect();
+        const containerRect = activeLink.closest(".toc-list").getBoundingClientRect();
+        const topPos = linkRect.top - containerRect.top;
+        
+        // Tịnh tiến khối kính và co giãn chiều cao tương thích với phần tử mục lục
+        verticalIndicator.style.transform = `translateY(${topPos}px)`;
+        verticalIndicator.style.height = `${linkRect.height}px`;
+    }
+
+    // Thiết lập vị trí khối kính ban đầu cho tab đang kích hoạt mặc định
+    const initialActiveLink = document.querySelector(".toc-link.active");
+    if (initialActiveLink) {
+        // Đặt độ trễ nhỏ để font chữ và layout kịp ổn định vị trí chính xác
+        setTimeout(() => updateVerticalIndicator(initialActiveLink), 150);
+    }
+
+    // Đăng ký sự kiện Click chuyển tab thay vì cuộn trang
+    tocLinks.forEach(link => {
+        link.addEventListener("click", function (e) {
+            e.preventDefault();
+            
+            if (this.classList.contains('active')) return;
+            
+            // Cập nhật thanh chọn Sidebar
+            tocLinks.forEach(l => l.classList.remove("active"));
+            this.classList.add("active");
+            updateVerticalIndicator(this);
+            
+            // Xử lý hoán đổi hiển thị các Section nội dung chính
+            const targetId = this.getAttribute("href").substring(1);
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+                // Cuộn trang nhẹ nhàng lên đỉnh nội dung làm việc mới
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    });
+
+    // === 4. KHỞI TẠO BAN ĐẦU CHO TAB QUẢN LÝ CHUYẾN ĐI (NGANG) ===
+    const initialTripTab = document.querySelector('.tab-pill.active');
+    if (initialTripTab) {
+        setTimeout(() => moveTripIndicator(initialTripTab), 150);
+    }
+
+    // Đảm bảo các khối kính tự động căn chỉnh lại khi người dùng thay đổi kích thước màn hình
+    window.addEventListener('resize', () => {
+        const currentActiveSidebar = document.querySelector(".toc-link.active");
+        updateVerticalIndicator(currentActiveSidebar);
+        
+        const currentActiveTripTab = document.querySelector('.tab-pill.active');
+        if (currentActiveTripTab) moveTripIndicator(currentActiveTripTab);
+    });
+});
+
+// === 5. XỬ LÝ KHỐI KÍNH TRƯỢT NGANG & LỌC DỮ LIỆU CHUYẾN ĐI ===
+function switchTripTab(element) {
+    if (!element) return;
+    
+    // Chuyển đổi class Active giữa các nút bấm ngang
+    document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
+    element.classList.add('active');
+    
+    // Trượt khối kính nền
+    moveTripIndicator(element);
+    
+    // Thực hiện chức năng lọc trạng thái trực tiếp trên bảng dữ liệu kính
+    const filterValue = element.textContent.trim().toLowerCase();
+    const rows = document.querySelectorAll('#trip-management .table-glass tbody tr');
+    
+    rows.forEach(row => {
+        const badge = row.querySelector('.glass-badge');
+        if (!badge) return;
+        const statusText = badge.textContent.trim().toLowerCase();
+        
+        if (filterValue === 'tất cả' || statusText === filterValue) {
+            row.style.display = '';
+            row.style.style.animation = 'transitionSection 0.3s ease forwards';
+        } else {
+            row.style.display = 'none';
+        }
+    });
+}
+
+function moveTripIndicator(element) {
+    const indicator = document.getElementById('tripTabIndicator');
+    if (!indicator) return;
+    
+    const leftPosition = element.offsetLeft;
+    const buttonWidth = element.offsetWidth;
+
+    // Di chuyển và thay đổi độ rộng khít theo nội dung text của tab
+    indicator.style.transform = `translateX(${leftPosition}px)`;
+    indicator.style.width = `${buttonWidth}px`;
+}
+
+// === 6. GIẢ LẬP CÁC THAO TÁC XỬ LÝ TRÊN DASHBOARD (UX FEEDBACK) ===
+function simulateAction(button, isSuccess) {
+    if (!button) return;
+    const originalContent = button.innerHTML;
+    
+    // Vô hiệu hóa nút và tạo hiệu ứng chờ
+    button.disabled = true;
+    button.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang thi hành...`;
+    
+    setTimeout(() => {
+        button.disabled = false;
+        button.innerHTML = originalContent;
+        
+        if (isSuccess) {
+            showSystemToast("Hệ thống đã phê duyệt! Đóng băng quỹ được gỡ bỏ và cập nhật dòng tiền thành công.", "success");
+            
+            // Tìm và đóng modal chứa nút bấm này (nếu có)
+            const activeModal = button.closest('.modal');
+            if (activeModal) {
+                const modalInstance = bootstrap.Modal.getInstance(activeModal);
+                if (modalInstance) modalInstance.hide();
+            }
+        } else {
+            showSystemToast("Lỗi kết nối máy chủ điều phối. Thao tác chưa được ghi nhận.", "error");
+        }
+    }, 1200);
+}
+
+// === 7. HIỂN THỊ THÔNG BÁO HỆ THỐNG (TOAST PREMIUM) ===
+function showSystemToast(message, type = "success") {
+    const toastContainer = document.getElementById('systemErrorToast');
+    const toastMessageSpan = document.getElementById('toastMsg');
+    
+    if (!toastContainer || !toastMessageSpan) return;
+    
+    toastMessageSpan.textContent = message;
+    const iconElement = toastContainer.querySelector('i');
+    
+    // Tự động đồng bộ giao diện toast theo ngữ cảnh thành công/thất bại
+    if (type === "error") {
+        toastContainer.classList.add('toast-error');
+        if (iconElement) iconElement.className = "fa-solid fa-circle-xmark me-2 fs-5 text-danger";
+    } else {
+        toastContainer.classList.remove('toast-error');
+        if (iconElement) iconElement.className = "fa-solid fa-circle-check me-2 fs-5 text-success";
+    }
+    
+    const bootstrapToast = new bootstrap.Toast(toastContainer, { delay: 4000 });
+    bootstrapToast.show();
+}
+    </script>
 </body>
 </html>

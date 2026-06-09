@@ -13,11 +13,19 @@
     <link rel="stylesheet" href="../../style/pages/admin.css" />
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="../../js/base.js"> </script>
     <script src="../../js/admin.js" defer></script>
 
 
 </head>
 <body>
+    <div id="intro-overlay">
+        <video id="intro-video" autoplay muted playsinline>
+            <source src="../../assets/video/Admin-Intro.mp4" type="video/mp4">
+            Trình duyệt của bạn không hỗ trợ video này.
+        </video>
+        <button id="skip-btn">Bỏ qua Intro</button>
+    </div>
     <header>
       <nav class="navbar custom-navbar fixed-top">
         <div class="container-base h-100 position-relative">
