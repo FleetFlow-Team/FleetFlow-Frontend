@@ -11,6 +11,7 @@
     
     <link rel="stylesheet" href="../../style/base.css">
     <link rel="stylesheet" href="../../style/pages/dispatcher.css">
+    <script src="../../js/base.js"></script>
 </head>
 <body>
     <div class="luxury-glow-bg">
@@ -37,6 +38,15 @@
     <feDisplacementMap in="SourceGraphic" in2="blur" scale="30" xChannelSelector="R" yChannelSelector="G" />
   </filter>
 </svg>
+<div id="intro-overlay">
+        <video id="intro-video" autoplay playsinline>
+            <source src="../../assets/video/Dispatcher-Intro.mp4" type="video/mp4">
+            Trình duyệt của bạn không hỗ trợ video này.
+        </video>
+        <div class="container">
+            <button id="skip-btn">Skip</button>
+        </div>
+    </div>
 
     <header>
         <nav class="navbar dispatcher-navbar transition-all">
@@ -46,8 +56,10 @@
                 <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" height="60px" class="me-2">
             </a>
 
-            <div class="navbar-slogan text-white fw-medium fs-5 fst-italic">
-                "Điều phối thông minh, Vận hành tối ưu"
+            <div class="navbar-slogan text-white fw-medium fs-3 fst-italic">
+                <span class="text-warning mx-1">•</span>
+                Điều phối thông minh, Vận hành tối ưu
+                <span class="text-warning mx-1">•</span>
             </div>
 
             <div class="user-profile-dropdown ms-auto">
@@ -97,7 +109,7 @@
                         <div class="toc-indicator" id="vertical-indicator"></div>
                         
                         <ul class="toc-list" id="dispatcher-nav">
-                            <li><a href="#overview" class="toc-link active"><i class="fa-solid fa-chart-pie text-light me-2"></i> Tổng quan</a></li>
+                            <li><a href="#overview" class="toc-link active"><i class="fa-solid fa-chart-pie text-warning me-2"></i> Tổng quan</a></li>
                             <li><a href="#map-tracking" class="toc-link"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> Bản đồ trực tuyến</a></li>
                             <li><a href="#trip-management" class="toc-link"><i class="fa-solid fa-route text-success me-2"></i> Quản lý chuyến đi</a></li>
                             <li><a href="#driver-status" class="toc-link"><i class="fa-solid fa-id-card text-info me-2"></i> Trạng thái tài xế</a></li>
