@@ -662,7 +662,7 @@
                   id="btnLogin"
                 >
                   <span
-                    ><a href="pages/login.html" class="text-decoration-none"
+                    ><a href="#" class="text-decoration-none"
                       >Đăng nhập</a
                     ></span
                   >
@@ -1237,6 +1237,27 @@
         />
       </a>
     </aside>
+
+        <div class="login-modal-overlay" id="loginModal">
+  <div class="glass-login-container">
+    <button class="close-modal-btn" id="closeLoginModal">&times;</button>
+    
+    <div class="text-center mb-4">
+      <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
+      <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
+      <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+    </div>
+    <form id="loginForm" class="d-flex flex-column gap-3 mt-4">
+      <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập">
+      <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu">
+      
+      <button type="button" class="glass-btn-submit mt-3">Đăng nhập</button>
+    </form>
+    <div class="text-center mt-4">
+      <a href="#" class="forget-p">Quên mật khẩu?</a>
+    </div>
+  </div>
+</div>
     <script src="js/base.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -1424,6 +1445,10 @@ document.addEventListener("DOMContentLoaded", function() {
             updateCarCarousel();
         }
     });
+
+    
     </script>
+
+
   </body>
 </html>

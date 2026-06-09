@@ -43,3 +43,33 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 });
+
+// =========================================
+// 3. LOGIN MODAL LOGIC
+// =========================================
+const btnLogin = document.getElementById('btnLogin');
+const loginModal = document.getElementById('loginModal');
+const closeLoginModal = document.getElementById('closeLoginModal');
+
+if (btnLogin && loginModal && closeLoginModal) {
+    // Sự kiện mở Box Đăng nhập
+    btnLogin.addEventListener('click', function(e) {
+        e.preventDefault(); // Chặn thẻ <a> chuyển sang trang login.html
+        loginModal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Khóa cuộn màn hình ở dưới
+    });
+
+    // Sự kiện đóng khi bấm nút X
+    closeLoginModal.addEventListener('click', function() {
+        loginModal.classList.remove('active');
+        document.body.style.overflow = ''; 
+    });
+
+    // Sự kiện đóng khi bấm ra vùng mờ (overlay) bên ngoài box
+    loginModal.addEventListener('click', function(e) {
+        if (e.target === loginModal) {
+            loginModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    });
+}
