@@ -37,72 +37,25 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: 'Inter', sans-serif; /* Font chữ hiện đại */
-    color: var(--text-color);
-    background-color: var(--color-2);
-}
-
-/* Yêu cầu: Xóa gạch chân cho toàn bộ thẻ a */
-a {
-    text-decoration: none;
-    color: inherit; /* Kế thừa màu từ thẻ cha thay vì màu xanh dương mặc định */
-    transition: color var(--transition-speed) ease;
-}
-
-/* =========================================
-   3. STANDARD BUTTON (NÚT BẤM DÙNG CHUNG)
-========================================= */
-.btn-base {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--color-1);
-    color: var(--color-2);
-    padding: 10px 24px;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px; /* Bo góc nhẹ nhàng, hiện đại */
-    cursor: pointer;
-    transition: all var(--transition-speed) ease;
-}
-
-.btn-base:hover {
-    background-color: var(--color-3);
-    color: #333333; /* Đổi màu chữ tối lại để nổi bật trên nền vàng */
-    transform: translateY(-2px); /* Hiệu ứng nảy lên nhẹ khi hover */
-    box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
-}
-
-.btn-base:active {
-    transform: translateY(0);
-}
-
-/* =========================================
-   4. CONTAINERS (KHUNG CHỨA NỘI DUNG)
-========================================= */
-/* Container chuẩn có giới hạn chiều rộng, luôn canh giữa */
-.container-base {
-    width: 100%;
-    max-width: 1300px; /* Kích thước chuẩn cho màn hình Desktop */
-    margin: 0 auto;
-    padding: 0 15px; /* Giữ khoảng cách 2 bên trên mobile */
-}
-
-/* Container tràn viền 100% */
-.container-fluid-base {
-    width: 100%;
-    padding: 0 15px;
-}
-
 html {
     scroll-behavior: smooth;
     scroll-padding-top: 90px;
 }
 
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    background-color: var(--color-2);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
 /* =========================================
-   2. REVEAL ON SCROLL (HIỆU ỨNG XUẤT HIỆN)
+   3. REVEAL ON SCROLL (HIỆU ỨNG XUẤT HIỆN)
 ========================================= */
 .reveal-on-scroll {
     opacity: 0;
@@ -120,20 +73,61 @@ html {
 .delay-4 { transition-delay: 0.8s; }
 
 /* =========================================
-   3. NAVBAR & DROPDOWN HEADER
+   4. CONTAINERS (KHUNG CHỨA NỘI DUNG)
 ========================================= */
-.container-base { width: 100%; padding-right: 15px; padding-left: 15px; margin-right: auto; margin-left: auto; display: flex; align-items: center; justify-content: space-between; }
-.brand-overflow { position: relative; height: 70px; display: flex; align-items: center; padding: 0; }
-.brand-overflow .logo-img { height: 100%; width: auto; object-fit: contain; padding: 5px 0; }
+.container-base {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+}
+
+.container-fluid-base {
+    width: 100%;
+    padding: 0 15px;
+}
+
+/* =========================================
+   5. NAVBAR & DROPDOWN HEADER
+========================================= */
+.brand-overflow { 
+    position: relative; height: 70px; display: flex; align-items: center; padding: 0; 
+}
+.brand-overflow .logo-img { 
+    height: 100%; width: auto; object-fit: contain; padding: 5px 0; 
+}
 
 .nav-link { transition: all 0.3s ease; }
-.nav-link:hover { opacity: 1; color: var(--color-3) !important; transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 222, 89, 0.6); }
+.nav-link:hover { 
+    opacity: 1; color: var(--color-3) !important; 
+    transform: translateY(-2px); text-shadow: 0 0 8px rgba(255, 222, 89, 0.6); 
+}
 
-/* Trạng thái Navbar dính và cuộn */
+/* Navbar Center Links */
+.navbar-center-links { 
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 20px; 
+}
+
+.nav-link-center {
+    display: flex; color: rgba(255, 255, 255, 0.85); font-weight: 600; font-size: 1.05rem;
+    padding: 8px 16px; transition: all 0.4s var(--liquid-easing); border-radius: 50px;
+    width: 130px; justify-content: center; align-items: center; 
+}
+
+.nav-link-center:hover, .nav-link-center.active {
+    color: white; background: rgba(255, 255, 255, 0.15); box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+.nav-link-center:hover { transform: translateY(-5px); }
+
+/* Trạng thái Navbar dính */
 .custom-navbar.sticky-top {
     position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%;
-    background-color: var(--color-1) !important; height: 70px; padding: 0 !important;
-    transition: all 0.6s var(--liquid-easing), background-color 0.4s ease; isolation: isolate; border: 0.5px solid transparent; z-index: 1030;
+    background-color: var(--color-1); height: 70px; padding: 0;
+    transition: all 0.6s var(--liquid-easing), background-color 0.4s ease; 
+    isolation: isolate; border: 0.5px solid transparent; z-index: 1030;
 }
 .custom-navbar::after {
     content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
@@ -145,27 +139,45 @@ html {
     box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.15); opacity: 0; transition: opacity 0.6s ease;
 }
 
+/* Fix viền Liquid Glass cho Navbar Scrolled */
 .custom-navbar.is-scrolled {
     top: 15px; width: 95%; max-width: 1300px; border-radius: 50px;
-    background-color: transparent !important; 
-    border: 2px solid transparent !important;
+    background-color: transparent; border: 1px solid rgba(255, 255, 255, 0.4);
     box-shadow: 0 0 0 2px var(--glass-border), 0 15px 35px rgba(0, 0, 0, 0.2); 
+    overflow: visible; 
 }
-.custom-navbar.is-scrolled::after, .custom-navbar.is-scrolled::before { opacity: 1; }
+.custom-navbar.is-scrolled::after { 
+    inset: -12px; opacity: 1; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); clip-path: inset(12px round 50px);
+    transform: translateZ(0); will-change: transform, filter; background: transparent;
+}
+.custom-navbar.is-scrolled::before { opacity: 1; }
 
 /* =========================================
-   4. BUTTONS & UI COMPONENTS (LIQUID EFFECT)
+   6. BUTTONS & UI COMPONENTS
 ========================================= */
-/* Thay thế phần 4. BUTTONS & UI COMPONENTS trong base.css */
+/* Standard Button */
+.btn-base {
+    display: inline-flex; align-items: center; justify-content: center;
+    background-color: var(--color-1); color: var(--color-2);
+    padding: 10px 24px; font-size: 1rem; font-weight: 600;
+    border: none; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+}
+.btn-base:hover {
+    background-color: var(--color-3); color: #333333;
+    transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
+}
+.btn-base:active { transform: translateY(0); }
+
+/* Liquid Glass Buttons */
 .btn-login, .btn-hero, .btn-cta-outline, .social-icon-btn, .step-number {
     position: relative; isolation: isolate; transform-style: preserve-3d;
-    background: transparent !important; border: 1px solid var(--glass-border) !important;
+    background: transparent; border: 1px solid var(--glass-border);
 }
 
 .btn-login::after, .btn-hero::after, .btn-cta-outline::after, .social-icon-btn::after, .step-number::after {
-    content: ''; position: absolute; inset: 0 !important; z-index: -1; border-radius: inherit;
-    background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-    transition: all 0.5s ease;
+    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
+    background: var(--glass-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); transition: all 0.5s ease;
 }
 
 .btn-login::before, .btn-hero::before, .btn-cta-outline::before, .social-icon-btn::before, .step-number::before {
@@ -174,41 +186,64 @@ html {
     transition: box-shadow 0.5s var(--liquid-easing);
 }
 
-.btn-login > *, .btn-hero > *, .btn-cta-outline > *, .social-icon-btn > *, .step-number > * {
-    position: relative; z-index: 3;
-}
+.btn-login > *, .btn-hero > *, .btn-cta-outline > *, .social-icon-btn > *, .step-number > * { position: relative; z-index: 3; }
 
-/* Button Định dạng */
 .btn-login, .btn-hero, .btn-cta-outline {
-    border-radius: 50px; padding: 10px 28px; font-weight: 600; text-decoration: none; cursor: pointer;
-    box-shadow: 0 8px 20px var(--glass-shadow); transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease; color: var(--color-dark);
+    border-radius: 50px; padding: 10px 28px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 8px 20px var(--glass-shadow); transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease; 
 }
 
-.btn-login { --glass-bg: rgba(255, 255, 255, 0.8); }
+.btn-login { --glass-bg: rgba(255, 255, 255, 0.8); color: var(--color-dark); }
+.btn-hero, .btn-cta-outline { --glass-bg: rgba(255, 255, 255, 0.12); color: white; border: 1px solid rgba(255,255,255,0.35); }
+.btn-hero:hover, .btn-cta-outline:hover { transform: translateY(-5px); }
 
-.btn-hero, .btn-cta-outline {
-    --glass-bg: rgba(255, 255, 255, 0.12);
-    color: white; border: 1px solid rgba(255,255,255,0.35) !important;
-    transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease, color 0.4s ease;
+/* Clean Glass Buttons (Profile & Notification) */
+.notification-btn, .user-profile-btn {
+    position: relative; display: inline-flex; align-items: center; justify-content: center;
+    background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.8);
+    color: var(--color-dark); text-decoration: none; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease; height: 46px; z-index: 1;
 }
+
+.notification-btn { width: 46px; border-radius: 50%; font-size: 1.15rem; }
+.user-profile-btn { gap: 12px; border-radius: 50px; padding: 4px 4px 4px 18px; }
+
+.notification-btn:hover, .user-profile-btn:hover {
+    background: #ffffff; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12); transform: translateY(-2px);
+}
+
+.notification-btn .badge-dot, .notification-badge {
+    position: absolute; top: 0px; right: 2px; width: 12px; height: 12px;
+    background-color: #ef4444; border: 2px solid #00b14f; border-radius: 50%; padding: 0;
+}
+
+.user-profile-btn .avatar {
+    width: 36px; height: 36px; border-radius: 50%; object-fit: cover;
+    background-color: var(--color-1); color: white; display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 0.9rem;
+}
+
 /* =========================================
-   5. FEATURE CARDS (LIQUID GLASS MESH 3D)
+   7. FEATURE CARDS & PANELS (LIQUID GLASS MESH 3D)
 ========================================= */
 .feature-card {
-    background: rgba(255, 255, 255, 0.05) !important; padding: 40px 30px; border-radius: 50px; height: 100%; text-align: center;
-    border: 2px solid transparent !important; position: relative; isolation: isolate; transform-style: preserve-3d;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0,0,0,0.05); transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease;
+    background: rgba(255, 255, 255, 0.05); padding: 40px 30px; border-radius: 50px; height: 100%; text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.4); position: relative; isolation: isolate; transform-style: preserve-3d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0,0,0,0.05); 
+    transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease; overflow: visible; 
 }
 
-.feature-card::after {
-    content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
-    background: rgba(255, 255, 255, 0.3); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
-    transition: all 0.5s ease;
+.feature-card::after{
+    content: ''; position: absolute; inset: -12px; z-index: -1; 
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); clip-path: inset(12px round 50px);
+    transform: translateZ(0); will-change: transform, filter;
 }
 
 .feature-card::before {
     content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
-    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.7), inset -2px -2px 5px 0 rgba(0, 0, 0, 0.03); transition: box-shadow 0.5s ease;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05); transition: box-shadow 0.5s ease;
 }
 
 .feature-card > * { position: relative; z-index: 3; transform: translateZ(20px); }
@@ -219,9 +254,8 @@ html {
 
 .feature-icon-wrapper { 
     width: 80px; height: 80px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; 
-    margin-bottom: 25px; background: rgba(255, 255, 255, 0.4) !important; backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted); 
-    border: 2px solid transparent; 
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 8px 16px rgba(0,0,0,0.05); transition: transform 0.5s var(--liquid-easing);
+    margin-bottom: 25px; background: rgba(255, 255, 255, 0.4); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted); 
+    border: 2px solid transparent; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 8px 16px rgba(0,0,0,0.05); transition: transform 0.5s var(--liquid-easing);
 }
 
 .icon-blue i { color: #3182ce; }
@@ -233,7 +267,179 @@ html {
 .feature-card p { color: var(--text-color); opacity: 0.85; font-size: 0.95rem; line-height: 1.6; margin: 0; }
 
 /* =========================================
-   6. FOOTER 
+   8. FORM ELEMENTS (BOOTSTRAP OVERRIDE)
+========================================= */
+input { border-radius: 50px; }
+
+body .form-floating > .form-control:focus ~ label::after,
+body .form-floating > .form-control:not(:placeholder-shown) ~ label::after,
+body .form-floating > .form-control:-webkit-autofill ~ label::after {
+    background-color: transparent !important;
+}
+
+body .form-floating > label { background-color: transparent !important; padding-left: 20px; }
+
+body .form-floating > .form-control:focus ~ label,
+body .form-floating > .form-control:not(:placeholder-shown) ~ label {
+    color: var(--color-1) !important; font-weight: 700; opacity: 0.9;
+    transform: scale(0.85) translateY(-0.6rem) translateX(0.5rem); 
+}
+
+body .form-floating > .form-control { padding-top: 1.625rem; padding-bottom: 0.625rem; }
+
+/* =========================================
+   9. SECTION TRANG CHỦ MỚI (FLEET SCROLL)
+========================================= */
+.fleet-scroll-container {
+    scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+}
+.fleet-scroll-container::-webkit-scrollbar { height: 8px; }
+.fleet-scroll-container::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.05); border-radius: 10px; }
+.fleet-scroll-container::-webkit-scrollbar-thumb { background: var(--color-1); border-radius: 10px; }
+.fleet-scroll-container::-webkit-scrollbar-thumb:hover { background: var(--color-3); }
+
+/* =========================================
+   10. AI CHAT LIQUID GLASS (findCar.html)
+========================================= */
+/* Container chính ôm toàn bộ đoạn chat */
+.ai-liquid-chat-container {
+  position: relative;
+  isolation: isolate;
+  transform-style: preserve-3d;
+  /* Tăng độ đục của nền và thêm blur mạnh để dễ đọc chữ */
+  background: rgba(255, 255, 255, 0.057) !important;
+  backdrop-filter: blur(50px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  
+  border: 2px solid transparent !important;
+  border-radius: 50px;
+  padding: 40px;
+  max-width: 900px;
+  overflow: visible;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 20px 50px rgba(0, 0, 0, 0.05);
+  width: 500px;
+  margin-bottom: 20px;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Lớp kính lỏng phía sau của khung chat */
+.ai-liquid-chat-container::after {
+  content: '';
+  position: absolute;
+  inset: -12px !important;
+  z-index: -1;
+  /* Đồng bộ nền và độ mờ (blur) với container chính */
+  background: rgba(255, 255, 255, 0.6); 
+  backdrop-filter: blur(25px);
+  -webkit-backdrop-filter: blur(25px);
+  clip-path: inset(12px round 50px) !important;
+  transform: translateZ(0);
+}
+
+.ai-liquid-chat-container::before {
+    content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
+    box-shadow: inset 2px 2px 8px rgba(255, 255, 255, 0.8), inset -2px -2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.ai-liquid-chat-container.show { display: block; animation: popUpGlass 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards; }
+@keyframes popUpGlass { to { opacity: 1; transform: translateY(0); } }
+
+.chat-glass-messages { max-height: 380px; overflow-y: auto; padding-right: 10px; display: flex; flex-direction: column; }
+.chat-glass-messages::-webkit-scrollbar { width: 0px; }
+
+/* AI Avatar & Bubbles */
+.avatar-glass {
+    position: relative; width: 60px; height: 60px; border-radius: 50px; border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.4); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 5px 15px rgba(0, 0, 0, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 0.8);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; padding: 4px; 
+}
+.avatar-glass img { width: 100%; height: 100%; object-fit: cover; border-radius: 50px; }
+.avatar-glass i { font-size: 20px; color: var(--color-1); }
+
+.chat-glass-bubble {
+    position: relative; border-radius: 50px; padding: 15px 25px; border: 2px solid transparent;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.03), inset 2px 2px 6px rgba(255, 255, 255, 0.7);
+    backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+}
+
+.user-bubble { background: rgba(255, 255, 255, 0.4); border-top-left-radius: 15px; border-top-right-radius: 15px; }
+.ai-bubble { background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 222, 89, 0.15) 100%); border-top-left-radius: 15px; }
+.typing-bubble { background: rgba(255, 255, 255, 0.3); padding: 15px 30px; border-top-left-radius: 15px; display: inline-flex; width: auto; }
+
+/* Typing Dots */
+.typing-dots { display: flex; align-items: center; gap: 4px; }
+.typing-dots span { width: 6px; height: 6px; background-color: white; border-radius: 50%; display: inline-block; animation: bounce 1.4s infinite ease-in-out both; }
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
+
+/* AI Badges & Car Suggestions */
+.car-suggestion-glass {
+    background: rgba(255, 255, 255, 0.5); border: 2px solid transparent; border-radius: 50px;
+    padding: 10px 25px 10px 10px; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), inset 2px 2px 5px rgba(255, 255, 255, 0.9);
+}
+.car-img-wrapper {
+    width: 65px; height: 65px; border-radius: 50px; background: rgba(255, 255, 255, 0.9);
+    display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08); padding: 10px;
+}
+.car-img-wrapper img { width: 100%; height: auto; object-fit: contain; }
+
+.glass-badge {
+    display: inline-block; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 700;
+    border: 2px solid transparent; margin-right: 8px; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+}
+.glass-badge.highlight { background: rgba(0, 177, 79, 0.15); color: var(--color-1); }
+.glass-badge.normal { background: rgba(255, 255, 255, 0.6); color: var(--text-color); }
+
+/* Suggestions Chips */
+.chat-glass-suggestions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 0 5px; }
+.glass-suggestion-chip {
+    border-radius: 50px; padding: 8px 16px; font-size: 0.8rem; font-weight: 500; color: var(--text-color);
+    background: rgba(255, 255, 255, 0.3); border: 2px solid transparent;
+    backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.05); cursor: pointer; transition: all 0.3s ease;
+}
+.glass-suggestion-chip:hover {
+    background: var(--glass-green); color: black; transform: translateY(-2px);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 177, 79, 0.2);
+}
+
+/* AI Input & Float Widget */
+.chat-glass-input-area { display: flex; gap: 10px; align-items: center; padding-top: 15px; border-top: 1px solid rgba(255, 255, 255, 0.635); }
+.glass-input {
+    flex-grow: 1; border-radius: 50px; padding: 15px 20px; border: 2px solid transparent;
+    background: rgba(255, 255, 255, 0.3); backdrop-filter: url(#frosted); -webkit-backdrop-filter: url(#frosted);
+    box-shadow: 0 0 2px rgba(255, 255, 255, 0.6); outline: none; color: var(--text-color);
+}
+.glass-send-btn {
+    width: 50px; height: 50px; border-radius: 50px; border: 2px solid transparent; background: var(--color-1); color: white;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 4px 15px rgba(0, 177, 79, 0.3); transition: transform 0.2s ease; flex-shrink: 0;
+}
+.glass-send-btn:hover { transform: scale(1.05); }
+
+.ai-floating-widget { position: fixed; bottom: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; align-items: flex-end; }
+.ai-img { width: 8rem; height: auto; cursor: pointer; transition: transform 0.3s ease; }
+.ai-img:hover { transform: scale(1.3); }
+.ai-trigger-btn img { width: 100%; height: 100%; object-fit: cover; border-radius: 50px; }
+
+/* =========================================
+   11. FLOATING CONTACT
+========================================= */
+.floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
+.social-icon-btn {
+    width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    --glass-bg: rgba(255,255,255,0.2); box-shadow: 0 8px 20px rgba(0,0,0,0.2); transition: transform 0.5s var(--liquid-easing);
+}
+.social-icon-btn img { position: relative; z-index: 3; border-radius: 50%; }
+.social-icon-btn:hover { transform: scale(1.15) translateY(-10px); }
+
+/* =========================================
+   12. FOOTER 
 ========================================= */
 footer { background-color: #111111; color: #a0aec0; padding: 60px 0 20px 0; font-size: 0.9rem; }
 footer h5 { color: white; font-weight: 700; margin-bottom: 20px; }
@@ -243,691 +449,7 @@ footer ul a { color: #a0aec0; text-decoration: none; transition: 0.3s; }
 footer ul a:hover { color: var(--color-1); padding-left: 5px; }
 .footer-bottom { border-top: 1px solid #333; margin-top: 40px; padding-top: 20px; text-align: center; }
 
-/* =========================================
-   7. FLOATING CONTACT
-========================================= */
-.floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
-.social-icon-btn {
-    width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
-    --glass-bg: rgba(255,255,255,0.2); box-shadow: 0 0 0 2px var(--glass-border), 0 8px 20px rgba(0,0,0,0.2); transition: transform 0.5s var(--liquid-easing);
-}
-.social-icon-btn img { position: relative; z-index: 3; border-radius: 50%; }
-.social-icon-btn:hover { transform: scale(1.15) translateY(-10px); }
-
-/* CSS cho thiết bị di động (Responsive nhỏ hơn 768px) */
+/* CSS cho thiết bị di động */
 @media (max-width: 768px) {
-    .container-base {
-        max-width: 100%;
-        padding: 0 20px;
-    }
+    .container-base { max-width: 100%; padding: 0 20px; }
 }
-
-/* =========================================
-   BỘ FIX TRIỆT ĐỂ LỖI VIỀN LIQUID GLASS 
-   (CẬP NHẬT THEO PHONG CÁCH DEMO)
-========================================= */
-/* Thay thế BỘ FIX TRIỆT ĐỂ LỖI VIỀN LIQUID GLASS trong base.css */
-
-/* 1. Đảm bảo viền (border) và khung chuẩn nằm ở thẻ Cha, tuyệt đối KHÔNG chứa filter */
-.custom-navbar.is-scrolled,
-.feature-card,
-.policy-sidebar .glass-panel {
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.4) !important;
-    overflow: visible; 
-}
-
-/* 2. Lớp kính lỏng (Liquid Layer) */
-.custom-navbar::after,
-.feature-card::after,
-.policy-sidebar .glass-panel::after {
-    content: ''; 
-    position: absolute; 
-    inset: -12px !important; 
-    z-index: -1; 
-    backdrop-filter: blur(16px); 
-    -webkit-backdrop-filter: blur(16px);
-    filter: url(#liquid-distortion); 
-    clip-path: inset(12px round 50px) !important;
-    transform: translateZ(0); 
-    will-change: transform, filter;
-}
-
-/* 3. Lớp bóng đổ bên trong (Bóng nổi 3D - không bị ảnh hưởng bởi liquid) */
-.custom-navbar::before,
-.feature-card::before,
-.policy-sidebar .glass-panel::before {
-    content: ''; 
-    position: absolute; 
-    inset: 0; 
-    z-index: 2; 
-    border-radius: inherit; 
-    pointer-events: none;
-    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
-                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
-}
-
-/* =========================================
-   NÚT PROFILE KẾ THỪA LIQUID TỪ NÚT ĐĂNG NHẬP
-========================================= */
-.user-profile-btn {
-    position: relative;
-    isolation: isolate;
-    transform-style: preserve-3d;
-    background: transparent !important;
-    border: 2px solid transparent !important;
-    border-radius: 50px;
-    padding: 6px 6px 6px 18px;
-    color: var(--color-dark);
-    cursor: pointer;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 8px 20px rgba(0,0,0,0.1);
-    transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease;
-    overflow: visible; 
-    text-decoration: none;
-    height: 44px;
-}
-
-/* Lớp kính nền sáng của nút Profile */
-.user-profile-btn::after {
-    content: ''; 
-    position: absolute; 
-    inset: 0 !important; 
-    z-index: -1; 
-    background: rgba(255, 255, 255, 0.85); 
-    backdrop-filter: url(#frosted); 
-    -webkit-backdrop-filter: url(#frosted);
-    border-radius: inherit; 
-    transition: all 0.5s ease;
-}
-
-/* Bóng đổ 3D bên trong viền */
-.user-profile-btn::before {
-    content: ''; position: absolute; inset: 0; z-index: -1; 
-    border-radius: inherit; pointer-events: none;
-    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.8), 
-                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
-}
-
-/* Đẩy ảnh avatar và chữ lên mặt trên cùng */
-.user-profile-btn > * {
-    position: relative;
-    z-index: 2;
-}
-
-/* Hiệu ứng Hover - Nảy 3D không gian */
-.user-profile-btn:hover {
-    transform: perspective(500px) translateZ(20px) translateY(-4px); 
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 15px 30px rgba(0, 0, 0, 0.15);
-}
-
-.user-profile-btn:hover::after {
-    background: rgba(255, 255, 255, 1); 
-}
-
-/* Hiệu ứng Nhấn - Lún xuống */
-.user-profile-btn:active {
-    transform: translateY(2px) scale(0.95); 
-    transition-duration: 0.1s;
-}
-
-input {
-    border-radius: 50px;
-}
-
-/* =========================================
-   3. GIAO DIỆN NAVBAR (Đồng bộ với Policy)
-========================================= */
-.navbar-center-links { 
-    position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 20px; 
-}
-
-.nav-link-center {
-    display: flex;
-    color: rgba(255, 255, 255, 0.85) !important;
-    font-weight: 600;
-    font-size: 1.05rem;
-    text-decoration: none;
-    position: relative;
-    padding: 8px 16px;
-    transition: all 0.4s var(--liquid-easing);
-    border-radius: 50px;
-    width: 130px;
-    justify-content: center;
-    align-items: center; 
-}
-
-.nav-link-center:hover {
-    color: white !important;
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px);
-}
-
-.nav-link-center.active { 
-    color: white !important; 
-    background: rgba(255, 255, 255, 0.15);
-    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-}
-
-/* =========================================
-   NÚT CHUÔNG THÔNG BÁO (LIQUID GLASS)
-========================================= */
-.notification-btn {
-    position: relative;
-    width: 44px; 
-    height: 44px;
-    border-radius: 50%; 
-    background: transparent !important;
-    border: 1px solid transparent !important;
-    color: var(--color-dark);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 8px 20px rgba(0,0,0,0.1);
-    transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease;
-    text-decoration: none;
-    z-index: 1;
-}
-
-/* Lớp kính nền sáng */
-.notification-btn::after {
-    content: ''; 
-    position: absolute; 
-    inset: 0 !important; 
-    z-index: -1; 
-    background: rgba(255, 255, 255, 0.85); 
-    backdrop-filter: url(#frosted); 
-    -webkit-backdrop-filter: url(#frosted);
-    border-radius: inherit; 
-    transition: all 0.5s ease;
-}
-
-/* Bóng đổ 3D bên trong viền */
-.notification-btn::before {
-    content: ''; position: absolute; inset: 0; 
-    z-index: 2; 
-    border-radius: inherit; pointer-events: none;
-    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.8), 
-                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
-}
-
-/* Đẩy icon chuông và dấu chấm đỏ lên mặt trên cùng */
-.notification-btn > * {
-    position: relative;
-    z-index: 3;
-}
-
-/* Hiệu ứng Hover - Nảy 3D */
-.notification-btn:hover {
-    transform: perspective(500px) translateZ(20px) translateY(-4px); 
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 15px 30px rgba(0, 0, 0, 0.15);
-}
-
-.notification-btn:hover::after {
-    background: rgba(255, 255, 255, 1);
-}
-
-/* Hiệu ứng Nhấn - Lún xuống */
-.notification-btn:active {
-    transform: translateY(2px) scale(0.95); 
-    transition-duration: 0.1s;
-}
-
-/* =========================================
-   FIX LỖI NỀN TRẮNG CỦA LABEL (FORM-FLOATING BOOTSTRAP)
-========================================= */
-
-/* 1. Xóa bỏ hoàn toàn lớp nền trắng ẩn phía sau label do Bootstrap tự tạo */
-.form-floating > .form-control:focus ~ label::after,
-.form-floating > .form-control:not(:placeholder-shown) ~ label::after,
-.form-floating > .form-control:-webkit-autofill ~ label::after {
-    background-color: transparent !important;
-}
-
-/* 2. Ép nền của chính thẻ label thành trong suốt */
-.form-floating > label {
-    background-color: transparent !important;
-    padding-left: 20px; 
-}
-
-/* 3. Tinh chỉnh lại vị trí và màu sắc khi label bay lên (Float state) */
-.form-floating > .form-control:focus ~ label,
-.form-floating > .form-control:not(:placeholder-shown) ~ label {
-    color: var(--color-1, #00B14F) !important; 
-    font-weight: 700;
-    opacity: 0.9;
-    transform: scale(0.85) translateY(-0.6rem) translateX(0.5rem); 
-}
-
-/* Fix thêm: Đẩy chữ trong input dịch xuống một chút để không đụng label khi bay lên */
-.form-floating > .form-control {
-    padding-top: 1.625rem;
-    padding-bottom: 0.625rem;
-}
-
-/* =========================================
-   8. BỔ SUNG CHO SECTION TRANG CHỦ MỚI
-========================================= */
-
-/* Tùy chỉnh thanh cuộn ngang cho Danh mục xe */
-.fleet-scroll-container {
-    scroll-snap-type: x mandatory; 
-    scroll-behavior: smooth; 
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Scrollbar Style cho Webkit (Chrome, Safari, Edge) */
-.fleet-scroll-container::-webkit-scrollbar {
-    height: 8px;
-}
-.fleet-scroll-container::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 10px;
-}
-.fleet-scroll-container::-webkit-scrollbar-thumb {
-    background: var(--color-1); 
-    border-radius: 10px;
-}
-.fleet-scroll-container::-webkit-scrollbar-thumb:hover {
-    background: var(--color-3); 
-}
-
-/* Hiệu ứng gõ chữ (Typing Dots) cho AI Demo */
-.typing-dots {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.typing-dots span {
-    width: 6px;
-    height: 6px;
-    background-color: white;
-    border-radius: 50%;
-    display: inline-block;
-    animation: bounce 1.4s infinite ease-in-out both;
-}
-.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
-.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
-
-@keyframes bounce {
-    0%, 80%, 100% { transform: scale(0); }
-    40% { transform: scale(1); }
-}
-
-/* =========================================
-   AI CHAT LIQUID GLASS (findCar.html)
-========================================= */
-
-/* 1. Container chính ôm toàn bộ đoạn chat */
-.ai-liquid-chat-container {
-  position: relative;
-  isolation: isolate;
-  transform-style: preserve-3d;
-  background: rgba(255, 255, 255, 0.15) !important;
-  border: 2px solid transparent !important;
-  border-radius: 50px;
-  padding: 40px;
-  max-width: 900px;
-  overflow: visible;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4), 0 20px 50px rgba(0, 0, 0, 0.05);
-  backdrop-filter: url(#frosted);
-  -webkit-backdrop-filter: url(#frosted);
-  width: 500px;
-  margin-bottom: 20px;
-  display: none;
-  opacity: 0;
-  transform: translateY(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.ai-liquid-chat-container::after {
-  content: '';
-  position: absolute;
-  inset: -12px !important;
-  z-index: -1;
-  background: rgba(255, 255, 255, 0.15); 
-  backdrop-filter: url(#frosted);
-  -webkit-backdrop-filter: url(#frosted);
-  clip-path: inset(12px round 50px) !important;
-  transform: translateZ(0);
-}
-
-.ai-liquid-chat-container::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  border-radius: inherit;
-  pointer-events: none;
-  box-shadow: inset 2px 2px 8px rgba(255, 255, 255, 0.8), inset -2px -2px 6px rgba(0, 0, 0, 0.03);
-}
-
-.ai-liquid-chat-container.show {
-    display: block;
-    animation: popUpGlass 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
-}
-
-@keyframes popUpGlass {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.chat-glass-messages {
-    max-height: 380px;
-    overflow-y: auto;
-    padding-right: 10px;
-    display: flex;
-    flex-direction: column;
-}
-
-.chat-glass-messages::-webkit-scrollbar {
-    width: 0px;
-}
-
-/* 2. Avatar Kính Tròn Đều 50px */
-.avatar-glass {
-  position: relative;
-  width: 60px;
-  height: 60px;
-  border-radius: 50px;
-  border: 2px solid transparent;
-  background: rgba(255, 255, 255, 0.4);
-  backdrop-filter: url(#frosted);
-  -webkit-backdrop-filter: url(#frosted);
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 5px 15px rgba(0, 0, 0, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  overflow: hidden;
-  padding: 4px; 
-}
-
-.avatar-glass img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50px;
-}
-
-.avatar-glass i {
-    font-size: 20px;
-    color: var(--color-1); 
-}
-
-/* 3. Bong bóng Chat Kính 50px */
-.chat-glass-bubble {
-  position: relative;
-  border-radius: 50px;
-  padding: 15px 25px;
-  border: 2px solid transparent;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 8px 20px rgba(0, 0, 0, 0.03), inset 2px 2px 6px rgba(255, 255, 255, 0.7);
-  backdrop-filter: url(#frosted);
-  -webkit-backdrop-filter: url(#frosted);
-}
-
-.user-bubble {
-  background: rgba(255, 255, 255, 0.4);
-  border-top-left-radius: 15px; 
-  border-top-right-radius: 15px; 
-}
-
-.ai-bubble {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(255, 222, 89, 0.15) 100%);
-  border-top-left-radius: 15px;
-}
-
-.typing-bubble {
-  background: rgba(255, 255, 255, 0.3);
-  padding: 15px 30px;
-  border-top-left-radius: 15px;
-  display: inline-flex;
-  width: auto;
-}
-
-/* 4. Thẻ gợi ý xe bên trong AI Bubble */
-.car-suggestion-glass {
-  background: rgba(255, 255, 255, 0.5);
-  border: 2px solid transparent;
-  border-radius: 50px;
-  padding: 10px 25px 10px 10px;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), inset 2px 2px 5px rgba(255, 255, 255, 0.9);
-}
-
-.car-img-wrapper {
-  width: 65px;
-  height: 65px;
-  border-radius: 50px;
-  background: rgba(255, 255, 255, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  padding: 10px;
-}
-
-.car-img-wrapper img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
-/* 5. Badge Kính 50px */
-.glass-badge {
-  display: inline-block;
-  padding: 6px 16px;
-  border-radius: 50px;
-  font-size: 0.85rem;
-  font-weight: 700;
-  border: 2px solid transparent;
-  margin-right: 8px;
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8), inset 1px 1px 2px rgba(255, 255, 255, 0.5);
-}
-
-.glass-badge.highlight {
-  background: rgba(0, 177, 79, 0.15); 
-  color: var(--color-1);
-}
-
-.glass-badge.normal {
-  background: rgba(255, 255, 255, 0.6);
-  color: var(--text-color);
-}
-
-.ai-floating-widget {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.ai-img {
-    width: 8rem;
-    height: auto;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.ai-img:hover {
-    transform: scale(1.3);
-}
-
-.ai-trigger-btn img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50px;
-}
-
-/* -------------------------------------
-   CSS CẬP NHẬT CHO GỢI Ý (SUGGESTIONS)
-------------------------------------- */
-.chat-glass-suggestions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
-    padding: 0 5px;
-}
-
-.glass-suggestion-chip {
-    border-radius: 50px;
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: var(--text-color);
-    background: rgba(255, 255, 255, 0.3);
-    border: 2px solid transparent;
-    backdrop-filter: url(#frosted);
-    -webkit-backdrop-filter: url(#frosted);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 2px 8px rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.glass-suggestion-chip:hover {
-    background: var(--glass-green);
-    color: black;
-    transform: translateY(-2px);
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5), 0 4px 12px rgba(0, 177, 79, 0.2);
-}
-
-/* ------------------------------------- */
-
-.chat-glass-input-area {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.glass-input {
-    flex-grow: 1;
-    border-radius: 50px;
-    padding: 15px 20px;
-    border: 2px solid transparent;
-    background: rgba(255, 255, 255, 0.3);
-    backdrop-filter: url(#frosted);
-    -webkit-backdrop-filter: url(#frosted);
-    box-shadow:  0 0 2px rgba(255, 255, 255, 0.6);
-    outline: none;
-    color: var(--text-color);
-}
-
-.glass-send-btn {
-    width: 50px;
-    height: 50px;
-    border-radius: 50px;
-    border: 2px solid transparent;
-    background: var(--color-1);
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 4px 15px rgba(0, 177, 79, 0.3);
-    transition: transform 0.2s ease;
-    flex-shrink: 0;
-}
-
-.glass-send-btn:hover {
-    transform: scale(1.05);
-}
-
-/* =========================================
-   NÚT PROFILE & THÔNG BÁO (CLEAN GLASS)
-========================================= */
-
-/* 1. Xóa bỏ hoàn toàn các lớp giả gây lỗi viền kép lùng bùng */
-.user-profile-btn::before, .user-profile-btn::after,
-.notification-btn::before, .notification-btn::after {
-    display: none !important;
-}
-
-/* 2. Định dạng chuẩn cho Nút Chuông Thông Báo */
-.notification-btn {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px; 
-    height: 46px;
-    background: rgba(255, 255, 255, 0.95) !important; /* Nền trắng hơi mờ */
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    border-radius: 50%;
-    color: var(--color-dark) !important;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    font-size: 1.15rem;
-    z-index: 1;
-}
-
-.notification-btn:hover {
-    background: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
-
-/* Dấu chấm đỏ thông báo - Tinh chỉnh lại vị trí và viền */
-.notification-btn .badge-dot, 
-.notification-badge {
-    position: absolute;
-    top: 0px;
-    right: 2px;
-    width: 12px;
-    height: 12px;
-    background-color: #ef4444; /* Đỏ tươi */
-    border: 2px solid #00b14f; /* Viền xanh tiệp với màu Navbar */
-    border-radius: 50%;
-    padding: 0;
-}
-
-/* 3. Định dạng chuẩn cho Nút Profile */
-.user-profile-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 12px; /* Khoảng cách giữa chữ và avatar */
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    border-radius: 50px;
-    padding: 4px 4px 4px 18px; /* Lề: trên phải dưới trái (ôm sát avatar bên phải) */
-    color: var(--color-dark) !important;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-    height: 46px; /* Bằng với nút chuông */
-}
-
-.user-profile-btn:hover {
-    background: #ffffff !important;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
-    transform: translateY(-2px);
-}
-
-/* Tinh chỉnh phần Avatar bên trong nút Profile (Nếu bạn đang dùng thẻ img hoặc div tròn) */
-.user-profile-btn .avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: cover;
-    background-color: var(--color-1); /* Nền xanh cho chữ TD */
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
