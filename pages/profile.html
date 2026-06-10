@@ -17,217 +17,13 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
+    
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
 
     <link rel="stylesheet" href="../style/base.css" />
+    <link rel="stylesheet" href="../style/profile.css" />
 
-    <style>
-      /* =========================================
-         1. NỀN TRANG 
-      ========================================= */
-      body {
-        font-family: "Inter", sans-serif;
-        background: linear-gradient(
-          135deg,
-          #e8f0eb 0%,
-          #d5e0da 50%,
-          #e2e8f0 100%
-        );
-        color: var(--text-color);
-        min-height: 100vh;
-      }
-
-      /* =========================================
-         2. BỘ FIX VIỀN LIQUID (BUFFER & CLIP) 
-      ========================================= */
-      .glass-panel,
-      .upload-box {
-        border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.4) !important;
-        overflow: visible;
-        position: relative;
-        z-index: 1;
-      }
-
-      .glass-panel::after,
-      .upload-box::after {
-        content: "";
-        position: absolute;
-        inset: -12px !important;
-        z-index: -1;
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(16px);
-        -webkit-backdrop-filter: blur(16px);
-        filter: url(#liquid-distortion);
-        clip-path: inset(12px round 50px) !important;
-        transform: translateZ(0);
-        will-change: transform, filter;
-      }
-
-      .glass-panel::before,
-      .upload-box::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        border-radius: 50px;
-        pointer-events: none;
-        box-shadow:
-          inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5),
-          inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
-      }
-
-      /* Đẩy nội dung lên trên mặt kính */
-      .glass-panel > *,
-      .upload-box > * {
-        position: relative;
-        z-index: 2;
-      }
-
-      /* =========================================
-         4. COMPONENT HỒ SƠ 
-      ========================================= */
-      /* Sidebar Menu */
-      .profile-sidebar {
-        padding: 40px 20px;
-      }
-
-      /* Khung Nhập Liệu (Inputs) */
-      .custom-input {
-        border-radius: 50px;
-        background: rgba(255, 255, 255, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        padding: 15px 20px;
-        box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.02);
-        transition: all 0.3s ease;
-      }
-      .custom-input:focus {
-        background: rgba(255, 255, 255, 0.8);
-        box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15);
-        border-color: var(--color-1);
-      }
-      .form-floating-custom label {
-        margin-left: 10px;
-        color: #64748b;
-      }
-
-      /* Avatar */
-      .avatar-img {
-        width: 130px;
-        height: 130px;
-        border-radius: 50%;
-        border: 4px solid rgba(255, 255, 255, 0.7);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        object-fit: cover;
-      }
-      .avatar-edit-btn {
-        bottom: 5px;
-        right: 5px;
-        background: var(--color-1);
-        color: white;
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: 0.3s;
-        border: 2px solid white;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      }
-      .avatar-edit-btn:hover {
-        transform: scale(1.15) rotate(10deg);
-      }
-
-      /* Upload Box (eKYC) */
-      .upload-box {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 50px 20px;
-        cursor: pointer;
-        text-align: center;
-        color: #475569;
-        font-weight: 600;
-        transition:
-          transform 0.4s var(--liquid-easing),
-          box-shadow 0.4s;
-      }
-      .upload-box i {
-        font-size: 3rem;
-        color: var(--color-1);
-        transition: 0.3s;
-      }
-      .upload-box:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-      }
-      .upload-box:hover i {
-        transform: scale(1.1);
-      }
-
-      /* =========================================
-         TÙY CHỈNH SIDEBAR BUTTON (GHI ĐÈ BASE.CSS)
-      ========================================= */
-      .nav-pills .btn-hero {
-        background: rgba(
-          255,
-          255,
-          255,
-          0.4
-        ) !important; /* Dùng !important để phá vỡ transparent của base.css */
-        border: 1px solid rgba(255, 255, 255, 0.6) !important;
-        color: var(--color-dark) !important;
-        padding: 14px 20px;
-        margin-bottom: 12px;
-        border-radius: 50px;
-        font-weight: 600;
-        transition: all 0.4s var(--liquid-easing);
-        width: 100%;
-        text-align: left;
-        justify-content: flex-start; /* Ép icon và chữ căn trái thay vì giữa */
-      }
-
-      /* Hiệu ứng kính ngưng tụ khi Hover */
-      .nav-pills .btn-hero:hover {
-        background: rgba(255, 255, 255, 0.7) !important;
-        transform: translateX(15px); /* Trượt nhẹ sang phải */
-      }
-
-      /* Hiệu ứng Active (Đang chọn) */
-      .nav-pills .btn-hero.active {
-        background: var(--glass-green) !important; /* Bật nền xanh */
-        box-shadow:
-          inset 0 2px 5px rgba(0, 0, 0, 0.1),
-          0 8px 20px rgba(0, 177, 79, 0.25) !important;
-      }
-
-      .btn-hero:hover::after {
-        background: rgba(255, 255, 255, 0.7) !important;
-        backdrop-filter: blur(30px);
-      }
-
-      /* Tối ưu Mobile */
-      @media (max-width: 991px) {
-        .navbar-center-links {
-          position: static;
-          transform: none;
-          flex-direction: column;
-          background: var(--color-1);
-          padding: 20px;
-          border-radius: 20px;
-        }
-        .glass-panel {
-          padding: 30px 20px !important;
-          border-radius: 30px;
-        }
-        .glass-panel::after,
-        .upload-box::after {
-          clip-path: inset(12px round 30px) !important;
-        }
-      }
-    </style>
+    
   </head>
   <body>
     <svg
@@ -268,7 +64,7 @@
           <div class="navbar-center-links d-none d-lg-flex">
             <a href="../index.html" class="nav-link-center">Trang chủ</a>
             <a href="findCar.html" class="nav-link-center">Đặt xe</a>
-            <a href="tripHistory.html" class="nav-link-center">Chuyến đi</a>
+            <a href="../pages/customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
             <a href="policy.html" class="nav-link-center">Chính sách</a>
           </div>
 
@@ -468,60 +264,7 @@
       </div>
     </main>
 
-    <footer>
-      <div class="container reveal-on-scroll">
-        <div class="row g-4">
-          <div class="col-lg-4 pe-lg-5">
-            <img
-              src="assets/img/FleetFlow_-_Logo-removebg-preview.png"
-              alt="Logo"
-              style="height: 80px; margin-bottom: 20px; object-fit: contain"
-            />
-            <p>
-              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
-              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
-              liên tỉnh.
-            </p>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Dịch Vụ</h5>
-            <ul>
-              <li><a href="pages/findCar.html">Đặt xe đường dài</a></li>
-              <li><a href="pages/findCar.html">Thuê xe sân bay</a></li>
-              <li><a href="pages/findCar.html">Tư vấn xe AI</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Hỗ Trợ</h5>
-            <ul>
-              <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="pages/policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="pages/policy.html">Giải quyết khiếu nại</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-4">
-            <h5>Liên Hệ (Hotline)</h5>
-            <ul class="text-white-50">
-              <li class="mb-2">
-                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
-                (24/7)
-              </li>
-              <li class="mb-2">
-                <i class="fa-solid fa-envelope me-2 text-success"></i>
-                support@fleetflow.vn
-              </li>
-              <li>
-                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
-                University, Ho Chi Minh City
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/base.js"></script>
@@ -569,4 +312,58 @@
       });
     </script>
   </body>
+  <footer>
+      <div class="container reveal-on-scroll">
+        <div class="row g-4">
+          <div class="col-lg-4 pe-lg-5">
+            <img
+              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
+              alt="Logo"
+              style="height: 80px; margin-bottom: 20px; object-fit: contain"
+            />
+            <p>
+              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
+              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
+              liên tỉnh.
+            </p>
+          </div>
+          <div class="col-lg-2 col-6">
+            <h5>Dịch Vụ</h5>
+            <ul>
+              <li><a href="../pages/findCar.html">Đặt xe đường dài</a></li>
+              <li><a href="../pages/findCar.html">Thuê xe sân bay</a></li>
+              <li><a href="../pages/findCar.html">Tư vấn xe AI</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-6">
+            <h5>Hỗ Trợ</h5>
+            <ul>
+              <li><a href="#">Trung tâm trợ giúp</a></li>
+              <li><a href="policy.html">Chính sách & Điều khoản</a></li>
+              <li><a href="policy.html">Giải quyết khiếu nại</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <h5>Liên Hệ (Hotline)</h5>
+            <ul class="text-white-50">
+              <li class="mb-2">
+                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
+                (24/7)
+              </li>
+              <li class="mb-2">
+                <i class="fa-solid fa-envelope me-2 text-success"></i>
+                support@fleetflow.vn
+              </li>
+              <li>
+                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
+                University, Ho Chi Minh City
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 </html>

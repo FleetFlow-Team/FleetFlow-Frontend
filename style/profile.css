@@ -1,0 +1,233 @@
+/* ==========================================================================
+   FLEETFLOW - HỒ SƠ CÁ NHÂN (PROFILE PAGE STYLES)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. BASE & LAYOUT STRUCTURE (Cấu trúc nền và sửa lỗi vị trí Footer)
+   -------------------------------------------------------------------------- */
+body {
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(
+        135deg,
+        #eaea6bc6 0%,
+        var(--color-2) 50%,
+        #2efc0080 100%
+    );
+    color: var(--text-color);
+    
+    /* FIX FOOTER: Ép footer luôn nằm ở đáy trang khi nội dung ngắn */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    /* FIX FOOTER: Cho phép thẻ main tự động giãn ra để chiếm hết khoảng trống, đẩy footer xuống dưới cùng */
+    flex: 1; 
+}
+
+/* Ghi đè lại thuộc tính cũ của footer để tương thích với flexbox */
+footer {
+    position: relative !important; 
+    bottom: auto !important;
+    margin-top: auto; 
+}
+
+/* --------------------------------------------------------------------------
+   2. LIQUID GLASS EFFECT (Bộ Fix viền kính lỏng)
+   -------------------------------------------------------------------------- */
+.glass-panel,
+.upload-box {
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    overflow: visible;
+    position: relative;
+    z-index: 1;
+}
+
+.glass-panel::after,
+.upload-box::after {
+    content: "";
+    position: absolute;
+    inset: -12px !important;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion);
+    clip-path: inset(12px round 50px) !important;
+    transform: translateZ(0);
+    will-change: transform, filter;
+}
+
+.glass-panel::before,
+.upload-box::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 50px;
+    pointer-events: none;
+    box-shadow:
+        inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5),
+        inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+}
+
+/* Đẩy nội dung lên trên mặt kính */
+.glass-panel > *,
+.upload-box > * {
+    position: relative;
+    z-index: 2;
+}
+
+/* --------------------------------------------------------------------------
+   3. SIDEBAR & NAVIGATION COMPONENT
+   -------------------------------------------------------------------------- */
+.profile-sidebar {
+    padding: 40px 20px;
+}
+
+/* Tùy chỉnh nút Sidebar (Ghi đè base.css) */
+.nav-pills .btn-hero {
+    background: rgba(255, 255, 255, 0.4) !important; 
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    color: var(--color-dark) !important;
+    padding: 14px 20px;
+    margin-bottom: 12px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.4s var(--liquid-easing);
+    width: 100%;
+    text-align: left;
+    justify-content: flex-start; /* Ép icon và chữ căn trái */
+}
+
+.nav-pills .btn-hero:hover {
+    background: rgba(255, 255, 255, 0.7) !important;
+    transform: translateX(15px); /* Trượt nhẹ sang phải */
+}
+
+.nav-pills .btn-hero.active {
+    background: var(--glass-green) !important;
+    box-shadow:
+        inset 0 2px 5px rgba(0, 0, 0, 0.1),
+        0 8px 20px rgba(0, 177, 79, 0.25) !important;
+}
+
+.btn-hero:hover::after {
+    background: rgba(255, 255, 255, 0.7) !important;
+    backdrop-filter: blur(30px);
+}
+
+/* --------------------------------------------------------------------------
+   4. USER AVATAR COMPONENT
+   -------------------------------------------------------------------------- */
+.avatar-img {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 4px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
+}
+
+.avatar-edit-btn {
+    bottom: 5px;
+    right: 5px;
+    background: var(--color-1);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 2px solid white;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-edit-btn:hover {
+    transform: scale(1.15) rotate(10deg);
+}
+
+/* --------------------------------------------------------------------------
+   5. PROFILE FORM INPUTS COMPONENT
+   -------------------------------------------------------------------------- */
+.custom-input {
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 15px 20px;
+    box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15);
+    border-color: var(--color-1);
+}
+
+.form-floating-custom label {
+    margin-left: 10px;
+    color: #64748b;
+}
+
+/* --------------------------------------------------------------------------
+   6. eKYC UPLOAD COMPONENT
+   -------------------------------------------------------------------------- */
+.upload-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    cursor: pointer;
+    text-align: center;
+    color: #475569;
+    font-weight: 600;
+    transition:
+        transform 0.4s var(--liquid-easing),
+        box-shadow 0.4s;
+}
+
+.upload-box i {
+    font-size: 3rem;
+    color: var(--color-1);
+    transition: 0.3s;
+}
+
+.upload-box:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+}
+
+.upload-box:hover i {
+    transform: scale(1.1);
+}
+
+/* --------------------------------------------------------------------------
+   7. RESPONSIVE / MOBILE ADJUSTMENTS
+   -------------------------------------------------------------------------- */
+@media (max-width: 991px) {
+    .navbar-center-links {
+        position: static;
+        transform: none;
+        flex-direction: column;
+        background: var(--color-1);
+        padding: 20px;
+        border-radius: 20px;
+    }
+    
+    .glass-panel {
+        padding: 30px 20px !important;
+        border-radius: 30px;
+    }
+    
+    .glass-panel::after,
+    .upload-box::after {
+        clip-path: inset(12px round 30px) !important;
+    }
+}

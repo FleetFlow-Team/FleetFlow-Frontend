@@ -1,4 +1,28 @@
 /* =========================================
+   CẤU HÌNH SELECT CỐ ĐỊNH (KHÔNG FLOATING)
+========================================= */
+
+/* Trả lại padding và chiều cao chuẩn, chữ nằm giữa ngay ngắn */
+select.custom-select-fixed {
+    padding: 16px 24px !important; 
+    height: auto !important; 
+    line-height: 1.5 !important;
+}
+
+/* Vẫn giữ nguyên nền tối và chữ trắng cho các lựa chọn bên trong dropdown */
+select.custom-select-fixed option {
+    background-color: #1a1c1a; 
+    color: #ffffff; 
+    font-size: 1rem;
+    padding: 10px;
+}
+
+/* Tùy chọn mặc định (Chọn giới tính / Chọn năm) hiển thị mờ */
+select.custom-select-fixed option[disabled] {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* =========================================
    1. WRAPPER & BACKGROUND TỔNG
 ========================================= */
 .login-wrapper {
