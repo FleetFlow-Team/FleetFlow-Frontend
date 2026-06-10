@@ -30,7 +30,7 @@ main {
 footer {
     position: relative !important; 
     bottom: auto !important;
-    margin-top: auto; 
+    margin-top: 35vh; 
 }
 
 /* --------------------------------------------------------------------------

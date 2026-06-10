@@ -1220,7 +1220,7 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
 
 #skip-btn {
     /* Không cần position: absolute và left/right nữa */
-    padding: 10px 20px;
+    padding: 10px 30px;
     background: rgba(255, 255, 255, 0.2);
     color: #fff;
     border-color: rgba(255, 255, 255, 0.6);
