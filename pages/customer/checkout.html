@@ -18,14 +18,13 @@
       ========================================= */
       body {
         font-family: "Inter", sans-serif;
-        background: linear-gradient(135deg, #e8f0eb 0%, #d5e0da 50%, #e2e8f0 100%);
         color: var(--text-color);
         min-height: 100vh;
       }
       /* =========================================
          2. BỘ FIX VIỀN LIQUID (BUFFER & CLIP 50px) 
       ========================================= */
-      .glass-panel, .payment-card, .btn-submit, .btn-back {
+      .payment-card, .btn-submit, .btn-back {
           border-radius: 50px;
           border: 1px solid rgba(255, 255, 255, 0.5) !important;
           overflow: visible;
@@ -33,7 +32,7 @@
           z-index: 1;
       }
 
-      .glass-panel::after, .custom-navbar::after, .payment-card::after, .btn-submit::after, .btn-back::after {
+      .custom-navbar::after, .payment-card::after, .btn-submit::after, .btn-back::after {
           content: ''; position: absolute;
           inset: -12px !important; z-index: -1;
           background: rgba(255, 255, 255, 0.2);
@@ -45,7 +44,7 @@
           border-radius: inherit; pointer-events: none;
       }
 
-      .glass-panel::before, .custom-navbar::before, .payment-card::before, .btn-submit::before, .btn-back::before {
+      .custom-navbar::before, .payment-card::before, .btn-submit::before, .btn-back::before {
           content: ''; position: absolute; inset: 0; z-index: -1;
           border-radius: inherit; pointer-events: none;
           box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.6), 
@@ -57,6 +56,42 @@
           position: relative;
           z-index: 2;
       }
+
+    .glass-panel {
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0) !important;
+    position: relative; 
+    isolation: isolate; 
+    transform-style: preserve-3d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0,0,0,0.05); 
+    overflow: visible; 
+}
+
+/* Lớp kính lỏng (Liquid Layer) trào ra ngoài 12px */
+.glass-panel::after {
+    content: ''; 
+    position: absolute; 
+    inset: -12px !important; 
+    z-index: -1; 
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion); 
+    clip-path: inset(12px round 50px) !important;
+    transform: translateZ(0); 
+    will-change: transform, filter;
+}
+
+/* Lớp bóng đổ 3D bên trong */
+.glass-panel::before {
+    content: ''; 
+    position: absolute; 
+    inset: 0; 
+    z-index: 2; 
+    border-radius: inherit; 
+    pointer-events: none;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+}
       
       .navbar-slogan { 
 
@@ -217,7 +252,7 @@
       }
     </style>
   </head>
-  <body>
+  <body class="bg-light-main">
     <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
         <defs>
             <filter id="liquid-distortion">
@@ -250,7 +285,7 @@
       </nav>
     </header>
 
-    <main class="container mb-5" style="margin-top: 80px !important;">
+    <main class="container mb-5" style="margin-top: 80px !important; background-color: var(--bg-gradient-light) !important;">
       <div class="row g-4">
         <div class="col-lg-7">
           <div class="glass-panel p-5 h-100">

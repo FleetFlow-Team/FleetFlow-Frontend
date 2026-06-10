@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="../style/base.css" />    
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
-    <link rel="stylesheet" href="../style/pages/findCar.css" />
+    <link rel="stylesheet" href="../style/findCar.css" />
 
     <style>
 
@@ -43,16 +43,6 @@
           background: rgba(255, 255, 255, 0.15);
           box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
       }
-
-/* =========================================
-   LIQUID GLASS - LIGHT THEME (Tone Trắng Sáng)
-========================================= */
-.liquid-light-main {
-    /* Gradient xám nhạt/trắng pha chút xanh mờ từ thương hiệu, rất sang trọng */
-    background: linear-gradient(135deg, #f4f7f6 0%, #e2e8f0 100%);
-    min-height: 100vh;
-    color: #334155; /* Text màu xám đen */
-}
 
 .highlight-text { color: var(--color-1, #00B14F); }
 .border-bottom-glass-light { border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
@@ -88,17 +78,8 @@
     border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-/* --- TÙY CHỈNH CHO SIDEBAR & SORTBAR --- */
-.filter-sidebar { border-radius: 35px; }
-.filter-sidebar::after { clip-path: inset(10px round 35px); }
 
-.filter-sidebar {
-  top: 120px !important;
-}
 
-.sort-bar { border-radius: 50px; }
-.sort-bar::after { clip-path: inset(10px round 50px); }
-.sort-bar .glass-content { padding: 10px 30px; }
 
 /* --- FORM CONTROLS (Sáng sủa, bo tròn) --- */
 .glass-select {
@@ -346,7 +327,7 @@
     <header>
       <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
         <div class="container-base position-relative h-100">
-          <a class="navbar-brand brand-overflow" href="index.html">
+          <a class="navbar-brand brand-overflow" href="../index.html">
             <img
               src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
               alt="FleetFlow Logo"
@@ -369,13 +350,13 @@
             >
               <li class="nav-item">
                 <div class="navbar-center-links-1 d-none d-lg-flex">
-                  <a href="../pages/login.html" class="nav-link-center-1">Trở thành tài xế FleetFlow</a>
+                  <a href="register.html" class="nav-link-center-1">Trở thành tài xế FleetFlow</a>
                 </div>
               </li>
 
               <li class="nav-item">
                 <div class="navbar-center-links-1 d-none d-lg-flex">
-            <a href="../pages/policy.html" class="nav-link-center-1">Về chính sách</a>
+            <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
           </div>
               </li>
               <li class="nav-item ms-lg-2">
@@ -397,7 +378,7 @@
       </nav>
     </header>
 
-    <main class="py-5 liquid-light-main" style="margin-top: 40px;">
+    <main class="py-5 bg-light-main" style="margin-top: 40px;">
     <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true" focusable="false">
         <defs>
             <filter id="liquid-distortion">
@@ -867,10 +848,6 @@
         <img class="ai-img" src="../assets/img/AI Logo.png" alt="Mở AI Chat" onclick="toggleChat()">
    
 </aside>
-
-
-
-
     <footer>
       <div class="container reveal-on-scroll">
         <div class="row g-4">
@@ -889,17 +866,17 @@
           <div class="col-lg-2 col-6">
             <h5>Dịch Vụ</h5>
             <ul>
-              <li><a href="pages/findCar.html">Đặt xe đường dài</a></li>
-              <li><a href="pages/findCar.html">Thuê xe sân bay</a></li>
-              <li><a href="pages/findCar.html">Tư vấn xe AI</a></li>
+              <li><a href="findCar.html">Đặt xe đường dài</a></li>
+              <li><a href="findCar.html">Thuê xe sân bay</a></li>
+              <li><a href="findCar.html">Tư vấn xe AI</a></li>
             </ul>
           </div>
           <div class="col-lg-2 col-6">
             <h5>Hỗ Trợ</h5>
             <ul>
               <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="pages/policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="pages/policy.html">Giải quyết khiếu nại</a></li>
+              <li><a href="policy.html">Chính sách & Điều khoản</a></li>
+              <li><a href="policy.html">Giải quyết khiếu nại</a></li>
             </ul>
           </div>
           <div class="col-lg-4">

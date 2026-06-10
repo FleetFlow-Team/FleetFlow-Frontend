@@ -20,7 +20,14 @@
     --glass-green: rgba(89, 255, 114, 0.307);
     --glass-yellow: rgba(255, 222, 89, 0.2);
     --bg-gradient-dark: linear-gradient(135deg, #0b0f17 0%, #1a2639 100%);
+    --bg-gradient-light:linear-gradient(
+        135deg,
+        #eaea6b40 0%,
+        var(--color-2) 50%,
+        #2efc002e 100%
+    );
     --bg-pleasant: #0f172a;
+
 
     /* Demo Glass Variables */
     --glass-demo-bg: rgba(255, 255, 255, 0.08);
@@ -52,6 +59,10 @@ a {
     text-decoration: none;
     color: inherit;
     transition: color 0.3s ease;
+}
+
+.bg-light-main {
+    background: var(--bg-gradient-light);
 }
 
 /* =========================================

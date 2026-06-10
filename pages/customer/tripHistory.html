@@ -19,10 +19,9 @@
         /* =========================================
            1. NỀN & NAVBAR ĐỒNG BỘ LIQUID GLASS
         ========================================= */
-        body {
-            background: linear-gradient(135deg, #e8f0eb 0%, #d5e0da 50%, #e2e8f0 100%);
-            min-height: 100vh;
-        }
+        .bg-light-main {
+    background: var(--bg-gradient-light);
+}
         /* =========================================
            2. HỆ THỐNG CLASS "KÍNH LỎNG" TÁI SỬ DỤNG
         ========================================= */
@@ -281,7 +280,7 @@
 }
     </style>
 </head>
-<body>
+<body class="bg-light-main">
     <!-- BỘ LỌC LIQUID GLASS BẮT BUỘC -->
     <svg style="width: 0; height: 0; position: absolute" aria-hidden="true" focusable="false">
         <defs>
@@ -425,13 +424,13 @@
 
     <aside class="floating-contact-buttons d-flex flex-column gap-3">
         <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
-            <img src="../../assets/img/zalo.jpg" alt="Zalo" style="width: 35px; height: 35px;">
+            <img src="../../assets/img/zalo.png" alt="Zalo" style="width: 35px; height: 35px;">
         </a>
         <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #9D32FA;" title="Chat Messenger">
-            <img src="../../assets/img/messenger.jpg" alt="Messenger" style="width: 35px; height: 35px;">
+            <img src="../../assets/img/messenger.png" alt="Messenger" style="width: 35px; height: 35px;">
         </a>
         <a href="tel:1900xxxx" class="social-icon-btn" style="border: 2px solid var(--color-1);" title="Gọi hotline">
-            <img src="../../assets/img/calling.jpg" alt="Phone" style="width: 35px; height: 35px;">
+            <img src="../../assets/img/calling.png" alt="Phone" style="width: 35px; height: 35px;">
         </a>
     </aside>
 
