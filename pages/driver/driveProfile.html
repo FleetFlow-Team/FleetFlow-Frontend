@@ -12,6 +12,7 @@
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png" />
     
     <link rel="stylesheet" href="../../style/pages/driver.css" />
+    
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -57,7 +58,7 @@
                         <div class="user-profile-trigger d-flex align-items-center">
                             <div class="user-info-block text-end d-none d-sm-block me-3">
                                 <div class="fw-bold fs-6 lh-1 text-white profile-name">Nguyễn Quang</div>
-                                <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75rem;">Tài xế Hạng Bạc</div>
+                                <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75 em;">Tài xế Hạng Bạc</div>
                             </div>
                             <div class="glass-avatar">
                                 <img src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff" alt="Avatar" />
@@ -551,6 +552,135 @@
             </div>
         </div>
     </div>
+
+    <script type="module">
+    import gsap from 'https://esm.sh/gsap@3.13.0'
+    import Draggable from 'https://esm.sh/gsap@3.13.0/Draggable'
+
+    gsap.registerPlugin(Draggable)
+
+    const toggle = document.querySelector('.liquid-toggle')
+    
+    // Khởi tạo ban đầu
+    toggle.style.setProperty('--complete', 0)
+    toggle.dataset.state = 'off' // Bắt đầu ở màu Đỏ
+
+    const toggleState = async () => {
+      toggle.dataset.pressed = true
+      toggle.dataset.active = true
+      
+      await Promise.allSettled(
+        toggle.getAnimations({ subtree: true }).map((a) => a.finished)
+      )
+      
+      const pressed = toggle.matches('[aria-pressed=true]')
+      
+      // Khi click, đổi State màu ngay lập tức
+      toggle.dataset.state = pressed ? 'off' : 'on'
+
+      gsap
+        .timeline({
+          onComplete: () => {
+            gsap.delayedCall(0.05, () => {
+              toggle.dataset.active = false
+              toggle.dataset.pressed = false
+              toggle.setAttribute('aria-pressed', !pressed)
+            })
+          },
+        })
+        .to(toggle, {
+          '--complete': pressed ? 0 : 100,
+          duration: 0.12,
+          delay: 0.18,
+        })
+    }
+    
+    const proxy = document.createElement('div')
+    Draggable.create(proxy, {
+      allowContextMenu: true,
+      handle: '.liquid-toggle',
+      onDragStart: function () {
+        const toggleBounds = toggle.getBoundingClientRect()
+        const pressed = toggle.matches('[aria-pressed=true]')
+        const bounds = pressed
+          ? toggleBounds.left - this.pointerX
+          : toggleBounds.left + toggleBounds.width - this.pointerX
+        this.dragBounds = bounds
+        toggle.dataset.active = true
+      },
+      onDrag: function () {
+        const pressed = toggle.matches('[aria-pressed=true]')
+        const dragged = this.x - this.startX
+        const complete = gsap.utils.clamp(
+          0,
+          100,
+          pressed
+            ? gsap.utils.mapRange(this.dragBounds, 0, 0, 100, dragged)
+            : gsap.utils.mapRange(0, this.dragBounds, 0, 100, dragged)
+        )
+        this.complete = complete
+        gsap.set(toggle, { '--complete': complete, '--delta': Math.min(Math.abs(this.deltaX), 12) })
+        
+        // Khi kéo quá 50%, kích hoạt chuyển thành Xanh, dưới 50% là Đỏ
+        toggle.dataset.state = complete >= 50 ? 'on' : 'off';
+      },
+      onDragEnd: function () {
+        const isTargetOn = this.complete >= 50;
+        toggle.dataset.state = isTargetOn ? 'on' : 'off';
+        
+        gsap.fromTo(
+          toggle,
+          {
+            '--complete': this.complete,
+          },
+          {
+            '--complete': isTargetOn ? 100 : 0,
+            duration: 0.15,
+            onComplete: () => {
+              gsap.delayedCall(0.05, () => {
+                toggle.dataset.active = false
+                toggle.setAttribute('aria-pressed', isTargetOn)
+              })
+            },
+          }
+        )
+      },
+      onPress: function () {
+        this.__pressTime = Date.now()
+        toggle.dataset.active = 'true'
+        toggle.dataset.pressed = 'true'
+      },
+      onRelease: function () {
+        this.__releaseTime = Date.now()
+        gsap.set(toggle, { '--delta': 0 })
+
+        if (this.__releaseTime - this.__pressTime <= 150) {
+          toggleState()
+          return
+        }
+
+        if (!this.isDragging) {
+          toggle.dataset.active = 'false'
+          toggle.dataset.pressed = 'false'
+        }
+      },
+    })
+
+    toggle.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        toggleState()
+      }
+      if (e.key === ' ') {
+        e.preventDefault()
+      }
+    })
+
+    toggle.addEventListener('keyup', (e) => {
+      if (e.key === ' ') {
+        toggleState()
+      }
+    })
+  </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
