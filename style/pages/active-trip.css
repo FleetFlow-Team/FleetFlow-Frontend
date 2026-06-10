@@ -144,12 +144,15 @@ body {
 
 /* Vòng tròn nhấp nháy trạng thái */
 .pulse-live {
-    width: 14px; height: 14px; background: var(--color-1); border-radius: 50%; position: relative;
+    width: 14px; height: 14px;
+    background: red;
+    border-radius: 50%; 
+    position: relative;
     border: 2px solid #ffffff;
 }
 .pulse-live::after {
     content: ''; position: absolute; inset: -4px; border-radius: 50%;
-    border: 2px solid var(--color-1); 
+    border: 5px solid red; 
     animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
 }
 @keyframes pulse-ring {
