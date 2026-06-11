@@ -35,11 +35,12 @@
    -------------------------------------------------------------------------- */
 .hero-section {
   position: relative;
-  height: 100vh;
+  height: 100svh;
   min-height: 600px;
   display: flex;
   align-items: center;
   overflow: hidden;
+  padding: 100px 0 60px 0;
 }
 
 .hero-video {
@@ -320,15 +321,6 @@
   color: var(--text-color);
   opacity: 0.8;
   font-size: 0.95rem;
-}
-
-/* --------------------------------------------------------------------------
-   6. TESTIMONIALS COMPONENT (Đánh giá khách hàng)
-   -------------------------------------------------------------------------- */
-@media (min-width: 768px) {
-  .stagger-up {
-    transform: translateY(-30px);
-  }
 }
 
 #testimonials .feature-card {
@@ -634,5 +626,136 @@
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   9. MEDIA QUERIES (TỐI ƯU GIAO DIỆN CÁC THIẾT BỊ)
+   ========================================================================== */
+
+/* --- Mobile nhỏ (Dưới 576px) --- */
+@media (max-width: 575.98px) {
+  .hero-section {
+    min-height: 100svh;
+    padding-top: 80px;
+  }
+  .header-slogan {
+    font-size: 2.2rem;
+  }
+  .description-text {
+    font-size: 1rem;
+  }
+  
+  .features-section, 
+  .car-showcase-section, 
+  .process-section, 
+  .cta-section {
+    padding: 60px 0;
+  }
+  #premium-register, 
+  #join-us-section {
+    padding: 60px 0 !important;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+  }
+  
+  .carousel-container {
+    height: 380px;
+  }
+  .car-flow-card {
+    width: 85%;
+    height: 350px;
+    padding: 15px;
+  }
+  .car-info-box h3 {
+    font-size: 1.2rem;
+  }
+  
+  .luxury-title {
+    font-size: 1.8rem;
+  }
+  .luxury-register-card {
+    padding: 20px !important;
+    border-radius: 20px;
+  }
+  .luxury-register-card::after {
+    clip-path: inset(8px round 20px) !important;
+  }
+  .sphere-1, .sphere-2 {
+    width: 250px;
+    height: 250px;
+  }
+}
+
+/* --- Mobile lớn / Tablet nhỏ (Từ 576px đến 767px) --- */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .hero-section {
+    min-height: 100svh;
+  }
+  .header-slogan {
+    font-size: 2.8rem;
+  }
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .carousel-container {
+    height: 450px;
+  }
+  .car-flow-card {
+    width: 75%;
+    height: 400px;
+  }
+  
+  .luxury-title {
+    font-size: 2.2rem;
+  }
+  .luxury-register-card {
+    padding: 30px !important;
+  }
+}
+
+/* --- Tablet lớn (Từ 768px đến 991px) --- */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .header-slogan {
+    font-size: 3.2rem;
+  }
+  .carousel-container {
+    height: 500px;
+  }
+  .car-flow-card {
+    width: 65%;
+    height: 450px;
+  }
+  .luxury-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* --- Dùng chung từ Tablet trở lên (Đoạn code stagger gốc của bạn) --- */
+@media (min-width: 768px) {
+  .stagger-up {
+    transform: translateY(-30px);
+  }
+}
+
+/* --- Laptop / Desktop nhỏ (Từ 992px đến 1199px) --- */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .car-flow-card {
+    width: 65%;
+    max-width: 450px;
+  }
+}
+
+/* --- Desktop lớn (Từ 1200px trở lên) --- */
+@media (min-width: 1200px) {
+  .luxury-register-card {
+    padding: 60px !important;
+  }
+  .car-showcase-section::before {
+    width: 400px;
+    height: 400px;
   }
 }
