@@ -35,12 +35,11 @@
    -------------------------------------------------------------------------- */
 .hero-section {
   position: relative;
-  height: 100svh;
+  height: 100vh;
   min-height: 600px;
   display: flex;
   align-items: center;
   overflow: hidden;
-  padding: 100px 0 60px 0;
 }
 
 .hero-video {
@@ -323,6 +322,9 @@
   font-size: 0.95rem;
 }
 
+/* --------------------------------------------------------------------------
+   6. TESTIMONIALS COMPONENT (Đánh giá khách hàng)
+   -------------------------------------------------------------------------- */
 #testimonials .feature-card {
   min-height: 250px;
   display: flex;
@@ -618,6 +620,8 @@
   display: block;
 }
 
+
+
 @keyframes fadeUpIn {
   0% {
     opacity: 0;
@@ -632,130 +636,109 @@
 /* ==========================================================================
    9. MEDIA QUERIES (TỐI ƯU GIAO DIỆN CÁC THIẾT BỊ)
    ========================================================================== */
+/* ==========================================================================
+   9. MEDIA QUERIES RESPONSIVE (CHUẨN HÓA & TỐI ƯU MỚI)
+   ========================================================================== */
 
 /* --- Mobile nhỏ (Dưới 576px) --- */
 @media (max-width: 575.98px) {
-  .hero-section {
-    min-height: 100svh;
-    padding-top: 80px;
-  }
-  .header-slogan {
-    font-size: 2.2rem;
-  }
-  .description-text {
-    font-size: 1rem;
-  }
+  .hero-section { min-height: 100svh !important; padding-top: 80px !important; }
+  .header-slogan { font-size: 2.2rem !important; }
+  .description-text { font-size: 1rem !important; }
   
   .features-section, 
   .car-showcase-section, 
   .process-section, 
-  .cta-section {
-    padding: 60px 0;
-  }
+  .cta-section,
   #premium-register, 
-  #join-us-section {
-    padding: 60px 0 !important;
-  }
+  #join-us-section { padding: 60px 0 !important; }
   
-  .section-title {
-    font-size: 1.8rem;
-  }
+  .section-title { font-size: 1.8rem !important; }
   
-  .carousel-container {
-    height: 380px;
-  }
-  .car-flow-card {
-    width: 85%;
-    height: 350px;
-    padding: 15px;
-  }
-  .car-info-box h3 {
-    font-size: 1.2rem;
-  }
+  .carousel-container { height: 380px !important; }
+  .car-flow-card { width: 85% !important; height: 350px !important; padding: 15px !important; }
+  .car-info-box h3 { font-size: 1.2rem !important; }
   
-  .luxury-title {
-    font-size: 1.8rem;
-  }
-  .luxury-register-card {
-    padding: 20px !important;
-    border-radius: 20px;
-  }
-  .luxury-register-card::after {
-    clip-path: inset(8px round 20px) !important;
-  }
-  .sphere-1, .sphere-2 {
-    width: 250px;
-    height: 250px;
-  }
+  .luxury-title { font-size: 1.8rem !important; }
+  .luxury-register-card { padding: 20px !important; border-radius: 20px !important; }
+  .luxury-register-card::after { clip-path: inset(8px round 20px) !important; }
+  .sphere-1, .sphere-2 { width: 250px !important; height: 250px !important; }
 }
 
 /* --- Mobile lớn / Tablet nhỏ (Từ 576px đến 767px) --- */
 @media (min-width: 576px) and (max-width: 767.98px) {
-  .hero-section {
-    min-height: 100svh;
-  }
-  .header-slogan {
-    font-size: 2.8rem;
-  }
-  .section-title {
-    font-size: 2rem;
-  }
+  .hero-section { min-height: 100svh !important; }
+  .header-slogan { font-size: 2.8rem !important; }
+  .section-title { font-size: 2rem !important; }
   
-  .carousel-container {
-    height: 450px;
-  }
-  .car-flow-card {
-    width: 75%;
-    height: 400px;
-  }
+  .carousel-container { height: 450px !important; }
+  .car-flow-card { width: 75% !important; height: 400px !important; }
   
-  .luxury-title {
-    font-size: 2.2rem;
-  }
-  .luxury-register-card {
-    padding: 30px !important;
-  }
+  .luxury-title { font-size: 2.2rem !important; }
+  .luxury-register-card { padding: 30px !important; }
 }
 
 /* --- Tablet lớn (Từ 768px đến 991px) --- */
 @media (min-width: 768px) and (max-width: 991.98px) {
-  .header-slogan {
-    font-size: 3.2rem;
-  }
-  .carousel-container {
-    height: 500px;
-  }
-  .car-flow-card {
-    width: 65%;
-    height: 450px;
-  }
-  .luxury-title {
-    font-size: 2.5rem;
-  }
-}
-
-/* --- Dùng chung từ Tablet trở lên (Đoạn code stagger gốc của bạn) --- */
-@media (min-width: 768px) {
-  .stagger-up {
-    transform: translateY(-30px);
-  }
+  .header-slogan { font-size: 3.2rem !important; }
+  .carousel-container { height: 500px !important; }
+  .car-flow-card { width: 65% !important; height: 450px !important; }
+  .luxury-title { font-size: 2.5rem !important; }
+  .stagger-up { transform: translateY(-30px) !important; }
 }
 
 /* --- Laptop / Desktop nhỏ (Từ 992px đến 1199px) --- */
 @media (min-width: 992px) and (max-width: 1199.98px) {
-  .car-flow-card {
-    width: 65%;
-    max-width: 450px;
-  }
+  .car-flow-card { width: 65% !important; max-width: 450px !important; }
 }
 
 /* --- Desktop lớn (Từ 1200px trở lên) --- */
 @media (min-width: 1200px) {
-  .luxury-register-card {
-    padding: 60px !important;
+  .luxury-register-card { padding: 60px !important; }
+  .car-showcase-section::before { width: 400px !important; height: 400px !important; }
+}
+
+/* ==========================================================================
+   10. NAVBAR RESPONSIVE COLLAPSE (Chuyên biệt dưới 992px theo Bootstrap)
+   ========================================================================== */
+@media (max-width: 991.98px) {
+  .custom-navbar .navbar-collapse { 
+      background: rgba(11, 15, 23, 0.95) !important; 
+      backdrop-filter: blur(20px) !important; 
+      -webkit-backdrop-filter: blur(20px) !important; 
+      border-radius: 20px !important; 
+      padding: 25px 20px !important; 
+      margin-top: 15px !important; 
+      border: 1px solid rgba(255, 255, 255, 0.1) !important; 
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important; 
   }
-  .car-showcase-section::before {
-    width: 400px;
-    height: 400px;
+  .custom-navbar .navbar-center-links-1.d-none { 
+      display: flex !important; 
+      justify-content: center !important; 
+      width: 100% !important; 
+  }
+  .custom-navbar .navbar-nav { 
+      width: 100% !important; 
+      align-items: stretch !important; 
+      gap: 15px !important; 
+  }
+  .custom-navbar .nav-item { 
+      width: 100% !important; 
+      display: flex !important; 
+      justify-content: center !important; 
+  }
+  .custom-navbar .nav-link-center-1 { 
+      width: 100% !important; 
+      justify-content: center !important; 
+      padding: 12px !important; 
+      background: rgba(255, 255, 255, 0.05) !important; 
+  }
+  .custom-navbar .btn-login { 
+      width: 100% !important; 
+      justify-content: center !important; 
+      padding: 12px !important; 
+      margin-top: 10px !important; 
+      border-radius: 50px !important; 
   }
 }
+

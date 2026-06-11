@@ -1310,3 +1310,128 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
     display: flex;
     justify-content: center; /* Căn giữa theo chiều ngang */
 }
+
+/* ==========================================================================
+   10. MOBILE GLASS DROPDOWN (ĐỒNG BỘ 100% VỚI NAVBAR GỐC)
+   ========================================================================== */
+
+/* Nút Hamburger tùy chỉnh */
+.mobile-menu-btn {
+    background: transparent;
+    transition: transform 0.3s ease;
+}
+.mobile-menu-btn.active i::before {
+    content: "\f00d"; /* Đổi icon sang dấu X */
+}
+
+/* Khung Dropdown Nổi (Mặc định ẩn) */
+.mobile-glass-dropdown {
+    position: absolute;
+    top: calc(100% + 15px);
+    right: 15px;
+    width: calc(100% - 30px);
+    max-width: 400px;
+    border-radius: 30px;
+    
+    /* Hiệu ứng ẩn/hiện mượt mà */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-20px) scale(0.95);
+    transition: all 0.5s var(--liquid-easing);
+    z-index: 1050;
+    
+    /* ĐỒNG BỘ UI/UX VỚI .custom-navbar.is-scrolled */
+    background-color: rgba(100, 129, 114, 0.506); /* Hoàn toàn trong suốt */
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 2px var(--glass-border), 0 15px 35px rgba(0, 0, 0, 0.2); 
+    isolation: isolate;
+    transform-style: preserve-3d;
+}
+
+/* Lớp Liquid Distortion - Sao chép y hệt Navbar */
+.mobile-glass-dropdown::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    z-index: -1;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion);
+    clip-path: inset(12px round 30px);
+    transform: translateZ(0);
+    will-change: transform, filter;
+    background: transparent; /* Bỏ màu nền, giữ độ trong suốt tinh khiết */
+}
+
+/* Bóng đổ 3D bên trong (Inner Shadow) */
+.mobile-glass-dropdown::before {
+    content: ''; 
+    position: absolute; 
+    inset: 0; 
+    z-index: 2; 
+    border-radius: inherit; 
+    pointer-events: none;
+    box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.15); 
+}
+
+/* Khi được kích hoạt (mở menu) */
+.mobile-glass-dropdown.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Nội dung bên trong Menu */
+.dropdown-inner-content {
+    padding: 25px 20px;
+    position: relative;
+    z-index: 3; /* Nằm trên cùng để click được */
+}
+
+/* Các link điều hướng Mobile - Trong suốt bọc viền sáng */
+.mobile-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-color);
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 12px 16px;
+    border-radius: 16px;
+    transition: all 0.4s var(--liquid-easing);
+    
+    /* Khối nút dạng kính mỏng nhẹ */
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+}
+
+.mobile-nav-item:hover, .mobile-nav-item:active {
+    background: rgba(255, 255, 255, 0.25);
+    color: var(--color-1); /* Hover đổi sang màu vàng đặc trưng của dự án */
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), inset 2px 2px 5px rgba(255, 255, 255, 0.4);
+}
+
+.mobile-nav-item i {
+    color: var(--color-1);
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+/* Đường kẻ phân cách tàng hình */
+.divider-glass {
+    height: 1px;
+    width: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* Đảm bảo Menu ẩn hoàn toàn khi lên màn hình Desktop (> 992px) */
+@media (min-width: 992px) {
+    .mobile-glass-dropdown, .mobile-menu-btn {
+        display: none !important;
+    }
+}

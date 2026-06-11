@@ -325,54 +325,43 @@
     </defs>
     </svg>
     <header>
-      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
-        <div class="container-base position-relative h-100">
-          <a class="navbar-brand brand-overflow" href="../index.html">
-            <img
-              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
-              alt="FleetFlow Logo"
-              class="logo-img"
-            />
+      <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
+        <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
+          
+          <a class="navbar-brand brand-overflow" href="index.html">
+            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
           </a>
 
-          <button
-            class="navbar-toggler border-0 ms-auto"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#fleetflowNav"
-          >
-            <span class="navbar-toggler-icon"></span>
+          <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
+            <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
           </button>
 
-          <div class="collapse navbar-collapse" id="fleetflowNav">
-            <ul
-              class="navbar-nav ms-auto align-items-center gap-4 mt-3 mt-lg-0"
-            >
-              <li class="nav-item">
-                <div class="navbar-center-links-1 d-none d-lg-flex">
-                  <a href="register.html" class="nav-link-center-1">Trở thành tài xế FleetFlow</a>
-                </div>
-              </li>
-
-              <li class="nav-item">
-                <div class="navbar-center-links-1 d-none d-lg-flex">
-            <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
+          <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
+            <a href="pages/register.html" class="nav-link-center-1">Trở thành tài xế</a>
+            <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
+            <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
+              <span>Đăng nhập</span>
+              <i class="fa-regular fa-user-circle fs-5"></i>
+            </button>
           </div>
-              </li>
-              <li class="nav-item ms-lg-2">
-                <button
-                  class="btn-login d-flex align-items-center gap-2"
-                  id="btnLogin"
-                >
-                  <span
-                    ><a href="#" class="text-decoration-none"
-                      >Đăng nhập</a
-                    ></span
-                  >
-                  <i class="fa-regular fa-user-circle fs-5"></i>
-                </button>
-              </li>
-            </ul>
+
+        </div>
+
+        <div class="mobile-glass-dropdown" id="mobileDropdown">
+          <div class="dropdown-inner-content d-flex flex-column gap-3">
+            <a href="pages/register.html" class="mobile-nav-item">
+              <i class="fa-solid fa-id-card"></i> Trở thành tài xế FleetFlow
+            </a>
+            <a href="pages/policy.html" class="mobile-nav-item">
+              <i class="fa-solid fa-shield-halved"></i> Về chính sách
+            </a>
+            
+            <div class="divider-glass my-2"></div>
+            
+            <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLoginMobile">
+              <span class="fw-bold">Đăng nhập ngay</span>
+              <i class="fa-regular fa-user-circle fs-5"></i>
+            </button>
           </div>
         </div>
       </nav>
