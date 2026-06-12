@@ -207,27 +207,93 @@ footer {
 .upload-box:hover i {
     transform: scale(1.1);
 }
+/* ==========================================================================
+   7. RESPONSIVE / MOBILE APPLE iOS UI ADJUSTMENTS (DƯỚI 992PX)
+   ========================================================================== */
+@media (max-width: 1200px) {
+    /* CHUYỂN BOTTOM BAR LƠ LỬNG KIỂU iOS */
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 450px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 15px;
+        border-radius: 50px;
+        z-index: 9999;
+        isolation: isolate;
+        
+        /* Nền kính sáng (Glassmorphism) */
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
+                    inset 1px 1px 3px rgba(255, 255, 255, 1);
+    }
 
-/* --------------------------------------------------------------------------
-   7. RESPONSIVE / MOBILE ADJUSTMENTS
-   -------------------------------------------------------------------------- */
-@media (max-width: 991px) {
-    .navbar-center-links {
-        position: static;
-        transform: none;
+    /* Viền chất lỏng cho Bottom Bar */
+    .mobile-bottom-nav::after {
+        content: ''; 
+        position: absolute; 
+        inset: -8px; 
+        z-index: -1;
+        backdrop-filter: blur(15px); 
+        -webkit-backdrop-filter: blur(15px);
+        filter: url(#liquid-distortion); 
+        clip-path: inset(8px round 50px);
+        background: transparent; 
+        border-radius: 60px;
+    }
+
+    /* ĐỊNH DẠNG ICON VÀ CHỮ (TỰ ĐỘNG CANH DỌC) */
+    .mobile-bottom-nav .nav-link-center {
+        display: flex;
         flex-direction: column;
-        background: var(--color-1);
-        padding: 20px;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 12px;
+        width: auto;
+        gap: 5px;
+        background: transparent;
+        color: #64748b;
         border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-bottom-nav .nav-link-center i {
+        font-size: 1.3rem;
+    }
+
+    .mobile-bottom-nav .nav-link-center .nav-text {
+        font-size: 0.65rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* TRẠNG THÁI ACTIVE VÀ HOVER */
+    .mobile-bottom-nav .nav-link-center.active {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--color-1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
+        transform: translateY(-4px);
+    }
+
+    .mobile-bottom-nav .nav-link-center:hover {
+        transform: translateY(-4px);
+        color: var(--color-dark);
+    }
+
+    /* ĐẨY KHUNG NỘI DUNG LÊN TRÁNH BỊ BOTTOM BAR ĐÈ LÊN */
+    main.container {
+        padding-bottom: 120px !important;
     }
     
-    .glass-panel {
-        padding: 30px 20px !important;
-        border-radius: 30px;
-    }
-    
-    .glass-panel::after,
-    .upload-box::after {
-        clip-path: inset(12px round 30px) !important;
+    .floating-contact-buttons {
+        bottom: 110px !important; 
     }
 }
