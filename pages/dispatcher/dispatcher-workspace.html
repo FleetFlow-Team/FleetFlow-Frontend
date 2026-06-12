@@ -39,16 +39,6 @@
     <feDisplacementMap in="SourceGraphic" in2="blur" scale="30" xChannelSelector="R" yChannelSelector="G" />
   </filter>
 </svg>
-<div id="intro-overlay">
-        <video id="intro-video" autoplay playsinline>
-            <source src="../../assets/video/Dispatcher-Intro.mp4" type="video/mp4">
-            Trình duyệt của bạn không hỗ trợ video này.
-        </video>
-        <div class="container-btn">
-            <button id="skip-btn">Skip</button>
-        </div>
-    </div>
-
     <header>
         <nav class="navbar dispatcher-navbar transition-all">
         <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
@@ -106,7 +96,7 @@
     <div class="container-fluid" style="padding-top: 40px; padding-bottom: 50px;">
         <div class="row px-xl-4">
             
-            <div class="col-lg-3 mb-4">
+            <div class="col-xl-3 d-none d-xl-block mb-4">
                 <div class="sticky-top" style="top: 100px; width: 20rem;">
                     <div class="toc-header border-bottom border-secondary pb-3 mb-4">
                         <i class="fa-solid fa-layer-group me-2"></i> Bảng Điều Khiển
@@ -126,7 +116,7 @@
                 </div>
             </div>
 
-            <div class="col-lg-9">
+            <div class="col-xl-9">
     
     <div id="overview" class="dashboard-section active">
         <div class="glass-panel mb-4">
@@ -288,6 +278,25 @@
 </div>
         </div>
     </div>
+
+    <!-- THANH BOTTOM NAV APPLE GLASS (Chỉ hiện khi < 1200px) -->
+    <nav class="bottom-nav-glass d-xl-none">
+        <a href="#overview" class="nav-item toc-link active">
+            <i class="fa-solid fa-chart-pie text-warning"></i><span>Tổng quan</span>
+        </a>
+        <a href="#map-tracking" class="nav-item toc-link">
+            <i class="fa-solid fa-map-location-dot text-primary"></i><span>Bản đồ</span>
+        </a>
+        <a href="#trip-management" class="nav-item toc-link">
+            <i class="fa-solid fa-route text-success"></i><span>Chuyến đi</span>
+        </a>
+        <a href="#driver-status" class="nav-item toc-link">
+            <i class="fa-solid fa-id-card text-info "></i><span>Tài xế</span>
+        </a>
+        <a href="#disputes" class="nav-item toc-link">
+            <i class="fa-solid fa-triangle-exclamation text-danger"></i><span>Khiếu nại</span>
+        </a>
+    </nav>
     </main>
 
     
@@ -336,8 +345,12 @@ document.addEventListener("DOMContentLoaded", function () {
     function updateVerticalIndicator(activeLink) {
         if (!activeLink || !verticalIndicator) return;
         
+        // KIỂM TRA: Chỉ tính toán trượt kính nếu nút bấm nằm bên trong thanh menu dọc của PC
+        const container = activeLink.closest(".toc-list");
+        if (!container) return; 
+
         const linkRect = activeLink.getBoundingClientRect();
-        const containerRect = activeLink.closest(".toc-list").getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
         const topPos = linkRect.top - containerRect.top;
         
         // Tịnh tiến khối kính và co giãn chiều cao tương thích với phần tử mục lục
@@ -346,7 +359,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Thiết lập vị trí khối kính ban đầu cho tab đang kích hoạt mặc định
-    const initialActiveLink = document.querySelector(".toc-link.active");
+    const initialActiveLink = document.querySelector(".toc-list .toc-link.active");
     if (initialActiveLink) {
         // Đặt độ trễ nhỏ để font chữ và layout kịp ổn định vị trí chính xác
         setTimeout(() => updateVerticalIndicator(initialActiveLink), 150);
@@ -359,13 +372,22 @@ document.addEventListener("DOMContentLoaded", function () {
             
             if (this.classList.contains('active')) return;
             
-            // Cập nhật thanh chọn Sidebar
+            // Xóa active khỏi TẤT CẢ các thẻ link (cả PC lẫn Mobile)
             tocLinks.forEach(l => l.classList.remove("active"));
-            this.classList.add("active");
-            updateVerticalIndicator(this);
+            
+            // Tìm và bôi sáng tất cả các nút có cùng href (Đồng bộ PC & Mobile)
+            const targetHref = this.getAttribute("href");
+            document.querySelectorAll(`.toc-link[href="${targetHref}"]`).forEach(l => {
+                l.classList.add("active");
+                
+                // Nếu nút đó nằm ở thanh Sidebar PC thì cho cục kính trượt tới
+                if (l.closest(".toc-list")) {
+                    updateVerticalIndicator(l);
+                }
+            });
             
             // Xử lý hoán đổi hiển thị các Section nội dung chính
-            const targetId = this.getAttribute("href").substring(1);
+            const targetId = targetHref.substring(1);
             sections.forEach(section => {
                 section.classList.remove('active');
             });

@@ -346,3 +346,68 @@ body {
         transform: scale(1) translateY(0);
     }
 }
+
+/* ==========================================================================
+   RESPONSIVE MOBILE (< 1200px) - BOTTOM NAV CHO DISPATCHER
+========================================================================== */
+@media (max-width: 1199.98px) {
+    /* Đẩy khung nội dung lên để tránh bị Bottom Nav che mất */
+    body { padding-bottom: 110px !important; } 
+
+    /* Ẩn slogan để Navbar gọn gàng, chừa chỗ cho Logo và Avatar */
+    .navbar-slogan { display: none !important; }
+
+    /* THIẾT KẾ BOTTOM NAV LƠ LỬNG */
+    .bottom-nav-glass {
+        position: fixed;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 500px;
+        display: flex; /* Bootstrap d-xl-none đã lo việc ẩn/hiện */
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 10px;
+        border-radius: 50px;
+        z-index: 9999;
+        isolation: isolate;
+        
+        background: rgba(255, 255, 255, 0.65);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
+                            inset 1px 1px 3px rgba(255, 255, 255, 1);
+    }
+
+    /* Viền hiệu ứng khúc xạ kính lỏng phía sau */
+    .bottom-nav-glass::after {
+        content: ''; position: absolute; inset: -8px; z-index: -1;
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        filter: url(#liquid-distortion); clip-path: inset(8px round 50px);
+        background: transparent; border-radius: 60px;
+    }
+
+    /* Định dạng nút bấm */
+    .bottom-nav-glass .nav-item {
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        padding: 8px 10px; width: auto; gap: 5px;
+        background: transparent; color: #64748b; border-radius: 20px;
+        transition: all 0.3s ease; text-decoration: none;
+    }
+
+    .bottom-nav-glass .nav-item i { font-size: 1.25rem; }
+    .bottom-nav-glass .nav-item span { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+
+    /* Trạng thái Active & Hover */
+    .bottom-nav-glass .nav-item.active {
+        background: rgba(255, 255, 255, 0.95); color: var(--color-1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
+                transform: translateY(-4px);
+    }
+    .bottom-nav-glass .nav-item:hover { transform: translateY(-4px); }
+
+    /* Thu nhỏ khoảng cách các block trên mobile */
+    .glass-panel { padding: 20px; border-radius: 24px; }
+}

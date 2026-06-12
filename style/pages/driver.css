@@ -490,34 +490,25 @@ h3.text-white, h3.text-success, h3.text-danger, h3.text-info {
     }
     .bottom-nav-glass .nav-item:hover { transform: translateY(-4px); color: var(--color-dark) }
 
-    /* --- 3. DI DỜI NÚT TRẠNG THÁI (PILL TOGGLE) XUỐNG DƯỚI --- */
-    /* Vị trí hoàn hảo: Nổi (Floating) ngay phía trên thanh Bottom Nav */
+    /* LOẠI BỎ CÁC BIẾN HOẶC HOẠT ẢNH FLOATING CŨ CỦA PILL ĐỂ NÓ NẰM IM TRÊN HEADER */
     .driver-status-wrapper {
-        display: flex !important; /* Ghi đè class ẩn d-none d-sm-block trong HTML */
-        position: fixed;
-        bottom: 110px; /* Nằm cách thanh Bottom Nav một chút */
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 9998;
-        
-        /* Cấu trúc một lớp viền kính nhỏ bao bọc viên Pill để tách biệt nó khỏi nền bản đồ */
-        background: rgba(0, 0, 0, 0.3);
-        padding: 8px;
-        border-radius: 60px;
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
-        
-        /* Hiệu ứng nổi bồng bềnh nhẹ để thu hút sự chú ý */
-        animation: floatPill 3s ease-in-out infinite;
+        display: none !important;
     }
 
-    /* 4. TỐI ƯU CÁC KHU VỰC KHÁC TRÊN DI ĐỘNG */
-    /* Ẩn slogan để Navbar gọn gàng, chừa chỗ cho Avatar và Chuông thông báo */
+    /* Ẩn bớt slogan trên các màn hình trung bình/nhỏ để tránh chen chúc vị trí với Pill */
     .navbar-slogan { display: none !important; }
+
+    .navbar-brand .pill-text {
+        font-size: 0.72rem;
+    }
+    .navbar-brand .icon-status {
+        font-size: 0.85rem;
+    }
+
+    .icon-status {
+        font-size: 0.95rem;
+    }
     
-    /* Thu nhỏ padding của các Panel để tiết kiệm diện tích bề ngang */
     .glass-panel { padding: 20px; border-radius: 24px; }
 }
 
