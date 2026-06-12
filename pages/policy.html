@@ -204,6 +204,94 @@
          5. NÚT LIÊN HỆ TRÔI NỔI
       ========================================= */
       .floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
+      
+      @media (max-width: 1200px) {
+    /* CHUYỂN BOTTOM BAR LƠ LỬNG KIỂU iOS */
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 450px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 15px;
+        border-radius: 50px;
+        z-index: 9999;
+        isolation: isolate;
+        
+        /* Nền kính sáng (Glassmorphism) */
+        background: rgba(255, 255, 255, 0.65);
+        backdrop-filter: blur(25px);
+        -webkit-backdrop-filter: blur(25px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
+                    inset 1px 1px 3px rgba(255, 255, 255, 1);
+    }
+
+    /* Viền chất lỏng cho Bottom Bar */
+    .mobile-bottom-nav::after {
+        content: ''; 
+        position: absolute; 
+        inset: -8px; 
+        z-index: -1;
+        backdrop-filter: blur(15px); 
+        -webkit-backdrop-filter: blur(15px);
+        filter: url(#liquid-distortion); 
+        clip-path: inset(8px round 50px);
+        background: transparent; 
+        border-radius: 60px;
+    }
+
+    /* ĐỊNH DẠNG ICON VÀ CHỮ (TỰ ĐỘNG CANH DỌC) */
+    .mobile-bottom-nav .nav-link-center {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 8px 12px;
+        width: auto;
+        gap: 5px;
+        background: transparent;
+        color: #64748b;
+        border-radius: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-bottom-nav .nav-link-center i {
+        font-size: 1.3rem;
+    }
+
+    .mobile-bottom-nav .nav-link-center .nav-text {
+        font-size: 0.65rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    /* TRẠNG THÁI ACTIVE VÀ HOVER */
+    .mobile-bottom-nav .nav-link-center.active {
+        background: rgba(255, 255, 255, 0.95);
+        color: var(--color-1);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
+        transform: translateY(-4px);
+    }
+
+    .mobile-bottom-nav .nav-link-center:hover {
+        transform: translateY(-4px);
+        color: var(--color-dark);
+    }
+
+    /* ĐẨY KHUNG NỘI DUNG LÊN TRÁNH BỊ BOTTOM BAR ĐÈ LÊN */
+    main.container {
+        padding-bottom: 120px !important;
+    }
+    
+    .floating-contact-buttons {
+        bottom: 110px !important; 
+    }
+}
     </style>
   </head>
   <body>
@@ -225,10 +313,22 @@
           </a>
 
           <div class="navbar-center-links d-none d-lg-flex">
-            <a href="../index.html" class="nav-link-center">Trang chủ</a>
-            <a href="../pages/findCar.html" class="nav-link-center">Đặt xe</a>
-            <a href="../pages/customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
-            <a href="policy.html" class="nav-link-center active">Chính sách</a>
+            <a href="../index.html" class="nav-link-center">
+              <i class="fa-solid fa-house mobile-icon d-lg-none"></i>
+              <span class="nav-text">Trang chủ</span>
+            </a>
+            <a href="../pages/findCar.html" class="nav-link-center">
+              <i class="fa-solid fa-car mobile-icon d-lg-none"></i>
+              <span class="nav-text">Đặt xe</span>
+            </a>
+            <a href="../pages/customer/tripHistory.html" class="nav-link-center">
+              <i class="fa-solid fa-clock-rotate-left mobile-icon d-lg-none"></i>
+              <span class="nav-text">Chuyến đi</span>
+            </a>
+            <a href="policy.html" class="nav-link-center active">
+              <i class="fa-solid fa-shield-halved mobile-icon d-lg-none"></i>
+              <span class="nav-text">Chính sách</span>
+            </a>
           </div>
 
           <div class="d-flex align-items-center gap-3">
@@ -237,32 +337,12 @@
               <i class="fa-regular fa-user-circle fs-5"></i>
             </button>
 
-            <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
-              <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
+            <button class="btn-login d-flex d-lg-none align-items-center justify-content-center" 
+                    style="width: 45px; height: 45px; padding: 0; border-radius: 50%;">
+              <i class="fa-regular fa-user-circle fs-4" style="margin: 0;"></i>
             </button>
           </div>
 
-        </div>
-
-        <div class="mobile-glass-dropdown" id="mobileDropdown">
-          <div class="dropdown-inner-content d-flex flex-column gap-3">
-            <a href="../index.html" class="mobile-nav-item">
-              <i class="fa-solid fa-house"></i> Trang chủ
-            </a>
-            <a href="../pages/findCar.html" class="mobile-nav-item">
-              <i class="fa-solid fa-car"></i> Đặt xe
-            </a>
-            <a href="../pages/customer/tripHistory.html" class="mobile-nav-item">
-              <i class="fa-solid fa-clock-rotate-left"></i> Chuyến đi
-            </a>
-            
-            <div class="divider-glass my-2"></div>
-            
-            <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2">
-              <span class="fw-bold">Đăng nhập ngay</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </button>
-          </div>
         </div>
       </nav>
     </header>
@@ -519,6 +599,25 @@
             <img src="../assets/img/calling.png" alt="Phone" style="width: 35px; height: 35px; border-radius: 50%;">
         </a>
     </aside>
+
+    <div class="mobile-bottom-nav d-lg-none">
+    <a href="../index.html" class="nav-link-center">
+        <i class="fa-solid fa-house mobile-icon"></i>
+        <span class="nav-text">Trang chủ</span>
+    </a>
+    <a href="findCar.html" class="nav-link-center">
+        <i class="fa-solid fa-car mobile-icon"></i>
+        <span class="nav-text">Đặt xe</span>
+    </a>
+    <a href="../pages/customer/tripHistory.html" class="nav-link-center">
+        <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
+        <span class="nav-text">Chuyến đi</span>
+    </a>
+    <a href="policy.html" class="nav-link-center active">
+        <i class="fa-solid fa-shield-halved mobile-icon"></i>
+        <span class="nav-text">Chính sách</span>
+    </a>
+</div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

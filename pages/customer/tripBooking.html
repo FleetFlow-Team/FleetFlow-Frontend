@@ -168,29 +168,119 @@
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* =========================================
-           4. RESPONSIVE MOBILE (BOTTOM SHEET)
-        ========================================= */
-        @media (max-width: 991px) {
-            .booking-panel {
-                top: auto; bottom: 20px; right: 50%; transform: translateX(50%);
-                width: 95%; max-height: 85vh; border-radius: 40px; 
+        /* ==========================================================================
+           4. RESPONSIVE MOBILE TỔNG HỢP (BOTTOM NAV & BOTTOM SHEET <1200px)
+        ========================================================================== */
+        @media (max-width: 1199.98px) {
+            
+            /* --- A. THANH ĐIỀU HƯỚNG ĐÁY (BOTTOM NAV iOS) --- */
+            .mobile-bottom-nav {
+                position: fixed;
+                bottom: 25px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 92%;
+                max-width: 450px;
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 10px 15px;
+                border-radius: 50px;
+                z-index: 9999;
+                isolation: isolate;
+                
+                background: rgba(255, 255, 255, 0.65);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
+                            inset 1px 1px 3px rgba(255, 255, 255, 1);
             }
-            .booking-panel::after { clip-path: inset(12px round 40px) !important; }
-            .booking-panel::before { border-radius: 40px; }
-            .panel-header { padding: 20px 24px 10px 24px; text-align: center; }
-            .panel-header::before { content: ''; display: block; width: 40px; height: 5px; background: rgba(0,0,0,0.2); border-radius: 5px; margin: 0 auto 16px auto; }
-            .panel-body { padding: 15px 24px; }
-            .panel-footer { padding: 15px 24px 20px 24px; }
-            .floating-contact-buttons { display: none; } /* Ẩn nút liên hệ ở mobile để tránh đè lên Panel */
+
+            .mobile-bottom-nav::after {
+                content: ''; position: absolute; inset: -8px; z-index: -1;
+                backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+                filter: url(#liquid-distortion); clip-path: inset(8px round 50px);
+                background: transparent; border-radius: 60px;
+            }
+
+            .mobile-bottom-nav .nav-link-center {
+                display: flex; flex-direction: column; justify-content: center; align-items: center;
+                padding: 8px 12px; width: auto; gap: 5px;
+                background: transparent; color: #64748b; border-radius: 20px;
+                transition: all 0.3s ease; text-decoration: none;
+            }
+
+            .mobile-bottom-nav .nav-link-center i { font-size: 1.3rem; }
+            .mobile-bottom-nav .nav-link-center .nav-text { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+
+            .mobile-bottom-nav .nav-link-center.active {
+                background: rgba(255, 255, 255, 0.95); color: var(--color-1);
+                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
+                transform: translateY(-4px);
+            }
+
+            .mobile-bottom-nav .nav-link-center:hover { transform: translateY(-4px); color: var(--color-dark); }
+
+            /* --- B. BẢNG ĐẶT XE DẠNG TRƯỢT (BOTTOM SHEET NHƯ GOOGLE MAPS) --- */
+            .booking-panel {
+                top: auto !important;
+                bottom: 0 !important;
+                right: auto !important;
+                left: 50% !important;
+                width: 100% !important;
+                height: 63vh !important; /* Độ cao khi mở full màn hình */
+                max-height: none !important;
+                border-radius: 50px !important;
+                
+                /* Thu gọn mặc định: Nhô lên 165px (vừa đủ hiện thanh kéo và tiêu đề) */
+                transform: translate(-50%, calc(100% - 165px)) !important;
+                transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) !important;
+                
+                /* Giảm bớt padding đáy để cân đối diện tích */
+                padding-bottom: 100px !important; 
+                z-index: 9998 !important;
+            }
+            
+            /* Class kích hoạt khi mở rộng (Expanded) */
+            .booking-panel.expanded {
+                transform: translate(-50%, 0) !important;
+            }
+
+            /* Điều chỉnh lớp viền chất lỏng cho Bottom Sheet (Chỉ bo góc trên) */
+            .booking-panel::after { clip-path: inset(12px 0 0 0 round 40px 40px 0 0) !important; }
+            .booking-panel::before { border-radius: 40px 40px 0 0 !important; }
+
+            .panel-header {
+                padding: 15px 24px 15px 24px !important;
+                text-align: center;
+                border-bottom: none !important;
+                -webkit-user-select: none; /* Ngăn bôi đen chữ khi vuốt */
+                user-select: none;
+            }
+            
+            /* Thanh ngang gợi ý vuốt (Drag handle) */
+            .drag-handle {
+                width: 50px; height: 6px; border-radius: 10px;
+                background: rgba(255, 255, 255, 0.8);
+                margin: 0 auto 15px auto;
+                box-shadow: inset 1px 1px 2px rgba(0,0,0,0.2);
+            }
+
+            .panel-header h2 { font-size: 1.2rem !important; }
+
+            /* Xoay mũi tên mượt mà khi mở rộng/thu gọn */
+            .toggle-icon { transition: transform 0.4s var(--liquid-easing); }
+            .booking-panel.expanded .toggle-icon { transform: rotate(180deg); }
+
+            .panel-body { padding: 0 24px 15px 24px !important; }
+            .panel-footer { padding: 10px 24px 20px 24px !important; }
+
+            /* --- C. FIX GIAO DIỆN CHUNG TRÊN MOBILE --- */
+            body { padding-bottom: 120px !important; } /* Đẩy bản đồ lên một chút */
+            .floating-contact-buttons { display: none !important; } /* Ẩn nút liên hệ trôi nổi cho sạch map */
         }
 
-        /* Toasts */
-        .toast-system-container { z-index: 9999; }
-        .toast-premium-error { background: rgba(239, 68, 68, 0.9) !important; backdrop-filter: blur(10px); color: white !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
-        .toast-premium-warning { background: rgba(245, 158, 11, 0.9) !important; backdrop-filter: blur(10px); color: white !important; border: 1px solid rgba(255,255,255,0.3); border-radius: 20px; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3); }
-
-        
     </style>
 </head>
 <body>
@@ -255,10 +345,10 @@
             </div>
         </section>
 
-        <aside class="booking-panel">
+        <aside class="booking-panel" id="bookingSheet">
             
-            <div class="panel-header">
-                <h2>Thiết lập lộ trình</h2>
+           <div class="panel-header" id="sheetHeader" style="cursor: pointer;">
+                <div class="drag-handle"></div> <h2><i class="fa-solid fa-chevron-up toggle-icon me-2"></i> Thiết lập lộ trình</h2>
             </div>
             
             <div class="panel-body">
@@ -339,95 +429,269 @@
         </div>
     </div>
 
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="../../index.html" class="nav-link-center">
+            <i class="fa-solid fa-house mobile-icon"></i>
+            <span class="nav-text">Trang chủ</span>
+        </a>
+        <a href="../findCar.html" class="nav-link-center active">
+            <i class="fa-solid fa-car mobile-icon"></i>
+            <span class="nav-text">Đặt xe</span>
+        </a>
+        <a href="tripHistory.html" class="nav-link-center">
+            <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
+            <span class="nav-text">Chuyến đi</span>
+        </a>
+        <a href="../policy.html" class="nav-link-center">
+            <i class="fa-solid fa-shield-halved mobile-icon"></i>
+            <span class="nav-text">Chính sách</span>
+        </a>
+    </div>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // JS được giữ nguyên logic gốc của bạn
-        let isDistanceValid = false;
-        let isTimeValid = false;
+    /* ==========================================================================
+   1. KHAI BÁO BIẾN TOÀN CỤC (GLOBAL VARIABLES)
+   ========================================================================== */
+let isDistanceValid = false;
+let isTimeValid = false;
+let toastDistance, toastSystemError;
 
-        const inputPickup = document.getElementById('inputPickup');
-        const inputDropoff = document.getElementById('inputDropoff');
-        const inputTime = document.getElementById('inputDepartureTime');
-        const btnContinue = document.getElementById('btnContinue');
-        const timeErrorMsg = document.getElementById('timeErrorMsg');
+// Đợi DOM load xong mới gán sự kiện để tránh lỗi biến null
+document.addEventListener("DOMContentLoaded", () => {
+    // Khởi tạo Toasts của Bootstrap
+    const distanceToastEl = document.getElementById('distanceErrorToast');
+    const systemErrorToastEl = document.getElementById('systemErrorToast');
+    
+    if (distanceToastEl) toastDistance = new bootstrap.Toast(distanceToastEl);
+    if (systemErrorToastEl) toastSystemError = new bootstrap.Toast(systemErrorToastEl);
+    
+    // Thiết lập thời gian tối thiểu cho input Date (Giờ hiện tại của Local)
+    const inputTime = document.getElementById('inputDepartureTime');
+    if (inputTime) {
+        const now = new Date();
+        const localISOTime = (new Date(now.getTime() - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+        inputTime.min = localISOTime;
+    }
 
-        let toastDistance, toastSystemError;
-        document.addEventListener("DOMContentLoaded", () => {
-            toastDistance = new bootstrap.Toast(document.getElementById('distanceErrorToast'));
-            toastSystemError = new bootstrap.Toast(document.getElementById('systemErrorToast'));
-            
-            const now = new Date();
-            const localISOTime = (new Date(now.getTime() - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-            inputTime.min = localISOTime;
-        });
+    // Kích hoạt tính toán bản đồ ngay khi vào trang
+    triggerMapCalculation();
 
-        function swapLocations() {
-            const temp = inputPickup.value;
-            inputPickup.value = inputDropoff.value;
-            inputDropoff.value = temp;
-            triggerMapCalculation();
-        }
+    // Khởi tạo logic Bottom Sheet cho Mobile
+    initBottomSheetUX();
+});
 
-        function showMockAutocomplete(dropdownId) { document.getElementById(dropdownId).style.display = 'block'; }
-        function selectLocation(inputId, textValue, dropdownId) {
-            document.getElementById(inputId).value = textValue;
-            document.getElementById(dropdownId).style.display = 'none';
-            triggerMapCalculation();
-        }
-        document.addEventListener('click', function(e) {
-            if(!e.target.closest('.form-floating')) {
-                document.getElementById('pickupDropdown').style.display = 'none';
-                document.getElementById('dropoffDropdown').style.display = 'none';
-            }
-        });
-
-        function triggerMapCalculation() {
-            const pickup = inputPickup.value.toLowerCase();
-            const dropoff = inputDropoff.value.toLowerCase();
-            if(!pickup || !dropoff) return;
-
-            let simulatedDistanceKm = 0;
-            if (dropoff.includes('vũng tàu')) simulatedDistanceKm = 105; 
-            else if (dropoff.includes('quận 1') || dropoff.includes('chợ bến thành')) simulatedDistanceKm = 5; 
-            else simulatedDistanceKm = 25; 
-
-            document.getElementById('distValue').innerText = simulatedDistanceKm;
-
-            if (simulatedDistanceKm <= 20) {
-                isDistanceValid = false;
-                toastDistance.show(); 
-            } else { isDistanceValid = true; }
-            checkFormValidity();
-        }
-
-        function validateDepartureTime() {
-            if(!inputTime.value) {
-                isTimeValid = false; checkFormValidity(); return;
-            }
-            const selectedMs = new Date(inputTime.value).getTime();
-            const currentMs = new Date().getTime(); 
-            const diffMinutes = (selectedMs - currentMs) / (1000 * 60);
-
-            if (diffMinutes < 120) {
-                inputTime.classList.add('is-invalid'); timeErrorMsg.classList.add('d-block'); isTimeValid = false;
-            } else {
-                inputTime.classList.remove('is-invalid'); timeErrorMsg.classList.remove('d-block'); isTimeValid = true;
-            }
-            checkFormValidity();
-        }
-
-        function checkFormValidity() { btnContinue.disabled = !(isDistanceValid && isTimeValid); }
-
-        function simulateBookingSubmit() {
-            const originalText = btnContinue.innerHTML;
-            btnContinue.disabled = true;
-            btnContinue.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải dữ liệu...';
-            setTimeout(() => {
-                btnContinue.innerHTML = originalText; btnContinue.disabled = false; toastSystemError.show();
-            }, 1500);
-        }
+/* ==========================================================================
+   2. LOGIC ĐIỀU KHIỂN GIAO DIỆN & AUTOCOMPLETE
+   ========================================================================== */
+function swapLocations() {
+    const inputPickup = document.getElementById('inputPickup');
+    const inputDropoff = document.getElementById('inputDropoff');
+    
+    if (inputPickup && inputDropoff) {
+        const temp = inputPickup.value;
+        inputPickup.value = inputDropoff.value;
+        inputDropoff.value = temp;
         triggerMapCalculation();
-    </script>
+    }
+}
+
+function showMockAutocomplete(dropdownId) { 
+    const dropdown = document.getElementById(dropdownId);
+    if (dropdown) dropdown.style.display = 'block'; 
+}
+
+function selectLocation(inputId, textValue, dropdownId) {
+    document.getElementById(inputId).value = textValue;
+    document.getElementById(dropdownId).style.display = 'none';
+    triggerMapCalculation();
+}
+
+// Ẩn Autocomplete khi click ra ngoài
+document.addEventListener('click', function(e) {
+    if(!e.target.closest('.form-floating')) {
+        const pickupDropdown = document.getElementById('pickupDropdown');
+        const dropoffDropdown = document.getElementById('dropoffDropdown');
+        if (pickupDropdown) pickupDropdown.style.display = 'none';
+        if (dropoffDropdown) dropoffDropdown.style.display = 'none';
+    }
+});
+
+/* ==========================================================================
+   3. LOGIC VALIDATION (KIỂM TRA TÍNH HỢP LỆ VÀ MÔ PHỎNG BẢN ĐỒ)
+   ========================================================================== */
+function triggerMapCalculation() {
+    const inputPickup = document.getElementById('inputPickup');
+    const inputDropoff = document.getElementById('inputDropoff');
+    
+    if (!inputPickup || !inputDropoff) return;
+
+    const pickup = inputPickup.value.toLowerCase();
+    const dropoff = inputDropoff.value.toLowerCase();
+    
+    if(!pickup || !dropoff) return;
+
+    // Giả lập khoảng cách
+    let simulatedDistanceKm = 0;
+    if (dropoff.includes('vũng tàu')) {
+        simulatedDistanceKm = 105; 
+    } else if (dropoff.includes('quận 1') || dropoff.includes('chợ bến thành')) {
+        simulatedDistanceKm = 5; 
+    } else {
+        simulatedDistanceKm = 25; 
+    }
+
+    // Hiển thị khoảng cách ra UI
+    const distValueEl = document.getElementById('distValue');
+    if (distValueEl) distValueEl.innerText = simulatedDistanceKm;
+
+    // Validate khoảng cách (> 20km)
+    if (simulatedDistanceKm <= 20) {
+        isDistanceValid = false;
+        if (toastDistance) toastDistance.show(); 
+    } else { 
+        isDistanceValid = true; 
+    }
+    
+    checkFormValidity();
+}
+
+function validateDepartureTime() {
+    const inputTime = document.getElementById('inputDepartureTime');
+    const timeErrorMsg = document.getElementById('timeErrorMsg');
+    
+    if (!inputTime) return;
+
+    if(!inputTime.value) {
+        isTimeValid = false; 
+        checkFormValidity(); 
+        return;
+    }
+
+    const selectedMs = new Date(inputTime.value).getTime();
+    const currentMs = new Date().getTime(); 
+    const diffMinutes = (selectedMs - currentMs) / (1000 * 60);
+
+    // Validate thời gian (Phải đặt trước 120 phút)
+    if (diffMinutes < 120) {
+        inputTime.classList.add('is-invalid'); 
+        if (timeErrorMsg) timeErrorMsg.classList.add('d-block'); 
+        isTimeValid = false;
+    } else {
+        inputTime.classList.remove('is-invalid'); 
+        if (timeErrorMsg) timeErrorMsg.classList.remove('d-block'); 
+        isTimeValid = true;
+    }
+    
+    checkFormValidity();
+}
+
+function checkFormValidity() { 
+    const btnContinue = document.getElementById('btnContinue');
+    if (btnContinue) {
+        btnContinue.disabled = !(isDistanceValid && isTimeValid); 
+    }
+}
+
+function simulateBookingSubmit() {
+    const btnContinue = document.getElementById('btnContinue');
+    if (!btnContinue) return;
+
+    const originalText = btnContinue.innerHTML;
+    btnContinue.disabled = true;
+    btnContinue.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang xử lý...';
+    
+    setTimeout(() => {
+        btnContinue.innerHTML = originalText; 
+        btnContinue.disabled = false; 
+        if (toastSystemError) toastSystemError.show();
+    }, 1500);
+}
+
+/* ==========================================================================
+   4. GOOGLE MAPS BOTTOM SHEET UX LOGIC (CHO CẢ PC & MOBILE)
+   ========================================================================== */
+function initBottomSheetUX() {
+    const sheet = document.getElementById('bookingSheet');
+    const header = document.getElementById('sheetHeader');
+    
+    // Nếu không tìm thấy element thì ngưng chạy phần này để tránh lỗi
+    if (!sheet || !header) return; 
+
+    let startY = 0;
+    let currentY = 0;
+    let isDragging = false;
+
+    // Hàm hỗ trợ lấy tọa độ Y bất kể là chuột hay ngón tay cảm ứng
+    function getClientY(e) {
+        return e.touches ? e.touches[0].clientY : e.clientY;
+    }
+
+    // Chạm (Tap) / Click vào Header để Mở/Đóng
+    header.addEventListener('click', (e) => {
+        // Ngăn việc click bị kích hoạt nhầm khi người dùng vừa kéo (drag) xong
+        if (Math.abs(currentY - startY) > 10 && isDragging) return;
+        
+        if (window.innerWidth < 1200) {
+            sheet.classList.toggle('expanded');
+        }
+    });
+
+    // Bắt đầu kéo (Drag / Touch Start)
+    function handleDragStart(e) {
+        if (window.innerWidth >= 1200) return;
+        isDragging = true;
+        startY = getClientY(e);
+        currentY = startY;
+        sheet.style.transition = 'none'; // Tắt mượt để panel bám sát ngón tay/chuột
+    }
+
+    // Đang kéo (Drag / Touch Move)
+    function handleDragMove(e) {
+        if (!isDragging || window.innerWidth >= 1200) return;
+        
+        currentY = getClientY(e);
+        let deltaY = currentY - startY;
+        
+        // Giới hạn vùng kéo bám theo chuột/ngón tay
+        if(sheet.classList.contains('expanded')) {
+            if(deltaY > 0) sheet.style.transform = `translate(-50%, ${deltaY}px)`; // Đang kéo xuống
+        } else {
+            if(deltaY < 0) sheet.style.transform = `translate(-50%, calc(100% - 190px + ${deltaY}px))`; // Đang kéo lên
+        }
+    }
+
+    // Kết thúc kéo (Drag / Touch End)
+    function handleDragEnd(e) {
+        if (!isDragging || window.innerWidth >= 1200) return;
+        isDragging = false;
+        
+        // Trả lại hiệu ứng transition của CSS
+        sheet.style.transition = ''; 
+        sheet.style.transform = ''; 
+        
+        let deltaY = currentY - startY;
+        
+        // Nếu quãng đường kéo đủ dài (>50px), thay đổi trạng thái
+        if (sheet.classList.contains('expanded')) {
+            if (deltaY > 50) sheet.classList.remove('expanded'); // Kéo xuống -> Thu gọn
+        } else {
+            if (deltaY < -50) sheet.classList.add('expanded'); // Kéo lên -> Mở rộng
+        }
+    }
+
+    // Đăng ký sự kiện cho Mobile (Cảm ứng)
+    header.addEventListener('touchstart', handleDragStart, {passive: true});
+    window.addEventListener('touchmove', handleDragMove, {passive: true}); 
+    window.addEventListener('touchend', handleDragEnd);
+
+    // Đăng ký sự kiện cho PC (Chuột)
+    header.addEventListener('mousedown', handleDragStart);
+    window.addEventListener('mousemove', handleDragMove); 
+    window.addEventListener('mouseup', handleDragEnd);
+}
+</script>
     <script src="../../js/base.js"></script>
 </body>
 </html>
