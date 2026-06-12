@@ -40,6 +40,10 @@
   display: flex;
   align-items: center;
   overflow: hidden;
+  background-image: url(../assets/img/Backgroud-mainpage.png);
+  background-size: cover; 
+  background-repeat: no-repeat;
+  
 }
 
 .hero-video {
@@ -78,9 +82,47 @@
 
 .description-text {
   font-size: 1.15rem;
-  color: #d1d5db;
+  color: var(--color-2);
   max-width: 500px;
   line-height: 1.6;
+}
+
+.ai-index-page {
+  width: 30rem; 
+  height: auto;
+  max-width: 100%; /* Đảm bảo responsive không bị vỡ trên màn hình nhỏ */
+  
+  /* Tạo hiệu ứng mượt mà khi hover */
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Hiệu ứng bồng bềnh tự động (Animation bay nhẹ như robot đang lơ lửng) */
+  animation: floatBot 1s ease-in-out infinite;
+  
+  /* Đổ bóng nhẹ nhàng cho hợp với vibe phát sáng của ảnh */
+  filter: drop-shadow(0 5px 10px rgba(80, 230, 82, 0.588));
+}
+
+/* Khi di chuột vào */
+.ai-index-page:hover {
+  /* Tăng kích thước nhẹ và đẩy robot lên một chút */
+  transform: scale(1.2) translateY(-10px); 
+  
+  /* Thêm hiệu ứng phát sáng nhẹ màu xanh lục bảo bảo hòa với background */
+  filter: drop-shadow(0 15px 30px rgba(46, 213, 116, 0.804));
+}
+
+/* Định nghĩa hiệu ứng lơ lửng (Floating) */
+@keyframes floatBot {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-12px); /* Nhấc lên nhẹ 12px */
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 /* --------------------------------------------------------------------------

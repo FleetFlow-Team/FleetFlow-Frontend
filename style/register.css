@@ -32,31 +32,7 @@ select.custom-select-fixed option[disabled] {
   background-repeat: no-repeat;
   position: relative;
   overflow: hidden;
-}
-
-/* =========================================
-   VIDEO BACKGROUND
-========================================= */
-.bg-video {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    /* Dịch chuyển video để căn giữa chính xác */
-    transform: translateX(-50%) translateY(-50%);
-    object-fit: cover; /* Đảm bảo video luôn phủ kín màn hình không bị méo */
-    z-index: -2; /* Nằm dưới cùng */
-}
-
-/* Lớp phủ màu đen trong suốt để làm nổi bật nội dung */
-.bg-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(26, 28, 26, 0.5); /* Tùy chỉnh độ tối (0.5 là 50%) */
-    z-index: -1; /* Nằm trên video nhưng dưới nội dung */
+  background-image: url(../assets/img/Background.png);
 }
 
 /* =========================================
