@@ -26,29 +26,25 @@
         <nav class="navbar custom-navbar transition-all">
             <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
                 
-                <a class="navbar-brand d-flex align-items-center" href="#">
-                    <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" height="60px" class="me-2 logo-img" />
-                </a>
+                <div class="navbar-brand d-flex align-items-center m-0">
+                    <label class="custom-pill-toggle" title="Thay đổi trạng thái">
+                        <input type="checkbox" id="navOnlineToggle" onchange="handleOnlineToggle()" />
+                        <div class="pill-track">
+                            <span class="pill-text text-off">Tạm nghỉ</span>
+                            <span class="pill-text text-on">Nhận chuyến</span>
+                            <div class="pill-thumb">
+                                <i class="fa-solid fa-moon icon-status icon-off"></i>
+                                <i class="fa-solid fa-satellite-dish icon-status icon-on"></i>
+                            </div>
+                        </div>
+                    </label>
+                </div>
 
-                <div class="navbar-slogan text-white fw-medium fs-3 fst-italic d-none d-md-block">
+                <div class="navbar-slogan text-white fw-medium fs-4 fst-italic d-none d-lg-block">
                     <span class="text-warning mx-1">•</span> AN TOÀN TRÊN TỪNG CHUYẾN ĐI <span class="text-warning mx-1">•</span>
                 </div>
 
-                <div class="d-flex align-items-center gap-4 ms-auto">
-                    <div class="driver-status-wrapper d-none d-sm-block">
-                        <label class="custom-pill-toggle" title="Thay đổi trạng thái">
-                            <input type="checkbox" id="navOnlineToggle" onchange="handleOnlineToggle()" />
-                            <div class="pill-track">
-                                <span class="pill-text text-off">Tạm nghỉ</span>
-                                <span class="pill-text text-on">Nhận chuyến</span>
-                                <div class="pill-thumb">
-                                    <i class="fa-solid fa-moon icon-status icon-off"></i>
-                                    <i class="fa-solid fa-satellite-dish icon-status icon-on"></i>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-
+                <div class="d-flex align-items-center gap-3 ms-auto">
                     <div class="notification-glass position-relative" title="Thông báo">
                         <i class="fa-regular fa-bell text-white fs-5"></i>
                         <span class="notification-badge" id="notiCount">3</span>
@@ -58,7 +54,7 @@
                         <div class="user-profile-trigger d-flex align-items-center">
                             <div class="user-info-block text-end d-none d-sm-block me-3">
                                 <div class="fw-bold fs-6 lh-1 text-white profile-name">Nguyễn Quang</div>
-                                <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75 em;">Tài xế Hạng Bạc</div>
+                                <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75em;">Tài xế Hạng Bạc</div>
                             </div>
                             <div class="glass-avatar">
                                 <img src="https://ui-avatars.com/api/?name=Quang+Driver&background=1a1c1a&color=fff" alt="Avatar" />
@@ -72,15 +68,14 @@
                             <a href="#settings" class="dropdown-item-custom text-white">
                                 <i class="fa-solid fa-gear"></i> Cài đặt ứng dụng
                             </a>
-                            
                             <hr class="dropdown-divider-custom">
-                            
                             <a href="../../index.html" class="dropdown-item-custom text-danger fw-bold logout-item">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
                             </a>
                         </div>
                     </div>
                 </div>
+
             </div>
         </nav>
     </header>

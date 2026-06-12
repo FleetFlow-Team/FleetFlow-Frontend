@@ -427,12 +427,105 @@ h3.text-white, h3.text-success, h3.text-danger, h3.text-info {
 .toast-premium.border-danger { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2); }
 .toast-premium.border-warning { box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2); }
 
-/* =========================================
-   12. MEDIA RESPONSIVE OVERRIDES
-========================================= */
-@media (max-width: 991px) {
-    body { padding-bottom: 80px; } /* Tránh đè bottom nav di động */
+/* ==========================================================================
+   10 & 12. RESPONSIVE MOBILE (<1200px) - APPLE LIQUID GLASS DARK MODE
+   ========================================================================== */
+@media (max-width: 1199.98px) {
+    
+    /* 1. THIẾT LẬP LẠI KHUNG GIAO DIỆN (Ẩn Sidebar, Mở rộng nội dung) */
+    .col-lg-3 { display: none !important; }
+    .col-lg-9 { width: 100% !important; }
+    body { padding-bottom: 150px !important; } /* Đẩy nội dung lên để tránh bị che */
+
+    /* --- 2. THANH ĐIỀU HƯỚNG ĐÁY (BOTTOM NAV iOS DARK MODE) --- */
+    .bottom-nav-glass {
+        position: fixed;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 92%;
+        max-width: 450px;
+        display: flex !important; /* Ép hiển thị, ghi đè d-lg-none của thẻ HTML */
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 10px 15px;
+        border-radius: 50px;
+        z-index: 9999;
+        isolation: isolate;
+        
+        /* Nền kính sang trọng (Glassmorphism) */
+        background: rgba(255, 255, 255, 0.65);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 1px solid rgba(255, 255, 255, 0.8);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
+                            inset 1px 1px 3px rgba(255, 255, 255, 1);
+    }
+
+    /* Viền chất lỏng (Liquid Distortion) cho Bottom Bar */
+    .bottom-nav-glass::after {
+        content: ''; position: absolute; inset: -8px; z-index: -1;
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+        filter: url(#liquid-distortion); clip-path: inset(8px round 50px);
+        background: transparent; border-radius: 60px;
+    }
+
+    /* Định dạng các nút chức năng bên trong */
+    .bottom-nav-glass .nav-item {
+        display: flex; flex-direction: column; justify-content: center; align-items: center;
+        padding: 8px 12px; width: auto; gap: 5px;
+        background: transparent; color: #64748b; border-radius: 20px;
+        transition: all 0.3s ease; text-decoration: none;
+    }
+
+    .bottom-nav-glass .nav-item i { font-size: 1.3rem; }
+    .bottom-nav-glass .nav-item span { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+
+    /* Trạng thái Active & Hover: Hiệu ứng nút kính sáng và nảy lên */
+    .bottom-nav-glass .nav-item.active {
+        background: rgba(255, 255, 255, 0.95); 
+        color: #10b981; /* Màu xanh lá đặc trưng */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
+        transform: translateY(-4px);
+    }
+    .bottom-nav-glass .nav-item:hover { transform: translateY(-4px); color: var(--color-dark) }
+
+    /* --- 3. DI DỜI NÚT TRẠNG THÁI (PILL TOGGLE) XUỐNG DƯỚI --- */
+    /* Vị trí hoàn hảo: Nổi (Floating) ngay phía trên thanh Bottom Nav */
+    .driver-status-wrapper {
+        display: flex !important; /* Ghi đè class ẩn d-none d-sm-block trong HTML */
+        position: fixed;
+        bottom: 110px; /* Nằm cách thanh Bottom Nav một chút */
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9998;
+        
+        /* Cấu trúc một lớp viền kính nhỏ bao bọc viên Pill để tách biệt nó khỏi nền bản đồ */
+        background: rgba(0, 0, 0, 0.3);
+        padding: 8px;
+        border-radius: 60px;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+        
+        /* Hiệu ứng nổi bồng bềnh nhẹ để thu hút sự chú ý */
+        animation: floatPill 3s ease-in-out infinite;
+    }
+
+    /* 4. TỐI ƯU CÁC KHU VỰC KHÁC TRÊN DI ĐỘNG */
+    /* Ẩn slogan để Navbar gọn gàng, chừa chỗ cho Avatar và Chuông thông báo */
+    .navbar-slogan { display: none !important; }
+    
+    /* Thu nhỏ padding của các Panel để tiết kiệm diện tích bề ngang */
     .glass-panel { padding: 20px; border-radius: 24px; }
+}
+
+/* Keyframe tạo hiệu ứng nổi lơ lửng cho nút Pill */
+@keyframes floatPill {
+    0% { transform: translateX(-50%) translateY(0px); }
+    50% { transform: translateX(-50%) translateY(-5px); }
+    100% { transform: translateX(-50%) translateY(0px); }
 }
 
 /* =========================================
