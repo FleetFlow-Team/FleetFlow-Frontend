@@ -58,7 +58,7 @@ async function handleLogin(event) {
                     window.location.href = '../pages/driver/driver-workspace.html';
                     break;
                 case 'CUSTOMER':
-                    window.location.href = '../pages/customer/tripBooking.html';
+                    window.location.href = '../pages/findCar.html';
                     break;
                 default:
                     alert('Lỗi: Vai trò của bạn không hợp lệ hoặc chưa được phân quyền trong hệ thống.');
