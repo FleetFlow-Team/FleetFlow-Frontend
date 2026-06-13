@@ -1435,3 +1435,61 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
         display: none !important;
     }
 }
+
+/* --- DROPDOWN MENU PROFILE --- */
+.dropdown-menu-modern {
+    position: absolute;
+    top: 110%; /* Nằm ngay dưới nút profile */
+    right: 0;  /* Canh lề phải sát với mép nút */
+    background: #ffffff;
+    border-radius: 16px;
+    min-width: 220px;
+    padding: 10px 0;
+    /* Trạng thái mặc định: Ẩn và chìm xuống dưới 1 chút */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    z-index: 1000;
+}
+
+/* Kích hoạt hiển thị khi hover vào vùng nút cha */
+.user-profile-btn:hover .dropdown-menu-modern {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Thiết kế các item bên trong */
+.dropdown-item-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    color: #475569;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.dropdown-item-custom i {
+    width: 20px; /* Cố định width icon để text thẳng hàng */
+    font-size: 1.1rem;
+}
+
+/* Hiệu ứng khi hover vào từng mục */
+.dropdown-item-custom:hover {
+    background: rgba(0, 177, 79, 0.08); /* Xanh lá nhạt của FleetFlow */
+    color: var(--color-1, #00B14F);
+}
+
+.dropdown-item-custom.text-danger:hover {
+    background: rgba(220, 53, 69, 0.08);
+    color: #dc3545 !important;
+}
+
+.divider-custom {
+    margin: 8px 0;
+    border-color: rgba(0, 0, 0, 0.06);
+}

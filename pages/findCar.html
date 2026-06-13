@@ -336,7 +336,7 @@
 
           <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
             <a href="pages/register.html" class="nav-link-center-1">Trở thành tài xế</a>
-            <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
+            <a href="../pages/policy.html" class="nav-link-center-1">Về chính sách</a>
             <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
               <span>Đăng nhập</span>
               <i class="fa-regular fa-user-circle fs-5"></i>
@@ -784,26 +784,26 @@
         </div>
     </div>
 
-     <div class="login-modal-overlay" id="loginModal">
-  <div class="glass-login-container">
-    <button class="close-modal-btn" id="closeLoginModal">&times;</button>
-    
-    <div class="text-center mb-4">
-      <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
-      <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
-      <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+    <div class="login-modal-overlay" id="loginModal">
+        <div class="glass-login-container">
+            <button class="close-modal-btn" id="closeLoginModal">&times;</button>
+            
+            <div class="text-center mb-4">
+            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
+            <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
+            <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+            </div>
+            <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
+        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
+        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+        
+        <button type="submit" class="glass-btn-submit mt-3">Đăng nhập</button>
+        </form>
+            <div class="text-center mt-4">
+            <a href="#" class="forget-p">Quên mật khẩu?</a>
+            </div>
+        </div>
     </div>
-    <form id="loginForm" class="d-flex flex-column gap-3 mt-4">
-      <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập">
-      <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu">
-      
-      <button type="button" class="glass-btn-submit mt-3">Đăng nhập</button>
-    </form>
-    <div class="text-center mt-4">
-      <a href="#" class="forget-p">Quên mật khẩu?</a>
-    </div>
-  </div>
-</div>
 </main>
 
 <aside class="ai-floating-widget">
@@ -862,8 +862,8 @@
             <h5>Hỗ Trợ</h5>
             <ul>
               <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="policy.html">Giải quyết khiếu nại</a></li>
+              <li><a href="../pages/policy.html">Chính sách & Điều khoản</a></li>
+              <li><a href="../pages/policy.html">Giải quyết khiếu nại</a></li>
             </ul>
           </div>
           <div class="col-lg-4">

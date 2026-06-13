@@ -332,16 +332,16 @@
           </div>
 
           <div class="d-flex align-items-center gap-3">
-            <button class="btn-login d-none d-lg-flex align-items-center gap-2">
-              <span>Đăng nhập</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </button>
+  <button id="btnLogin" class="btn-login d-none d-lg-flex align-items-center gap-2">
+    <span>Đăng nhập</span>
+    <i class="fa-regular fa-user-circle fs-5"></i>
+  </button>
 
-            <button class="btn-login d-flex d-lg-none align-items-center justify-content-center" 
-                    style="width: 45px; height: 45px; padding: 0; border-radius: 50%;">
-              <i class="fa-regular fa-user-circle fs-4" style="margin: 0;"></i>
-            </button>
-          </div>
+  <button id="btnLoginMobile" class="btn-login d-flex d-lg-none align-items-center justify-content-center" 
+          style="width: 45px; height: 45px; padding: 0; border-radius: 50%;">
+    <i class="fa-regular fa-user-circle fs-4" style="margin: 0;"></i>
+  </button>
+</div>
 
         </div>
       </nav>
@@ -568,25 +568,25 @@
     </footer>
 
     <div class="login-modal-overlay" id="loginModal">
-          <div class="glass-login-container">
+        <div class="glass-login-container">
             <button class="close-modal-btn" id="closeLoginModal">&times;</button>
             
             <div class="text-center mb-4">
-              <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
-              <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
-              <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
+            <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
+            <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
             </div>
-            <form id="loginForm" class="d-flex flex-column gap-3 mt-4">
-              <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập">
-              <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu">
-              
-              <button type="button" class="glass-btn-submit mt-3">Đăng nhập</button>
-            </form>
+            <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
+        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
+        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+        
+        <button type="submit" class="glass-btn-submit mt-3">Đăng nhập</button>
+        </form>
             <div class="text-center mt-4">
-              <a href="#" class="forget-p">Quên mật khẩu?</a>
+            <a href="#" class="forget-p">Quên mật khẩu?</a>
             </div>
-          </div>
         </div>
+    </div>
 
     <aside class="floating-contact-buttons d-flex flex-column gap-3 reveal-on-scroll delay-4">
         <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
