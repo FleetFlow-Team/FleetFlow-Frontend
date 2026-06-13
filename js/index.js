@@ -15,7 +15,6 @@ async function handleLogin(event) {
     formData.append('password', password);
 
     try {
-        // QUAN TRỌNG: Sửa "TenProjectCuaBan" thành Context Path thực tế trên NetBeans
         const apiUrl = 'http://localhost:8080/FleetFlow/api/v1/auth/login';
 
         // Gọi API
@@ -45,10 +44,23 @@ async function handleLogin(event) {
 
             // ----------------------------------------------------
             // ĐIỀU PHỐI TRANG 
-            // Nếu admin.html nằm trong thư mục pages/, hãy sửa thành 'pages/admin.html'
-            // ----------------------------------------------------
-            window.location.href = '../../pages/admin/admin-workspace.html'; 
+            const userRole = data.user.role.toUpperCase(); // Chuyển thành in hoa để dễ so sánh
 
+            switch (userRole) {
+                case 'ADMIN':
+                    window.location.href = '../pages/admin/admin-workspace.html';
+                    break;
+                case 'DRIVER':
+                    window.location.href = '../pages/driver/driver-workspace.html';
+                    break;
+                case 'CUSTOMER':
+                    window.location.href = '../pages/customer/tripBooking.html';
+                    break;
+                default:
+                    alert('Lỗi: Vai trò của bạn không hợp lệ hoặc chưa được phân quyền trong hệ thống.');
+                    localStorage.clear();
+                    break;
+            }
         } else {
             alert('Lỗi đăng nhập: ' + data.message);
         }
