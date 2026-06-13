@@ -31,11 +31,15 @@ async function handleLogin(event) {
         // Xử lý phản hồi
         if (data.success) {
             alert('Đăng nhập thành công! Chào mừng ' + data.user.fullName);
-            
+    
             // Lưu Token
             if (data.accessToken) {
                 localStorage.setItem('accessToken', data.accessToken);
                 localStorage.setItem('refreshToken', data.refreshToken);
+                
+                // THÊM DÒNG NÀY: Lưu tên và role người dùng để trang khác dùng lại
+                localStorage.setItem('fullName', data.user.fullName);
+                localStorage.setItem('userRole', data.user.roleName);
             }
 
             // Dọn dẹp UI
@@ -44,7 +48,7 @@ async function handleLogin(event) {
 
             // ----------------------------------------------------
             // ĐIỀU PHỐI TRANG 
-            const userRole = data.user.role.toUpperCase(); // Chuyển thành in hoa để dễ so sánh
+            const userRole = data.user.roleName.toUpperCase(); // Chuyển thành in hoa để dễ so sánh
 
             switch (userRole) {
                 case 'ADMIN':
