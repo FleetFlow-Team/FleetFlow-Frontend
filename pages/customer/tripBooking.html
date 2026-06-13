@@ -10,10 +10,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
-
+    <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
+    <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
     <style>
         /* =========================================
            2. BỐ CỤC ĐẶT XE (MAP & LIQUID GLASS PANEL)
@@ -28,13 +28,16 @@
 
         /* KHU VỰC BẢN ĐỒ Full Màn Hình */
         .map-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
-            background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2000') center/cover no-repeat; z-index: 1;
-        }
+    position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+    background-color: #f4f7f6; /* Đổi thành màu nền trơn chờ load map */
+    z-index: 1;
+}
         .map-overlay-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.15); backdrop-filter: blur(2px);
-        }
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(2px);
+    pointer-events: none; /* Thêm dòng này */
+    z-index: 2; /* Đảm bảo nằm trên map nhưng dưới panel đặt xe */
+}
 
         /* LIQUID GLASS BOOKING PANEL */
         .booking-panel {
@@ -336,11 +339,14 @@
 
     <main class="booking-layout">
         
-        <section class="map-container">
-            <div class="map-overlay-layer"></div>
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:2; pointer-events:none;">
+        <section class="map-container position-relative">
+            <div id="fleetMap" style="width: 100%; height: 100vh;"></div>
+            
+            <div class="map-overlay-layer" id="mapOverlay"></div>
+            
+            <div id="mapPlaceholder" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:2; pointer-events:none;">
                 <i class="fa-solid fa-map-location-dot fs-1 text-secondary opacity-50 mb-2"></i>
-                <h5 class="fw-bold text-secondary opacity-50">Khu vực Render Google Maps API</h5>
+                <h5 class="fw-bold text-secondary opacity-50">Đang khởi tạo bản đồ...</h5>
             </div>
         </section>
 
@@ -449,169 +455,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    /* ==========================================================================
-   1. KHAI BÁO BIẾN TOÀN CỤC (GLOBAL VARIABLES)
-   ========================================================================== */
-let isDistanceValid = false;
-let isTimeValid = false;
-let toastDistance, toastSystemError;
-
-// Đợi DOM load xong mới gán sự kiện để tránh lỗi biến null
-document.addEventListener("DOMContentLoaded", () => {
-    // Khởi tạo Toasts của Bootstrap
-    const distanceToastEl = document.getElementById('distanceErrorToast');
-    const systemErrorToastEl = document.getElementById('systemErrorToast');
-    
-    if (distanceToastEl) toastDistance = new bootstrap.Toast(distanceToastEl);
-    if (systemErrorToastEl) toastSystemError = new bootstrap.Toast(systemErrorToastEl);
-    
-    // Thiết lập thời gian tối thiểu cho input Date (Giờ hiện tại của Local)
-    const inputTime = document.getElementById('inputDepartureTime');
-    if (inputTime) {
-        const now = new Date();
-        const localISOTime = (new Date(now.getTime() - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
-        inputTime.min = localISOTime;
-    }
-
-    // Kích hoạt tính toán bản đồ ngay khi vào trang
-    triggerMapCalculation();
-
-    // Khởi tạo logic Bottom Sheet cho Mobile
-    initBottomSheetUX();
-});
-
-/* ==========================================================================
-   2. LOGIC ĐIỀU KHIỂN GIAO DIỆN & AUTOCOMPLETE
-   ========================================================================== */
-function swapLocations() {
-    const inputPickup = document.getElementById('inputPickup');
-    const inputDropoff = document.getElementById('inputDropoff');
-    
-    if (inputPickup && inputDropoff) {
-        const temp = inputPickup.value;
-        inputPickup.value = inputDropoff.value;
-        inputDropoff.value = temp;
-        triggerMapCalculation();
-    }
-}
-
-function showMockAutocomplete(dropdownId) { 
-    const dropdown = document.getElementById(dropdownId);
-    if (dropdown) dropdown.style.display = 'block'; 
-}
-
-function selectLocation(inputId, textValue, dropdownId) {
-    document.getElementById(inputId).value = textValue;
-    document.getElementById(dropdownId).style.display = 'none';
-    triggerMapCalculation();
-}
-
-// Ẩn Autocomplete khi click ra ngoài
-document.addEventListener('click', function(e) {
-    if(!e.target.closest('.form-floating')) {
-        const pickupDropdown = document.getElementById('pickupDropdown');
-        const dropoffDropdown = document.getElementById('dropoffDropdown');
-        if (pickupDropdown) pickupDropdown.style.display = 'none';
-        if (dropoffDropdown) dropoffDropdown.style.display = 'none';
-    }
-});
-
-/* ==========================================================================
-   3. LOGIC VALIDATION (KIỂM TRA TÍNH HỢP LỆ VÀ MÔ PHỎNG BẢN ĐỒ)
-   ========================================================================== */
-function triggerMapCalculation() {
-    const inputPickup = document.getElementById('inputPickup');
-    const inputDropoff = document.getElementById('inputDropoff');
-    
-    if (!inputPickup || !inputDropoff) return;
-
-    const pickup = inputPickup.value.toLowerCase();
-    const dropoff = inputDropoff.value.toLowerCase();
-    
-    if(!pickup || !dropoff) return;
-
-    // Giả lập khoảng cách
-    let simulatedDistanceKm = 0;
-    if (dropoff.includes('vũng tàu')) {
-        simulatedDistanceKm = 105; 
-    } else if (dropoff.includes('quận 1') || dropoff.includes('chợ bến thành')) {
-        simulatedDistanceKm = 5; 
-    } else {
-        simulatedDistanceKm = 25; 
-    }
-
-    // Hiển thị khoảng cách ra UI
-    const distValueEl = document.getElementById('distValue');
-    if (distValueEl) distValueEl.innerText = simulatedDistanceKm;
-
-    // Validate khoảng cách (> 20km)
-    if (simulatedDistanceKm <= 20) {
-        isDistanceValid = false;
-        if (toastDistance) toastDistance.show(); 
-    } else { 
-        isDistanceValid = true; 
-    }
-    
-    checkFormValidity();
-}
-
-function validateDepartureTime() {
-    const inputTime = document.getElementById('inputDepartureTime');
-    const timeErrorMsg = document.getElementById('timeErrorMsg');
-    
-    if (!inputTime) return;
-
-    if(!inputTime.value) {
-        isTimeValid = false; 
-        checkFormValidity(); 
-        return;
-    }
-
-    const selectedMs = new Date(inputTime.value).getTime();
-    const currentMs = new Date().getTime(); 
-    const diffMinutes = (selectedMs - currentMs) / (1000 * 60);
-
-    // Validate thời gian (Phải đặt trước 120 phút)
-    if (diffMinutes < 120) {
-        inputTime.classList.add('is-invalid'); 
-        if (timeErrorMsg) timeErrorMsg.classList.add('d-block'); 
-        isTimeValid = false;
-    } else {
-        inputTime.classList.remove('is-invalid'); 
-        if (timeErrorMsg) timeErrorMsg.classList.remove('d-block'); 
-        isTimeValid = true;
-    }
-    
-    checkFormValidity();
-}
-
-function checkFormValidity() { 
-    const btnContinue = document.getElementById('btnContinue');
-    if (btnContinue) {
-        btnContinue.disabled = !(isDistanceValid && isTimeValid); 
-    }
-}
-
-function simulateBookingSubmit() {
-    const btnContinue = document.getElementById('btnContinue');
-    if (!btnContinue) return;
-
-    const originalText = btnContinue.innerHTML;
-    btnContinue.disabled = true;
-    btnContinue.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang xử lý...';
-    
-    setTimeout(() => {
-        btnContinue.innerHTML = originalText; 
-        btnContinue.disabled = false; 
-        if (toastSystemError) toastSystemError.show();
-    }, 1500);
-}
-
-/* ==========================================================================
-   4. GOOGLE MAPS BOTTOM SHEET UX LOGIC (CHO CẢ PC & MOBILE)
-   ========================================================================== */
-function initBottomSheetUX() {
+    <script>function initBottomSheetUX() {
     const sheet = document.getElementById('bookingSheet');
     const header = document.getElementById('sheetHeader');
     
@@ -691,6 +535,9 @@ function initBottomSheetUX() {
     window.addEventListener('mouseup', handleDragEnd);
 }
 </script>
+
     <script src="../../js/base.js"></script>
+    <script src="../../js/tripBooking.js"></script>
+    
 </body>
 </html>

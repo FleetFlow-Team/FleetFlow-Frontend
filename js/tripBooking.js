@@ -1,38 +1,26 @@
-document.addEventListener("DOMContentLoaded", function() {
-        const fullName = localStorage.getItem('fullName');
-        const accessToken = localStorage.getItem('accessToken');
+// ==========================================
+// CẤU HÌNH VÀ KHỞI TẠO VIETMAP
+// ==========================================
+const VIETMAP_API_KEY = '16069deeb411f94746f9bd2eafb5f123aabbef05c2f21740';
 
-        if (accessToken && fullName) {
-            // Tự động xử lý khoảng trắng để truyền vào API tạo Avatar
-            const avatarName = encodeURIComponent(fullName);
+// Khởi tạo bản đồ VietMap GL dựa trên id 'fleetMap' trong HTML
+const map = new vietmapgl.Map({
+    container: 'fleetMap', 
+    style: `https://maps.vietmap.vn/maps/styles/tm/style.json?apikey=${VIETMAP_API_KEY}`,
+    center: [106.702872, 10.774339], // Tọa độ mặc định tại trung tâm TP.HCM (Kinh độ, Vĩ độ)
+    zoom: 13 // Mức độ thu phóng ban đầu
+});
 
-            // Sửa nút Desktop
-            const btnDesktop = document.getElementById('btnLogin');
-            if (btnDesktop) {
-                // Thay thế class cũ thành class mới của bạn
-                btnDesktop.className = 'user-profile-btn';
-                btnDesktop.innerHTML = `
-                    <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2; padding-right: 10px;">
-                        <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);">${fullName}</span>
-                        <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
-                    </div>
-                    <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
-                `;
-                btnDesktop.onclick = (e) => { e.preventDefault(); if(confirm('Đăng xuất khỏi FleetFlow?')) { localStorage.clear(); window.location.reload(); } };
-            }
+// Thêm các nút chức năng điều hướng (Phóng to, thu nhỏ, xoay bản đồ) vào góc trên bên trái
+map.addControl(new vietmapgl.NavigationControl(), 'top-left');
 
-            // Sửa nút Mobile (Giữ nguyên form giống desktop cho đồng bộ)
-            const btnMobile = document.getElementById('btnLoginMobile');
-            if (btnMobile) {
-                btnMobile.className = 'user-profile-btn w-100 mt-2'; // Thêm w-100 để bung đầy menu mobile
-                btnMobile.innerHTML = `
-                    <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2; padding-right: 10px;">
-                        <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);">${fullName}</span>
-                        <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
-                    </div>
-                    <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
-                `;
-                btnMobile.onclick = (e) => { e.preventDefault(); if(confirm('Đăng xuất khỏi FleetFlow?')) { localStorage.clear(); window.location.reload(); } };
-            }
-        }
-    });
+// Xử lý sự kiện sau khi bản đồ đã tải xong hoàn toàn các lớp dữ liệu
+map.on('load', () => {
+    // Tìm và ẩn dòng chữ "Đang khởi tạo bản đồ..." trên giao diện
+    const placeholder = document.getElementById('mapPlaceholder');
+    if (placeholder) {
+        placeholder.style.setProperty('display', 'none', 'important');
+    }
+    
+    console.log("VietMap đã được tích hợp thành công lên giao diện.");
+});
