@@ -316,37 +316,85 @@
     letter-spacing: 0.5px;
 }
 
-/* =========================================
-   9. RESPONSIVE MOBILE VIEW
-========================================= */
-@media (max-width: 991.98px) {
-    /* FOOTER RESPONSIVE */
-    .footer-corporate {
-        padding: 50px 0 20px 0;
-    }
-    .footer-title {
-        margin-bottom: 14px;
-        margin-top: 12px; /* Tạo khoảng hở khi các cột bị xếp chồng hàng dọc trên Mobile */
-    }
-    .footer-divider {
-        margin: 30px 0 20px 0;
+/* ==========================================================================
+   9. RESPONSIVE MOBILE TỔNG HỢP (< 1200PX) - BOTTOM SHEET & GRID
+========================================================================== */
+@media (max-width: 1199.98px) {
+    /* --- A. BỘ LỌC TÌM KIẾM (BOTTOM SHEET KÍNH LỎNG) --- */
+    .filter-sidebar {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        width: 100% !important;
+        max-width: 100%;
+        height: 75vh !important; /* Chiều cao khi kéo lên full */
+        border-radius: 40px 40px 0 0 !important;
+        
+        /* Thu gọn: Nhô lên 85px để lộ thanh kéo và chữ "Bộ lọc" */
+        transform: translate(-50%, calc(100% - 85px)) !important;
+        transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) !important;
+        z-index: 9998 !important; 
+        padding: 10px 20px 40px 20px !important;
+        overflow-y: auto;
+        margin-bottom: 0 !important;
     }
 
-    /* FILTER SIDEBAR RESPONSIVE */
-    .filter-sidebar {
-        position: relative;
-        top: 0;
-        margin-bottom: 20px;
+    .filter-sidebar.expanded {
+        transform: translate(-50%, 0) !important;
+    }
+
+    /* Viền kính Liquid Glass chỉ bo góc trên */
+    .filter-sidebar::after { clip-path: inset(12px 0 0 0 round 40px 40px 0 0) !important; }
+    .filter-sidebar::before { border-radius: 40px 40px 0 0 !important; }
+
+    /* Thanh ngang gợi ý vuốt (Drag Handle) */
+    .drag-handle-filter {
+        width: 50px; height: 6px; border-radius: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        margin: 0 auto 15px auto;
+        box-shadow: inset 1px 1px 2px rgba(255,255,255,0.5);
+    }
+
+    /* --- B. TỐI ƯU AI CHAT WIDGET --- */
+    .ai-floating-widget {
+        bottom: 105px !important; /* Đẩy lên trên thanh lọc lúc thu gọn */
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+        z-index: 9997 !important; 
+    }
+    .floating-contact-buttons {
+        display: none !important; /* Ẩn liên hệ trôi nổi cho gọn màn hình tìm xe */
     }
     
-    /* NAVBAR RESPONSIVE */
+    /* Khi mở bộ lọc -> Ép AI lặn xuống để không che bộ lọc */
+    body.filter-open .ai-floating-widget {
+        transform: translateY(150px) scale(0.8);
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    /* --- C. TỐI ƯU CỠ CHỮ THẺ XE TRÊN MOBILE (2 XE/HÀNG) --- */
+    .vehicle-img-box { height: 110px; border-radius: 25px 25px 0 0;}
+    .vehicle-detail-content { padding: 12px; }
+    .v-title { font-size: 0.9rem; margin-bottom: 5px; }
+    .v-specs { font-size: 0.7rem; gap: 6px !important; margin: 8px 0 !important; flex-wrap: wrap; }
+    .price-current { font-size: 1.05rem; }
+    .price-old { font-size: 0.75rem; }
+    .btn-liquid-book { padding: 6px 12px; font-size: 0.8rem; }
+    .vehicle-badge-discount { font-size: 0.6rem; padding: 4px 8px; top: 8px; right: 8px; }
+    
+    /* Thu gọn Layout Navbar cho Mobile */
     .custom-navbar .collapse.navbar-collapse {
         background-color: var(--color-dark);
-        padding: 20px;
-        position: absolute;
-        top: 70px;
-        left: 0;
-        width: 100%;
-        z-index: 1000;
+        padding: 20px; position: absolute; top: 70px; left: 0; width: 100%; z-index: 1000;
     }
+}
+
+/* Tablet (Tùy chỉnh riêng độ to thẻ xe để nhìn sang trọng hơn) */
+@media (min-width: 768px) and (max-width: 1199.98px) {
+    .vehicle-img-box { height: 160px; border-radius: 35px 35px 0 0;}
+    .v-title { font-size: 1.1rem; }
+    .v-specs { font-size: 0.85rem; }
+    .price-current { font-size: 1.25rem; }
+    .btn-liquid-book { padding: 8px 16px; font-size: 0.95rem; }
 }

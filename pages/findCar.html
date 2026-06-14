@@ -380,8 +380,9 @@
     <div class="container-base position-relative z-2">
         <div class="row g-4">
             <aside class="col-lg-3">
-                <div class="glass-panel filter-sidebar">
+                <div class="glass-panel filter-sidebar " id="filterSheet">
                     <div class="glass-content">
+                        <div class="drag-handle-filter d-xl-none"></div>
                         <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom-glass-light">
                             <h5 class="fw-bold m-0 text-dark"><i class="fa-solid fa-sliders me-2 highlight-text"></i>Bộ lọc</h5>
                             <button type="reset" class="btn btn-sm btn-link highlight-text p-0 text-decoration-none fw-semibold">Xóa lọc</button>
@@ -478,51 +479,72 @@
 
                 <div class="row" style="--bs-gutter-x: 2rem; --bs-gutter-y: 2.5rem;">
     
-    <div class="col-md-6 col-xl-4">
+    
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-yellow">Giảm 17%</div>
-                    <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=600" alt="VinFast" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-yellow">Giảm 15%</div>
+                    <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="Honda City" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 1, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 1.1 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">VinFast VF8 Plus 2023</h5>
+                    <h5 class="v-title fw-bold text-dark">Honda City RS 2023</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
-                        <span><i class="fa-solid fa-bolt me-1 text-warning"></i>Điện</span>
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
                         <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">600.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">510.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                      <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
                     <div class="vehicle-badge-discount badge-red">Giảm 10%</div>
-                    <img src="https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=600" alt="Honda CR-V" class="v-img" loading="lazy" />
+                    <img src="https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=600" alt="Kia Morning" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Bình Thạnh</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 2.4 km</span>
+                    <h5 class="v-title fw-bold text-dark">Kia Morning GT-Line 2022</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
                     </div>
-                    <h5 class="v-title fw-bold text-dark">Honda CR-V Turbo 2022</h5>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">400.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">360.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-yellow">Giảm 20%</div>
+                    <img src="https://images.unsplash.com/photo-1621007947382-bb3c3994e3fd?q=80&w=600" alt="Mitsubishi Xpander" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <h5 class="v-title fw-bold text-dark">Mitsubishi Xpander 2023</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
                         <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
@@ -530,31 +552,111 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">800.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">640.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html">Đặt xe</a></button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-red">Giảm 5%</div>
+                    <img src="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=600" alt="Kia Carnival" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
+                    <h5 class="v-title fw-bold text-dark">Kia Carnival Signature 2022</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Dầu</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>8 Chỗ</span>
                     </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">1.200.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">1.140.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-yellow">Giảm 12%</div>
+                    <img src="https://images.unsplash.com/photo-1583267746897-2cf415887172?q=80&w=600" alt="Toyota Fortuner" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <h5 class="v-title fw-bold text-dark">Toyota Fortuner Legender</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Dầu</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">1.000.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">880.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-red">Giảm 10%</div>
+                    <img src="https://images.unsplash.com/photo-1606152421802-db97b9c7a11b?q=80&w=600" alt="Mazda CX-8" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <h5 class="v-title fw-bold text-dark">Mazda CX-8 Premium 2023</h5>
+                    <div class="v-specs d-flex gap-3 text-secondary small my-3">
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
+                        <div class="price-container d-flex flex-column">
+                          <span class="price-old">1.100.000</span>
+                          <div class="d-flex align-items-baseline gap-2">
+                              <span class="price-current">990.000<span class="currency">đ</span></span>
+                          </div>
+                        </div>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-6 col-md-4 col-xl-4">
+        <div class="glass-card h-100 tilt-effect">
+            <div class="glass-content d-flex flex-column h-100">
+                <div class="vehicle-img-box position-relative">
+                    <div class="vehicle-badge-discount badge-red">Giảm 8%</div>
+                    <img src="https://images.unsplash.com/photo-1590362891945-c414dc0db45a?q=80&w=600" alt="Hyundai Accent" class="v-img" loading="lazy" />
+                </div>
+                <div class="vehicle-detail-content">
+                    <h5 class="v-title fw-bold text-dark">Hyundai Accent 1.4 AT 2023</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
                         <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
@@ -562,31 +664,27 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">500.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">460.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-yellow">Giảm 12%</div>
+                    <img src="https://images.unsplash.com/photo-1620067645050-8bce73fb2a95?q=80&w=600" alt="Mazda 2" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <h5 class="v-title fw-bold text-dark">Mazda 2 Sport 2022</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
                         <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
@@ -594,31 +692,27 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">550.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">484.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-red">Giảm 10%</div>
+                    <img src="https://images.unsplash.com/photo-1550344073-7e18b459c038?q=80&w=600" alt="Toyota Vios" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <h5 class="v-title fw-bold text-dark">Toyota Vios G 2023</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
                         <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
@@ -626,145 +720,130 @@
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">580.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">522.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-yellow">Giảm 15%</div>
+                    <img src="https://images.unsplash.com/photo-1580274455191-1c62238fa333?q=80&w=600" alt="Suzuki XL7" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <h5 class="v-title fw-bold text-dark">Suzuki XL7 2022</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
                         <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
-                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">750.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">630.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-red">Giảm 5%</div>
+                    <img src="https://images.unsplash.com/photo-1605556209594-827c1cb08764?q=80&w=600" alt="Hyundai Custin" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <h5 class="v-title fw-bold text-dark">Hyundai Custin Cao Cấp</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
                         <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
-                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">1.100.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">1.040.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-yellow">Giảm 18%</div>
+                    <img src="https://images.unsplash.com/photo-1559416523-140ddc3d238c?q=80&w=600" alt="Ford Everest" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <h5 class="v-title fw-bold text-dark">Ford Everest Titanium</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
-                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Dầu</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
-                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">1.300.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">1.060.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
+    <div class="col-6 col-md-4 col-xl-4">
         <div class="glass-card h-100 tilt-effect">
             <div class="glass-content d-flex flex-column h-100">
                 <div class="vehicle-img-box position-relative">
-                    <div class="vehicle-badge-discount badge-blue">Bán chạy</div>
-                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=600" alt="Mazda 6" class="v-img" loading="lazy" />
+                    <div class="vehicle-badge-discount badge-red">Giảm 20%</div>
+                    <img src="https://images.unsplash.com/photo-1570733568860-9d0d3b663533?q=80&w=600" alt="Kia Sorento" class="v-img" loading="lazy" />
                 </div>
                 <div class="vehicle-detail-content">
-                    <div class="d-flex align-items-center justify-content-between mb-2 small">
-                        <span class="text-secondary"><i class="fa-solid fa-location-dot highlight-text me-1"></i>Quận 7, HCM</span>
-                        <span class="fw-bold text-dark"><i class="fa-solid fa-location-arrow text-primary me-1"></i>~ 3.5 km</span>
-                    </div>
-                    <h5 class="v-title fw-bold text-dark">Mazda 6 Premium 2021</h5>
+                    <h5 class="v-title fw-bold text-dark">Kia Sorento Signature</h5>
                     <div class="v-specs d-flex gap-3 text-secondary small my-3">
-                        <span><i class="fa-solid fa-gas-pump me-1"></i>Xăng</span>
+                        <span><i class="fa-solid fa-gas-pump me-1"></i>Dầu</span>
                         <span><i class="fa-solid fa-circle-dot me-1"></i>Tự động</span>
-                        <span><i class="fa-solid fa-chair me-1"></i>5 Chỗ</span>
+                        <span><i class="fa-solid fa-chair me-1"></i>7 Chỗ</span>
                     </div>
                     <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
                         <div class="price-container d-flex flex-column">
-                          <span class="price-old">540.000</span>
+                          <span class="price-old">1.250.000</span>
                           <div class="d-flex align-items-baseline gap-2">
-                              <span class="price-current">540.000<span class="currency">đ</span></span>
+                              <span class="price-current">1.000.000<span class="currency">đ</span></span>
                           </div>
                         </div>
-                        <button class="btn-liquid-book">Đặt xe</button>
+                        <button class="btn-liquid-book"><a href="../pages/customer/tripBooking.html" class="text-white text-decoration-none">Đặt xe</a></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
                 <nav aria-label="Page navigation" class="mt-5 mb-4">
