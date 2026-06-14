@@ -686,6 +686,39 @@
   // Kích hoạt vị trí ban đầu cho cục kính sau khi trang tải xong ổn định
   setTimeout(updateVerticalIndicator, 150);
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const fullName = localStorage.getItem('fullName');
+    const email = localStorage.getItem('email');
+    const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+    if (fullName) {
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+
+        // 1. Cập nhật Navbar Desktop (Phần tôi đã thiếu sót)
+        if(document.getElementById('navDesktopAvatar')) document.getElementById('navDesktopAvatar').src = avatarUrl;
+        if(document.getElementById('navDesktopName')) document.getElementById('navDesktopName').innerText = fullName;
+        if(document.getElementById('navDesktopRole')) document.getElementById('navDesktopRole').innerText = userRole;
+
+        // 2. Cập nhật Navbar Mobile (Đã sửa lại đúng ID navMobileAvatar)
+        if(document.getElementById('navMobileAvatar')) document.getElementById('navMobileAvatar').src = avatarUrl;
+
+        // 3. Cập nhật Sidebar bên trái
+        if(document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatarUrl;
+        if(document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = fullName;
+        if(document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
+
+        // 4. Cập nhật Mobile Dropdown Menu
+        if(document.getElementById('profileAvatar')) document.getElementById('profileAvatar').src = avatarUrl;
+        if(document.getElementById('profileDisplayName')) document.getElementById('profileDisplayName').innerText = fullName;
+        
+        // 5. Cập nhật Form Thông tin cá nhân
+        if(document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
+    }
+    
+    if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
+    if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
+});
     </script>
     
     <script src="../js/base.js"></script>

@@ -89,14 +89,14 @@
 
             <div class="user-profile-btn d-none d-lg-flex align-items-center gap-2">
               <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
-                <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark); padding-left: 10px">Thân Tiến Dũng</span>
-                <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
+                <span id="navDesktopName" class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark); padding-left: 10px">Đang tải...</span>
+                <span id="navDesktopRole" class="fw-medium" style="font-size: 0.75rem; color: #64748b;">...</span>
               </div>
-              <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
+              <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;" />
             </div>
 
             <div class="user-profile-btn d-flex d-lg-none align-items-center gap-2 p-1" id="mobileToggleBtn" style="cursor: pointer; border-radius: 50%;">
-              <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" style="width: 38px; height: 38px; border-radius: 50%;" />
+              <img id="navMobileAvatar" src="" style="width: 38px; height: 38px; border-radius: 50%;" />
             </div>
           </div>
         </div>
@@ -105,9 +105,9 @@
           <div class="dropdown-inner-content d-flex flex-column gap-2">
             
             <div class="text-center mb-3">
-              <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" class="rounded-circle mb-2 shadow-sm" style="width: 60px; border: 2px solid rgba(255,255,255,0.5);">
-              <h6 class="fw-bold text-white mb-0 fs-6">Thân Tiến Dũng</h6>
-              <span class="text-white-50" style="font-size: 0.8rem;">Khách hàng</span>
+              <img id="profileAvatar" src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" class="rounded-circle mb-2 shadow-sm" style="width: 60px; border: 2px solid rgba(255,255,255,0.5);">
+              <h6 id="profileDisplayName" class="fw-bold text-white mb-0 fs-6">Thân Tiến Dũng</h6>
+              <span id="profileDisplayRole" class="text-white-50" style="font-size: 0.8rem;">Khách hàng</span>
             </div>
             
             <div class="divider-glass mb-2"></div>
@@ -140,19 +140,12 @@
           >
             <div class="user-avatar-box mb-4">
               <div class="position-relative d-inline-block">
-                <img
-                  src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff"
-                  class="avatar-img"
-                />
-                <label
-                  for="avatarInput"
-                  class="avatar-edit-btn position-absolute"
-                  ><i class="fa-solid fa-camera"></i
-                ></label>
+                <img id="sidebarAvatar" src="" class="avatar-img" />
+                <label for="avatarInput" class="avatar-edit-btn position-absolute"><i class="fa-solid fa-camera"></i></label>
                 <input type="file" id="avatarInput" class="d-none" />
               </div>
-              <h5 class="fw-bold mt-3 mb-0 text-dark">Tiến Dũng</h5>
-              <p class="text-muted small">Khách hàng Thân thiết</p>
+              <h5 id="sidebarName" class="fw-bold mt-3 mb-0 text-dark">Đang tải...</h5>
+              <p id="sidebarRole" class="text-muted small">...</p>
             </div>
 
             <div
@@ -199,6 +192,7 @@
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Họ và tên</label>
                   <input
+                  id="inputFullName" readonly
                     type="text"
                     class="form-control custom-input"
                     id="name"
@@ -217,10 +211,10 @@
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Email</label>
                   <input
+                  id="inputEmail" readonly
                     type="email"
                     class="form-control custom-input"
                     id="email"
-                    value="dungtt@example.com"
                   />
                 </div>
                 <div class="col-md-6 form-floating-custom">
@@ -279,21 +273,21 @@
               <h3 class="fw-bold mb-4 text-dark">
                 <i class="fa-solid fa-key me-2 text-success"></i> Đổi mật khẩu
               </h3>
-              <form class="row g-4 mt-2">
+              <form id="changePasswordForm" class="row g-4 mt-2">
                 <div class="col-md-12 form-floating-custom">
                   <label class="mb-2 fw-semibold">Mật khẩu hiện tại</label>
-                  <input type="password" class="form-control custom-input" />
+                  <input type="password" id="oldPassword" class="form-control custom-input" required />
                 </div>
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Mật khẩu mới</label>
-                  <input type="password" class="form-control custom-input" />
+                  <input type="password" id="newPassword" class="form-control custom-input" required />
                 </div>
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Xác nhận mật khẩu mới</label>
-                  <input type="password" class="form-control custom-input" />
+                  <input type="password" id="confirmPassword" class="form-control custom-input" required />
                 </div>
                 <div class="col-12 text-end mt-5">
-                  <button type="submit" class="btn-login px-5 py-3 fs-6">
+                  <button type="submit" id="btnSubmitChangePass" class="btn-login px-5 py-3 fs-6">
                     Cập nhật mật khẩu
                   </button>
                 </div>
@@ -350,6 +344,122 @@
           });
         });
       });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const fullName = localStorage.getItem('fullName');
+    const email = localStorage.getItem('email');
+    const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+    if (fullName) {
+        document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff&size=256`;
+        document.getElementById('profileDisplayName').innerText = fullName;
+        document.getElementById('inputFullName').value = fullName;
+    }
+    
+    if (email) document.getElementById('inputEmail').value = email;
+    if (userRole) document.getElementById('profileDisplayRole').innerText = userRole;
+});
+
+// LOGIC XỬ LÝ ĐỔI MẬT KHẨU TỪ TAB SECURITY
+document.addEventListener("DOMContentLoaded", function() {
+    const cpForm = document.getElementById('changePasswordForm');
+    const cpBtn = document.getElementById('btnSubmitChangePass');
+
+    if (cpForm) {
+        cpForm.addEventListener('submit', async function(e) {
+            e.preventDefault(); // Ngăn trình duyệt reload lại trang
+            
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Lấy email ngầm từ LocalStorage (đã được lưu lúc đăng nhập)
+            const email = localStorage.getItem('email');
+
+            if (!email) {
+                alert("Phiên đăng nhập đã lỗi. Vui lòng đăng nhập lại!");
+                localStorage.clear();
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Kiểm tra mật khẩu xác nhận
+            if (newPassword !== confirmPassword) {
+                alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+                return;
+            }
+
+            // Hiệu ứng Loading cho nút bấm
+            const originalText = cpBtn.innerHTML;
+            cpBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+            cpBtn.disabled = true;
+
+            // Đóng gói data gửi xuống Java Servlet
+            const formData = new URLSearchParams();
+            formData.append('email', email);
+            formData.append('oldPassword', oldPassword);
+            formData.append('newPassword', newPassword);
+            formData.append('confirmPassword', confirmPassword);
+
+            try {
+                // Gọi API tới ChangePasswordController
+                const response = await fetch('http://localhost:8080/FleetFlow/api/v1/auth/change-password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData.toString()
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert("Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.");
+                    
+                    // Reset form, xóa token và đẩy về trang chủ để đăng nhập lại
+                    cpForm.reset();
+                    localStorage.clear();
+                    window.location.href = '../index.html'; 
+                } else {
+                    alert("Thất bại: " + data.message);
+                }
+            } catch (error) {
+                console.error("Lỗi gọi API Đổi mật khẩu:", error);
+                alert("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.");
+            } finally {
+                // Khôi phục nút bấm nếu có lỗi
+                cpBtn.innerHTML = originalText;
+                cpBtn.disabled = false;
+            }
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    const fullName = localStorage.getItem('fullName');
+    const email = localStorage.getItem('email');
+    const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+    if (fullName) {
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+
+        // 1. Cập nhật Avatar nhỏ trên góc Navbar Mobile
+        if(document.getElementById('mobileNavAvatar')) document.getElementById('mobileNavAvatar').src = avatarUrl;
+
+        // 2. Cập nhật Sidebar bên trái
+        if(document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatarUrl;
+        if(document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = fullName;
+        if(document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
+
+        // 3. Cập nhật Mobile Dropdown Menu (Bạn đã gắn ID sẵn rồi)
+        if(document.getElementById('profileAvatar')) document.getElementById('profileAvatar').src = avatarUrl;
+        if(document.getElementById('profileDisplayName')) document.getElementById('profileDisplayName').innerText = fullName;
+        
+        // 4. Cập nhật Form
+        if(document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
+    }
+    
+    if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
+    if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
+});
     </script>
   </body>
   <footer>
