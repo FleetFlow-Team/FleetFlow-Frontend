@@ -14,6 +14,13 @@
     
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <script>
+        // Nếu không tìm thấy Token trong LocalStorage, đá sang trang 403
+        if (!localStorage.getItem('accessToken')) {
+            // Điều chỉnh số lượng '../' sao cho trỏ đúng tới vị trí file 403.html của bạn
+            window.location.replace('../../index.html'); 
+        }
+    </script>
 
     <style>
         /* =========================================
@@ -380,26 +387,16 @@
             <a href="../policy.html" class="nav-link-center">Chính sách</a>
           </div>
 
-          <div class="nav-right-actions">
-            <div class="nav-right-actions d-flex align-items-center gap-3">
-              <!-- Nút Chuông -->
-              <div class="notification-btn position-relative">
+          <div class="nav-right-actions d-flex align-items-center gap-3">
+            <div id="notificationBtn" class="notification-btn position-relative" style="display: none;">
                 <i class="fa-regular fa-bell fs-5"></i>
-                <span
-                  class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                ></span>
-              </div>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+            </div>
 
-              <!-- Nút Profile -->
-            <div class="user-profile-btn d-flex align-items-center gap-2">
-                <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
-                    <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark); padding-left: 10px">Thân Tiến Dũng</span>
-                    <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
-                </div>
-                <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
+            <div id="btnLogin" class="user-profile-btn d-flex align-items-center gap-2" style="cursor: pointer;">
+                <a href="../../index.html" class="btn btn-outline-success fw-bold px-4" style="border-radius: 50px;">Đăng nhập</a>
             </div>
-            </div>
-          </div>
+        </div>
         </div>
       </nav>
     </header> 
@@ -570,6 +567,10 @@
         <a href="../policy.html" class="nav-link-center">
             <i class="fa-solid fa-shield-halved mobile-icon"></i>
             <span class="nav-text">Chính sách</span>
+        </a>
+        <a href="login.html" id="btnLoginMobile" class="nav-link-center">
+            <i class="fa-solid fa-user mobile-icon"></i>
+            <span class="nav-text">Tài khoản</span>
         </a>
     </div>
 

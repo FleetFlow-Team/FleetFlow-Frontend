@@ -14,11 +14,44 @@
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
     <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
     <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
+
+    <script>
+        // Nếu không tìm thấy Token trong LocalStorage, đá sang trang 403
+        if (!localStorage.getItem('accessToken')) {
+            // Điều chỉnh số lượng '../' sao cho trỏ đúng tới vị trí file 403.html của bạn
+            window.location.replace('../../error/403.html'); 
+        }
+    </script>
     <style>
         /* =========================================
            2. BỐ CỤC ĐẶT XE (MAP & LIQUID GLASS PANEL)
         ========================================= */
-        
+        /* Cập nhật CSS cho Distance Badge */
+.distance-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px; 
+    background: rgba(255, 255, 255, 0.6); 
+    backdrop-filter: blur(12px); /* Glassmorphism effect */
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: 50px; 
+    font-size: 0.95rem; 
+    font-weight: 700; 
+    color: #334155; 
+    margin-top: 15px; 
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng sáng lên khi có kết quả hợp lệ */
+.distance-badge.active-route {
+    background: rgba(0, 177, 79, 0.1);
+    border-color: #00B14F;
+    color: #00B14F;
+    box-shadow: 0 4px 15px rgba(0, 177, 79, 0.15);
+}
+
         .booking-layout {
             position: relative; 
             height: calc(100vh - 70px); 
@@ -32,13 +65,6 @@
     background-color: #f4f7f6; /* Đổi thành màu nền trơn chờ load map */
     z-index: 1;
 }
-        .map-overlay-layer {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255,255,255,0.15); backdrop-filter: blur(2px);
-    pointer-events: none; /* Thêm dòng này */
-    z-index: 2; /* Đảm bảo nằm trên map nhưng dưới panel đặt xe */
-}
-
         /* LIQUID GLASS BOOKING PANEL */
         .booking-panel {
             position: absolute;
@@ -168,6 +194,95 @@
         .autocomplete-main-text { font-weight: 600; color: #1e293b; display: block;}
         .autocomplete-sub-text { font-size: 0.8rem; color: #64748b; }
 
+        .location-dot {
+            position: absolute; left: 0; width: 16px; height: 16px; border-radius: 50%; border: 3px solid rgba(255,255,255,0.9);
+            box-shadow: 0 0 0 2px var(--color-1, #00B14F); background: var(--color-1, #00B14F); z-index: 2;
+        }
+        .dot-pickup { top: 24px; }
+        .dot-dropoff { bottom: 24px; background: #e53e3e; box-shadow: 0 0 0 2px #e53e3e; }
+
+        /* Định dạng chung cho 2 điểm */
+        .location-dot {
+            position: absolute; 
+            z-index: 2;
+        }
+
+        /* 1. Điểm Đón: Chấm xanh dương Google + Hiệu ứng toả sóng (Pulse) */
+        .dot-pickup { 
+            top: 24px; 
+            left: 1px; /* Căn giữa trục đường đứt nét */
+            width: 14px; 
+            height: 14px; 
+            background-color: #4285F4; /* Xanh dương Google */
+            border-radius: 50%; 
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 1px #4285F4;
+            animation: pulse-blue 1.5s infinite; /* Gọi animation */
+        }
+
+        /* 2. Điểm Trả: Hình mũi tên/Ghim đỏ (Red Pin) bằng CSS thuần */
+        .dot-dropoff { 
+            bottom: 24px; 
+            left: 0px;
+            width: 16px; 
+            height: 16px; 
+            background-color: #EA4335; /* Đỏ Google */
+            /* Cắt vát 1 góc để tạo hình giọt nước/mũi tên */
+            border-radius: 50% 50% 50% 0; 
+            /* Xoay góc vát chúc xuống dưới làm mũi tên */
+            transform: rotate(-45deg); 
+            border: 2px solid #ffffff; 
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3); 
+        }
+
+        /* =========================================
+   MARKERS TRÊN BẢN ĐỒ VIETMAP
+========================================= */
+/* Điểm đón: Chấm xanh toả sóng */
+.map-marker-pickup { 
+    width: 25px; 
+    height: 25px; 
+    background-color: #4285F4; /* Xanh Google */
+    border-radius: 50%; 
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 1px #4285F4;
+    animation: pulse-blue-map 1.5s infinite; 
+    cursor: pointer;
+}
+
+/* Điểm trả: Ghim đỏ bản đồ */
+.map-marker-dropoff { 
+    width: 35px; 
+    height: 35px; 
+    background-color: #EA4335; /* Đỏ Google */
+            /* Cắt vát 1 góc để tạo hình giọt nước/mũi tên */
+            border-radius: 50% 50% 50% 0; 
+            /* Xoay góc vát chúc xuống dưới làm mũi tên */
+            transform: rotate(-30deg); 
+            border: 2px solid #ffffff; 
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3); 
+}
+
+/* Hiệu ứng toả sóng xanh cho map marker */
+@keyframes pulse-blue-map {
+    0% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.6); }
+    70% { box-shadow: 0 0 0 12px rgba(66, 133, 244, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(66, 133, 244, 0); }
+}
+
+        /* Keyframes: Hiệu ứng vòng sóng xanh tỏa ra */
+        @keyframes pulse-blue {
+            0% {
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.6);
+            }
+            70% {
+                box-shadow: 0 0 0 8px rgba(66, 133, 244, 0); /* Vòng toả ra 8px rồi mờ dần */
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+            }
+        }
+
         @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -231,8 +346,12 @@
                 right: auto !important;
                 left: 50% !important;
                 width: 100% !important;
-                height: 63vh !important; /* Độ cao khi mở full màn hình */
-                max-height: none !important;
+                
+                /* --- SỬA Ở ĐÂY --- */
+                height: 50vh !important; /* Giảm từ 63vh xuống 50vh để panel thấp hơn */
+                max-height: 450px !important; /* Ép thêm một giới hạn an toàn bằng pixel nếu màn hình quá dài */
+                /* ----------------- */
+
                 border-radius: 50px !important;
                 
                 /* Thu gọn mặc định: Nhô lên 165px (vừa đủ hiện thanh kéo và tiêu đề) */
@@ -240,7 +359,7 @@
                 transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2) !important;
                 
                 /* Giảm bớt padding đáy để cân đối diện tích */
-                padding-bottom: 100px !important; 
+                padding-bottom: 80px !important; /* Có thể giảm một chút padding đáy để không bị trống không gian */
                 z-index: 9998 !important;
             }
             
@@ -283,6 +402,7 @@
             .floating-contact-buttons { display: none !important; } /* Ẩn nút liên hệ trôi nổi cho sạch map */
         }
 
+
     </style>
 </head>
 <body>
@@ -315,22 +435,10 @@
 
           <div class="nav-right-actions">
             <div class="nav-right-actions d-flex align-items-center gap-3">
-              <!-- Nút Chuông -->
-              <div class="notification-btn position-relative">
-                <i class="fa-regular fa-bell fs-5"></i>
-                <span
-                  class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"
-                ></span>
-              </div>
-
-              <!-- Nút Profile -->
-            <div class="user-profile-btn d-flex align-items-center gap-2">
-                <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
-                    <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark); padding-left: 10px">Thân Tiến Dũng</span>
-                    <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
+                <div id="desktopAuthContainer">
+                    <a href="login.html" class="btn btn-outline-success fw-bold px-4" style="border-radius: 50px;">Đăng nhập</a>
                 </div>
-                <img src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
-            </div>
+
             </div>
           </div>
         </div>
@@ -340,10 +448,7 @@
     <main class="booking-layout">
         
         <section class="map-container position-relative">
-            <div id="fleetMap" style="width: 100%; height: 100vh;"></div>
-            
-            <div class="map-overlay-layer" id="mapOverlay"></div>
-            
+            <div id="fleetMap" style="width: 100%; height: 100vh;"></div>            
             <div id="mapPlaceholder" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:2; pointer-events:none;">
                 <i class="fa-solid fa-map-location-dot fs-1 text-secondary opacity-50 mb-2"></i>
                 <h5 class="fw-bold text-secondary opacity-50">Đang khởi tạo bản đồ...</h5>
@@ -366,12 +471,12 @@
                     </button>
 
                     <div class="form-floating mb-3 position-relative">
-                        <input type="text" class="form-control" id="inputPickup" placeholder="Điểm đón" value="KĐT Vinhomes Central Park, Q1" oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()">
+                        <input type="text" class="form-control" id="inputPickup" placeholder="Điểm đón" value="" oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()">
                         <label for="inputPickup">Đón tại</label>
                         <div class="autocomplete-dropdown" id="pickupDropdown">
-                            <div class="autocomplete-item" onclick="selectLocation('inputPickup', 'KĐT Vinhomes Central Park, Q1', 'pickupDropdown')">
+                            <div class="autocomplete-item" onclick="selectLocation('inputPickup', 'Công viên Ánh Sáng Vinhomes Grand Park', 'pickupDropdown')">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">KĐT Vinhomes Central Park</span><span class="autocomplete-sub-text">Phường 22, Quận Bình Thạnh, HCM</span></div>
+                                <div><span class="autocomplete-main-text">Vinhomes Grand Park</span><span class="autocomplete-sub-text">512 Nguyễn Xiển phường Long Bình TPHCM</span></div>
                             </div>
                         </div>
                     </div>
@@ -408,7 +513,7 @@
 
             <div class="panel-footer">
                 <button class="btn-booking-submit" id="btnContinue" onclick="simulateBookingSubmit()" disabled>
-                    Chốt lộ trình
+                    Xác nhận lộ trình
                 </button>
             </div>
         </aside>
@@ -451,11 +556,52 @@
             <i class="fa-solid fa-shield-halved mobile-icon"></i>
             <span class="nav-text">Chính sách</span>
         </a>
+        <a href="login.html" id="btnLoginMobile" class="nav-link-center">
+            <i class="fa-solid fa-user mobile-icon"></i>
+            <span class="nav-text">Tài khoản</span>
+        </a>
     </div>
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>function initBottomSheetUX() {
+    <script src="../../js/customer/tripHistory.js"></script>
+    <script>
+    
+    /* ==========================================================================
+   1. KHAI BÁO BIẾN TOÀN CỤC (GLOBAL VARIABLES)
+   ========================================================================== */
+let isDistanceValid = false;
+let isTimeValid = false;
+let toastDistance, toastSystemError;
+
+// Đợi DOM load xong mới gán sự kiện để tránh lỗi biến null
+document.addEventListener("DOMContentLoaded", () => {
+    // Khởi tạo Toasts của Bootstrap
+    const distanceToastEl = document.getElementById('distanceErrorToast');
+    const systemErrorToastEl = document.getElementById('systemErrorToast');
+    
+    if (distanceToastEl) toastDistance = new bootstrap.Toast(distanceToastEl);
+    if (systemErrorToastEl) toastSystemError = new bootstrap.Toast(systemErrorToastEl);
+    
+    // Thiết lập thời gian tối thiểu cho input Date (Giờ hiện tại của Local)
+    const inputTime = document.getElementById('inputDepartureTime');
+    if (inputTime) {
+        const now = new Date();
+        const localISOTime = (new Date(now.getTime() - now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
+        inputTime.min = localISOTime;
+    }
+
+    // Kích hoạt tính toán bản đồ ngay khi vào trang
+    triggerMapCalculation();
+
+    // Khởi tạo logic Bottom Sheet cho Mobile
+    initBottomSheetUX();
+});
+
+/* ==========================================================================
+   4. GOOGLE MAPS BOTTOM SHEET UX LOGIC (CHO CẢ PC & MOBILE)
+   ========================================================================== */
+function initBottomSheetUX() {
     const sheet = document.getElementById('bookingSheet');
     const header = document.getElementById('sheetHeader');
     
@@ -538,6 +684,7 @@
 
     <script src="../../js/base.js"></script>
     <script src="../../js/tripBooking.js"></script>
+    <script src="../../js/customer/tripBooking.js"></script>
     
 </body>
 </html>

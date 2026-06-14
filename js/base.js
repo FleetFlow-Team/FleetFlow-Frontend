@@ -99,24 +99,6 @@ if (btnLogins.length > 0 && loginModal && closeLoginModal) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const introOverlay = document.getElementById("intro-overlay");
-    const introVideo = document.getElementById("intro-video");
-    const skipBtn = document.getElementById("skip-btn");
-
-    if (introOverlay && introVideo && skipBtn) {
-        function hideIntro() {
-            introOverlay.classList.add("fade-out");
-            setTimeout(() => {
-                introVideo.pause();
-            }, 800);
-        }
-
-        introVideo.addEventListener("ended", hideIntro);
-        skipBtn.addEventListener("click", hideIntro);
-    }
-});
-
 document.addEventListener("DOMContentLoaded", function() {
         const fullName = localStorage.getItem('fullName');
         const accessToken = localStorage.getItem('accessToken');
@@ -260,6 +242,9 @@ async function handleLogin(event) {
         });
 
         const data = await response.json();
+        const fullName = localStorage.getItem('fullName');
+        const accessToken = localStorage.getItem('accessToken');
+        const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
         // Xử lý phản hồi
         if (data.success) {    
@@ -271,6 +256,7 @@ async function handleLogin(event) {
                 // THÊM DÒNG NÀY: Lưu tên và role người dùng để trang khác dùng lại
                 localStorage.setItem('fullName', data.user.fullName);
                 localStorage.setItem('userRole', data.user.roleName);
+                localStorage.setItem('accessToken', data.token);
             }
 
             // Dọn dẹp UI
