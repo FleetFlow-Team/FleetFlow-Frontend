@@ -23,6 +23,10 @@
     <link rel="stylesheet" href="../style/base.css" />
     <link rel="stylesheet" href="../style/profile.css" />
 
+    <script>
+    if (!localStorage.getItem('accessToken')) window.location.replace('../403.html');
+  </script>
+
     
   </head>
   <body>
