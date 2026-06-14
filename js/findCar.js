@@ -1,5 +1,5 @@
 // ==========================================================================
-// 6. KHỞI TẠO DOM & LOGIC BOTTOM SHEET (MOBILE) - BẢN HOÀN THIỆN
+// 6. KHỞI TẠO DOM & LOGIC BOTTOM SHEET (MOBILE) - ĐÃ VÁ LỖI LIỆT CLICK
 // ==========================================================================
 document.addEventListener("DOMContentLoaded", () => {
     // 1. Khởi tạo Toast
@@ -34,11 +34,18 @@ function initBottomSheetUX() {
         return e.touches ? e.touches[0].clientY : e.clientY;
     }
 
-    // Chạm vào Header để Mở/Đóng
-    header.addEventListener('click', () => {
-        if (Math.abs(currentY - startY) > 10 && isDragging) return; // Tránh click nhầm khi đang vuốt
+    // Chạm vào Header để Mở/Đóng (Đã fix lỗi bị liệt click)
+    header.addEventListener('click', (e) => {
+        // Bỏ qua nếu người dùng cố tình bấm vào nút "Xóa"
+        if(e.target.tagName.toLowerCase() === 'button') return; 
+
+        // Nếu khoảng cách ngón tay di chuyển > 10px thì xem như là vuốt, không kích hoạt Click
+        if (Math.abs(currentY - startY) > 10) return; 
+        
         if (window.innerWidth < 1200) {
             sheet.classList.toggle('expanded');
+            // Thêm class này cho body để ẩn/hiện cục AI Chat
+            document.body.classList.toggle('filter-open'); 
         }
     });
 
@@ -48,7 +55,7 @@ function initBottomSheetUX() {
         startY = getClientY(e);
         currentY = startY;
         
-        // VÁ LỖI CỐT LÕI: Dùng setProperty kèm 'important' để đánh bại CSS gốc
+        // Dùng setProperty kèm 'important' để đánh bại CSS gốc
         sheet.style.setProperty('transition', 'none', 'important'); 
     }
 
@@ -59,12 +66,11 @@ function initBottomSheetUX() {
         let deltaY = currentY - startY;
         
         if(sheet.classList.contains('expanded')) {
-            // Đang mở -> Kéo xuống
+            // Đang mở -> Ép kéo xuống
             if(deltaY > 0) sheet.style.setProperty('transform', `translate(-50%, ${deltaY}px)`, 'important'); 
         } else {
-            // Đang đóng -> Kéo lên
-            if(deltaY < 0) sheet.style.setProperty('transform', `translate(-50%, calc(100% - 190px + ${deltaY}px))`, 'important'); 
-            // Lưu ý: Đổi 190px thành 85px nếu bạn đang áp dụng đoạn JS này cho trang findCar.html (Bộ lọc)
+            // Đang đóng -> Ép kéo lên
+            if(deltaY < 0) sheet.style.setProperty('transform', `translate(-50%, calc(100% - 85px + ${deltaY}px))`, 'important'); 
         }
     }
 
@@ -72,17 +78,32 @@ function initBottomSheetUX() {
         if (!isDragging || window.innerWidth >= 1200) return;
         isDragging = false;
         
-        // VÁ LỖI CỐT LÕI: Gỡ bỏ CSS inline để trả lại quyền điều khiển cho Class CSS gốc
+        // Gỡ bỏ CSS inline để trả lại hiệu ứng nảy lỏng cho CSS gốc
         sheet.style.removeProperty('transition'); 
         sheet.style.removeProperty('transform'); 
         
         let deltaY = currentY - startY;
         
         if (sheet.classList.contains('expanded')) {
-            if (deltaY > 50) sheet.classList.remove('expanded'); // Kéo xuống đủ xa -> Thu gọn
+            if (deltaY > 50) {
+                sheet.classList.remove('expanded'); // Kéo xuống đủ xa -> Thu gọn
+                document.body.classList.remove('filter-open'); // Mở lại AI Chat
+            }
         } else {
-            if (deltaY < -50) sheet.classList.add('expanded'); // Kéo lên đủ xa -> Mở rộng
+            if (deltaY < -50) {
+                sheet.classList.add('expanded'); // Kéo lên đủ xa -> Mở rộng
+                document.body.classList.add('filter-open'); // Ẩn AI Chat đi
+            }
         }
+
+        // ========================================================
+        // DÒNG QUAN TRỌNG NHẤT: XÓA TRÍ NHỚ TỌA ĐỘ
+        // Đảm bảo click vẫn hoạt động bình thường ở những lần sau
+        // ========================================================
+        setTimeout(() => { 
+            startY = 0; 
+            currentY = 0; 
+        }, 50);
     }
 
     // Sự kiện Mobile (Touch)
