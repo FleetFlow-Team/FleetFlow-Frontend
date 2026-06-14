@@ -100,118 +100,92 @@ if (btnLogins.length > 0 && loginModal && closeLoginModal) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-        const fullName = localStorage.getItem('fullName');
-        const accessToken = localStorage.getItem('accessToken');
+    // Luôn gọi hàm khởi tạo trạng thái tài khoản khi tải trang
+    initUserProfile();
+});
 
-        if (accessToken && fullName) {
-            const avatarName = encodeURIComponent(fullName);
+function initUserProfile() {
+    const fullName = localStorage.getItem('fullName');
+    const accessToken = localStorage.getItem('accessToken');
+    const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
-            // ==========================================
-            // XỬ LÝ NÚT DESKTOP
-            // ==========================================
-            const oldBtnDesktop = document.getElementById('btnLogin');
-            if (oldBtnDesktop) {
-                // 1. Tuyệt chiêu Clone: Tạo ra một nút mới tinh để rũ bỏ mọi Event Listener mở Modal cũ
-                const btnDesktop = oldBtnDesktop.cloneNode(false);
-                oldBtnDesktop.parentNode.replaceChild(btnDesktop, oldBtnDesktop);
-                
-                // 2. Gán lại ID và cấp Class giao diện mới
-                btnDesktop.id = 'btnLogin';
-                btnDesktop.className = oldBtnDesktop.className; // Kế thừa class cũ (như d-none, d-lg-flex)
-                btnDesktop.classList.remove('btn-login');       // Xóa class nút đăng nhập
-                btnDesktop.classList.add('user-profile-btn');   // Thêm class nút Profile
-                
-                // 3. Đổ HTML (Giao diện Profile + Dropdown)
-                btnDesktop.innerHTML = `
-                    <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2; padding-right: 10px;">
-                        <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);">${fullName}</span>
-                        <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
-                    </div>
-                    <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
-                    
-                    <div class="dropdown-menu-modern shadow-lg">        
-                        <a href="#profile" class="dropdown-item-custom">
-                            <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
-                        </a>
-                        <hr class="divider-custom">
-                        <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-                        </a>
-                    </div>
-                `;
+    // Nếu chưa đăng nhập thì giữ nguyên giao diện nút bấm ban đầu
+    if (!accessToken || !fullName) return;
 
-                // 4. Ngăn chặn click vào nút profile làm trang bị nhảy lên trên cùng
-                btnDesktop.addEventListener('click', (e) => {
-                    // Nếu click vào phần tử chứa class logout-item thì bỏ qua để xử lý đăng xuất
-                    if (!e.target.closest('.logout-item')) {
-                        e.preventDefault();
-                    }
-                });
+    const avatarName = encodeURIComponent(fullName);
+    
+    // TỰ ĐỘNG GIẢI QUYẾT ĐƯỜNG DẪN DỰA TRÊN VỊ TRÍ FILE HIỆN TẠI
+    const currentPath = window.location.pathname.toLowerCase();
+    let profileUrl = 'pages/profile.html';
+    let indexUrl = 'index.html';
 
-                // 5. Gắn sự kiện Đăng xuất an toàn
-                const logoutBtn = btnDesktop.querySelector('.logout-item');
-                if (logoutBtn) {
-                    logoutBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation(); // Ngăn sự kiện click vô tình bong bóng (bubble) ra ngoài
-                        
-                        localStorage.clear(); 
-                        window.location.href = '../index.html'; // Đẩy về trang chủ
-                        
-                    });
+    if (currentPath.includes('/pages/customer/') || 
+        currentPath.includes('/pages/driver/') || 
+        currentPath.includes('/pages/admin/') || 
+        currentPath.includes('/pages/dispatcher/')) {
+        profileUrl = '../profile.html';
+        indexUrl = '../../index.html';
+    } else if (currentPath.includes('/pages/')) {
+        profileUrl = 'profile.html';
+        indexUrl = '../index.html';
+    }
+
+    // Khối giao diện Avatar hiển thị thay thế nút Đăng nhập
+    const getProfileTemplate = () => `
+        <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2; padding-right: 10px;">
+            <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);">${fullName}</span>
+            <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">${userRole}</span>
+        </div>
+        <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
+        
+        <div class="dropdown-menu-modern shadow-lg">        
+            <a href="${profileUrl}" class="dropdown-item-custom">
+                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
+            </a>
+            <hr class="divider-custom">
+            <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+            </a>
+        </div>
+    `;
+
+    const targetButtons = [
+        { id: 'btnLogin', isMobile: false },
+        { id: 'btnLoginMobile', isMobile: true }
+    ];
+
+    targetButtons.forEach(target => {
+        const oldBtn = document.getElementById(target.id);
+        if (oldBtn) {
+            const btnProfile = oldBtn.cloneNode(false);
+            oldBtn.parentNode.replaceChild(btnProfile, oldBtn);
+            
+            btnProfile.id = target.id;
+            btnProfile.className = oldBtn.className;
+            btnProfile.classList.remove('btn-login');
+            btnProfile.classList.add('user-profile-btn');
+            if (target.isMobile) btnProfile.classList.add('mt-2');
+
+            btnProfile.innerHTML = getProfileTemplate();
+
+            btnProfile.addEventListener('click', (e) => {
+                if (!e.target.closest('.logout-item') && !e.target.closest('a')) {
+                    e.preventDefault();
                 }
-            }
+            });
 
-            // ==========================================
-            // XỬ LÝ NÚT MOBILE (LÀM TƯƠNG TỰ)
-            // ==========================================
-            const oldBtnMobile = document.getElementById('btnLoginMobile');
-            if (oldBtnMobile) {
-                const btnMobile = oldBtnMobile.cloneNode(false);
-                oldBtnMobile.parentNode.replaceChild(btnMobile, oldBtnMobile);
-                
-                btnMobile.id = 'btnLoginMobile';
-                                // Thay thế dòng: btnMobile.className = 'user-profile-btn w-100 mt-2';
-                // Thành 4 dòng sau:
-                btnMobile.className = oldBtnMobile.className;   // Kế thừa class cũ (như d-lg-none)
-                btnMobile.classList.remove('btn-login');
-                btnMobile.classList.add('user-profile-btn');
-                btnMobile.classList.add('mt-2');                // Thêm margin-top cho menu điện thoại
-                
-                btnMobile.innerHTML = `
-                    <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2; padding-right: 10px;">
-                        <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);">${fullName}</span>
-                        <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;">Khách hàng</span>
-                    </div>
-                    <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
-                    
-                    <div class="dropdown-menu-modern shadow-lg">        
-                        <a href="#profile" class="dropdown-item-custom">
-                            <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
-                        </a>
-                        <hr class="divider-custom">
-                        <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-                        </a>
-                    </div>
-                `;
-
-                btnMobile.addEventListener('click', (e) => {
-                    if (!e.target.closest('.logout-item')) e.preventDefault();
+            const logoutBtn = btnProfile.querySelector('.logout-item');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    localStorage.clear(); 
+                    window.location.href = indexUrl; 
                 });
-
-                const logoutBtnMb = btnMobile.querySelector('.logout-item');
-                if (logoutBtnMb) {
-                    logoutBtnMb.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        localStorage.clear(); 
-                            window.location.href = '../index.html';
-                    });
-                }
             }
         }
     });
+}
 
     // =========================================
 // 4. API ĐĂNG NHẬP & ĐIỀU PHỐI (LIÊN KẾT BACKEND)
@@ -242,21 +216,20 @@ async function handleLogin(event) {
         });
 
         const data = await response.json();
-        const fullName = localStorage.getItem('fullName');
-        const accessToken = localStorage.getItem('accessToken');
-        const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
         // Xử lý phản hồi
         if (data.success) {    
-            // Lưu Token
-            if (data.accessToken) {
-                localStorage.setItem('accessToken', data.accessToken);
-                localStorage.setItem('refreshToken', data.refreshToken);
+            // Lưu Token (Đã xóa các dòng khai báo thừa và sửa lỗi ghi đè accessToken)
+            if (data.accessToken || data.token) { 
+                const tokenToSave = data.accessToken || data.token; 
+                localStorage.setItem('accessToken', tokenToSave);
+                if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
                 
-                // THÊM DÒNG NÀY: Lưu tên và role người dùng để trang khác dùng lại
                 localStorage.setItem('fullName', data.user.fullName);
                 localStorage.setItem('userRole', data.user.roleName);
-                localStorage.setItem('accessToken', data.token);
+                
+                // THÊM DÒNG NÀY ĐỂ TRANG PROFILE CÓ THỂ LẤY ĐƯỢC EMAIL ĐỔI MẬT KHẨU
+                localStorage.setItem('email', email); 
             }
 
             // Dọn dẹp UI

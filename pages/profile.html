@@ -56,58 +56,37 @@
 
     <header>
       <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
-        <div class="container-base position-relative h-100">
+        <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
           
           <a class="navbar-brand brand-overflow" href="../index.html">
             <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
           </a>
 
           <div class="navbar-center-links d-none d-lg-flex">
-            <a href="../index.html" class="nav-link-center">
-              <i class="fa-solid fa-house mobile-icon d-lg-none"></i>
-              <span class="nav-text">Trang chủ</span>
-            </a>
-            <a href="findCar.html" class="nav-link-center">
-              <i class="fa-solid fa-car mobile-icon d-lg-none"></i>
-              <span class="nav-text">Đặt xe</span>
-            </a>
-            <a href="../pages/customer/tripHistory.html" class="nav-link-center">
-              <i class="fa-solid fa-clock-rotate-left mobile-icon d-lg-none"></i>
-              <span class="nav-text">Chuyến đi</span>
-            </a>
-            <a href="policy.html" class="nav-link-center">
-              <i class="fa-solid fa-shield-halved mobile-icon d-lg-none"></i>
-              <span class="nav-text">Chính sách</span>
-            </a>
+            <a href="../index.html" class="nav-link-center">Trang chủ</a>
+            <a href="findCar.html" class="nav-link-center">Đặt xe</a>
+            <a href="customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
+            <a href="policy.html" class="nav-link-center">Chính sách</a>
           </div>
 
           <div class="nav-right-actions d-flex align-items-center gap-3">
-            <div class="notification-btn position-relative">
-              <i class="fa-regular fa-bell fs-5"></i>
-              <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-            </div>
-
-            <div class="user-profile-btn d-none d-lg-flex align-items-center gap-2">
-              <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
-                <span id="navDesktopName" class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark); padding-left: 10px">Đang tải...</span>
-                <span id="navDesktopRole" class="fw-medium" style="font-size: 0.75rem; color: #64748b;">...</span>
-              </div>
-              <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;" />
-            </div>
+            <button class="btn-login d-none d-lg-flex align-items-center gap-2" id="btnLogin">
+              <span>Đăng nhập</span>
+            </button>
 
             <div class="user-profile-btn d-flex d-lg-none align-items-center gap-2 p-1" id="mobileToggleBtn" style="cursor: pointer; border-radius: 50%;">
-              <img id="navMobileAvatar" src="" style="width: 38px; height: 38px; border-radius: 50%;" />
+              <img id="mobileNavAvatar" src="" style="width: 38px; height: 38px; border-radius: 50%;" />
             </div>
+
           </div>
         </div>
 
         <div class="mobile-glass-dropdown" id="mobileDropdown" style="max-width: 300px;">
           <div class="dropdown-inner-content d-flex flex-column gap-2">
-            
             <div class="text-center mb-3">
-              <img id="profileAvatar" src="https://ui-avatars.com/api/?name=Tien+Dung&background=00B14F&color=fff" class="rounded-circle mb-2 shadow-sm" style="width: 60px; border: 2px solid rgba(255,255,255,0.5);">
-              <h6 id="profileDisplayName" class="fw-bold text-white mb-0 fs-6">Thân Tiến Dũng</h6>
-              <span id="profileDisplayRole" class="text-white-50" style="font-size: 0.8rem;">Khách hàng</span>
+              <img id="profileAvatar" src="https://ui-avatars.com/api/?name=User&background=00B14F&color=fff" class="rounded-circle mb-2 shadow-sm" style="width: 60px; border: 2px solid rgba(255,255,255,0.5);">
+              <h6 id="profileDisplayName" class="fw-bold text-white mb-0 fs-6">Đang tải...</h6>
+              <span id="profileDisplayRole" class="text-white-50" style="font-size: 0.8rem;">...</span>
             </div>
             
             <div class="divider-glass mb-2"></div>
@@ -124,7 +103,7 @@
             
             <div class="divider-glass my-2"></div>
             
-            <button class="mobile-nav-item text-start w-100 border-0" style="background: rgba(255, 60, 60, 0.1);">
+            <button class="mobile-nav-item text-start w-100 border-0" style="background: rgba(255, 60, 60, 0.1);" onclick="localStorage.clear(); window.location.href='../index.html';">
               <i class="fa-solid fa-right-from-bracket text-danger"></i> <span class="text-danger">Đăng xuất</span>
             </button>
           </div>
