@@ -738,58 +738,79 @@ document.addEventListener("DOMContentLoaded", function() {
     if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
 });
 
-// =======================================================
-// LOGIC XỬ LÝ XÁC NHẬN ĐIỀU KHOẢN (DÀNH CHO TÀI XẾ)
-// =======================================================
-document.addEventListener("DOMContentLoaded", function() {
-    const userRole = localStorage.getItem('userRole') || '';
-    const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
-    const isTermsAccepted = localStorage.getItem('isTermsAccepted') === 'true';
+  // =======================================================
+  // LOGIC XỬ LÝ XÁC NHẬN ĐIỀU KHOẢN (DÀNH CHO TÀI XẾ)
+  // =======================================================
+  const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
 
-    // Nếu là tài xế và chưa đồng ý điều khoản -> Hiện thanh xác nhận lên
-    if (isDriver && !isTermsAccepted) {
-        const termsBox = document.getElementById('driverTermsAcceptanceBox');
-        if (termsBox) termsBox.classList.remove('d-none');
-    }
-});
+  document.addEventListener("DOMContentLoaded", async function() {
+      const userRole = localStorage.getItem('userRole') || '';
+      const accountId = localStorage.getItem('accountId');
+      const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
 
-// Hàm gọi API /api/v1/driver/terms/accept
-async function acceptDriverTerms() {
-    const accountId = localStorage.getItem('accountId');
-    if (!accountId) {
-        alert("Lỗi phiên làm việc. Vui lòng đăng nhập lại!");
-        return;
-    }
+      if (isDriver && accountId) {
+          try {
+              // Gọi API kiểm tra thời gian đồng ý điều khoản trực tiếp từ Database
+              const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
+              const result = await response.json();
 
-    const btn = document.getElementById('btnAcceptTerms');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xử lý...';
-    btn.disabled = true;
+              if (result.success && result.data) {
+                  const data = result.data;
+                  
+                  // Kiểm tra điều kiện nghiêm ngặt: có tồn tại mốc thời gian và không phải chuỗi rỗng/"null"
+                  if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") {
+                      localStorage.setItem('isTermsAccepted', 'true');
+                      // Tài xế đã đồng ý điều khoản -> Ẩn hộp và không cho xuất hiện checkout nữa
+                      const termsBox = document.getElementById('driverTermsAcceptanceBox');
+                      if (termsBox) termsBox.classList.add('d-none');
+                  } else {
+                      localStorage.setItem('isTermsAccepted', 'false');
+                      // Chưa đồng ý -> Hiển thị khung cấu trúc cho tài xế click chọn
+                      const termsBox = document.getElementById('driverTermsAcceptanceBox');
+                      if (termsBox) termsBox.classList.remove('d-none');
+                  }
+              }
+          } catch (error) {
+              console.error("Lỗi xác thực trạng thái điều khoản tại Policy:", error);
+          }
+      }
+  });
 
-    try {
-        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/terms/accept?accountID=${accountId}`, {
-            method: 'POST'
-        });
-        const data = await response.json();
+  // Hàm gọi API POST để cập nhật trạng thái đồng ý điều khoản xuống DB
+  async function acceptDriverTerms() {
+      const accountId = localStorage.getItem('accountId');
+      if (!accountId) {
+          alert("Lỗi phiên làm việc. Vui lòng đăng nhập lại!");
+          return;
+      }
 
-        if (data.success) {
-            alert("Cảm ơn bạn đã xác nhận đồng ý Điều khoản dịch vụ!");
-            
-            // Lưu cờ vào bộ nhớ và ẩn thanh xác nhận đi
-            localStorage.setItem('isTermsAccepted', 'true');
-            document.getElementById('driverTermsAcceptanceBox').classList.add('d-none');
-        } else {
-            alert("Lỗi hệ thống: " + data.message);
-            btn.disabled = false;
-            btn.innerHTML = originalText;
-        }
-    } catch (error) {
-        console.error("Lỗi gọi API Điều khoản:", error);
-        alert("Không thể kết nối đến máy chủ.");
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-    }
-}
+      const btn = document.getElementById('btnAcceptTerms');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+      btn.disabled = true;
+
+      try {
+          const response = await fetch(`${DRIVER_API_BASE}/terms/accept?accountID=${accountId}`, {
+              method: 'POST'
+          });
+          const data = await response.json();
+
+          if (data.success) {
+              alert("Cảm ơn bạn đã xác nhận đồng ý Điều khoản dịch vụ của FleetFlow!");
+              localStorage.setItem('isTermsAccepted', 'true');
+              document.getElementById('driverTermsAcceptanceBox').classList.add('d-none');
+          } else {
+              alert("Lỗi hệ thống: " + data.message);
+              btn.disabled = false;
+              btn.innerHTML = originalText;
+          }
+      } catch (error) {
+          console.error("Lỗi gọi API Điều khoản:", error);
+          alert("Không thể kết nối đến máy chủ.");
+          btn.disabled = false;
+          btn.innerHTML = originalText;
+      }
+  }
     </script>
     
     <script src="../js/base.js"></script>

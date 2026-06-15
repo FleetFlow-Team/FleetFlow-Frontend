@@ -15,23 +15,32 @@ let isChartInitialized = false;
 // 2. KHỞI TẠO KHI TRANG TẢI XONG (LIFECYCLE HOOK)
 // ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // Bước 1: Khởi tạo và kiểm tra phiên làm việc. 
-    // Nếu không hợp lệ (mất AccountID), hàm sẽ tự động đá văng về trang chủ.
     if (!initDriverSession()) return; 
 
-    // Bước 2: Tự động tải dữ liệu Hồ sơ Tài xế (Tab mặc định khi mới vào)
     fetchDriverProfile();
 
-    // Bước 3: Kiểm tra trạng thái giấy tờ (eKYC)
-    // Nếu tài xế chưa nộp CCCD/Bằng lái, hiển thị Toast cảnh báo màu vàng góc dưới trái
+    // KIỂM TRA TRẠNG THÁI eKYC
     const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
     if (!isEkycComplete) {
-        const warningToast = document.getElementById('ekycWarningToast');
-        if (warningToast) warningToast.style.display = 'block';
+        const ekycToast = document.getElementById('ekycWarningToast');
+        if (ekycToast) {
+            ekycToast.style.display = 'block';
+            ekycToast.classList.add('show');
+            ekycToast.style.opacity = '1';
+        }
     }
 
-    // Bước 4: Khởi tạo các Toast thông báo của Bootstrap để dùng sau
+    // KIỂM TRA TRẠNG THÁI ĐIỀU KHOẢN TỪ BỘ NHỚ
+    const isTermsAccepted = localStorage.getItem('isTermsAccepted');
+    if (isTermsAccepted === 'false') {
+        const termsToast = document.getElementById('termsWarningToast');
+        if (termsToast) {
+            termsToast.style.display = 'block';
+            termsToast.classList.add('show');
+            termsToast.style.opacity = '1';
+        }
+    }
+
     window.toastError = new bootstrap.Toast(document.getElementById("systemErrorToast"), { delay: 3000 });
     window.toastConflict = new bootstrap.Toast(document.getElementById("conflictToast"), { delay: 3000 });
 });
@@ -109,15 +118,22 @@ async function fetchDriverProfile() {
             }
 
             // 👉 ĐẶT VÀO ĐÚNG VỊ TRÍ NÀY (BÊN TRONG KHỐI IF CHỨA BIẾN DATA)
-            // ĐỒNG BỘ TRẠNG THÁI ĐIỀU KHOẢN TỪ DATABASE
-            if (data.termsAcceptedAt) { 
+            // 🚀 ĐỒNG BỘ LẠI TRẠNG THÁI SAU KHI GỌI API THÀNH CÔNG
+            if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") { 
                 localStorage.setItem('isTermsAccepted', 'true');
-                const termsWarningToast = document.getElementById('termsWarningToast');
-                if (termsWarningToast) termsWarningToast.style.display = 'none';
+                const termsToast = document.getElementById('termsWarningToast');
+                if (termsToast) {
+                    termsToast.style.display = 'none';
+                    termsToast.classList.remove('show');
+                }
             } else {
                 localStorage.setItem('isTermsAccepted', 'false');
-                const termsWarningToast = document.getElementById('termsWarningToast');
-                if (termsWarningToast) termsWarningToast.style.display = 'block'; 
+                const termsToast = document.getElementById('termsWarningToast');
+                if (termsToast) {
+                    termsToast.style.display = 'block'; 
+                    termsToast.classList.add('show');
+                    termsToast.style.opacity = '1';
+                }
             }
         }
     } catch (error) {
