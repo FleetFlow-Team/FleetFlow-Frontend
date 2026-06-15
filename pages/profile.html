@@ -469,6 +469,9 @@ document.addEventListener("DOMContentLoaded", function() {
     if (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ') {
         const driverLicenseSection = document.getElementById('driverLicenseSection');
         if (driverLicenseSection) driverLicenseSection.classList.remove('d-none');
+
+        const mobileDriverWorkspaceBtn = document.getElementById('mobileDriverWorkspaceBtn');
+        if (mobileDriverWorkspaceBtn) mobileDriverWorkspaceBtn.classList.remove('d-none');
     }
 });
 
