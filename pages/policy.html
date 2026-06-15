@@ -756,22 +756,23 @@ document.addEventListener("DOMContentLoaded", function() {
               if (result.success && result.data) {
                   const data = result.data;
                   
-                  // 🚀 FIX LỖI: Lấy giá trị cover cả 2 trường hợp key trả về từ Java
-                  const termsDate = data.termsAcceptedAt || data.TermsAcceptedAt || null;
+                  // 🚀 HÀM QUÉT KEY BẤT CHẤP CHỮ HOA/THƯỜNG TỪ BACKEND
+                  const getVal = (key) => {
+                      const lowerKey = key.toLowerCase();
+                      for (let k in data) { if (k.toLowerCase() === lowerKey) return data[k]; }
+                      return null;
+                  };
                   
-                  // Kiểm tra hợp lệ (Có tồn tại, không phải chuỗi "null", không rỗng)
+                  const termsDate = getVal('termsAcceptedAt');
                   const isAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
 
+                  const termsBox = document.getElementById('driverTermsAcceptanceBox');
                   if (isAccepted) {
                       localStorage.setItem('isTermsAccepted', 'true');
-                      // Đã đồng ý -> Ẩn hộp checkout vĩnh viễn
-                      const termsBox = document.getElementById('driverTermsAcceptanceBox');
-                      if (termsBox) termsBox.classList.add('d-none');
+                      if (termsBox) termsBox.classList.add('d-none'); // Đã đồng ý -> Ẩn vĩnh viễn
                   } else {
                       localStorage.setItem('isTermsAccepted', 'false');
-                      // Chưa đồng ý -> Bật hộp checkout
-                      const termsBox = document.getElementById('driverTermsAcceptanceBox');
-                      if (termsBox) termsBox.classList.remove('d-none');
+                      if (termsBox) termsBox.classList.remove('d-none'); // Chưa đồng ý -> Hiện hộp
                   }
               }
           } catch (error) {
