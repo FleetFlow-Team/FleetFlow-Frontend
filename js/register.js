@@ -1,47 +1,47 @@
 // Đợi DOM tải xong trước khi gán sự kiện
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Lấy form đăng ký dựa trên ID được định nghĩa trong HTML[cite: 1]
     const registerForm = document.getElementById('registerForm');
 
     if (registerForm) {
         registerForm.addEventListener('submit', async function(event) {
-            // Ngăn chặn hành vi reload trang mặc định của form
             event.preventDefault();
 
-            // 1. Lấy dữ liệu từ các ô input trong HTML[cite: 1]
+            // 1. Lấy và chuẩn hóa dữ liệu từ form
             const name = document.getElementById('name').value.trim();
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const rePassword = document.getElementById('rePassword').value;
             const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const roleName = document.getElementById('roleName').value; // Bắt buộc là "Customer" hoặc "Driver"
 
-            // 2. Validate cơ bản ở Frontend
+            // 2. Validate Frontend
             if (password !== rePassword) {
                 alert('Mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại!');
                 return;
             }
 
-            // 3. Chuẩn bị dữ liệu gửi xuống Backend
-            // Vì Backend dùng request.getParameter() nên ta phải gửi dạng x-www-form-urlencoded
+            // 3. Đóng gói dữ liệu (Ánh xạ chuẩn xác với request.getParameter trong Controller)
             const formData = new URLSearchParams();
-            formData.append('fullName', name);       // Khớp với String fullName = request.getParameter("fullName");
-            formData.append('email', email);         // Khớp với String email = request.getParameter("email");
-            formData.append('password', password);   // Khớp với String password = request.getParameter("password");
-            formData.append('phoneNumber', phoneNumber); // Khớp với String phoneNumber = request.getParameter("phoneNumber");[cite: 2]
-            // Lưu ý: roleName sẽ tự động mặ định là "Customer" ở Backend nếu không gửi[cite: 2]
+            formData.append('fullName', name);       
+            formData.append('email', email);         
+            formData.append('password', password);   
+            formData.append('phoneNumber', phoneNumber); 
+            formData.append('roleName', roleName);
+            // Controller có nhận tham số address, ta có thể gửi rỗng để tránh lỗi null pointer tiềm ẩn
+            formData.append('address', ''); 
 
             try {
-                // Đổi "FleetFlow" thành tên Context Path thực tế của bạn trên NetBeans nếu cần
+                // Đảm bảo URL trỏ đúng vào Endpoint của Controller
                 const apiUrl = 'http://localhost:8080/FleetFlow/api/v1/auth/register'; 
 
-                // Hiển thị trạng thái loading (tùy chọn)
+                // 4. Cập nhật UI trạng thái Loading
                 const submitBtn = registerForm.querySelector('button[type="submit"]');
                 const originalBtnText = submitBtn.innerText;
-                submitBtn.innerText = 'Đang xử lý...';
+                submitBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xử lý...';
                 submitBtn.disabled = true;
 
-                // 4. Gọi API bằng Fetch
+                // 5. Gửi request
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
@@ -50,30 +50,31 @@ document.addEventListener('DOMContentLoaded', function() {
                     body: formData.toString()
                 });
 
-                // 5. Đọc JSON trả về từ Servlet (Map<String, Object> apiResponse)[cite: 2]
+                // 6. Xử lý phản hồi từ RegisterController
                 const data = await response.json();
 
-                // Phục hồi lại nút submit
+                // Phục hồi nút bấm
                 submitBtn.innerText = originalBtnText;
                 submitBtn.disabled = false;
 
-                // 6. Xử lý logic theo kết quả Backend trả về[cite: 2]
                 if (data.success) {
-                    // Hiển thị thông báo thành công (message từ Backend: "Đăng ký tài khoản thành công với vai trò...")[cite: 2]
-                    alert(data.message); 
+                    // Đăng ký thành công
+                    alert("Thành công: " + data.message); 
                     
-                    // Chuyển hướng người dùng về trang đăng nhập
+                    // Bạn có thể tận dụng data.accountID ở đây nếu cần lưu vào sessionStorage
+                    // sessionStorage.setItem('tempAccountId', data.accountID);
+                    
+                    registerForm.reset();
                     window.location.href = '../index.html'; 
                 } else {
-                    // Nếu thất bại (VD: email đã tồn tại), hiển thị thông báo lỗi[cite: 2]
-                    alert('Lỗi: ' + data.message);
+                    // Đăng ký thất bại (Sai định dạng role, trùng email, v.v.)
+                    alert("Thất bại: " + data.message);
                 }
 
             } catch (error) {
                 console.error('Lỗi khi gọi API đăng ký:', error);
-                alert('Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại server NetBeans!');
+                alert('Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại trạng thái server Tomcat/Glassfish!');
                 
-                // Phục hồi lại nút submit nếu có lỗi mạng
                 const submitBtn = registerForm.querySelector('button[type="submit"]');
                 submitBtn.innerText = 'Đăng kí tài khoản';
                 submitBtn.disabled = false;
