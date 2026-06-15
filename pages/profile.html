@@ -299,6 +299,8 @@
           </div>
         </section>
       </div>
+
+      
     </main>
 
     
@@ -663,7 +665,19 @@ const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
         }
     }
     </script>
+    <!-- Box warning cho chính sách -->
+    <div id="termsWarningToast" class="toast align-items-center border border-danger shadow-lg position-fixed bottom-0 end-0 m-4" 
+         role="alert" style="z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; max-width: 350px;">
+        <div class="d-flex p-3">
+            <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
+                <i class="fa-solid fa-file-signature fs-3 text-danger fa-beat mt-1"></i> 
+                <span>Tài khoản của bạn chưa xác nhận điều khoản. Vui lòng vào <a href="../policy.html" class="text-danger fw-bold text-decoration-underline">Chính sách</a> để đọc và đồng ý!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('termsWarningToast').style.display='none'"></button>
+        </div>
+    </div>
 
+    <!-- Box warning cho ekyc -->
     <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4" 
          role="alert" style="z-index: 10000; background: rgba(255, 255, 255, 0.296); box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: none; max-width: 350px;">
         <div class="d-flex p-3">

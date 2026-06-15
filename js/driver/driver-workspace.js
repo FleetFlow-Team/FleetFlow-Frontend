@@ -111,6 +111,17 @@ async function fetchDriverProfile() {
     } catch (error) {
         console.error("Lỗi lấy Profile Tài xế:", error);
     }
+
+    // ĐỒNG BỘ TRẠNG THÁI ĐIỀU KHOẢN TỪ DATABASE
+            if (data.termsAcceptedAt) { // Nếu Database báo là đã có thời gian xác nhận
+                localStorage.setItem('isTermsAccepted', 'true');
+                const termsWarningToast = document.getElementById('termsWarningToast');
+                if (termsWarningToast) termsWarningToast.style.display = 'none';
+            } else {
+                localStorage.setItem('isTermsAccepted', 'false');
+                const termsWarningToast = document.getElementById('termsWarningToast');
+                if (termsWarningToast) termsWarningToast.style.display = 'block'; // Bật cảnh báo đỏ lên
+            }
 }
 
 /**
