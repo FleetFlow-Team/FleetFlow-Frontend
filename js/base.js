@@ -259,11 +259,7 @@ async function handleLogin(event) {
 
         // Xử lý phản hồi
         if (data.success) {    
-            // Nếu đăng nhập đúng, ẩn dòng quên mật khẩu đi (nếu nó đang hiện)
-            const errorHelper = document.getElementById('errorHelperText');
-            if (errorHelper) errorHelper.classList.add('d-none');
-
-            // Lưu Token...
+            // Lưu Token
             if (data.accessToken || data.token) { 
                 const tokenToSave = data.accessToken || data.token; 
                 localStorage.setItem('accessToken', tokenToSave);
@@ -271,7 +267,15 @@ async function handleLogin(event) {
                 
                 localStorage.setItem('fullName', data.user.fullName);
                 localStorage.setItem('userRole', data.user.roleName);
-                localStorage.setItem('email', email); 
+
+                // THÊM 2 DÒNG NÀY ĐỂ FIX LỖI API:
+                // Lưu ID (Kiểm tra xem backend trả về là id hay accountId)
+                const accId = data.user.id || data.user.accountId; 
+                if (accId) localStorage.setItem('accountId', accId);
+                
+                // Lưu lại Email để dùng cho đổi mật khẩu hoặc API khác
+                const userEmail = data.user.email || document.getElementById('loginEmail').value;
+                localStorage.setItem('email', userEmail);
             }
 
             // Dọn dẹp UI
