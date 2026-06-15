@@ -219,7 +219,11 @@ async function handleLogin(event) {
 
         // Xử lý phản hồi
         if (data.success) {    
-            // Lưu Token (Đã xóa các dòng khai báo thừa và sửa lỗi ghi đè accessToken)
+            // Nếu đăng nhập đúng, ẩn dòng quên mật khẩu đi (nếu nó đang hiện)
+            const errorHelper = document.getElementById('errorHelperText');
+            if (errorHelper) errorHelper.classList.add('d-none');
+
+            // Lưu Token...
             if (data.accessToken || data.token) { 
                 const tokenToSave = data.accessToken || data.token; 
                 localStorage.setItem('accessToken', tokenToSave);
@@ -227,8 +231,6 @@ async function handleLogin(event) {
                 
                 localStorage.setItem('fullName', data.user.fullName);
                 localStorage.setItem('userRole', data.user.roleName);
-                
-                // THÊM DÒNG NÀY ĐỂ TRANG PROFILE CÓ THỂ LẤY ĐƯỢC EMAIL ĐỔI MẬT KHẨU
                 localStorage.setItem('email', email); 
             }
 
@@ -236,30 +238,32 @@ async function handleLogin(event) {
             document.getElementById('loginModal').classList.remove('active');
             document.body.style.overflow = '';
 
-            // ----------------------------------------------------
-            // ĐIỀU PHỐI TRANG 
-            const userRole = data.user.roleName.toUpperCase(); // Chuyển thành in hoa để dễ so sánh
-
+            // ĐIỀU PHỐI TRANG... (Phần switch case giữ nguyên)
+            const userRole = data.user.roleName.toUpperCase();
             switch (userRole) {
-                case 'ADMIN':
-                    window.location.href = '../pages/admin/admin-workspace.html';
-                    break;
-                case 'DRIVER':
-                    window.location.href = '../pages/driver/driver-workspace.html';
-                    break;
-                case 'CUSTOMER':
-                    window.location.href = '../pages/findCar.html';
-                    break;
-                case 'DISPATCHER':
-                    window.location.href = '../pages/dispatcher/dispatcher-workspace.html';
-                    break;
+                case 'ADMIN': window.location.href = '../pages/admin/admin-workspace.html'; break;
+                case 'DRIVER': window.location.href = '../pages/driver/driver-workspace.html'; break;
+                case 'CUSTOMER': window.location.href = '../pages/findCar.html'; break;
+                case 'DISPATCHER': window.location.href = '../pages/dispatcher/dispatcher-workspace.html'; break;
                 default:
                     alert('Lỗi: Vai trò của bạn không hợp lệ hoặc chưa được phân quyền trong hệ thống.');
                     localStorage.clear();
                     break;
             }
         } else {
+            // NẾU ĐĂNG NHẬP SAI:
             alert('Lỗi đăng nhập: ' + data.message);
+            
+            // Xóa dữ liệu ô mật khẩu và focus lại để khách dễ nhập lại
+            const pwdInput = document.getElementById('loginPassword');
+            pwdInput.value = '';
+            pwdInput.focus();
+
+            // Hiển thị nút "Quên tài khoản hoặc mật khẩu?"
+            const errorHelper = document.getElementById('errorHelperText');
+            if (errorHelper) {
+                errorHelper.classList.remove('d-none');
+            }
         }
 
     } catch (error) {

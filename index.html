@@ -650,11 +650,16 @@
             <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
               <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
               <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
-              
+              <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
+                <a href="pages/forgotPassword.html" class="text-danger text-decoration-none" style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
+                  <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
+                </a>
+              </div>
               <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
             </form>
-            <div class="text-center mt-4">
-              <a href="#" class="forget-p">Quên mật khẩu?</a>
+            <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+              <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
+              <a href="pages/register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
             </div>
           </div>
         </div>

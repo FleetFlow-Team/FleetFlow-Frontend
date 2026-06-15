@@ -1493,3 +1493,18 @@ footer ul a:hover { color: var(--color-1); padding-left: 5px; }
     margin: 8px 0;
     border-color: rgba(0, 0, 0, 0.06);
 }
+
+/* Hiệu ứng Glow vàng cho link Đăng ký */
+.glow-register-link {
+    color: #ffffff;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.glow-register-link:hover {
+    color: var(--color-3) !important;
+    text-shadow: 0 0 12px rgba(255, 222, 89, 0.8);
+    letter-spacing: 0.5px;
+}
