@@ -215,37 +215,57 @@
 
             <div class="tab-pane fade" id="content-ekyc">
               <h3 class="fw-bold mb-4 text-dark">
-                <i class="fa-solid fa-user-check me-2 text-success"></i> Xác
-                minh danh tính
+                <i class="fa-solid fa-user-check me-2 text-success"></i> Xác minh danh tính
               </h3>
               <p class="text-muted mb-4">
-                Vui lòng tải lên ảnh chụp 2 mặt Căn cước công dân của bạn để
-                kích hoạt đầy đủ quyền lợi chuyến đi.
+                Vui lòng tải lên ảnh chụp giấy tờ tùy thân của bạn để kích hoạt đầy đủ quyền lợi trên hệ thống.
               </p>
-              <div class="row g-4 mt-2">
+              
+              <form id="ekycProfileForm" class="row g-4 mt-2">
+                <div class="col-12"><h5 class="text-dark fw-bold mb-0 fs-6">1. Căn cước công dân (Mặt trước & Mặt sau)</h5></div>
                 <div class="col-md-6">
-                  <div
-                    class="upload-box"
-                    onclick="document.getElementById('idFront').click()"
-                  >
+                  <div class="upload-box" onclick="document.getElementById('idFront').click()">
                     <i class="fa-regular fa-id-card mb-3"></i>
                     <div class="fs-5">Mặt trước CCCD</div>
-                    <small class="text-muted mt-2">Nhấn để tải ảnh lên</small>
+                    <small class="text-muted mt-2" id="idFrontName">Nhấn để tải ảnh lên</small>
                   </div>
-                  <input type="file" id="idFront" class="d-none" />
+                  <input type="file" id="idFront" class="d-none" accept="image/*" onchange="document.getElementById('idFrontName').innerText = this.files[0].name" />
                 </div>
                 <div class="col-md-6">
-                  <div
-                    class="upload-box"
-                    onclick="document.getElementById('idBack').click()"
-                  >
+                  <div class="upload-box" onclick="document.getElementById('idBack').click()">
                     <i class="fa-solid fa-address-card mb-3"></i>
                     <div class="fs-5">Mặt sau CCCD</div>
-                    <small class="text-muted mt-2">Nhấn để tải ảnh lên</small>
+                    <small class="text-muted mt-2" id="idBackName">Nhấn để tải ảnh lên</small>
                   </div>
-                  <input type="file" id="idBack" class="d-none" />
+                  <input type="file" id="idBack" class="d-none" accept="image/*" onchange="document.getElementById('idBackName').innerText = this.files[0].name" />
                 </div>
-              </div>
+
+                <div id="driverLicenseSection" class="col-12 row g-4 m-0 p-0 d-none">
+                  <div class="col-12 mt-4"><h5 class="text-dark fw-bold mb-0 fs-6 text-info">2. Bằng lái xe (Chỉ dành cho Đối tác Tài xế)</h5></div>
+                  <div class="col-md-6">
+                    <div class="upload-box" onclick="document.getElementById('licenseFront').click()" style="border-color: #0dcaf0;">
+                      <i class="fa-regular fa-id-badge mb-3 text-info"></i>
+                      <div class="fs-5">Mặt trước Bằng lái</div>
+                      <small class="text-muted mt-2" id="licenseFrontName">Nhấn để tải ảnh lên</small>
+                    </div>
+                    <input type="file" id="licenseFront" class="d-none" accept="image/*" onchange="document.getElementById('licenseFrontName').innerText = this.files[0].name" />
+                  </div>
+                  <div class="col-md-6">
+                    <div class="upload-box" onclick="document.getElementById('licenseBack').click()" style="border-color: #0dcaf0;">
+                      <i class="fa-solid fa-id-badge mb-3 text-info"></i>
+                      <div class="fs-5">Mặt sau Bằng lái</div>
+                      <small class="text-muted mt-2" id="licenseBackName">Nhấn để tải ảnh lên</small>
+                    </div>
+                    <input type="file" id="licenseBack" class="d-none" accept="image/*" onchange="document.getElementById('licenseBackName').innerText = this.files[0].name" />
+                  </div>
+                </div>
+
+                <div class="col-12 text-end mt-4">
+                  <button type="button" class="btn-login px-5 py-3 fs-6" id="btnSubmitEkyc" onclick="submitEkycProfile()">
+                    Gửi hồ sơ xét duyệt
+                  </button>
+                </div>
+              </form>
             </div>
 
             <div class="tab-pane fade" id="content-security">
