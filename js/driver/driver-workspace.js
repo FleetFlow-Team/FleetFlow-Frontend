@@ -1,33 +1,82 @@
 /**
- * TỆP XỬ LÝ NGHIỆP VỤ CHÍNH CHO DRIVER WORKSPACE
- * Quản lý API Dashboard, Profile, Tab Switch và Chart
+ * ============================================================================
+ * FLEETFLOW - DRIVER WORKSPACE MAIN SCRIPT
+ * File xử lý toàn bộ nghiệp vụ trên bảng điều khiển của Đối tác Tài xế.
+ * Bao gồm: Xác thực phiên, Gọi API Dashboard/Profile, Vẽ Biểu đồ và Xử lý UI.
+ * ============================================================================
  */
 
+// 1. KHAI BÁO CÁC BIẾN TOÀN CỤC & CẤU HÌNH API
 const API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
-let incomeChartInstance = null;
+let incomeChartInstance = null; // Biến lưu trữ biểu đồ để tránh lỗi vẽ đè (Canvas duplication)
 let isChartInitialized = false;
 
-// Khởi tạo các thành phần giao diện khi trang tải xong
+// ============================================================================
+// 2. KHỞI TẠO KHI TRANG TẢI XONG (LIFECYCLE HOOK)
+// ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Tải thông tin Profile (Tab Tài Khoản) ngầm định ngay khi vào trang
+    
+    // Bước 1: Khởi tạo và kiểm tra phiên làm việc. 
+    // Nếu không hợp lệ (mất AccountID), hàm sẽ tự động đá văng về trang chủ.
+    if (!initDriverSession()) return; 
+
+    // Bước 2: Tự động tải dữ liệu Hồ sơ Tài xế (Tab mặc định khi mới vào)
     fetchDriverProfile();
 
-    // 2. Kiểm tra Cờ eKYC (Kế thừa từ base.js hoặc chạy riêng)
+    // Bước 3: Kiểm tra trạng thái giấy tờ (eKYC)
+    // Nếu tài xế chưa nộp CCCD/Bằng lái, hiển thị Toast cảnh báo màu vàng góc dưới trái
     const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
     if (!isEkycComplete) {
         const warningToast = document.getElementById('ekycWarningToast');
         if (warningToast) warningToast.style.display = 'block';
     }
 
-    // 3. Khởi tạo Toasts Bootstrap
+    // Bước 4: Khởi tạo các Toast thông báo của Bootstrap để dùng sau
     window.toastError = new bootstrap.Toast(document.getElementById("systemErrorToast"), { delay: 3000 });
     window.toastConflict = new bootstrap.Toast(document.getElementById("conflictToast"), { delay: 3000 });
 });
 
+// ============================================================================
+// 3. QUẢN LÝ PHIÊN ĐĂNG NHẬP (SESSION MANAGEMENT)
+// ============================================================================
 /**
- * ---------------------------------------------------------
- * HÀM 1: GỌI API LẤY PROFILE TÀI XẾ (GET /profile)
- * ---------------------------------------------------------
+ * Hàm kiểm tra bộ nhớ trình duyệt và cập nhật thông tin lên thanh Header
+ */
+function initDriverSession() {
+    const accountId = localStorage.getItem('accountId');
+    const fullName = localStorage.getItem('fullName') || 'Tài xế';
+    const userRole = localStorage.getItem('userRole') || 'Đối tác Tài xế';
+
+    // Rào chắn bảo mật: Không có Account ID tức là chưa đăng nhập chuẩn
+    if (!accountId) {
+        alert("Phiên đăng nhập không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại!");
+        localStorage.clear();
+        window.location.href = '../../index.html';
+        return false;
+    }
+
+    // Cập nhật thông tin lên thanh Navbar phía trên cùng của Driver
+    const headerName = document.querySelector('.user-info-block .profile-name');
+    const headerRole = document.querySelector('.user-info-block .profile-role');
+    const headerAvatar = document.querySelector('.user-info-block img');
+
+    if (headerName) headerName.innerText = fullName;
+    
+    // Nếu role tiếng Anh là DRIVER thì việt hóa lại cho đẹp
+    if (headerRole) headerRole.innerText = (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ') ? 'Đối tác Tài xế' : userRole;
+    
+    // Tạo avatar tự động từ Tên
+    if (headerAvatar) headerAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=1a1c1a&color=fff`;
+
+    return true; // Phiên hợp lệ
+}
+
+// ============================================================================
+// 4. KẾT NỐI API BACKEND (DATA FETCHING)
+// ============================================================================
+
+/**
+ * Gọi API GET /profile để lấy thông tin chi tiết của tài xế
  */
 async function fetchDriverProfile() {
     const accountId = localStorage.getItem('accountId');
@@ -37,31 +86,27 @@ async function fetchDriverProfile() {
         const response = await fetch(`${API_BASE}/profile?accountID=${accountId}`);
         const result = await response.json();
 
+        // Kiểm tra xem Backend có trả về success = true và có data không
         if (result.success && result.data) {
             const data = result.data;
             
-            // Cập nhật Tab Tài khoản
+            // Lấy các thẻ HTML cần điền dữ liệu
             const accName = document.getElementById('accDriverName');
             const accAvatar = document.getElementById('accDriverAvatar');
             const accRating = document.getElementById('accDriverRating');
             const accVehicle = document.getElementById('accDriverVehicle');
 
-            if(accName) accName.innerText = data.fullName || 'Tài xế FleetFlow';
+            // Đổ dữ liệu vào HTML (Sử dụng toán tử || để gán giá trị mặc định nếu data bị null)
+            if(accName) accName.innerText = data.fullName || localStorage.getItem('fullName');
             if(accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName || 'Driver')}&background=1a1c1a&color=fff`;
             
-            // Render Rating & Đánh giá
             if(accRating) {
                 accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${data.averageRating || '5.0'} (${data.reviewCount || 0} đánh giá)`;
             }
             
-            // Render Xe
             if(accVehicle) {
                 accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> ${data.vehicleName || 'Đang cập nhật'} (${data.plateNumber || '...'})`;
             }
-
-            // Đồng bộ lên Navbar Header
-            const headerName = document.querySelector('.user-info-block .profile-name');
-            if(headerName) headerName.innerText = data.fullName;
         }
     } catch (error) {
         console.error("Lỗi lấy Profile Tài xế:", error);
@@ -69,16 +114,11 @@ async function fetchDriverProfile() {
 }
 
 /**
- * ---------------------------------------------------------
- * HÀM 2: GỌI API LẤY DASHBOARD (GET /dashboard)
- * ---------------------------------------------------------
+ * Gọi API GET /dashboard để lấy báo cáo doanh thu, chuyến đi và lịch sử giao dịch
  */
 async function fetchDriverDashboard() {
     const accountId = localStorage.getItem('accountId');
-    if (!accountId) {
-        alert("Lỗi phiên làm việc: Không tìm thấy Account ID. Vui lòng đăng nhập lại.");
-        return;
-    }
+    if (!accountId) return;
 
     try {
         const response = await fetch(`${API_BASE}/dashboard?accountID=${accountId}`);
@@ -87,82 +127,57 @@ async function fetchDriverDashboard() {
         if (result.success && result.data) {
             const data = result.data;
 
-            // 1. Cập nhật các con số tổng quan (KPIs)
+            // 1. Cập nhật 3 chỉ số KPI chính (Thu nhập, Số chuyến, Tiền thưởng)
             document.getElementById('dashNetIncome').innerText = (data.netIncome || 0).toLocaleString("vi-VN");
             document.getElementById('dashTotalTrips').innerText = data.totalTrips || 0;
             document.getElementById('dashBonus').innerText = (data.bonus || 0).toLocaleString("vi-VN");
 
-            // 2. Vẽ bảng chi tiết giao dịch
+            // 2. Vẽ bảng chi tiết lịch sử giao dịch
             renderTransactionTable(data.transactions || []);
 
-            // 3. Vẽ biểu đồ Chart.js
+            // 3. Vẽ biểu đồ Chart.js (Dữ liệu tuần)
             if (data.chartData) {
                 renderIncomeChart(data.chartData);
             }
         } else {
-            console.warn("Không có dữ liệu Dashboard hoặc API trả về lỗi:", result.message);
+            console.warn("Lỗi API Dashboard:", result.message);
         }
     } catch (error) {
         console.error("Lỗi lấy dữ liệu Dashboard:", error);
-        window.toastError.show(); // Báo lỗi góc màn hình
+        if (window.toastError) window.toastError.show();
     }
 }
 
-/**
- * ---------------------------------------------------------
- * HÀM 3: XỬ LÝ CHUYỂN TAB MƯỢT MÀ
- * ---------------------------------------------------------
- */
-window.switchTab = function(tabId, element) {
-    // Xóa active menu Desktop & Mobile
-    document.querySelectorAll("#driver-nav .toc-link, .bottom-nav-glass .nav-item")
-            .forEach(a => a.classList.remove("active"));
-    
-    // Gắn lại active
-    if(element.classList.contains('toc-link')) {
-        element.classList.add("active");
-        document.querySelectorAll(`.bottom-nav-glass .nav-item`).forEach(a => { if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); });
-    } else {
-        element.classList.add("active");
-        document.querySelectorAll(`#driver-nav .toc-link`).forEach(a => { if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); });
-    }
-
-    // Đổi Section Content
-    document.querySelectorAll(".dashboard-section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
-
-    // XỬ LÝ GỌI API THEO TAB:
-    if (tabId === "tab-income") {
-        // Chỉ gọi API Dashboard khi người dùng bấm vào tab Thu Nhập để tiết kiệm tài nguyên
-        fetchDriverDashboard();
-    } else if (tabId === "tab-account") {
-        fetchDriverProfile();
-    }
-};
+// ============================================================================
+// 5. RENDER GIAO DIỆN (UI RENDERERS)
+// ============================================================================
 
 /**
- * ---------------------------------------------------------
- * HELPER: VẼ BIỂU ĐỒ (DỮ LIỆU TỪ API)
- * ---------------------------------------------------------
+ * Vẽ biểu đồ cột thu nhập bằng Chart.js
+ * @param {Object} chartData Đối tượng chứa labels, income (cước) và bonus (thưởng)
  */
 function renderIncomeChart(chartData) {
     const chartEl = document.getElementById("incomeChart");
     if (!chartEl) return;
     const ctx = chartEl.getContext("2d");
     
-    // Hủy biểu đồ cũ nếu đã vẽ trước đó (để tránh lỗi ghi đè)
+    // RẤT QUAN TRỌNG: Phải hủy (destroy) biểu đồ cũ trước khi vẽ cái mới 
+    // Nếu không Chart.js sẽ bị lỗi giật lag (hover bị nhấp nháy do 2 canvas đè nhau)
     if (incomeChartInstance) {
         incomeChartInstance.destroy();
     }
 
+    // Tạo màu gradient (chuyển sắc) cho cột xanh dương (Cước)
     let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
     gradientBlue.addColorStop(0, "rgba(56, 189, 248, 0.8)");
     gradientBlue.addColorStop(1, "rgba(56, 189, 248, 0.2)");
     
+    // Tạo màu gradient cho cột màu cam (Thưởng)
     let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
     gradientOrange.addColorStop(0, "rgba(251, 191, 36, 0.8)");
     gradientOrange.addColorStop(1, "rgba(251, 191, 36, 0.2)");
 
+    // Cấu hình vẽ Chart
     incomeChartInstance = new Chart(ctx, {
         type: "bar",
         data: {
@@ -187,23 +202,30 @@ function renderIncomeChart(chartData) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: { mode: "index", intersect: false },
+            interaction: { mode: "index", intersect: false }, // Hover 1 lúc lên cả 2 cột
             plugins: {
-                legend: { position: "top", align: "end", labels: { color: "#ffffff", usePointStyle: true, boxWidth: 10, padding: 20, font: { family: "Inter", weight: "600" } } },
-                tooltip: { backgroundColor: "rgba(0,0,0,0.8)", titleFont: { family: "Inter", size: 14 }, bodyFont: { family: "Inter", size: 13 }, padding: 12, cornerRadius: 8 },
+                legend: { position: "top", align: "end", labels: { color: "#ffffff", usePointStyle: true } },
+                tooltip: { backgroundColor: "rgba(0,0,0,0.8)", cornerRadius: 8 },
             },
             scales: {
-                x: { stacked: true, grid: { display: false }, ticks: { font: { family: "Inter", weight: "600" }, color: "rgba(255,255,255,0.7)" } },
-                y: { stacked: true, border: { display: false }, grid: { color: "rgba(255,255,255,0.1)" }, ticks: { font: { family: "Inter" }, color: "rgba(255,255,255,0.5)", callback: function (value) { return value.toLocaleString("vi-VN") + " đ"; } } },
+                x: { stacked: true, grid: { display: false }, ticks: { color: "rgba(255,255,255,0.7)" } },
+                y: { 
+                    stacked: true, 
+                    border: { display: false }, 
+                    grid: { color: "rgba(255,255,255,0.1)" }, 
+                    ticks: { 
+                        color: "rgba(255,255,255,0.5)", 
+                        callback: function (value) { return value.toLocaleString("vi-VN") + " đ"; } 
+                    } 
+                },
             },
         },
     });
 }
 
 /**
- * ---------------------------------------------------------
- * HELPER: VẼ BẢNG GIAO DỊCH
- * ---------------------------------------------------------
+ * Đổ dữ liệu các giao dịch thành các hàng (<tr>) trong bảng
+ * @param {Array} transactions Mảng các giao dịch từ Backend
  */
 function renderTransactionTable(transactions) {
     const tbody = document.getElementById('transactionTableBody');
@@ -216,7 +238,7 @@ function renderTransactionTable(transactions) {
 
     let html = '';
     transactions.forEach(trx => {
-        // Tùy chỉnh màu sắc dựa theo loại giao dịch
+        // Tùy chỉnh màu sắc Badge (Thẻ trạng thái) dựa theo loại giao dịch
         const isPenalty = trx.type.includes('Phạt') || trx.type.includes('Hủy');
         const badgeColor = isPenalty ? 'warning' : 'info';
         const icon = isPenalty ? 'fa-hand-holding-dollar' : 'fa-car-side';
@@ -237,25 +259,70 @@ function renderTransactionTable(transactions) {
     tbody.innerHTML = html;
 }
 
+// ============================================================================
+// 6. XỬ LÝ SỰ KIỆN TƯƠNG TÁC (USER INTERACTIONS)
+// ============================================================================
+
 /**
- * ---------------------------------------------------------
- * XỬ LÝ NHẬN CHUYẾN (MOCK GIAO DIỆN)
- * ---------------------------------------------------------
+ * Hàm điều hướng giữa các Tab (Trang chủ, Thu nhập, Tài khoản)
+ * @param {string} tabId ID của thẻ Section cần mở
+ * @param {HTMLElement} element Thẻ HTML (Link/Button) vừa được bấm vào
+ */
+window.switchTab = function(tabId, element) {
+    
+    // 1. Xóa class 'active' của tất cả các menu trên Desktop và Mobile
+    document.querySelectorAll("#driver-nav .toc-link, .bottom-nav-glass .nav-item")
+            .forEach(a => a.classList.remove("active"));
+    
+    // 2. Bôi sáng (active) menu vừa bấm vào
+    if(element.classList.contains('toc-link')) {
+        // Nếu click trên Desktop -> Đồng bộ bôi sáng xuống Mobile
+        element.classList.add("active");
+        document.querySelectorAll(`.bottom-nav-glass .nav-item`).forEach(a => { if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); });
+    } else {
+        // Nếu click trên Mobile -> Đồng bộ bôi sáng lên Desktop
+        element.classList.add("active");
+        document.querySelectorAll(`#driver-nav .toc-link`).forEach(a => { if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); });
+    }
+
+    // 3. Ẩn tất cả section và hiện section mục tiêu
+    document.querySelectorAll(".dashboard-section").forEach(sec => sec.classList.remove("active"));
+    document.getElementById(tabId).classList.add("active");
+
+    // 4. Kỹ thuật Lazy-Load (Chỉ gọi API khi nào cần thiết)
+    if (tabId === "tab-income") {
+        fetchDriverDashboard(); // Gọi API khi bấm vào tab Lịch sử Thu nhập
+    } else if (tabId === "tab-account") {
+        fetchDriverProfile();   // Gọi lại API khi bấm vào Tài khoản để cập nhật dữ liệu mới nhất
+    }
+};
+
+/**
+ * Hàm giả lập thao tác nhấn nút "Nhận chuyến" của thẻ Open Job
+ * @param {HTMLElement} btnElement Nút bấm vừa tương tác
+ * @param {string} cardId ID của khối HTML chứa chuyến xe
+ * @param {string} scenario Kịch bản test (success, error409: có người nhận mất, error500: lỗi server)
  */
 window.acceptJob = function(btnElement, cardId, scenario) {
     const originalText = btnElement.innerHTML;
+    
+    // Chặn người dùng spam click (Trạng thái Loading)
     btnElement.disabled = true;
     btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang tải...';
 
+    // Giả lập độ trễ mạng 1.2s trước khi phản hồi
     setTimeout(() => {
         if (scenario === "error409") {
+            // Trường hợp: Tài xế khác nhận mất
             removeCardSmoothly(document.getElementById(cardId));
             if (window.toastConflict) window.toastConflict.show();
         } else if (scenario === "error500") {
+            // Trường hợp: Lỗi Server (Trả lại nút để bấm lại)
             btnElement.disabled = false;
             btnElement.innerHTML = originalText;
             if (window.toastError) window.toastError.show();
         } else if (scenario === "success") {
+            // Trường hợp: Nhận thành công -> Ẩn thẻ xe và bật Modal chúc mừng
             removeCardSmoothly(document.getElementById(cardId));
             const sm = new bootstrap.Modal(document.getElementById("successModal"));
             sm.show();
@@ -263,19 +330,29 @@ window.acceptJob = function(btnElement, cardId, scenario) {
     }, 1200);
 }
 
+/**
+ * Hiệu ứng xóa một thẻ (Card) mềm mại khỏi DOM (Mờ dần + Thu nhỏ)
+ */
 window.removeCardSmoothly = function(card) {
     if (card) {
         card.style.transition = "transform 0.4s ease, opacity 0.4s ease";
         card.style.transform = "scale(0.9)";
         card.style.opacity = "0";
+        
+        // Chờ animation chạy xong mới xóa hẳn element bằng JS
         setTimeout(() => {
             card.remove();
+            
+            // Cập nhật lại số lượng xe đang hiển thị trên dấu chấm đỏ Notification
             const count = document.querySelectorAll(".broadcast-card-item").length;
             const badge = document.getElementById("jobBadge");
             if (badge) badge.innerText = count;
+            
+            // Nếu không còn đơn nào -> Hiện thông báo "Chưa có cuốc xe"
             if (count === 0) {
                 if (badge) badge.style.display = "none";
-                document.getElementById("emptyState").style.display = "block";
+                const emptyState = document.getElementById("emptyState");
+                if(emptyState) emptyState.style.display = "block";
             }
         }, 400);
     }
