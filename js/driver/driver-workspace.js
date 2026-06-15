@@ -96,7 +96,7 @@ async function fetchDriverProfile() {
             const accRating = document.getElementById('accDriverRating');
             const accVehicle = document.getElementById('accDriverVehicle');
 
-            // Đổ dữ liệu vào HTML (Sử dụng toán tử || để gán giá trị mặc định nếu data bị null)
+            // Đổ dữ liệu vào HTML
             if(accName) accName.innerText = data.fullName || localStorage.getItem('fullName');
             if(accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName || 'Driver')}&background=1a1c1a&color=fff`;
             
@@ -107,21 +107,22 @@ async function fetchDriverProfile() {
             if(accVehicle) {
                 accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> ${data.vehicleName || 'Đang cập nhật'} (${data.plateNumber || '...'})`;
             }
-        }
-    } catch (error) {
-        console.error("Lỗi lấy Profile Tài xế:", error);
-    }
 
-    // ĐỒNG BỘ TRẠNG THÁI ĐIỀU KHOẢN TỪ DATABASE
-            if (data.termsAcceptedAt) { // Nếu Database báo là đã có thời gian xác nhận
+            // 👉 ĐẶT VÀO ĐÚNG VỊ TRÍ NÀY (BÊN TRONG KHỐI IF CHỨA BIẾN DATA)
+            // ĐỒNG BỘ TRẠNG THÁI ĐIỀU KHOẢN TỪ DATABASE
+            if (data.termsAcceptedAt) { 
                 localStorage.setItem('isTermsAccepted', 'true');
                 const termsWarningToast = document.getElementById('termsWarningToast');
                 if (termsWarningToast) termsWarningToast.style.display = 'none';
             } else {
                 localStorage.setItem('isTermsAccepted', 'false');
                 const termsWarningToast = document.getElementById('termsWarningToast');
-                if (termsWarningToast) termsWarningToast.style.display = 'block'; // Bật cảnh báo đỏ lên
+                if (termsWarningToast) termsWarningToast.style.display = 'block'; 
             }
+        }
+    } catch (error) {
+        console.error("Lỗi lấy Profile Tài xế:", error);
+    }
 }
 
 /**
