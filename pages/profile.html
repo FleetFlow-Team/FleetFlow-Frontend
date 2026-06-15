@@ -467,15 +467,26 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
-    const userRole = localStorage.getItem('userRole') || '';
-    if (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ') {
-        const driverLicenseSection = document.getElementById('driverLicenseSection');
-        if (driverLicenseSection) driverLicenseSection.classList.remove('d-none');
+        const userRole = localStorage.getItem('userRole') || '';
+        const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+        
+        // 🚀 HIỆN NGAY CẢNH BÁO NẾU LOCALSTORAGE ĐÃ LƯU TRẠNG THÁI (Không cần đợi API)
+        if (isDriver) {
+            const isTermsAccepted = localStorage.getItem('isTermsAccepted');
+            if (isTermsAccepted === 'false') {
+                const termsToast = document.getElementById('termsWarningToast');
+                if (termsToast) {
+                    termsToast.style.display = 'block';
+                    termsToast.classList.add('show'); // Ép Bootstrap hiện opacity: 1
+                    termsToast.style.opacity = '1';
+                }
+            }
+        }
 
-        const mobileDriverWorkspaceBtn = document.getElementById('mobileDriverWorkspaceBtn');
-        if (mobileDriverWorkspaceBtn) mobileDriverWorkspaceBtn.classList.remove('d-none');
-    }
-});
+        // Tải dữ liệu thật từ Backend (Lấy SĐT, Tên và Trạng thái eKYC)
+        loadProfileDataFromAPI(isDriver);
+    });
+
 
 const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
     let currentApprovalStatus = 'PENDING'; // Biến cờ theo dõi trạng thái eKYC
@@ -501,24 +512,22 @@ const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
                 const result = await response.json();
                 
                 if (result.success && result.data) {
-                    const data = result.data;
+                    const data = result.data; 
                     
-                    // Điền dữ liệu vào form (Ghi đè lên dữ liệu ảo ban đầu)
                     const inputName = document.getElementById('inputFullName');
                     const inputPhone = document.getElementById('inputPhone');
                     
                     if (inputName) {
                         inputName.value = data.fullName || '';
-                        inputName.removeAttribute('readonly'); // Mở khóa cho phép sửa tên
+                        inputName.removeAttribute('readonly'); 
                     }
                     if (inputPhone) {
                         inputPhone.value = data.phoneNumber || '';
-                        inputPhone.removeAttribute('readonly'); // Mở khóa cho phép sửa SĐT
+                        inputPhone.removeAttribute('readonly'); 
                     }
                     
                     currentApprovalStatus = data.approvalStatus || 'PENDING';
                     
-                    // Nếu bị Ban Quản Trị từ chối -> Chèn cảnh báo đỏ
                     if (currentApprovalStatus === 'REJECTED') {
                         const formEkyc = document.getElementById('ekycProfileForm');
                         if (formEkyc && !document.getElementById('rejectWarning')) {
@@ -535,15 +544,31 @@ const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
                             formEkyc.insertAdjacentHTML('afterbegin', warningHtml);
                         }
                     }
+
+                    // 🚀 LOGIC ĐÃ ĐƯỢC FIX LỖI "NULL" VÀ BOOTSTRAP CLASS
+                    if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") { 
+                        localStorage.setItem('isTermsAccepted', 'true');
+                        const termsToast = document.getElementById('termsWarningToast');
+                        if (termsToast) {
+                            termsToast.style.display = 'none';
+                            termsToast.classList.remove('show');
+                        }
+                    } else {
+                        localStorage.setItem('isTermsAccepted', 'false');
+                        const termsToast = document.getElementById('termsWarningToast');
+                        if (termsToast) {
+                            termsToast.style.display = 'block'; 
+                            termsToast.classList.add('show'); // Ép Bootstrap hiện opacity: 1
+                            termsToast.style.opacity = '1';
+                        }
+                    }
                 }
             } catch (error) {
                 console.error("Lỗi tải thông tin:", error);
             }
         }
-        
-        
-      }
-
+    }
+    
     /**
      * HÀM 2: XỬ LÝ SỰ KIỆN SUBMIT FORM THÔNG TIN CÁ NHÂN
      */
