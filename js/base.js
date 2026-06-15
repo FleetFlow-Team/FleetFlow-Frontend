@@ -250,6 +250,9 @@ async function handleLogin(event) {
                 case 'CUSTOMER':
                     window.location.href = '../pages/findCar.html';
                     break;
+                case 'DISPATCHER':
+                    window.location.href = '../pages/dispatcher/dispatcher-workspace.html';
+                    break;
                 default:
                     alert('Lỗi: Vai trò của bạn không hợp lệ hoặc chưa được phân quyền trong hệ thống.');
                     localStorage.clear();
