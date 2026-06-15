@@ -118,6 +118,7 @@ function initUserProfile() {
     const currentPath = window.location.pathname.toLowerCase();
     let profileUrl = 'pages/profile.html';
     let indexUrl = 'index.html';
+    let driverWorkspaceUrl = 'pages/driver/driver-workspace.html'; // Thêm biến đường dẫn cho Driver
 
     if (currentPath.includes('/pages/customer/') || 
         currentPath.includes('/pages/driver/') || 
@@ -125,12 +126,50 @@ function initUserProfile() {
         currentPath.includes('/pages/dispatcher/')) {
         profileUrl = '../profile.html';
         indexUrl = '../../index.html';
+        driverWorkspaceUrl = '../driver/driver-workspace.html';
     } else if (currentPath.includes('/pages/')) {
         profileUrl = 'profile.html';
         indexUrl = '../index.html';
+        driverWorkspaceUrl = 'driver/driver-workspace.html';
     }
 
-    // Khối giao diện Avatar hiển thị thay thế nút Đăng nhập
+    // ======================================================================
+    // LOGIC: ẨN MENU KHÔNG CẦN THIẾT NẾU LÀ TÀI XẾ (DRIVER)
+    // ======================================================================
+    const upperRole = userRole.toUpperCase();
+    let workspaceLinkHtml = ''; // Biến chứa HTML của nút Chế độ Tài xế
+
+    if (upperRole === 'DRIVER' || upperRole === 'TÀI XẾ') {
+        
+        // Tạo nút bấm vào Workspace (Chỉ khi là tài xế)
+        workspaceLinkHtml = `
+            <a href="${driverWorkspaceUrl}" class="dropdown-item-custom text-success">
+                <i class="fa-solid fa-car-side"></i> Chế độ Tài xế
+            </a>
+        `;
+
+        // Lọc trên PC và Bottom Nav Mobile (Đoạn code cũ của bạn giữ nguyên)
+        const navMenus = document.querySelectorAll('.navbar-center-links, .desktop-menu, .mobile-bottom-nav');
+        navMenus.forEach(menu => {
+            menu.querySelectorAll('a').forEach(link => {
+                if (!link.innerText.toLowerCase().includes('chính sách')) {
+                    link.style.setProperty('display', 'none', 'important');
+                }
+            });
+        });
+
+        // Lọc trong Dropdown Menu Mobile
+        const dropdownItems = document.querySelectorAll('.mobile-glass-dropdown .mobile-nav-item, .mobile-glass-dropdown a');
+        dropdownItems.forEach(item => {
+            const text = item.innerText.toLowerCase();
+            if (text.includes('trở thành tài xế') || text.includes('trang chủ') || text.includes('đặt xe')) {
+                item.style.setProperty('display', 'none', 'important');
+            }
+        });
+    }
+    // ======================================================================
+
+    // Khối giao diện Avatar hiển thị thay thế nút Đăng nhập (Đã chèn thêm workspaceLinkHtml)
     const getProfileTemplate = () => `
         <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2; padding-right: 10px;">
             <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);">${fullName}</span>
@@ -142,6 +181,7 @@ function initUserProfile() {
             <a href="${profileUrl}" class="dropdown-item-custom">
                 <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
             </a>
+            ${workspaceLinkHtml} 
             <hr class="divider-custom">
             <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
@@ -238,6 +278,10 @@ async function handleLogin(event) {
             document.getElementById('loginModal').classList.remove('active');
             document.body.style.overflow = '';
 
+            // THÊM DÒNG NÀY ĐỂ LƯU ID GỌI API EKYC:
+                // (Lưu ý: Thay data.user.id thành data.user.accountId nếu Backend của bạn đặt tên biến khác)
+            localStorage.setItem('accountId', data.user.id || data.user.accountId);
+
             // ĐIỀU PHỐI TRANG... (Phần switch case giữ nguyên)
             const userRole = data.user.roleName.toUpperCase();
             switch (userRole) {
@@ -271,3 +315,13 @@ async function handleLogin(event) {
         alert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra Server NetBeans (Tomcat/Glassfish) đã được bật chưa.');
     }
 }
+// Warning cho tài xế
+document.addEventListener("DOMContentLoaded", function () {
+    // Kiểm tra biến cờ eKYC trong LocalStorage
+    const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
+    
+    if (!isEkycComplete) {
+        const warningToast = document.getElementById('ekycWarningToast');
+        if (warningToast) warningToast.style.display = 'block';
+    }
+});

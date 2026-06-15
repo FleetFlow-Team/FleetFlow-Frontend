@@ -100,6 +100,10 @@
             <button class="mobile-nav-item text-start w-100 border-0" data-bs-toggle="pill" data-bs-target="#content-security" onclick="document.getElementById('mobileToggleBtn').click()">
               <i class="fa-solid fa-lock"></i> Mật khẩu
             </button>
+
+            <a href="driver/driver-workspace.html" class="mobile-nav-item text-start w-100 border-0 text-decoration-none d-none" id="mobileDriverWorkspaceBtn">
+              <i class="fa-solid fa-car-side text-success"></i> <span class="text-success">Chế độ Tài xế</span>
+            </a>
             
             <div class="divider-glass my-2"></div>
             
@@ -459,7 +463,90 @@ document.addEventListener("DOMContentLoaded", function() {
     if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
     if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const userRole = localStorage.getItem('userRole') || '';
+    if (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ') {
+        const driverLicenseSection = document.getElementById('driverLicenseSection');
+        if (driverLicenseSection) driverLicenseSection.classList.remove('d-none');
+    }
+});
+
+async function submitEkycProfile() {
+    const userRole = localStorage.getItem('userRole') || '';
+    const accountId = localStorage.getItem('accountId');
+    const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+
+    if (!accountId) {
+        alert("Lỗi: Không tìm thấy ID tài khoản. Vui lòng đăng xuất và đăng nhập lại!");
+        return;
+    }
+
+    const idFront = document.getElementById('idFront').files[0];
+    const idBack = document.getElementById('idBack').files[0];
+    const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
+
+    if (!idFront || !idBack) {
+        alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
+        return;
+    }
+    if (isDriver && !licenseFront) {
+        alert("Tài khoản của bạn là Đối tác Tài xế. Vui lòng tải lên thêm Bằng lái xe!");
+        return;
+    }
+
+    const btn = document.getElementById('btnSubmitEkyc');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
+    btn.disabled = true;
+
+    // Đóng gói file gửi xuống Backend
+    const formData = new FormData();
+    formData.append('identityCard', idFront); 
+    if (isDriver && licenseFront) {
+        formData.append('driverLicense', licenseFront); 
+    }
+
+    try {
+        // Gắn API thật xuống DriverController.java
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/documents/submit?accountID=${accountId}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert(data.message); // Báo thành công từ Server
+            localStorage.setItem('isEkycComplete', 'true');
+            
+            // Xóa cảnh báo nếu có
+            const warning = document.getElementById('ekycWarningToast');
+            if(warning) warning.style.display = 'none';
+        } else {
+            alert("Lỗi từ hệ thống: " + data.message);
+        }
+    } catch (error) {
+        console.error("Lỗi gửi eKYC:", error);
+        alert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại NetBeans/Server.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
     </script>
+
+    <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4" 
+         role="alert" style="z-index: 10000; background: rgba(255, 255, 255, 0.296); box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: none; max-width: 350px;">
+        <div class="d-flex p-3">
+            <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
+                <i class="fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1"></i> 
+                <span style="color: var(--text-color)">Tài khoản chưa xác thực. Vui lòng vào <a href="../profile.html" class="text-warning fw-bold">Hồ sơ</a> bổ sung CCCD và Bằng lái xe để nhận chuyến!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('ekycWarningToast').style.display='none'"></button>
+        </div>
+    </div>
   </body>
   <footer>
       <div class="container reveal-on-scroll">
