@@ -750,22 +750,26 @@ document.addEventListener("DOMContentLoaded", function() {
 
       if (isDriver && accountId) {
           try {
-              // Gọi API kiểm tra thời gian đồng ý điều khoản trực tiếp từ Database
               const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
               const result = await response.json();
 
               if (result.success && result.data) {
                   const data = result.data;
                   
-                  // Kiểm tra điều kiện nghiêm ngặt: có tồn tại mốc thời gian và không phải chuỗi rỗng/"null"
-                  if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") {
+                  // 🚀 FIX LỖI: Lấy giá trị cover cả 2 trường hợp key trả về từ Java
+                  const termsDate = data.termsAcceptedAt || data.TermsAcceptedAt || null;
+                  
+                  // Kiểm tra hợp lệ (Có tồn tại, không phải chuỗi "null", không rỗng)
+                  const isAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
+
+                  if (isAccepted) {
                       localStorage.setItem('isTermsAccepted', 'true');
-                      // Tài xế đã đồng ý điều khoản -> Ẩn hộp và không cho xuất hiện checkout nữa
+                      // Đã đồng ý -> Ẩn hộp checkout vĩnh viễn
                       const termsBox = document.getElementById('driverTermsAcceptanceBox');
                       if (termsBox) termsBox.classList.add('d-none');
                   } else {
                       localStorage.setItem('isTermsAccepted', 'false');
-                      // Chưa đồng ý -> Hiển thị khung cấu trúc cho tài xế click chọn
+                      // Chưa đồng ý -> Bật hộp checkout
                       const termsBox = document.getElementById('driverTermsAcceptanceBox');
                       if (termsBox) termsBox.classList.remove('d-none');
                   }
@@ -775,7 +779,7 @@ document.addEventListener("DOMContentLoaded", function() {
           }
       }
   });
-
+  
   // Hàm gọi API POST để cập nhật trạng thái đồng ý điều khoản xuống DB
   async function acceptDriverTerms() {
       const accountId = localStorage.getItem('accountId');

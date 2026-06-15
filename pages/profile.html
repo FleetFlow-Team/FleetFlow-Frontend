@@ -185,6 +185,7 @@
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Số điện thoại</label>
                   <input
+                    id="inputPhone"
                     type="tel"
                     class="form-control custom-input text-muted"
                     value="0987654321"
@@ -350,224 +351,194 @@
         });
       });
 
-document.addEventListener("DOMContentLoaded", function() {
-    const fullName = localStorage.getItem('fullName');
-    const email = localStorage.getItem('email');
-    const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+      document.addEventListener("DOMContentLoaded", function() {
+          const fullName = localStorage.getItem('fullName');
+          const email = localStorage.getItem('email');
+          const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
-    if (fullName) {
-        document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff&size=256`;
-        document.getElementById('profileDisplayName').innerText = fullName;
-        document.getElementById('inputFullName').value = fullName;
-    }
-    
-    if (email) document.getElementById('inputEmail').value = email;
-    if (userRole) document.getElementById('profileDisplayRole').innerText = userRole;
-});
+          if (fullName) {
+              document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff&size=256`;
+              document.getElementById('profileDisplayName').innerText = fullName;
+              document.getElementById('inputFullName').value = fullName;
+          }
+          
+          if (email) document.getElementById('inputEmail').value = email;
+          if (userRole) document.getElementById('profileDisplayRole').innerText = userRole;
+      });
 
 // LOGIC XỬ LÝ ĐỔI MẬT KHẨU TỪ TAB SECURITY
+      document.addEventListener("DOMContentLoaded", function() {
+          const cpForm = document.getElementById('changePasswordForm');
+          const cpBtn = document.getElementById('btnSubmitChangePass');
+
+          if (cpForm) {
+              cpForm.addEventListener('submit', async function(e) {
+                  e.preventDefault(); // Ngăn trình duyệt reload lại trang
+                  
+                  const oldPassword = document.getElementById('oldPassword').value;
+                  const newPassword = document.getElementById('newPassword').value;
+                  const confirmPassword = document.getElementById('confirmPassword').value;
+                  
+                  // Lấy email ngầm từ LocalStorage (đã được lưu lúc đăng nhập)
+                  const email = localStorage.getItem('email');
+
+                  if (!email) {
+                      alert("Phiên đăng nhập đã lỗi. Vui lòng đăng nhập lại!");
+                      localStorage.clear();
+                      window.location.href = '../index.html';
+                      return;
+                  }
+
+                  // Kiểm tra mật khẩu xác nhận
+                  if (newPassword !== confirmPassword) {
+                      alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+                      return;
+                  }
+
+                  // Hiệu ứng Loading cho nút bấm
+                  const originalText = cpBtn.innerHTML;
+                  cpBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+                  cpBtn.disabled = true;
+
+                  // Đóng gói data gửi xuống Java Servlet
+                  const formData = new URLSearchParams();
+                  formData.append('email', email);
+                  formData.append('oldPassword', oldPassword);
+                  formData.append('newPassword', newPassword);
+                  formData.append('confirmPassword', confirmPassword);
+
+                  try {
+                      // Gọi API tới ChangePasswordController
+                      const response = await fetch('http://localhost:8080/FleetFlow/api/v1/auth/change-password', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                          body: formData.toString()
+                      });
+
+                      const data = await response.json();
+
+                      if (data.success) {
+                          alert("Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.");
+                          
+                          // Reset form, xóa token và đẩy về trang chủ để đăng nhập lại
+                          cpForm.reset();
+                          localStorage.clear();
+                          window.location.href = '../index.html'; 
+                      } else {
+                          alert("Thất bại: " + data.message);
+                      }
+                  } catch (error) {
+                      console.error("Lỗi gọi API Đổi mật khẩu:", error);
+                      alert("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.");
+                  } finally {
+                      // Khôi phục nút bấm nếu có lỗi
+                      cpBtn.innerHTML = originalText;
+                      cpBtn.disabled = false;
+                  }
+              });
+          }
+      });
+    </script>
+
+<script>const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
+let currentApprovalStatus = 'PENDING'; 
+
 document.addEventListener("DOMContentLoaded", function() {
-    const cpForm = document.getElementById('changePasswordForm');
-    const cpBtn = document.getElementById('btnSubmitChangePass');
+    const userRole = localStorage.getItem('userRole') || '';
+    const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+    
+    // Đồng bộ hiển thị thông tin cơ bản từ LocalStorage trước
+    initLocalProfileUI();
 
-    if (cpForm) {
-        cpForm.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Ngăn trình duyệt reload lại trang
-            
-            const oldPassword = document.getElementById('oldPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            // Lấy email ngầm từ LocalStorage (đã được lưu lúc đăng nhập)
-            const email = localStorage.getItem('email');
-
-            if (!email) {
-                alert("Phiên đăng nhập đã lỗi. Vui lòng đăng nhập lại!");
-                localStorage.clear();
-                window.location.href = '../index.html';
-                return;
-            }
-
-            // Kiểm tra mật khẩu xác nhận
-            if (newPassword !== confirmPassword) {
-                alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
-                return;
-            }
-
-            // Hiệu ứng Loading cho nút bấm
-            const originalText = cpBtn.innerHTML;
-            cpBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
-            cpBtn.disabled = true;
-
-            // Đóng gói data gửi xuống Java Servlet
-            const formData = new URLSearchParams();
-            formData.append('email', email);
-            formData.append('oldPassword', oldPassword);
-            formData.append('newPassword', newPassword);
-            formData.append('confirmPassword', confirmPassword);
-
-            try {
-                // Gọi API tới ChangePasswordController
-                const response = await fetch('http://localhost:8080/FleetFlow/api/v1/auth/change-password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    alert("Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.");
-                    
-                    // Reset form, xóa token và đẩy về trang chủ để đăng nhập lại
-                    cpForm.reset();
-                    localStorage.clear();
-                    window.location.href = '../index.html'; 
-                } else {
-                    alert("Thất bại: " + data.message);
-                }
-            } catch (error) {
-                console.error("Lỗi gọi API Đổi mật khẩu:", error);
-                alert("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.");
-            } finally {
-                // Khôi phục nút bấm nếu có lỗi
-                cpBtn.innerHTML = originalText;
-                cpBtn.disabled = false;
-            }
-        });
-    }
+    // Tải dữ liệu thời gian thực từ API để kiểm soát cảnh báo
+    loadProfileDataFromAPI(isDriver);
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+function initLocalProfileUI() {
     const fullName = localStorage.getItem('fullName');
     const email = localStorage.getItem('email');
     const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
     if (fullName) {
         const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
-
-        // 1. Cập nhật Avatar nhỏ trên góc Navbar Mobile
         if(document.getElementById('mobileNavAvatar')) document.getElementById('mobileNavAvatar').src = avatarUrl;
-
-        // 2. Cập nhật Sidebar bên trái
         if(document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatarUrl;
         if(document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = fullName;
         if(document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
-
-        // 3. Cập nhật Mobile Dropdown Menu (Bạn đã gắn ID sẵn rồi)
         if(document.getElementById('profileAvatar')) document.getElementById('profileAvatar').src = avatarUrl;
         if(document.getElementById('profileDisplayName')) document.getElementById('profileDisplayName').innerText = fullName;
-        
-        // 4. Cập nhật Form
         if(document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
     }
-    
     if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
     if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
-});
+}
 
-document.addEventListener("DOMContentLoaded", function() {
-        const userRole = localStorage.getItem('userRole') || '';
-        const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+async function loadProfileDataFromAPI(isDriver) {
+    const accountId = localStorage.getItem('accountId');
+    if (!accountId || !isDriver) return;
+
+    try {
+        const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
+        const result = await response.json();
         
-        // 🚀 HIỆN NGAY CẢNH BÁO NẾU LOCALSTORAGE ĐÃ LƯU TRẠNG THÁI (Không cần đợi API)
-        if (isDriver) {
-            const isTermsAccepted = localStorage.getItem('isTermsAccepted');
-            if (isTermsAccepted === 'false') {
-                const termsToast = document.getElementById('termsWarningToast');
+        if (result.success && result.data) {
+            const data = result.data; 
+            
+            const inputName = document.getElementById('inputFullName');
+            const inputPhone = document.getElementById('inputPhone');
+            
+            if (inputName) {
+                inputName.value = data.fullName || '';
+                inputName.removeAttribute('readonly'); 
+            }
+            if (inputPhone) {
+                inputPhone.value = data.phoneNumber || '';
+                inputPhone.removeAttribute('readonly'); 
+            }
+            
+            currentApprovalStatus = data.approvalStatus || 'PENDING';
+            
+            // Xử lý thông báo hồ sơ bị từ chối
+            if (currentApprovalStatus === 'REJECTED') {
+                const formEkyc = document.getElementById('ekycProfileForm');
+                if (formEkyc && !document.getElementById('rejectWarning')) {
+                    const warningHtml = `
+                    <div id="rejectWarning" class="col-12 mb-3">
+                        <div class="alert alert-danger border-danger d-flex align-items-center gap-3">
+                            <i class="fa-solid fa-triangle-exclamation fs-3"></i>
+                            <div>
+                                <strong>Hồ sơ của bạn đã bị Ban Quản Trị từ chối!</strong><br>
+                                Vui lòng tải lên lại hình ảnh CCCD và Bằng lái xe rõ nét hơn.
+                            </div>
+                        </div>
+                    </div>`;
+                    formEkyc.insertAdjacentHTML('afterbegin', warningHtml);
+                }
+            }
+
+            // 🚀 BẬT TẮT TERMS WARNING TOAST DỰA VÀO KẾT QUẢ ĐỐI CHIẾU THỰC TẾ
+            const termsToast = document.getElementById('termsWarningToast');
+            if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") { 
+                localStorage.setItem('isTermsAccepted', 'true');
                 if (termsToast) {
-                    termsToast.style.display = 'block';
-                    termsToast.classList.add('show'); // Ép Bootstrap hiện opacity: 1
+                    termsToast.style.display = 'none';
+                    termsToast.classList.remove('show');
+                }
+            } else {
+                localStorage.setItem('isTermsAccepted', 'false');
+                if (termsToast) {
+                    termsToast.style.display = 'block'; 
+                    termsToast.classList.add('show'); 
                     termsToast.style.opacity = '1';
                 }
             }
         }
-
-        // Tải dữ liệu thật từ Backend (Lấy SĐT, Tên và Trạng thái eKYC)
-        loadProfileDataFromAPI(isDriver);
-    });
-
-
-const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
-    let currentApprovalStatus = 'PENDING'; // Biến cờ theo dõi trạng thái eKYC
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const userRole = localStorage.getItem('userRole') || '';
-        const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
-        
-        // Tải dữ liệu thật từ Backend (Lấy SĐT, Tên và Trạng thái eKYC)
-        loadProfileDataFromAPI(isDriver);
-    });
-
-    /**
-     * HÀM 1: GỌI API ĐỂ TẢI FORM VÀ KIỂM TRA TRẠNG THÁI TỪ CHỐI
-     */
-    async function loadProfileDataFromAPI(isDriver) {
-        const accountId = localStorage.getItem('accountId');
-        if (!accountId) return;
-
-        if (isDriver) {
-            try {
-                const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
-                const result = await response.json();
-                
-                if (result.success && result.data) {
-                    const data = result.data; 
-                    
-                    const inputName = document.getElementById('inputFullName');
-                    const inputPhone = document.getElementById('inputPhone');
-                    
-                    if (inputName) {
-                        inputName.value = data.fullName || '';
-                        inputName.removeAttribute('readonly'); 
-                    }
-                    if (inputPhone) {
-                        inputPhone.value = data.phoneNumber || '';
-                        inputPhone.removeAttribute('readonly'); 
-                    }
-                    
-                    currentApprovalStatus = data.approvalStatus || 'PENDING';
-                    
-                    if (currentApprovalStatus === 'REJECTED') {
-                        const formEkyc = document.getElementById('ekycProfileForm');
-                        if (formEkyc && !document.getElementById('rejectWarning')) {
-                            const warningHtml = `
-                            <div id="rejectWarning" class="col-12 mb-3">
-                                <div class="alert alert-danger border-danger d-flex align-items-center gap-3">
-                                    <i class="fa-solid fa-triangle-exclamation fs-3"></i>
-                                    <div>
-                                        <strong>Hồ sơ của bạn đã bị Ban Quản Trị từ chối!</strong><br>
-                                        Vui lòng tải lên lại hình ảnh CCCD và Bằng lái xe rõ nét hơn.
-                                    </div>
-                                </div>
-                            </div>`;
-                            formEkyc.insertAdjacentHTML('afterbegin', warningHtml);
-                        }
-                    }
-
-                    // 🚀 LOGIC ĐÃ ĐƯỢC FIX LỖI "NULL" VÀ BOOTSTRAP CLASS
-                    if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") { 
-                        localStorage.setItem('isTermsAccepted', 'true');
-                        const termsToast = document.getElementById('termsWarningToast');
-                        if (termsToast) {
-                            termsToast.style.display = 'none';
-                            termsToast.classList.remove('show');
-                        }
-                    } else {
-                        localStorage.setItem('isTermsAccepted', 'false');
-                        const termsToast = document.getElementById('termsWarningToast');
-                        if (termsToast) {
-                            termsToast.style.display = 'block'; 
-                            termsToast.classList.add('show'); // Ép Bootstrap hiện opacity: 1
-                            termsToast.style.opacity = '1';
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error("Lỗi tải thông tin:", error);
-            }
-        }
+    } catch (error) {
+        console.error("Lỗi đồng bộ dữ liệu tài xế từ API:", error);
     }
+}
+
+// Giữ lại hàm updateProfile(event) và submitEkycProfile() của bạn ở phía dưới...
     
     /**
      * HÀM 2: XỬ LÝ SỰ KIỆN SUBMIT FORM THÔNG TIN CÁ NHÂN

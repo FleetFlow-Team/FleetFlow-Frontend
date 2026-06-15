@@ -38,6 +38,12 @@ document.addEventListener("DOMContentLoaded", () => {
             termsToast.style.display = 'block';
             termsToast.classList.add('show');
             termsToast.style.opacity = '1';
+            
+            // Kích hoạt Bootstrap
+            try {
+                const bsToast = new bootstrap.Toast(termsToast, { autohide: false });
+                bsToast.show();
+            } catch (e) {}
         }
     }
 
@@ -119,20 +125,30 @@ async function fetchDriverProfile() {
 
             // 👉 ĐẶT VÀO ĐÚNG VỊ TRÍ NÀY (BÊN TRONG KHỐI IF CHỨA BIẾN DATA)
             // 🚀 ĐỒNG BỘ LẠI TRẠNG THÁI SAU KHI GỌI API THÀNH CÔNG
-            if (data.termsAcceptedAt && data.termsAcceptedAt !== "null" && data.termsAcceptedAt !== "") { 
+            // 👉 ĐẶT VÀO ĐÚNG VỊ TRÍ NÀY (BÊN TRONG KHỐI IF CHỨA BIẾN DATA)
+            // 🚀 ĐỒNG BỘ LẠI TRẠNG THÁI SAU KHI GỌI API THÀNH CÔNG
+            const termsDate = data.termsAcceptedAt || data.TermsAcceptedAt || null;
+            const isAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
+
+            const termsToastEl = document.getElementById('termsWarningToast');
+
+            if (isAccepted) { 
                 localStorage.setItem('isTermsAccepted', 'true');
-                const termsToast = document.getElementById('termsWarningToast');
-                if (termsToast) {
-                    termsToast.style.display = 'none';
-                    termsToast.classList.remove('show');
+                if (termsToastEl) {
+                    termsToastEl.style.display = 'none';
+                    termsToastEl.classList.remove('show');
                 }
             } else {
                 localStorage.setItem('isTermsAccepted', 'false');
-                const termsToast = document.getElementById('termsWarningToast');
-                if (termsToast) {
-                    termsToast.style.display = 'block'; 
-                    termsToast.classList.add('show');
-                    termsToast.style.opacity = '1';
+                if (termsToastEl) {
+                    termsToastEl.style.display = 'block'; 
+                    termsToastEl.classList.add('show');
+                    termsToastEl.style.opacity = '1';
+
+                    try {
+                        const bsToast = new bootstrap.Toast(termsToastEl, { autohide: false });
+                        bsToast.show();
+                    } catch (e) {}
                 }
             }
         }
