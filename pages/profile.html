@@ -171,7 +171,7 @@
                 <i class="fa-regular fa-address-card me-2 text-success"></i>
                 Thông tin cá nhân
               </h3>
-              <form class="row g-4 mt-2">
+              <form id="profileForm" class="row g-4 mt-2" onsubmit="updateProfile(event)">
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Họ và tên</label>
                   <input
@@ -475,69 +475,193 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-async function submitEkycProfile() {
-    const userRole = localStorage.getItem('userRole') || '';
-    const accountId = localStorage.getItem('accountId');
-    const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
+    let currentApprovalStatus = 'PENDING'; // Biến cờ theo dõi trạng thái eKYC
 
-    if (!accountId) {
-        alert("Lỗi: Không tìm thấy ID tài khoản. Vui lòng đăng xuất và đăng nhập lại!");
-        return;
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        const userRole = localStorage.getItem('userRole') || '';
+        const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+        
+        // Tải dữ liệu thật từ Backend (Lấy SĐT, Tên và Trạng thái eKYC)
+        loadProfileDataFromAPI(isDriver);
+    });
 
-    const idFront = document.getElementById('idFront').files[0];
-    const idBack = document.getElementById('idBack').files[0];
-    const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
+    /**
+     * HÀM 1: GỌI API ĐỂ TẢI FORM VÀ KIỂM TRA TRẠNG THÁI TỪ CHỐI
+     */
+    async function loadProfileDataFromAPI(isDriver) {
+        const accountId = localStorage.getItem('accountId');
+        if (!accountId) return;
 
-    if (!idFront || !idBack) {
-        alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
-        return;
-    }
-    if (isDriver && !licenseFront) {
-        alert("Tài khoản của bạn là Đối tác Tài xế. Vui lòng tải lên thêm Bằng lái xe!");
-        return;
-    }
-
-    const btn = document.getElementById('btnSubmitEkyc');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
-    btn.disabled = true;
-
-    // Đóng gói file gửi xuống Backend
-    const formData = new FormData();
-    formData.append('identityCard', idFront); 
-    if (isDriver && licenseFront) {
-        formData.append('driverLicense', licenseFront); 
-    }
-
-    try {
-        // Gắn API thật xuống DriverController.java
-        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/documents/submit?accountID=${accountId}`, {
-            method: 'POST',
-            body: formData
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            alert(data.message); // Báo thành công từ Server
-            localStorage.setItem('isEkycComplete', 'true');
-            
-            // Xóa cảnh báo nếu có
-            const warning = document.getElementById('ekycWarningToast');
-            if(warning) warning.style.display = 'none';
-        } else {
-            alert("Lỗi từ hệ thống: " + data.message);
+        if (isDriver) {
+            try {
+                const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const data = result.data;
+                    
+                    // Điền dữ liệu vào form (Ghi đè lên dữ liệu ảo ban đầu)
+                    const inputName = document.getElementById('inputFullName');
+                    const inputPhone = document.getElementById('inputPhone');
+                    
+                    if (inputName) {
+                        inputName.value = data.fullName || '';
+                        inputName.removeAttribute('readonly'); // Mở khóa cho phép sửa tên
+                    }
+                    if (inputPhone) {
+                        inputPhone.value = data.phoneNumber || '';
+                        inputPhone.removeAttribute('readonly'); // Mở khóa cho phép sửa SĐT
+                    }
+                    
+                    currentApprovalStatus = data.approvalStatus || 'PENDING';
+                    
+                    // Nếu bị Ban Quản Trị từ chối -> Chèn cảnh báo đỏ
+                    if (currentApprovalStatus === 'REJECTED') {
+                        const formEkyc = document.getElementById('ekycProfileForm');
+                        if (formEkyc && !document.getElementById('rejectWarning')) {
+                            const warningHtml = `
+                            <div id="rejectWarning" class="col-12 mb-3">
+                                <div class="alert alert-danger border-danger d-flex align-items-center gap-3">
+                                    <i class="fa-solid fa-triangle-exclamation fs-3"></i>
+                                    <div>
+                                        <strong>Hồ sơ của bạn đã bị Ban Quản Trị từ chối!</strong><br>
+                                        Vui lòng tải lên lại hình ảnh CCCD và Bằng lái xe rõ nét hơn.
+                                    </div>
+                                </div>
+                            </div>`;
+                            formEkyc.insertAdjacentHTML('afterbegin', warningHtml);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Lỗi tải thông tin:", error);
+            }
         }
-    } catch (error) {
-        console.error("Lỗi gửi eKYC:", error);
-        alert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại NetBeans/Server.");
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
     }
-}
 
+    /**
+     * HÀM 2: XỬ LÝ SỰ KIỆN SUBMIT FORM THÔNG TIN CÁ NHÂN
+     */
+    async function updateProfile(event) {
+        event.preventDefault(); // Chặn tải lại trang
+        const accountId = localStorage.getItem('accountId');
+        if (!accountId) {
+            alert("Lỗi: Không tìm thấy ID tài khoản. Vui lòng đăng nhập lại!");
+            return;
+        }
+
+        const inputName = document.getElementById('inputFullName');
+        const inputPhone = document.getElementById('inputPhone');
+        
+        const fullName = inputName ? inputName.value.trim() : '';
+        const phoneNumber = inputPhone ? inputPhone.value.trim() : '';
+
+        // Hiệu ứng Loading cho nút submit
+        const btn = event.submitter || document.activeElement; 
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang lưu...';
+        btn.disabled = true;
+
+        // Đóng gói dữ liệu gửi xuống Backend
+        const params = new URLSearchParams();
+        params.append('fullName', fullName);
+        params.append('phoneNumber', phoneNumber);
+
+        try {
+            const response = await fetch(`${DRIVER_API_BASE}/profile/update?accountID=${accountId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params.toString()
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Cập nhật thông tin cá nhân thành công!");
+                
+                // Cập nhật LocalStorage và đồng bộ UI ngay lập tức
+                localStorage.setItem('fullName', fullName);
+                document.querySelectorAll('#profileDisplayName, .profile-name, #sidebarName, .user-info-block .profile-name').forEach(el => el.innerText = fullName);
+                
+                const newAvatar = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+                document.querySelectorAll('#profileAvatar, #mobileNavAvatar, .user-profile-btn img, #accDriverAvatar, #sidebarAvatar').forEach(img => img.src = newAvatar);
+            } else {
+                alert("Lỗi hệ thống: " + result.message);
+            }
+        } catch (error) {
+            console.error("Lỗi cập nhật Profile:", error);
+            alert("Không thể kết nối đến máy chủ.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+    /**
+     * HÀM 3: XỬ LÝ NỘP/NỘP LẠI HỒ SƠ eKYC (Bẻ lái API tự động)
+     */
+    async function submitEkycProfile() {
+        const userRole = localStorage.getItem('userRole') || '';
+        const accountId = localStorage.getItem('accountId');
+        const isDriver = userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ';
+
+        if (!accountId) {
+            alert("Lỗi: Không tìm thấy ID tài khoản. Vui lòng đăng nhập lại!");
+            return;
+        }
+
+        const idFront = document.getElementById('idFront').files[0];
+        const idBack = document.getElementById('idBack').files[0];
+        const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
+
+        if (!idFront || !idBack) {
+            alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
+            return;
+        }
+        if (isDriver && !licenseFront) {
+            alert("Tài khoản của bạn là Đối tác Tài xế. Vui lòng tải lên thêm Bằng lái xe!");
+            return;
+        }
+
+        const btn = document.getElementById('btnSubmitEkyc');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('identityCard', idFront); 
+        if (isDriver && licenseFront) {
+            formData.append('driverLicense', licenseFront); 
+        }
+
+        // TỰ ĐỘNG BẺ LÁI ENDPOINT NẾU BỊ TỪ CHỐI TRƯỚC ĐÓ
+        const endpoint = (currentApprovalStatus === 'REJECTED') ? 'documents/reupload' : 'documents/submit';
+
+        try {
+            const response = await fetch(`${DRIVER_API_BASE}/${endpoint}?accountID=${accountId}`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(data.message); 
+                localStorage.setItem('isEkycComplete', 'true');
+                currentApprovalStatus = 'PENDING';
+                window.location.reload(); 
+            } else {
+                alert("Lỗi từ hệ thống: " + data.message);
+            }
+        } catch (error) {
+            console.error("Lỗi gửi eKYC:", error);
+            alert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại NetBeans/Server.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
     </script>
 
     <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4" 
