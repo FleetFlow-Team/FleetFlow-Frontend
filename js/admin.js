@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     // 🚀 BẬT CHỐT CHẶN VÀ ĐỒNG BỘ NAVBAR ĐẦU TIÊN
     if (!initAdminSession()) return; 
 
+    fetchAndRenderEkycQueue();
+    
     // Bắt sự kiện cho nút Đăng xuất
     const logoutBtn = document.querySelector('.logout-item');
     if (logoutBtn) {
@@ -403,3 +405,118 @@ function handleAdminLogout(e) {
         window.location.replace('../../index.html');
     }
 }
+
+// Xử lí luồng duyệt Driver
+// =========================================================================
+// API TÍCH HỢP: QUẢN LÝ TÀI XẾ (KIỂM DUYỆT HỒ SƠ EKYC)
+// =========================================================================
+const ADMIN_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/admin/drivers';
+let currentPendingDrivers = []; // Biến toàn cục lưu trữ danh sách tài xế chờ duyệt
+
+// TASK 1: API GET PENDING DRIVERS & DATA MAPPING
+window.fetchAndRenderEkycQueue = async function () {
+    const queueList = document.getElementById("ekycQueueList");
+    if (!queueList) return;
+    
+    // Hiển thị trạng thái Loading
+    queueList.innerHTML = `
+        <tr>
+            <td colspan="4" class="text-center p-5">
+                <i class="fa-solid fa-circle-notch fa-spin fs-2 text-info"></i>
+                <p class="mt-2 text-white-50 small fw-bold">Đang tải dữ liệu hồ sơ...</p>
+            </td>
+        </tr>`;
+
+    try {
+        const response = await fetch(`${ADMIN_API_BASE}/pending`, { 
+            method: 'GET',
+            credentials: 'include' // Bắt buộc để gửi Session Cookie của Admin lên Backend
+        });
+        
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            currentPendingDrivers = result.data;
+            
+            // Cập nhật số lượng hiển thị trên Badge của Sidebar
+            const badge = document.querySelector('a[href="#tab-drivers"] .badge');
+            if (badge) badge.innerText = currentPendingDrivers.length;
+
+            if (currentPendingDrivers.length === 0) {
+                queueList.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="text-center py-5">
+                            <i class="fa-solid fa-check-double text-success mb-3" style="font-size: 3rem;"></i>
+                            <h5 class="text-white fw-bold">Tuyệt vời!</h5>
+                            <p class="text-white-50 small">Tất cả hồ sơ eKYC đã được xử lý xong.</p>
+                        </td>
+                    </tr>`;
+                return;
+            }
+
+            queueList.innerHTML = ""; // Xóa dòng Loading
+            
+            // Lặp dữ liệu và vẽ giao diện
+            currentPendingDrivers.forEach(driver => {
+                // Tách chuỗi thời gian (VD: "2026-04-18 08:51:00.0")
+                const dateStr = driver.createdAt || '';
+                const timeOnly = dateStr.includes(' ') ? dateStr.split(' ')[1].substring(0, 5) : '--:--';
+                const dateOnly = dateStr.includes(' ') ? dateStr.split(' ')[0] : 'Chưa cập nhật';
+                
+                // --- BẮT ĐẦU: LOGIC DATA MAPPING TÁCH ẢNH ---
+                let cccdUrl = '../../assets/img/default-doc.png';
+                let licenseUrl = '../../assets/img/default-doc.png';
+
+                if (driver.documents && driver.documents.length > 0) {
+                    driver.documents.forEach(doc => {
+                        if (doc.docType && doc.docType.toUpperCase() === 'NATIONALID') {
+                            cccdUrl = doc.fileUrl;
+                        }
+                        if (doc.docType && doc.docType.toUpperCase() === 'DRIVERLICENSE') {
+                            licenseUrl = doc.fileUrl;
+                        }
+                    });
+                }
+                
+                // Lưu ngược ảnh vào object để truyền cho Task 2 (Bật Modal)
+                driver.extractedCccd = cccdUrl;
+                driver.extractedLicense = licenseUrl;
+                // --- KẾT THÚC: DATA MAPPING ---
+
+                const rowHtml = `
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-success bg-opacity-25 text-success border border-success border-opacity-50 fw-bold fs-5 d-flex align-items-center justify-content-center rounded-circle" style="width:45px; height:45px;">
+                                    ${driver.fullName.charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-white fs-6">${driver.fullName}</div>
+                                    <div class="small text-white-50 mt-1"><i class="fa-solid fa-phone me-1"></i> ${driver.phoneNumber || 'Trống'}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="small fw-bold text-white">${timeOnly}</div>
+                            <div class="small text-white-50 mt-1">${dateOnly}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3 fw-bold glass-badge-hover" style="cursor:pointer;" onclick="openEkycModal(${driver.accountId})">
+                                <i class="fa-solid fa-fingerprint fa-beat-fade me-1"></i> Chờ Thẩm Định
+                            </span>
+                        </td>
+                        <td class="text-end">
+                            <button class="btn-glass-action border-info text-info me-2 fw-bold" onclick="openEkycModal(${driver.accountId})">Xem Hồ Sơ</button>
+                        </td>
+                    </tr>
+                `;
+                queueList.insertAdjacentHTML('beforeend', rowHtml);
+            });
+        } else {
+            queueList.innerHTML = `<tr><td colspan="4" class="text-danger fw-bold p-3 text-center">Lỗi tải dữ liệu: ${result.message || 'Phiên đăng nhập không hợp lệ'}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Fetch Error:", error);
+        queueList.innerHTML = `<tr><td colspan="4" class="text-danger fw-bold p-3 text-center">Lỗi kết nối máy chủ NetBeans.</td></tr>`;
+    }
+};

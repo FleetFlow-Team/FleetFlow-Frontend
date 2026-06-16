@@ -55,21 +55,15 @@
                 <div class="user-profile-dropdown">
                     <div class="user-profile-trigger d-flex align-items-center">
                         <div class="user-info-block text-end d-none d-sm-block me-3">
-                            <div class="fw-bold fs-6 lh-1 text-white profile-name">Nguyễn Quản trị</div>
-                            <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75rem;">Administrator</div>
+                            <div class="fw-bold fs-6 lh-1 text-white profile-name">Đang tải...</div>
+                            <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75rem;">...</div>
                         </div>
                         <div class="glass-avatar">
-                            <img src="https://ui-avatars.com/api/?name=Quan+Tri&background=00b14f&color=fff" alt="Avatar" />
+                            <img src="../../assets/img/default-avatar.png" alt="Avatar" />
                         </div>
                     </div>
                     
-                    <div class="dropdown-menu-modern shadow-lg">
-                        <div class="dropdown-header-custom px-4 py-3">
-                            <div class="fw-bold text-white fs-6">Nguyễn Quản trị</div>
-                            <div class="small text-white-50">admin@fleetflow.vn</div>
-                        </div>
-                        <hr class="dropdown-divider-custom">
-                        
+                    <div class="dropdown-menu-modern shadow-lg">                        
                         <a href="#profile" class="dropdown-item-custom">
                             <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
                         </a>
@@ -79,7 +73,7 @@
                         
                         <hr class="dropdown-divider-custom">
                         
-                        <a href="../../index.html" class="dropdown-item-custom text-danger fw-bold logout-item">
+                        <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
                             <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
                         </a>
                     </div>
@@ -347,57 +341,8 @@
                                     <th width="25%" class="text-end">Hành động</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <img src="https://ui-avatars.com/api/?name=Tran+Tinh&background=random" class="rounded-circle border border-2 border-white" width="45" height="45">
-                                            <div>
-                                                <div class="fw-bold text-white fs-6">Trần Mới Tinh</div>
-                                                <div class="small text-white-50 mt-1"><i class="fa-solid fa-phone me-1"></i> 0912 345 678</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small fw-bold text-white">10:30 AM</div>
-                                        <div class="small text-white-50 mt-1">Hôm nay, 06/06/2026</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3 fw-bold glass-badge-hover" onclick="openEkycModal()">
-                                            <i class="fa-solid fa-fingerprint fa-beat-fade me-1"></i> Chờ Thẩm Định (Click)
-                                        </span>
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn-glass-action me-2" onclick="openEkycModal()">Xem Hồ Sơ</button>
-                                        <button class="btn-glass-action bg-primary text-white border-primary" onclick="simulateSaveConfig(this)">Duyệt Nhanh</button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <img src="https://ui-avatars.com/api/?name=Nguyen+Quang&background=random" class="rounded-circle border border-2 border-white" width="45" height="45">
-                                            <div>
-                                                <div class="fw-bold text-white fs-6">Nguyễn Quang</div>
-                                                <div class="small text-white-50 mt-1"><i class="fa-solid fa-phone me-1"></i> 0988 111 222</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small fw-bold text-white">14:15 PM</div>
-                                        <div class="small text-white-50 mt-1">Hôm qua, 05/06/2026</div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-success bg-opacity-25 text-success border border-success p-2 px-3 fw-bold">
-                                            <i class="fa-solid fa-circle-check me-1"></i> Đã Kích Hoạt
-                                        </span>
-                                    </td>
-                                    <td class="text-end">
-                                        <button class="btn-glass-action text-white-50 border-secondary" disabled style="opacity: 0.5;">
-                                            <i class="fa-solid fa-check"></i> Đã Xử Lý
-                                        </button>
-                                    </td>
-                                </tr>
+                            <tbody id="ekycQueueList">
+                                
                             </tbody>
                         </table>
                     </div>
