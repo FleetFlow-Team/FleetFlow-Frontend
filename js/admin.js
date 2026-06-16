@@ -260,29 +260,31 @@ document.addEventListener("DOMContentLoaded", function () {
 // === 5. CÁC HÀM TƯƠNG TÁC TOÀN CỤC (GLOBAL SCOPE FUNCTIONS - BIND TO WINDOW) ===
 
 // 5.1 Xử lý xem tài liệu eKYC nâng cao (Zoom & Rotate Image Physics)
-let currentScale = 1.0;
-let currentRotation = 0;
-
-window.zoomImg = function (factor) {
-    const img = document.getElementById("cccdImg");
-    if (!img) return;
-    currentScale *= factor;
-    // Giới hạn zoom từ 0.5x đến 3x tránh vỡ layout
-    if (currentScale < 0.5) currentScale = 0.5;
-    if (currentScale > 3.0) currentScale = 3.0;
-    applyTransformations(img);
+// Biến lưu trạng thái Zoom/Rotate độc lập cho 4 ảnh
+let imageStates = {
+    'cccdFrontImg': { scale: 1, rotate: 0 },
+    'cccdBackImg': { scale: 1, rotate: 0 },
+    'licenseFrontImg': { scale: 1, rotate: 0 },
+    'licenseBackImg': { scale: 1, rotate: 0 }
 };
 
-window.rotateImg = function () {
-    const img = document.getElementById("cccdImg");
-    if (!img) return;
-    currentRotation = (currentRotation + 90) % 360;
-    applyTransformations(img);
+window.zoomImg = function (imgId, factor) {
+    const img = document.getElementById(imgId);
+    let state = imageStates[imgId];
+    if (img && state) {
+        state.scale = Math.max(0.5, Math.min(state.scale * factor, 3)); // Khống chế zoom từ 0.5x đến 3x
+        img.style.transform = `scale(${state.scale}) rotate(${state.rotate}deg)`;
+    }
 };
 
-function applyTransformations(element) {
-    element.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
-}
+window.rotateImg = function (imgId) {
+    const img = document.getElementById(imgId);
+    let state = imageStates[imgId];
+    if (img && state) {
+        state.rotate += 90;
+        img.style.transform = `scale(${state.scale}) rotate(${state.rotate}deg)`;
+    }
+};
 
 let currentViewingAccountId = null;
 
@@ -313,13 +315,26 @@ window.openEkycModal = function (accountId) {
     if (modalDate) modalDate.innerText = `Thời gian nộp: ${dateStr}`;
 
     // 4. Đổ dữ liệu Hình ảnh và Reset hiệu ứng hiển thị ảnh (Zoom/Rotate)
-    const cccdImgDOM = document.getElementById("cccdImg");
-    if (cccdImgDOM) {
-        cccdImgDOM.src = driver.extractedCccd || '../../assets/img/default-doc.png';
-        if (typeof currentScale !== 'undefined') currentScale = 1.0;
-        if (typeof currentRotation !== 'undefined') currentRotation = 0;
-        cccdImgDOM.style.transform = `scale(1) rotate(0deg)`;
-    }
+    const imgConfigs = [
+        { id: "cccdFrontImg", url: driver.extractedCccd },
+        { id: "cccdBackImg", url: driver.extractedCccd },
+        { id: "licenseFrontImg", url: driver.extractedLicense },
+        { id: "licenseBackImg", url: driver.extractedLicense }
+    ];
+
+    imgConfigs.forEach(config => {
+        const imgDOM = document.getElementById(config.id);
+        if (imgDOM) {
+            // Đổ ảnh, nếu BE chưa có ảnh thì dùng ảnh mặc định
+            imgDOM.src = config.url || '../../assets/img/default-doc.png';
+            
+            // Reset trạng thái zoom/xoay của ảnh này về mặc định
+            if (imageStates[config.id]) {
+                imageStates[config.id] = { scale: 1, rotate: 0 };
+            }
+            imgDOM.style.transform = `scale(1) rotate(0deg)`;
+        }
+    });
 
     // 5. Khôi phục (Reset) giao diện của form Từ chối về trạng thái gốc
     const rejectContainer = document.getElementById('rejectReasonContainer');
@@ -613,7 +628,7 @@ async function approveEkyc() {
 // =========================================================================
 
 // 1. Khi bấm nút "Từ chối" màu đỏ
-function rejectEkyc() {
+window.prepareReject = function() {
     // Ẩn 2 nút gốc và hiện Textarea
     document.getElementById('ekycActionButtons').classList.add('d-none');
     document.getElementById('rejectReasonContainer').classList.remove('d-none');
@@ -621,7 +636,7 @@ function rejectEkyc() {
 }
 
 // 2. Khi bấm "Hủy" nhập lý do
-function cancelReject() {
+window.cancelReject = function() {
     // Ẩn Textarea, hiện lại 2 nút gốc
     document.getElementById('rejectReasonContainer').classList.add('d-none');
     document.getElementById('rejectReasonInput').value = '';
@@ -643,7 +658,7 @@ function confirmRejectEkyc() {
 }
 
 // 4. Lõi gọi API Từ chối
-async function executeRejectApi(reason) {
+window.executeRejectApi = async function(reason) {
     const btn = document.querySelector('#rejectReasonContainer .btn-danger');
     const originalText = btn ? btn.innerHTML : 'Xác nhận Gửi';
     if (btn) {
