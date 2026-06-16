@@ -679,3 +679,8 @@ img.rounded-circle.border-white {
     border-color: rgba(255, 255, 255, 0.3);
     color: rgba(255, 255, 255, 0.7);
 }
+
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+    color: var(--color-3) !important;
+    background-color: var(--color-1) !important;
+}

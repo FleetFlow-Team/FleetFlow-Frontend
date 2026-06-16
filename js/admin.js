@@ -323,16 +323,30 @@ window.openEkycModal = function (accountId) {
     ];
 
     imgConfigs.forEach(config => {
-        const imgDOM = document.getElementById(config.id);
-        if (imgDOM) {
-            // Đổ ảnh, nếu BE chưa có ảnh thì dùng ảnh mặc định
-            imgDOM.src = config.url || '../../assets/img/default-doc.png';
-            
-            // Reset trạng thái zoom/xoay của ảnh này về mặc định
-            if (imageStates[config.id]) {
-                imageStates[config.id] = { scale: 1, rotate: 0 };
+        const imgDOM = document.getElementById(config.imgId);
+        const emptyDOM = document.getElementById(config.emptyId);
+        const ctrlDOM = document.getElementById(config.ctrlId);
+
+        // Kiểm tra xem URL có hợp lệ không (Không rỗng và không chứa chữ 'default-doc')
+        const isValidUrl = config.url && config.url.trim() !== '' && !config.url.includes('default-doc.png');
+
+        if (imgDOM && emptyDOM) {
+            if (isValidUrl) {
+                // CÓ ẢNH: Hiện thẻ img, ẩn khung empty, hiện nút điều khiển
+                imgDOM.src = config.url;
+                imgDOM.classList.remove('d-none');
+                emptyDOM.classList.add('d-none');
+                if (ctrlDOM) ctrlDOM.classList.remove('d-none');
+
+                // Reset trạng thái zoom/xoay
+                if (imageStates[config.imgId]) imageStates[config.imgId] = { scale: 1, rotate: 0 };
+                imgDOM.style.transform = `scale(1) rotate(0deg)`;
+            } else {
+                // KHÔNG CÓ ẢNH: Ẩn thẻ img, hiện khung empty, ẩn nút điều khiển
+                imgDOM.classList.add('d-none');
+                emptyDOM.classList.remove('d-none');
+                if (ctrlDOM) ctrlDOM.classList.add('d-none');
             }
-            imgDOM.style.transform = `scale(1) rotate(0deg)`;
         }
     });
 
