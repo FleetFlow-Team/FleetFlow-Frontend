@@ -227,7 +227,7 @@ function initUserProfile() {
     });
 }
 
-    // =========================================
+// =========================================
 // 4. API ĐĂNG NHẬP & ĐIỀU PHỐI (LIÊN KẾT BACKEND)
 // =========================================
 async function handleLogin(event) {
@@ -249,9 +249,7 @@ async function handleLogin(event) {
         // Gọi API
         const response = await fetch(apiUrl, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
 
@@ -259,39 +257,43 @@ async function handleLogin(event) {
 
         // Xử lý phản hồi
         if (data.success) {    
-            // Lưu Token
+            // 1. Lưu Token & Phân quyền
             if (data.accessToken || data.token) { 
-                const tokenToSave = data.accessToken || data.token; 
-                localStorage.setItem('accessToken', tokenToSave);
+                localStorage.setItem('accessToken', data.accessToken || data.token);
                 if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
-                
+            }
+            
+            // 2. LƯU THÔNG TIN ACCOUNT (TÀI KHOẢN)
+            if (data.user) {
                 localStorage.setItem('fullName', data.user.fullName);
                 localStorage.setItem('userRole', data.user.roleName);
-
-                // THÊM 2 DÒNG NÀY ĐỂ FIX LỖI API:
-                // Lưu ID (Kiểm tra xem backend trả về là id hay accountId)
+                localStorage.setItem('email', data.user.email || email);
+                
                 const accId = data.user.id || data.user.accountId; 
                 if (accId) localStorage.setItem('accountId', accId);
-                
-                // Lưu lại Email để dùng cho đổi mật khẩu hoặc API khác
-                const userEmail = data.user.email || document.getElementById('loginEmail').value;
-                localStorage.setItem('email', userEmail);
+            }
+
+            // 3. LƯU THÔNG TIN CUSTOMER (KHÁCH HÀNG / TÀI XẾ) ĐỂ ĐẶT XE
+            // Backend có thể trả về customerId nằm ở ngoài data.customerId, hoặc trong data.customer.id
+            let custId = data.customerId || (data.customer && data.customer.id) || (data.user && data.user.customerId);
+            
+            if (custId) {
+                localStorage.setItem('customerId', custId);
             }
 
             // Dọn dẹp UI
             document.getElementById('loginModal').classList.remove('active');
             document.body.style.overflow = '';
 
-            // THÊM DÒNG NÀY ĐỂ LƯU ID GỌI API EKYC:
-                // (Lưu ý: Thay data.user.id thành data.user.accountId nếu Backend của bạn đặt tên biến khác)
-            localStorage.setItem('accountId', data.user.id || data.user.accountId);
-
-            // ĐIỀU PHỐI TRANG... (Phần switch case giữ nguyên)
-            const userRole = data.user.roleName.toUpperCase();
+            // 4. ĐIỀU PHỐI TRANG
+            const userRole = (data.user.roleName || '').toUpperCase();
             switch (userRole) {
                 case 'ADMIN': window.location.href = '../pages/admin/admin-workspace.html'; break;
                 case 'DRIVER': window.location.href = '../pages/driver/driver-workspace.html'; break;
-                case 'CUSTOMER': window.location.href = '../pages/findCar.html'; break;
+                case 'CUSTOMER': 
+                case 'KHÁCH HÀNG': 
+                    window.location.href = '../pages/findCar.html'; 
+                    break;
                 case 'DISPATCHER': window.location.href = '../pages/dispatcher/dispatcher-workspace.html'; break;
                 default:
                     alert('Lỗi: Vai trò của bạn không hợp lệ hoặc chưa được phân quyền trong hệ thống.');
@@ -301,24 +303,21 @@ async function handleLogin(event) {
         } else {
             // NẾU ĐĂNG NHẬP SAI:
             alert('Lỗi đăng nhập: ' + data.message);
-            
-            // Xóa dữ liệu ô mật khẩu và focus lại để khách dễ nhập lại
             const pwdInput = document.getElementById('loginPassword');
             pwdInput.value = '';
             pwdInput.focus();
 
-            // Hiển thị nút "Quên tài khoản hoặc mật khẩu?"
             const errorHelper = document.getElementById('errorHelperText');
-            if (errorHelper) {
-                errorHelper.classList.remove('d-none');
-            }
+            if (errorHelper) errorHelper.classList.remove('d-none');
         }
 
     } catch (error) {
         console.error('Lỗi kết nối tới Backend:', error);
-        alert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra Server NetBeans (Tomcat/Glassfish) đã được bật chưa.');
+        alert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra Server NetBeans đã được bật chưa.');
     }
 }
+
+
 // Warning cho tài xế
 document.addEventListener("DOMContentLoaded", function () {
     // Kiểm tra biến cờ eKYC trong LocalStorage

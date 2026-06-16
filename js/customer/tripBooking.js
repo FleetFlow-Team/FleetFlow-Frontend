@@ -103,10 +103,13 @@ if (!currentVehicleId) {
     window.location.replace("../../pages/findCar.html");
 }
 
+
+
 let currentDistanceKm = 0;
 let currentEstimatedTotal = 0;
 let tripCoordinates = {}; // Lưu tọa độ Lat/Lng để tạo Booking
 let currentVoucherId = null; // Lưu ID voucher nếu áp dụng thành công
+
 
 
 // Khởi tạo bản đồ VietMap GL
@@ -527,19 +530,23 @@ function initBottomSheetUX() {
     window.addEventListener('mouseup', handleDragEnd);
 }
 
-
-
 // ==========================================
 // 3. BÁO GIÁ TỰ ĐỘNG (Check-price API)
 // ==========================================
-async function calculateRealPrice() {
-    if (currentDistanceKm < 20) return;
+window.calculateRealPrice = async function() {
+    // Không gọi API nếu chưa có xe hoặc khoảng cách chưa hợp lệ
+    if (!currentVehicleId || currentDistanceKm < 20) return;
 
     const timeInput = document.getElementById('inputDepartureTime');
-    // Backend yêu cầu format: YYYY-MM-DDTHH:mm:ss. Thêm ':00' nếu input chưa có giây
-    let departureTime = timeInput && timeInput.value ? timeInput.value + ':00' : getFutureTime(2);
+    let departureTimeStr = null;
+    
+    // Nối thêm ':00' (giây) để đồng bộ định dạng Timestamp
+    if (timeInput && timeInput.value) {
+        departureTimeStr = timeInput.value + ':00'; 
+    } else {
+        departureTimeStr = getFutureTime(2); 
+    }
 
-    // Payload chuẩn theo CustomerBookingController.java
     const payload = {
         vehicleId: currentVehicleId,
         bookingType: "DISTANCE",
@@ -547,97 +554,149 @@ async function calculateRealPrice() {
         distanceKm: currentDistanceKm,
         durationHours: 0,
         durationDays: 0,
-        departureTime: departureTime
+        departureTime: departureTimeStr
     };
 
+    const baseFareEl = document.getElementById('baseFareDisplay'); 
+    const totalFareEl = document.getElementById('totalFareDisplay'); 
+    const depositEl = document.getElementById('depositDisplay'); 
+    const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
+
     try {
-        const res = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
+        // UI Loading
+        if (baseFareEl) baseFareEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin text-secondary"></i>`;
+        if (totalFareEl) totalFareEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>`;
+        if (depositEl) depositEl.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i>`;
+
+        // Gọi API check-price
+        const response = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        const data = await res.json();
-        
+
+        // TÌM LỖI CHÍNH XÁC: Kiểm tra xem server có trả về JSON không
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            const rawText = await response.text(); // Đọc dạng text nếu bị Tomcat trả về trang HTML 500
+            throw new Error(`Server không trả về JSON. HTTP Status: ${response.status}. Lỗi trả về: ${rawText.substring(0, 100)}...`);
+        }
+
+        const data = await response.json();
+
+        // Xử lý khi HTTP Status code là 4xx, 5xx nhưng vẫn trả về JSON
+        if (!response.ok) {
+            throw new Error(data.error || `HTTP Lỗi: ${response.status}`);
+        }
+
         if (data.success) {
             currentEstimatedTotal = data.estimatedTotal;
-            currentVoucherId = null; // Xóa mã voucher cũ nếu khách đổi lộ trình
-            document.getElementById('voucherInput').value = ''; // Clear ô nhập
 
-            const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
-            
-            // Đổ dữ liệu bóc tách được vào Glass Panel
-            let baseFareHtml = fVND(data.baseFare);
-            if (data.weekendSurcharge > 0) {
-                baseFareHtml += ` <span class="text-warning small" style="font-size: 0.75rem">(+${fVND(data.weekendSurcharge)} T7/CN)</span>`;
-            }
+            // Reset voucher
+            currentVoucherId = null;
+            const discountEl = document.getElementById('discountDisplay');
+            const voucherInput = document.getElementById('voucherInput');
+            if (discountEl) discountEl.innerText = '0 đ';
+            if (voucherInput) voucherInput.value = '';
 
-            document.getElementById('baseFareDisplay').innerHTML = baseFareHtml;
-            document.getElementById('discountDisplay').innerText = '0 đ';
-            document.getElementById('totalFareDisplay').innerText = fVND(data.estimatedTotal);
-            document.getElementById('depositDisplay').innerText = fVND(data.deposit30Percent);
+            // Render dữ liệu
+            if (baseFareEl) baseFareEl.innerText = fVND(data.baseFare);
+            if (totalFareEl) totalFareEl.innerText = fVND(data.estimatedTotal);
+            if (depositEl) depositEl.innerText = fVND(data.deposit30Percent);
 
-            // Mở khóa nút Đặt xe nếu giờ giấc đã hợp lệ
-            if (!timeInput.classList.contains('is-invalid')) {
-                document.getElementById('btnSubmitBooking').disabled = false;
+            // Phụ phí cuối tuần
+            const surchargeEl = document.getElementById('weekendSurchargeDisplay');
+            if (surchargeEl) {
+                if (data.weekendSurcharge > 0) {
+                    surchargeEl.innerText = `+ ${fVND(data.weekendSurcharge)}`;
+                    surchargeEl.parentElement.style.display = 'flex';
+                } else {
+                    surchargeEl.parentElement.style.display = 'none';
+                }
             }
         } else {
-            console.error("Lỗi báo giá: ", data.error);
+            throw new Error(data.error || "Logic tính giá thất bại");
         }
-    } catch (error) { 
-        console.error("Lỗi gọi API báo giá:", error); 
+    } catch (error) {
+        // IN LỖI RA CONSOLE ĐỂ DEBUG
+        console.error("🚨 Lỗi Cực Kỳ Rõ Ràng Tại API Check-Price:", error.message || error);
+        
+        if (baseFareEl) baseFareEl.innerText = '----';
+        if (totalFareEl) totalFareEl.innerText = '---';
+        if (depositEl) depositEl.innerText = '--';
     }
-}
+};
 
-// Bắt sự kiện đổi giờ -> Tự tính lại giá (vì có thể dính phụ phí cuối tuần)
+// Bắt sự kiện đổi giờ -> Tự tính lại giá (bắt phụ phí cuối tuần)
 document.getElementById('inputDepartureTime').addEventListener('change', () => {
     validateDepartureTime();
+    // Nếu khoảng cách hợp lệ và thời gian không bị lỗi (cách hiện tại >= 120p)
     if (currentDistanceKm >= 20 && !document.getElementById('inputDepartureTime').classList.contains('is-invalid')) {
         calculateRealPrice();
     }
 });
-
 // ==========================================
 // 4. ÁP MÃ VOUCHER (/vouchers/apply)
 // ==========================================
+
 window.applyVoucher = async function() {
     const code = document.getElementById('voucherInput').value.trim();
+    
+    // Lấy customerId từ localStorage (Giả định bạn đã lưu lúc đăng nhập)
+    const customerId = parseInt(localStorage.getItem('customerId'));
 
+    // 1. Kiểm tra các điều kiện đầu vào
     if (!code) {
         return Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập mã ưu đãi!' });
     }
-    if (!customerId) {
+    if (!customerId || isNaN(customerId)) {
         return Swal.fire({ icon: 'info', title: 'Chưa đăng nhập', text: 'Bạn cần đăng nhập để dùng tính năng này.' });
     }
     if (currentEstimatedTotal === 0) {
-        return Swal.fire({ icon: 'warning', title: 'Chưa có lộ trình', text: 'Vui lòng chọn điểm đón/trả trước!' });
+        return Swal.fire({ icon: 'warning', title: 'Chưa có lộ trình', text: 'Vui lòng chọn điểm đón/trả để hệ thống tính giá trước!' });
     }
 
+    // 2. Chuyển UI nút bấm sang trạng thái loading
     const btn = document.getElementById('btnApplyVoucher');
     const origText = btn.innerText;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
     btn.disabled = true;
 
+    // Lưu ý: Đảm bảo vehicleTypeId được truyền đúng. Nếu currentVehicleId ở file của bạn là ID loại xe thì giữ nguyên.
+    // Nếu nó là ID xe cụ thể, bạn cần lấy vehicleTypeId từ localStorage mà bạn đã lưu ở màn chọn xe.
+    const vehicleTypeId = parseInt(localStorage.getItem('selectedVehicleTypeId')) || currentVehicleId;
+
+    // 3. Chuẩn bị payload khớp với API spec
     const payload = {
         code: code,
         customerId: customerId,
         estimatedTotal: currentEstimatedTotal,
-        vehicleTypeId: currentVehicleId 
+        vehicleTypeId: vehicleTypeId 
     };
 
+    const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
+
     try {
+        // 4. Gọi API
         const res = await fetch(`${CUSTOMER_API_BASE}/vouchers/apply`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
+        
         const data = await res.json();
-        const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
 
+        // 5. Xử lý kết quả trả về
         if (data.success) {
-            // Cập nhật giá mới
+            // Cập nhật giá mới lên UI theo response từ API
             document.getElementById('discountDisplay').innerText = `-${fVND(data.discountAmount)}`;
             document.getElementById('totalFareDisplay').innerText = fVND(data.finalTotal);
-            document.getElementById('depositDisplay').innerText = fVND(data.finalTotal * 0.3); // Cập nhật lại cọc
+            
+            // Tính toán và cập nhật lại số tiền cọc (30% của tổng tiền sau giảm giá)
+            const newDeposit = data.finalTotal * 0.3;
+            document.getElementById('depositDisplay').innerText = fVND(newDeposit); 
+            
+            // Lưu ID voucher vào biến toàn cục để gửi kèm lúc tạo Booking
             currentVoucherId = data.voucherId; 
             
             Swal.fire({
@@ -648,18 +707,25 @@ window.applyVoucher = async function() {
                 showConfirmButton: false
             });
         } else {
-            // Hiển thị lỗi từ Backend (Hết hạn, sai xe,...)
-            Swal.fire({ icon: 'error', title: 'Mã không hợp lệ', text: data.error });
+            // Hiển thị lỗi từ Backend (Hết hạn, sai xe, không tồn tại...)
+            Swal.fire({ icon: 'error', title: 'Mã không hợp lệ', text: data.error || 'Voucher không khả dụng.' });
             document.getElementById('voucherInput').value = '';
+            
+            // Reset lại UI về giá gốc nếu mã bị lỗi/khách nhập sai mã khác
+            currentVoucherId = null;
+            document.getElementById('discountDisplay').innerText = '0 đ';
+            document.getElementById('totalFareDisplay').innerText = fVND(currentEstimatedTotal);
+            document.getElementById('depositDisplay').innerText = fVND(currentEstimatedTotal * 0.3);
         }
     } catch (e) { 
+        console.error("Lỗi áp dụng voucher:", e);
         new bootstrap.Toast(document.getElementById('systemErrorToast')).show(); 
     } finally { 
+        // Trả lại UI cho nút bấm
         btn.innerHTML = origText; 
         btn.disabled = false; 
     }
 };
-
 // ==========================================
 // 5. CHỐT ĐƠN (Submit Booking) & ĐIỀU HƯỚNG
 // ==========================================
