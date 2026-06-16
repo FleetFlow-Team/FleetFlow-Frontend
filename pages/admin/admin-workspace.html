@@ -714,24 +714,35 @@
                     </ul>
 
                     <div class="tab-content" id="ekycTabContent">
+                        <!-- TAB CCCD -->
                         <div class="tab-pane fade show active" id="tab-cccd">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="apple-doc-card">
                                         <div class="doc-title-badge">Mặt Trước</div>
-                                        <img src="../../assets/img/default-doc.png" class="ekyc-img" id="cccdFrontImg">
-                                        <div class="apple-floating-controls">
-                                            <button onclick="zoomImg('cccdFrontImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
-                                            <button onclick="zoomImg('cccdFrontImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
-                                            <button onclick="rotateImg('cccdFrontImg')"><i class="fa-solid fa-rotate-right"></i></button>
+                                        <!-- Khối hiển thị khi KHÔNG có ảnh -->
+                                        <div class="doc-empty-state" id="cccdFrontEmpty">
+                                            <i class="fa-regular fa-image"></i>
+                                            <span>Chưa cập nhật</span>
+                                        </div>
+                                        <!-- Khối hiển thị khi CÓ ảnh -->
+                                        <img src="" class="ekyc-img d-none" id="cccdFrontImg">
+                                        <div class="apple-floating-controls d-none" id="cccdFrontControls">
+                                            <button onclick="zoomImg('cccdFrontImg', 1.2)" title="Phóng to"><i class="fa-solid fa-plus"></i></button>
+                                            <button onclick="zoomImg('cccdFrontImg', 0.8)" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
+                                            <button onclick="rotateImg('cccdFrontImg')" title="Xoay ảnh"><i class="fa-solid fa-rotate-right"></i></button>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="apple-doc-card">
                                         <div class="doc-title-badge">Mặt Sau</div>
-                                        <img src="../../assets/img/default-doc.png" class="ekyc-img" id="cccdBackImg">
-                                        <div class="apple-floating-controls">
+                                        <div class="doc-empty-state" id="cccdBackEmpty">
+                                            <i class="fa-regular fa-image"></i>
+                                            <span>Chưa cập nhật</span>
+                                        </div>
+                                        <img src="" class="ekyc-img d-none" id="cccdBackImg">
+                                        <div class="apple-floating-controls d-none" id="cccdBackControls">
                                             <button onclick="zoomImg('cccdBackImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
                                             <button onclick="zoomImg('cccdBackImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
                                             <button onclick="rotateImg('cccdBackImg')"><i class="fa-solid fa-rotate-right"></i></button>
@@ -741,13 +752,18 @@
                             </div>
                         </div>
 
+                        <!-- TAB BẰNG LÁI -->
                         <div class="tab-pane fade" id="tab-license">
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <div class="apple-doc-card">
                                         <div class="doc-title-badge">Mặt Trước</div>
-                                        <img src="../../assets/img/default-doc.png" class="ekyc-img" id="licenseFrontImg">
-                                        <div class="apple-floating-controls">
+                                        <div class="doc-empty-state" id="licenseFrontEmpty">
+                                            <i class="fa-regular fa-image"></i>
+                                            <span>Chưa cập nhật</span>
+                                        </div>
+                                        <img src="" class="ekyc-img d-none" id="licenseFrontImg">
+                                        <div class="apple-floating-controls d-none" id="licenseFrontControls">
                                             <button onclick="zoomImg('licenseFrontImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
                                             <button onclick="zoomImg('licenseFrontImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
                                             <button onclick="rotateImg('licenseFrontImg')"><i class="fa-solid fa-rotate-right"></i></button>
@@ -757,8 +773,12 @@
                                 <div class="col-md-6">
                                     <div class="apple-doc-card">
                                         <div class="doc-title-badge">Mặt Sau</div>
-                                        <img src="../../assets/img/default-doc.png" class="ekyc-img" id="licenseBackImg">
-                                        <div class="apple-floating-controls">
+                                        <div class="doc-empty-state" id="licenseBackEmpty">
+                                            <i class="fa-regular fa-image"></i>
+                                            <span>Chưa cập nhật</span>
+                                        </div>
+                                        <img src="" class="ekyc-img d-none" id="licenseBackImg">
+                                        <div class="apple-floating-controls d-none" id="licenseBackControls">
                                             <button onclick="zoomImg('licenseBackImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
                                             <button onclick="zoomImg('licenseBackImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
                                             <button onclick="rotateImg('licenseBackImg')"><i class="fa-solid fa-rotate-right"></i></button>
