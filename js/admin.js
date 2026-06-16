@@ -557,3 +557,129 @@ window.fetchAndRenderEkycQueue = async function () {
         queueList.innerHTML = `<tr><td colspan="4" class="text-danger fw-bold p-3 text-center">Lỗi kết nối máy chủ NetBeans.</td></tr>`;
     }
 };
+
+// =========================================================================
+// TASK 3: TÍCH HỢP API DUYỆT HỒ SƠ (APPROVE)
+// =========================================================================
+async function approveEkyc() {
+    if (!currentViewingAccountId) {
+        alert("Lỗi: Không xác định được ID tài xế đang xem.");
+        return;
+    }
+
+    const btn = document.getElementById('btnApprove');
+    const originalText = btn ? btn.innerHTML : 'Phê Duyệt';
+    if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang duyệt...';
+        btn.disabled = true;
+    }
+
+    try {
+        const response = await fetch(`${ADMIN_API_BASE}/${currentViewingAccountId}/approve`, {
+            method: 'POST',
+            credentials: 'include' // Bắt buộc để gửi Session Cookie lên Java Backend
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showSystemToast("Đã phê duyệt hồ sơ đối tác tài xế thành công!", "success");
+
+            // Đóng Modal (Đã sửa đúng ID là ekycModal)
+            const modalEl = document.getElementById('ekycModal');
+            if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+
+            // Load lại danh sách (Làm biến mất tài xế vừa duyệt)
+            fetchAndRenderEkycQueue();
+        } else {
+            alert("Không thể duyệt: " + data.message);
+        }
+    } catch (error) {
+        console.error("Lỗi duyệt hồ sơ:", error);
+        alert("Mất kết nối đến máy chủ khi duyệt hồ sơ.");
+    } finally {
+        if (btn) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+}
+
+// =========================================================================
+// TASK 4: TÍCH HỢP API TỪ CHỐI (REJECT) KÈM LÝ DO
+// =========================================================================
+
+// 1. Khi bấm nút "Từ chối" màu đỏ
+function rejectEkyc() {
+    // Ẩn 2 nút gốc và hiện Textarea
+    document.getElementById('ekycActionButtons').classList.add('d-none');
+    document.getElementById('rejectReasonContainer').classList.remove('d-none');
+    document.getElementById('rejectReasonInput').focus();
+}
+
+// 2. Khi bấm "Hủy" nhập lý do
+function cancelReject() {
+    // Ẩn Textarea, hiện lại 2 nút gốc
+    document.getElementById('rejectReasonContainer').classList.add('d-none');
+    document.getElementById('rejectReasonInput').value = '';
+    document.getElementById('ekycActionButtons').classList.remove('d-none');
+}
+
+// 3. Khi bấm "Xác nhận Gửi"
+function confirmRejectEkyc() {
+    const reasonInput = document.getElementById('rejectReasonInput');
+    const reason = reasonInput ? reasonInput.value.trim() : '';
+
+    if (!reason) {
+        alert("Vui lòng nhập lý do từ chối để tài xế biết cách khắc phục hồ sơ!");
+        reasonInput.focus();
+        return;
+    }
+
+    executeRejectApi(reason);
+}
+
+// 4. Lõi gọi API Từ chối
+async function executeRejectApi(reason) {
+    const btn = document.querySelector('#rejectReasonContainer .btn-danger');
+    const originalText = btn ? btn.innerHTML : 'Xác nhận Gửi';
+    if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang gửi...';
+        btn.disabled = true;
+    }
+
+    try {
+        const response = await fetch(`${ADMIN_API_BASE}/${currentViewingAccountId}/reject`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ rejectReason: reason }) // Gửi kèm lý do dạng JSON
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            showSystemToast("Đã từ chối và gửi email lý do cho tài xế!", "success");
+
+            // Đóng Modal và Reset trạng thái nút bấm
+            const modalEl = document.getElementById('ekycModal');
+            if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+            cancelReject();
+
+            // Load lại danh sách hàng đợi
+            fetchAndRenderEkycQueue();
+        } else {
+            alert("Lỗi từ chối: " + data.message);
+        }
+    } catch (error) {
+        console.error("Lỗi từ chối hồ sơ:", error);
+        alert("Mất kết nối đến máy chủ.");
+    } finally {
+        if (btn) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+}

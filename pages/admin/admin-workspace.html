@@ -687,9 +687,18 @@
                         <input type="text" class="form-control glass-input fw-bold fs-5 text-white" value="079099123456" readonly>
                     </div>
 
-                    <div class="mt-auto d-flex gap-3">
-                        <button class="btn-glass-action w-50 py-3 text-danger fw-bold border-danger" onclick="simulateSaveConfig(this)">Từ Chối</button>
-                        <button class="glass-liquid-btn w-50 py-3 text-success fw-bold border-success" onclick="simulateSaveConfig(this)">Phê Duyệt</button>
+                    <div class="mt-auto d-flex gap-3" id="ekycActionButtons">
+                        <button id="btnReject" class="btn-glass-action w-50 py-3 text-danger fw-bold border-danger" onclick="rejectEkyc()">Từ Chối</button>
+                        <button id="btnApprove" class="glass-liquid-btn w-50 py-3 text-success fw-bold border-success" onclick="approveEkyc()">Phê Duyệt</button>
+                    </div>
+
+                    <div id="rejectReasonContainer" class="mt-auto d-none p-3 border border-danger rounded" style="background-color: rgba(220, 53, 69, 0.05);">
+                        <label for="rejectReasonInput" class="form-label text-danger fw-bold small"><i class="fa-solid fa-pen-nib"></i> Lý do từ chối:</label>
+                        <textarea id="rejectReasonInput" class="form-control border-danger shadow-none bg-dark text-white mb-3" rows="3" placeholder="VD: Ảnh CCCD bị mờ, Bằng lái xe không hợp lệ..."></textarea>
+                        <div class="d-flex gap-2">
+                            <button type="button" class="btn btn-outline-secondary w-50 fw-bold" onclick="cancelReject()">Hủy</button>
+                            <button type="button" class="btn btn-danger w-50 fw-bold" onclick="confirmRejectEkyc()">Xác nhận Gửi</button>
+                        </div>
                     </div>
                 </div>
                 
