@@ -4,6 +4,14 @@
  */
 
 document.addEventListener("DOMContentLoaded", function () {
+    // 🚀 BẬT CHỐT CHẶN VÀ ĐỒNG BỘ NAVBAR ĐẦU TIÊN
+    if (!initAdminSession()) return; 
+
+    // Bắt sự kiện cho nút Đăng xuất
+    const logoutBtn = document.querySelector('.logout-item');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', handleAdminLogout);
+    }
     // === 1. ĐIỀU HƯỚNG SIDEBAR SINGLE-PAGE & KHỐI KÍNH TRƯỢT DỌC ===
     const tocLinks = document.querySelectorAll(".toc-link");
     const verticalIndicator = document.getElementById("vertical-indicator");
@@ -355,3 +363,43 @@ window.showSystemToast = function (message, type = "success") {
         toastContainer.classList.remove("show");
     }, 4000);
 };
+
+// Script mới lưu session cho admin
+// === 6. QUẢN LÝ PHIÊN LÀM VIỆC (SESSION & ROUTE GUARD) ===
+function initAdminSession() {
+    const userRole = localStorage.getItem('userRole') || '';
+    const fullName = localStorage.getItem('fullName') || 'Administrator';
+    const email = localStorage.getItem('email') || 'admin@fleetflow.vn';
+
+    // 1. Chốt chặn bảo mật (Route Guard): Đá văng nếu không phải Admin
+    if (userRole.toUpperCase() !== 'ADMIN') {
+        alert("Lỗi phân quyền: Bạn không có quyền truy cập không gian Quản trị viên!");
+        window.location.replace('../../index.html'); // Đẩy về trang chủ hoặc trang đăng nhập
+        return false;
+    }
+
+    // 2. Tạo Link Avatar động từ tên
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00b14f&color=fff`;
+
+    // 3. Đồng bộ dữ liệu lên Navbar
+    const nameElements = document.querySelectorAll('.profile-name, .dropdown-header-custom .fw-bold');
+    const roleElements = document.querySelectorAll('.profile-role');
+    const emailElements = document.querySelectorAll('.dropdown-header-custom .small.text-white-50');
+    const avatarImg = document.querySelector('.glass-avatar img');
+
+    nameElements.forEach(el => { if (el) el.innerText = fullName; });
+    roleElements.forEach(el => { if (el) el.innerText = userRole.toUpperCase(); });
+    emailElements.forEach(el => { if (el) el.innerText = email; });
+    if (avatarImg) avatarImg.src = avatarUrl;
+
+    return true;
+}
+
+// Hàm xử lý đăng xuất
+function handleAdminLogout(e) {
+    e.preventDefault();
+    if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị?")) {
+        localStorage.clear(); // Xóa sạch phiên làm việc
+        window.location.replace('../../index.html');
+    }
+}

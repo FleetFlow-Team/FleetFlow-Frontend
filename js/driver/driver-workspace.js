@@ -95,65 +95,54 @@ function initDriverSession() {
  */
 async function fetchDriverProfile() {
     const accountId = localStorage.getItem('accountId');
-    if (!accountId) return;
+    // Chặn ngay lập tức nếu mất AccountID
+    if (!accountId || accountId === 'undefined') {
+        window.location.replace('../../index.html');
+        return;
+    }
 
     try {
         const response = await fetch(`${API_BASE}/profile?accountID=${accountId}`);
         const result = await response.json();
 
-        // Kiểm tra xem Backend có trả về success = true và có data không
+        // 🚨 NẾU API THÀNH CÔNG VÀ TRẢ VỀ DỮ LIỆU
         if (result.success && result.data) {
             const data = result.data;
+            const getVal = (key) => {
+                const lowerKey = key.toLowerCase();
+                for (let k in data) { if (k.toLowerCase() === lowerKey && data[k] !== null) return data[k]; }
+                return null;
+            };
             
-            // Lấy các thẻ HTML cần điền dữ liệu
+            const termsDate = getVal('termsAcceptedAt');
+            const isTermsAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
+            const approvalStatus = String(getVal('approvalStatus') || 'PENDING').toUpperCase();
+
+            // 🚨 BỨC TƯỜNG LỬA CHỐT CHẶN 🚨
+            if (!isTermsAccepted || approvalStatus !== 'APPROVED') {
+                alert("Tài khoản chưa đủ điều kiện nhận chuyến!\nVui lòng vào trang Profile để hoàn tất Hồ sơ và xác nhận Điều khoản.");
+                window.location.replace('../../pages/profile.html'); 
+                return;
+            }
+
+            // NẾU PASS 3 ĐIỀU KIỆN, HIỂN THỊ DỮ LIỆU BÌNH THƯỜNG
             const accName = document.getElementById('accDriverName');
             const accAvatar = document.getElementById('accDriverAvatar');
             const accRating = document.getElementById('accDriverRating');
             const accVehicle = document.getElementById('accDriverVehicle');
 
-            // Đổ dữ liệu vào HTML
-            if(accName) accName.innerText = data.fullName || localStorage.getItem('fullName');
-            if(accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName || 'Driver')}&background=1a1c1a&color=fff`;
-            
-            if(accRating) {
-                accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${data.averageRating || '5.0'} (${data.reviewCount || 0} đánh giá)`;
-            }
-            
-            if(accVehicle) {
-                accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> ${data.vehicleName || 'Đang cập nhật'} (${data.plateNumber || '...'})`;
-            }
-
-            // 👉 ĐẶT VÀO ĐÚNG VỊ TRÍ NÀY (BÊN TRONG KHỐI IF CHỨA BIẾN DATA)
-            // 🚀 ĐỒNG BỘ LẠI TRẠNG THÁI SAU KHI GỌI API THÀNH CÔNG
-            // 👉 ĐẶT VÀO ĐÚNG VỊ TRÍ NÀY (BÊN TRONG KHỐI IF CHỨA BIẾN DATA)
-            // 🚀 ĐỒNG BỘ LẠI TRẠNG THÁI SAU KHI GỌI API THÀNH CÔNG
-            const termsDate = data.termsAcceptedAt || data.TermsAcceptedAt || null;
-            const isAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
-
-            const termsToastEl = document.getElementById('termsWarningToast');
-
-            if (isAccepted) { 
-                localStorage.setItem('isTermsAccepted', 'true');
-                if (termsToastEl) {
-                    termsToastEl.style.display = 'none';
-                    termsToastEl.classList.remove('show');
-                }
-            } else {
-                localStorage.setItem('isTermsAccepted', 'false');
-                if (termsToastEl) {
-                    termsToastEl.style.display = 'block'; 
-                    termsToastEl.classList.add('show');
-                    termsToastEl.style.opacity = '1';
-
-                    try {
-                        const bsToast = new bootstrap.Toast(termsToastEl, { autohide: false });
-                        bsToast.show();
-                    } catch (e) {}
-                }
-            }
+            if(accName) accName.innerText = getVal('fullName') || localStorage.getItem('fullName');
+            if(accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(getVal('fullName') || 'Driver')}&background=1a1c1a&color=fff`;
+            if(accRating) accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${getVal('averageRating') || '5.0'} (${getVal('reviewCount') || 0} đánh giá)`;
+            if(accVehicle) accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> ${getVal('vehicleName') || 'Đang cập nhật'} (${getVal('plateNumber') || '...'})`;
+        } else {
+            // 🚨 FIX LỖI: NẾU API THẤT BẠI (VD: TÀI XẾ PENDING BỊ ẨN), MẶC ĐỊNH ĐÁ VĂNG
+            alert("Tài khoản chưa sẵn sàng hoặc đang chờ duyệt!\nVui lòng kiểm tra lại Hồ sơ cá nhân.");
+            window.location.replace('../../pages/profile.html');
         }
     } catch (error) {
         console.error("Lỗi lấy Profile Tài xế:", error);
+        window.location.replace('../../pages/profile.html');
     }
 }
 
