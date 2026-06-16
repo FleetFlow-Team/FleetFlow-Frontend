@@ -431,94 +431,99 @@
         if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
     }
 
-    async function loadProfileDataFromAPI() {
-        let accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+    async function loadProfileDataFromAPI(isDriver) {
+      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+      if (!accountId || accountId === 'undefined' || !isDriver) return;
 
-        const showToastForce = (id) => {
-            const el = document.getElementById(id);
-            if (!el) return;
-            el.classList.remove('d-none');
-            el.style.setProperty('display', 'block', 'important');
-            el.style.setProperty('opacity', '1', 'important');
-            el.style.setProperty('z-index', '999999', 'important');
-            el.classList.add('show');
-            try { new bootstrap.Toast(el, { autohide: false }).show(); } catch(e) {}
-        };
+      // 🚀 HÀM ÉP HIỂN THỊ TOAST (XUYÊN THỦNG MỌI CSS BỊ LỖI)
+      const showToastForce = (id) => {
+          const el = document.getElementById(id);
+          if (!el) return;
+          el.classList.remove('d-none');
+          el.style.setProperty('display', 'block', 'important');
+          el.style.setProperty('opacity', '1', 'important');
+          el.style.setProperty('z-index', '999999', 'important'); // Ép nổi lên trên cùng
+          el.classList.add('show');
+          try { new bootstrap.Toast(el, { autohide: false }).show(); } catch(e) {}
+      };
 
-        // Nếu mất ID (chưa đăng nhập), ép bật cả 2 bảng
-        if (!accountId || accountId === 'undefined') {
-            showToastForce('termsWarningToast');
-            showToastForce('ekycWarningToast');
-            return;
-        }
+      try {
+          const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
+          const result = await response.json();
+          
+          if (result.success && result.data) {
+              const data = result.data; 
+              const getVal = (key) => {
+                  const lowerKey = key.toLowerCase();
+                  for (let k in data) { if (k.toLowerCase() === lowerKey && data[k] !== null) return data[k]; }
+                  return null;
+              };
+              
+              // Đổ dữ liệu vào Form
+              const inputName = document.getElementById('inputFullName');
+              const inputPhone = document.getElementById('inputPhone');
+              if (inputName) { inputName.value = getVal('fullName') || ''; inputName.removeAttribute('readonly'); }
+              if (inputPhone) { inputPhone.value = getVal('phoneNumber') || ''; inputPhone.removeAttribute('readonly'); }
+              
+              // ========================================================
+              // 🚀 BẮT DỮ LIỆU TỪ BACKEND MỚI
+              // ========================================================
+              currentApprovalStatus = String(getVal('approvalStatus') || 'PENDING').toUpperCase();
+              
+              // Bắt trực tiếp giá trị boolean từ DB (thay thế cho việc check null Timestamp cũ)
+              const isTermsAccepted = data.termsAccepted === true; 
+              
+              // Lưu cờ vào bộ nhớ tạm để dự phòng cho các trang khác
+              localStorage.setItem('isTermsAccepted', isTermsAccepted);
+              
+              // 1. QUYẾT ĐỊNH HIỂN THỊ TOAST CCCD (eKYC)
+              if (currentApprovalStatus !== 'APPROVED') {
+                  showToastForce('ekycWarningToast'); 
+                  
+                  const ekycToastEl = document.getElementById('ekycWarningToast');
+                  const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
+                  if (ekycToastEl) {
+                      const toastSpan = ekycToastEl.querySelector('.toast-body span');
+                      const toastIcon = ekycToastEl.querySelector('i');
+                      if (currentApprovalStatus === 'REJECTED') {
+                          ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed bottom-0 start-0 m-4 show";
+                          if(toastIcon) toastIcon.className = "fa-solid fa-circle-xmark fs-3 text-danger fa-beat mt-1";
+                          if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>bị từ chối</b>. Vui lòng tải lại CCCD & Bằng lái!";
+                      } else if (isEkycComplete) {
+                          ekycToastEl.className = "toast align-items-center border border-info shadow-lg position-fixed bottom-0 start-0 m-4 show";
+                          if(toastIcon) toastIcon.className = "fa-solid fa-clock-rotate-left fs-3 text-info fa-spin-pulse mt-1";
+                          if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>đang chờ phê duyệt</b>. Vui lòng quay lại sau!";
+                      } else {
+                          ekycToastEl.className = "toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4 show";
+                          if(toastIcon) toastIcon.className = "fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1";
+                          if(toastSpan) toastSpan.innerHTML = "Tài khoản chưa xác thực. Vui lòng tải lên CCCD & Bằng lái xe!";
+                      }
+                  }
+              } else {
+                  const el = document.getElementById('ekycWarningToast');
+                  if (el) el.style.setProperty('display', 'none', 'important');
+              }
 
-        try {
-            const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
-            const result = await response.json();
-            
-            if (result.success && result.data) {
-                const data = result.data; 
-                const getVal = (key) => {
-                    const lowerKey = key.toLowerCase();
-                    for (let k in data) { if (k.toLowerCase() === lowerKey && data[k] !== null) return data[k]; }
-                    return null;
-                };
-                
-                const inputName = document.getElementById('inputFullName');
-                const inputPhone = document.getElementById('inputPhone');
-                if (inputName) { inputName.value = getVal('fullName') || ''; inputName.removeAttribute('readonly'); }
-                if (inputPhone) { inputPhone.value = getVal('phoneNumber') || ''; inputPhone.removeAttribute('readonly'); }
-                
-                currentApprovalStatus = String(getVal('approvalStatus') || 'PENDING').toUpperCase();
-                const termsDate = getVal('termsAcceptedAt');
-                const isTermsAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
-                
-                // 1. QUYẾT ĐỊNH HIỂN THỊ TOAST CCCD
-                if (currentApprovalStatus !== 'APPROVED') {
-                    showToastForce('ekycWarningToast');
-                    const ekycToastEl = document.getElementById('ekycWarningToast');
-                    const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
-                    if (ekycToastEl) {
-                        const toastSpan = ekycToastEl.querySelector('.toast-body span');
-                        const toastIcon = ekycToastEl.querySelector('i');
-                        if (currentApprovalStatus === 'REJECTED') {
-                            ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed bottom-0 start-0 m-4 show";
-                            if(toastIcon) toastIcon.className = "fa-solid fa-circle-xmark fs-3 text-danger fa-beat mt-1";
-                            if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>bị từ chối</b>. Vui lòng tải lại CCCD & Bằng lái!";
-                        } else if (isEkycComplete) {
-                            ekycToastEl.className = "toast align-items-center border border-info shadow-lg position-fixed bottom-0 start-0 m-4 show";
-                            if(toastIcon) toastIcon.className = "fa-solid fa-clock-rotate-left fs-3 text-info fa-spin-pulse mt-1";
-                            if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>đang chờ phê duyệt</b>. Vui lòng quay lại sau!";
-                        } else {
-                            ekycToastEl.className = "toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4 show";
-                            if(toastIcon) toastIcon.className = "fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1";
-                            if(toastSpan) toastSpan.innerHTML = "Tài khoản chưa xác thực. Vui lòng tải lên CCCD & Bằng lái xe!";
-                        }
-                    }
-                } else {
-                    const el = document.getElementById('ekycWarningToast');
-                    if (el) el.style.setProperty('display', 'none', 'important');
-                }
+              // 2. QUYẾT ĐỊNH HIỂN THỊ TOAST ĐIỀU KHOẢN
+              if (isTermsAccepted) { 
+                  const el = document.getElementById('termsWarningToast');
+                  if (el) el.style.setProperty('display', 'none', 'important');
+              } else {
+                  showToastForce('termsWarningToast'); // Ép hiển thị bảng bắt xác nhận chính sách
+              }
 
-                // 2. QUYẾT ĐỊNH HIỂN THỊ TOAST ĐIỀU KHOẢN
-                if (isTermsAccepted) { 
-                    localStorage.setItem('isTermsAccepted', 'true');
-                    const el = document.getElementById('termsWarningToast');
-                    if (el) el.style.setProperty('display', 'none', 'important');
-                } else {
-                    localStorage.setItem('isTermsAccepted', 'false');
-                    showToastForce('termsWarningToast');
-                }
-            } else {
-                showToastForce('termsWarningToast');
-                showToastForce('ekycWarningToast');
-            }
-        } catch (error) {
-            console.error("Lỗi đồng bộ API Profile:", error);
-            showToastForce('termsWarningToast');
-            showToastForce('ekycWarningToast');
-        }
-    }
+          } else {
+              // 🚨 API BÁO FALSE -> ÉP BẬT CẢ 2 BẢNG CẢNH BÁO
+              showToastForce('termsWarningToast');
+              showToastForce('ekycWarningToast');
+          }
+      } catch (error) {
+          console.error("Lỗi đồng bộ API Profile:", error);
+          // 🚨 LỖI SERVER HOẶC MẤT MẠNG -> ÉP BẬT CẢ 2 BẢNG CẢNH BÁO
+          showToastForce('termsWarningToast');
+          showToastForce('ekycWarningToast');
+      }
+  }
 
     async function updateProfile(event) {
         event.preventDefault();

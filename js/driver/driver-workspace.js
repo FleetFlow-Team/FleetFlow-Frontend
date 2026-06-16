@@ -95,7 +95,8 @@ function initDriverSession() {
  */
 async function fetchDriverProfile() {
     const accountId = localStorage.getItem('accountId');
-    // Chặn ngay lập tức nếu mất AccountID
+    
+    // Chặn ngay lập tức nếu mất AccountID khỏi bộ nhớ
     if (!accountId || accountId === 'undefined') {
         window.location.replace('../../index.html');
         return;
@@ -114,18 +115,18 @@ async function fetchDriverProfile() {
                 return null;
             };
             
-            const termsDate = getVal('termsAcceptedAt');
-            const isTermsAccepted = termsDate && String(termsDate).trim().toLowerCase() !== "null" && String(termsDate).trim() !== "";
+            // 🚀 BẮT TRỰC TIẾP GIÁ TRỊ BOOLEAN TỪ BACKEND MỚI
+            const isTermsAccepted = data.termsAccepted === true;
             const approvalStatus = String(getVal('approvalStatus') || 'PENDING').toUpperCase();
 
-            // 🚨 BỨC TƯỜNG LỬA CHỐT CHẶN 🚨
+            // 🚨 BỨC TƯỜNG LỬA CHỐT CHẶN (ROUTE GUARD) 🚨
             if (!isTermsAccepted || approvalStatus !== 'APPROVED') {
                 alert("Tài khoản chưa đủ điều kiện nhận chuyến!\nVui lòng vào trang Profile để hoàn tất Hồ sơ và xác nhận Điều khoản.");
                 window.location.replace('../../pages/profile.html'); 
                 return;
             }
 
-            // NẾU PASS 3 ĐIỀU KIỆN, HIỂN THỊ DỮ LIỆU BÌNH THƯỜNG
+            // NẾU PASS CẢ 2 ĐIỀU KIỆN -> HIỂN THỊ DỮ LIỆU BÌNH THƯỜNG VÀO WORKSPACE
             const accName = document.getElementById('accDriverName');
             const accAvatar = document.getElementById('accDriverAvatar');
             const accRating = document.getElementById('accDriverRating');
@@ -136,7 +137,7 @@ async function fetchDriverProfile() {
             if(accRating) accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${getVal('averageRating') || '5.0'} (${getVal('reviewCount') || 0} đánh giá)`;
             if(accVehicle) accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> ${getVal('vehicleName') || 'Đang cập nhật'} (${getVal('plateNumber') || '...'})`;
         } else {
-            // 🚨 FIX LỖI: NẾU API THẤT BẠI (VD: TÀI XẾ PENDING BỊ ẨN), MẶC ĐỊNH ĐÁ VĂNG
+            // 🚨 NẾU API THẤT BẠI (VD: TÀI XẾ PENDING BỊ ẨN), MẶC ĐỊNH ĐÁ VĂNG
             alert("Tài khoản chưa sẵn sàng hoặc đang chờ duyệt!\nVui lòng kiểm tra lại Hồ sơ cá nhân.");
             window.location.replace('../../pages/profile.html');
         }
