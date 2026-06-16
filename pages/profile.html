@@ -435,7 +435,7 @@
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       if (!accountId || accountId === 'undefined' || !isDriver) return;
 
-      // 🚀 HÀM ÉP HIỂN THỊ TOAST SIÊU MẠNH (XUYÊN THỦNG CSS)
+      // Hàm ép hiển thị Toast cứng qua Inline CSS (Bỏ qua Bootstrap Script để tránh xung đột)
       const showToastForce = (id) => {
           const el = document.getElementById(id);
           if (!el) return;
@@ -444,7 +444,6 @@
           el.style.setProperty('opacity', '1', 'important');
           el.style.setProperty('z-index', '999999', 'important'); 
           el.classList.add('show');
-          try { new bootstrap.Toast(el, { autohide: false }).show(); } catch(e) {}
       };
 
       try {
@@ -453,36 +452,38 @@
           
           if (result.success && result.data) {
               const data = result.data; 
-              const getVal = (key) => {
-                  const lowerKey = key.toLowerCase();
-                  for (let k in data) { if (k.toLowerCase() === lowerKey && data[k] !== null) return data[k]; }
-                  return null;
-              };
               
-              // Đổ dữ liệu vào Form
+              // Đổ dữ liệu vào Form Input
               const inputName = document.getElementById('inputFullName');
               const inputPhone = document.getElementById('inputPhone');
-              if (inputName) { inputName.value = getVal('fullName') || ''; inputName.removeAttribute('readonly'); }
-              if (inputPhone) { inputPhone.value = getVal('phoneNumber') || ''; inputPhone.removeAttribute('readonly'); }
+              if (inputName && data.fullName) { inputName.value = data.fullName; inputName.removeAttribute('readonly'); }
+              if (inputPhone && data.phoneNumber) { inputPhone.value = data.phoneNumber; inputPhone.removeAttribute('readonly'); }
               
-              // ========================================================
-              // 🚀 BẮT DỮ LIỆU TỪ BACKEND MỚI (CHỐNG LỖI PARSE BOOLEAN)
-              // ========================================================
-              currentApprovalStatus = String(getVal('approvalStatus') || 'PENDING').toUpperCase();
+              // 1. ĐỒNG BỘ TOÀN BỘ XUỐNG LOCAL STORAGE
+              localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
+              localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
+              localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
+              localStorage.setItem('termsAcceptedAt', data.termsAcceptedAt || '');
+              localStorage.setItem('averageRating', data.averageRating || '0');
+              localStorage.setItem('walletBalance', data.walletBalance || '0');
+              localStorage.setItem('createdAt', data.createdAt || '');
+
+              let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? false;
+              let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1);
+              localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
               
-              const rawTerms = getVal('termsAccepted');
-              const isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1);
+              // 2. ĐỌC TỪ LOCAL STORAGE ĐỂ XỬ LÝ TOAST
+              const storedApproval = localStorage.getItem('approvalStatus');
+              const storedTerms = localStorage.getItem('termsAccepted');
               
-              localStorage.setItem('isTermsAccepted', isTermsAccepted ? 'true' : 'false');
-              
-              // 1. KIỂM TRA TOAST CCCD (eKYC)
-              if (currentApprovalStatus !== 'APPROVED') {
+              // --- XỬ LÝ TOAST eKYC ---
+              if (storedApproval !== 'APPROVED') {
                   const ekycToastEl = document.getElementById('ekycWarningToast');
                   const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
                   if (ekycToastEl) {
                       const toastSpan = ekycToastEl.querySelector('.toast-body span');
                       const toastIcon = ekycToastEl.querySelector('i');
-                      if (currentApprovalStatus === 'REJECTED') {
+                      if (storedApproval === 'REJECTED') {
                           ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed bottom-0 start-0 m-4 show";
                           if(toastIcon) toastIcon.className = "fa-solid fa-circle-xmark fs-3 text-danger fa-beat mt-1";
                           if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>bị từ chối</b>. Vui lòng tải lại CCCD & Bằng lái!";
@@ -502,25 +503,26 @@
                   if (el) el.style.setProperty('display', 'none', 'important');
               }
 
-              // 2. KIỂM TRA TOAST ĐIỀU KHOẢN (Độc lập hoàn toàn với eKYC)
-              if (!isTermsAccepted) { 
-                  showToastForce('termsWarningToast'); // Hiển thị bảng bắt xác nhận chính sách
+              // --- XỬ LÝ TOAST TERMS (ĐẢM BẢO HIỂN THỊ CHO ID 5) ---
+              if (storedTerms !== 'true') { 
+                  showToastForce('termsWarningToast');
               } else {
                   const el = document.getElementById('termsWarningToast');
                   if (el) el.style.setProperty('display', 'none', 'important');
               }
 
           } else {
-              // 🚨 NẾU CHƯA CÓ TRONG BẢNG DRIVER -> ÉP BẬT CẢ 2 CẢNH BÁO
+              // Dữ liệu Null -> Mặc định bắt ép
+              localStorage.setItem('termsAccepted', 'false');
+              localStorage.setItem('approvalStatus', 'PENDING');
               showToastForce('termsWarningToast');
               showToastForce('ekycWarningToast');
           }
       } catch (error) {
-          console.error("Lỗi đồng bộ API Profile:", error);
-          showToastForce('termsWarningToast');
-          showToastForce('ekycWarningToast');
+          console.error("Lỗi API Profile:", error);
       }
   }
+
     async function updateProfile(event) {
         event.preventDefault();
         const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
