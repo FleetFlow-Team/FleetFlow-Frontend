@@ -108,8 +108,9 @@ async function fetchDriverProfile() {
         if (result.success && result.data) {
             const data = result.data;
             
-            // 1. TRUY VẤN VÀ LƯU TOÀN BỘ VÀO LOCAL STORAGE TRỰC TIẾP
+            // 1. LƯU TOÀN BỘ TRƯỜNG DỮ LIỆU VÀO LOCAL STORAGE
             localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
+            localStorage.setItem('accountId', data.accountId || data.accountID || accountId);
             localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
             localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
             localStorage.setItem('termsAcceptedAt', data.termsAcceptedAt || '');
@@ -117,22 +118,22 @@ async function fetchDriverProfile() {
             localStorage.setItem('walletBalance', data.walletBalance || '0');
             localStorage.setItem('createdAt', data.createdAt || '');
             
-            // Xử lý riêng TermsAccepted để chuẩn hóa thành chuỗi 'true'/'false'
+            // Xử lý parse Boolean chính xác cho TermsAccepted
             let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? false;
-            let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1);
+            let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
             localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
 
-            // 2. LẤY TRẠNG THÁI TỪ LOCAL STORAGE ĐỂ XỬ LÝ LUỒNG CHẶN (ROUTE GUARD)
+            // 2. CHỐT CHẶN (ROUTE GUARD): KICK RA KHỎI WORKSPACE NẾU CHƯA ĐỦ ĐIỀU KIỆN
             const storedTerms = localStorage.getItem('termsAccepted');
             const storedApproval = localStorage.getItem('approvalStatus');
 
             if (storedTerms !== 'true' || storedApproval !== 'APPROVED') {
-                alert("Tài khoản chưa đủ điều kiện nhận chuyến!\nVui lòng vào trang Profile để hoàn tất Hồ sơ (eKYC) và xác nhận Điều khoản.");
+                alert("Tài khoản chưa đủ điều kiện nhận chuyến!\nVui lòng vào trang Profile để hoàn tất eKYC và đồng ý Điều khoản.");
                 window.location.replace('../../pages/profile.html'); 
-                return; // Ngắt luồng
+                return;
             }
 
-            // 3. RENDER UI NẾU THỎA MÃN ĐIỀU KIỆN
+            // 3. RENDER UI CHO TÀI XẾ HỢP LỆ
             const accName = document.getElementById('accDriverName');
             const accAvatar = document.getElementById('accDriverAvatar');
             const accRating = document.getElementById('accDriverRating');
@@ -141,10 +142,9 @@ async function fetchDriverProfile() {
             if(accName) accName.innerText = data.fullName || localStorage.getItem('fullName');
             if(accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName || 'Driver')}&background=1a1c1a&color=fff`;
             if(accRating) accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${localStorage.getItem('averageRating')} đánh giá`;
-            if(accVehicle) accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> Đang tải...`;
+            if(accVehicle) accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> Sẵn sàng`;
             
         } else {
-            // Chưa có hồ sơ trong bảng Driver (Dữ liệu Null)
             localStorage.setItem('termsAccepted', 'false');
             localStorage.setItem('approvalStatus', 'PENDING');
             alert("Tài khoản chưa sẵn sàng! Vui lòng hoàn tất Hồ sơ cá nhân.");

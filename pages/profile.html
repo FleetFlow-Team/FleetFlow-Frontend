@@ -435,14 +435,16 @@
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       if (!accountId || accountId === 'undefined' || !isDriver) return;
 
-      // Hàm ép hiển thị Toast cứng qua Inline CSS (Bỏ qua Bootstrap Script để tránh xung đột)
+      // Hàm hiển thị Toast an toàn (Không bị Bootstrap/CSS ghi đè)
       const showToastForce = (id) => {
           const el = document.getElementById(id);
           if (!el) return;
           el.classList.remove('d-none');
-          el.style.setProperty('display', 'block', 'important');
-          el.style.setProperty('opacity', '1', 'important');
-          el.style.setProperty('z-index', '999999', 'important'); 
+          el.style.display = 'block';
+          el.style.opacity = '1';
+          el.style.zIndex = '999999';
+          // Ép reflow để CSS bắt kịp
+          void el.offsetWidth;
           el.classList.add('show');
       };
 
@@ -453,13 +455,13 @@
           if (result.success && result.data) {
               const data = result.data; 
               
-              // Đổ dữ liệu vào Form Input
+              // Đổ dữ liệu vào Form
               const inputName = document.getElementById('inputFullName');
               const inputPhone = document.getElementById('inputPhone');
               if (inputName && data.fullName) { inputName.value = data.fullName; inputName.removeAttribute('readonly'); }
               if (inputPhone && data.phoneNumber) { inputPhone.value = data.phoneNumber; inputPhone.removeAttribute('readonly'); }
               
-              // 1. ĐỒNG BỘ TOÀN BỘ XUỐNG LOCAL STORAGE
+              // 1. ĐỒNG BỘ TOÀN BỘ VÀO LOCAL STORAGE
               localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
               localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
               localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
@@ -469,14 +471,14 @@
               localStorage.setItem('createdAt', data.createdAt || '');
 
               let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? false;
-              let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1);
+              let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
               localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
               
-              // 2. ĐỌC TỪ LOCAL STORAGE ĐỂ XỬ LÝ TOAST
+              // 2. HIỂN THỊ TOAST CẢNH BÁO
               const storedApproval = localStorage.getItem('approvalStatus');
               const storedTerms = localStorage.getItem('termsAccepted');
               
-              // --- XỬ LÝ TOAST eKYC ---
+              // Xử lý Toast EKYC
               if (storedApproval !== 'APPROVED') {
                   const ekycToastEl = document.getElementById('ekycWarningToast');
                   const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
@@ -500,19 +502,18 @@
                   showToastForce('ekycWarningToast'); 
               } else {
                   const el = document.getElementById('ekycWarningToast');
-                  if (el) el.style.setProperty('display', 'none', 'important');
+                  if (el) el.style.display = 'none';
               }
 
-              // --- XỬ LÝ TOAST TERMS (ĐẢM BẢO HIỂN THỊ CHO ID 5) ---
+              // Xử lý Toast TERMS (Sẽ hoạt động cho tài xế ID 5)
               if (storedTerms !== 'true') { 
                   showToastForce('termsWarningToast');
               } else {
                   const el = document.getElementById('termsWarningToast');
-                  if (el) el.style.setProperty('display', 'none', 'important');
+                  if (el) el.style.display = 'none';
               }
 
           } else {
-              // Dữ liệu Null -> Mặc định bắt ép
               localStorage.setItem('termsAccepted', 'false');
               localStorage.setItem('approvalStatus', 'PENDING');
               showToastForce('termsWarningToast');
