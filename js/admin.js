@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!initAdminSession()) return; 
 
     fetchAndRenderEkycQueue();
-    
+
     // Bắt sự kiện cho nút Đăng xuất
     const logoutBtn = document.querySelector('.logout-item');
     if (logoutBtn) {
@@ -284,14 +284,51 @@ function applyTransformations(element) {
     element.style.transform = `scale(${currentScale}) rotate(${currentRotation}deg)`;
 }
 
+let currentViewingAccountId = null;
+
 // 5.2 Mở các Modals chương trình bằng Bootstrap API
-window.openEkycModal = function () {
-    // Reset thông số ảnh mỗi lần mở modal thẩm định mới
-    currentScale = 1.0;
-    currentRotation = 0;
-    const img = document.getElementById("cccdImg");
-    if (img) applyTransformations(img);
+// =========================================================================
+// TASK 2: HÀM MỞ MODAL VÀ ĐỔ DỮ LIỆU CHI TIẾT TÀI XẾ
+// =========================================================================
+window.openEkycModal = function (accountId) {
+    // 1. Tìm tài xế trong mảng dữ liệu đã lưu từ API ở Task 1
+    const driver = currentPendingDrivers.find(d => d.accountId === accountId);
+    if (!driver) {
+        console.error("Không tìm thấy dữ liệu hồ sơ của tài xế này!");
+        return;
+    }
+
+    // 2. Lưu lại ID vào biến toàn cục để sử dụng cho nút Duyệt (Task 3) / Từ chối (Task 4)
+    currentViewingAccountId = accountId;
+
+    // 3. Đổ dữ liệu dạng Text (Tên, SĐT, Ngày tạo) vào Modal
+    const modalName = document.getElementById("modalDriverName");
+    const modalPhone = document.getElementById("modalDriverPhone");
+    const modalDate = document.getElementById("modalDriverDate");
+
+    if (modalName) modalName.innerText = driver.fullName;
+    if (modalPhone) modalPhone.innerHTML = `<i class="fa-solid fa-phone me-2"></i> ${driver.phoneNumber || 'Không có SĐT'}`;
     
+    // Xử lý chuỗi ngày tháng
+    const dateStr = driver.createdAt ? driver.createdAt.split('.')[0] : 'Chưa cập nhật';
+    if (modalDate) modalDate.innerText = `Thời gian nộp: ${dateStr}`;
+
+    // 4. Đổ dữ liệu Hình ảnh (Sử dụng URL đã được bóc tách và gán ở Task 1)
+    const cccdImgDOM = document.getElementById("cccdImg");
+    if (cccdImgDOM) {
+        // Ưu tiên hiển thị mặt trước CCCD, nếu null thì hiện ảnh mặc định
+        cccdImgDOM.src = driver.extractedCccd || '../../assets/img/default-doc.png';
+        
+        // Reset lại hiệu ứng Zoom/Rotate về mặc định mỗi khi mở tài xế mới
+        if (typeof currentScale !== 'undefined') currentScale = 1.0;
+        if (typeof currentRotation !== 'undefined') currentRotation = 0;
+        cccdImgDOM.style.transform = `scale(1) rotate(0deg)`;
+    }
+
+    // (Tùy chọn: Nếu HTML có thiết kế thêm thẻ <img id="licenseImg"> cho bằng lái, bạn gọi thêm:
+    // if (licenseImgDOM) licenseImgDOM.src = driver.extractedLicense; )
+
+    // 5. Kích hoạt hiển thị Modal Bootstrap
     const ekycModalEl = document.getElementById("ekycModal");
     if (ekycModalEl) {
         const modalInstance = bootstrap.Modal.getOrCreateInstance(ekycModalEl);
