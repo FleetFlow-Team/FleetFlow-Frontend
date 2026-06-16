@@ -291,14 +291,14 @@ let currentViewingAccountId = null;
 // TASK 2: HÀM MỞ MODAL VÀ ĐỔ DỮ LIỆU CHI TIẾT TÀI XẾ
 // =========================================================================
 window.openEkycModal = function (accountId) {
-    // 1. Tìm tài xế trong mảng dữ liệu đã lưu từ API ở Task 1
+    // 1. Tìm tài xế trong mảng dữ liệu đã lưu từ API
     const driver = currentPendingDrivers.find(d => d.accountId === accountId);
     if (!driver) {
         console.error("Không tìm thấy dữ liệu hồ sơ của tài xế này!");
         return;
     }
 
-    // 2. Lưu lại ID vào biến toàn cục để sử dụng cho nút Duyệt (Task 3) / Từ chối (Task 4)
+    // 2. Lưu lại ID vào biến toàn cục để sử dụng cho thao tác Duyệt/Từ chối
     currentViewingAccountId = accountId;
 
     // 3. Đổ dữ liệu dạng Text (Tên, SĐT, Ngày tạo) vào Modal
@@ -309,26 +309,30 @@ window.openEkycModal = function (accountId) {
     if (modalName) modalName.innerText = driver.fullName;
     if (modalPhone) modalPhone.innerHTML = `<i class="fa-solid fa-phone me-2"></i> ${driver.phoneNumber || 'Không có SĐT'}`;
     
-    // Xử lý chuỗi ngày tháng
     const dateStr = driver.createdAt ? driver.createdAt.split('.')[0] : 'Chưa cập nhật';
     if (modalDate) modalDate.innerText = `Thời gian nộp: ${dateStr}`;
 
-    // 4. Đổ dữ liệu Hình ảnh (Sử dụng URL đã được bóc tách và gán ở Task 1)
+    // 4. Đổ dữ liệu Hình ảnh và Reset hiệu ứng hiển thị ảnh (Zoom/Rotate)
     const cccdImgDOM = document.getElementById("cccdImg");
     if (cccdImgDOM) {
-        // Ưu tiên hiển thị mặt trước CCCD, nếu null thì hiện ảnh mặc định
         cccdImgDOM.src = driver.extractedCccd || '../../assets/img/default-doc.png';
-        
-        // Reset lại hiệu ứng Zoom/Rotate về mặc định mỗi khi mở tài xế mới
         if (typeof currentScale !== 'undefined') currentScale = 1.0;
         if (typeof currentRotation !== 'undefined') currentRotation = 0;
         cccdImgDOM.style.transform = `scale(1) rotate(0deg)`;
     }
 
-    // (Tùy chọn: Nếu HTML có thiết kế thêm thẻ <img id="licenseImg"> cho bằng lái, bạn gọi thêm:
-    // if (licenseImgDOM) licenseImgDOM.src = driver.extractedLicense; )
+    // 5. Khôi phục (Reset) giao diện của form Từ chối về trạng thái gốc
+    const rejectContainer = document.getElementById('rejectReasonContainer');
+    const actionButtons = document.getElementById('ekycActionButtons');
+    const rejectInput = document.getElementById('rejectReasonInput');
+    
+    if (rejectContainer && actionButtons && rejectInput) {
+        rejectContainer.classList.add('d-none');     // Ẩn khu vực nhập lý do
+        actionButtons.classList.remove('d-none');    // Hiển thị lại 2 nút Duyệt/Từ chối
+        rejectInput.value = '';                      // Xóa sạch đoạn văn gõ dở trước đó
+    }
 
-    // 5. Kích hoạt hiển thị Modal Bootstrap
+    // 6. Kích hoạt và hiển thị Modal lên màn hình
     const ekycModalEl = document.getElementById("ekycModal");
     if (ekycModalEl) {
         const modalInstance = bootstrap.Modal.getOrCreateInstance(ekycModalEl);
@@ -410,17 +414,16 @@ function initAdminSession() {
     const fullName = localStorage.getItem('fullName') || 'Administrator';
     const email = localStorage.getItem('email') || 'admin@fleetflow.vn';
 
-    // 1. Chốt chặn bảo mật (Route Guard): Đá văng nếu không phải Admin
+    // 🚨 TASK 5: CHỐT CHẶN BẢO MẬT (ROUTE GUARD) 🚨
+    // Nếu Role không tồn tại hoặc không phải ADMIN -> Lập tức đá văng
     if (userRole.toUpperCase() !== 'ADMIN') {
-        alert("Lỗi phân quyền: Bạn không có quyền truy cập không gian Quản trị viên!");
-        window.location.replace('../../index.html'); // Đẩy về trang chủ hoặc trang đăng nhập
-        return false;
+        console.warn("CẢNH BÁO BẢO MẬT: Phát hiện truy cập trái phép vào trang Admin!");
+        window.location.replace('../../403.html'); // Đá văng ra trang lỗi 403
+        return false; // Trả về false để chặn toàn bộ API bên dưới chạy
     }
 
-    // 2. Tạo Link Avatar động từ tên
+    // --- (Phần code dưới giữ nguyên: Đồng bộ Avatar và Tên lên Navbar) ---
     const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00b14f&color=fff`;
-
-    // 3. Đồng bộ dữ liệu lên Navbar
     const nameElements = document.querySelectorAll('.profile-name, .dropdown-header-custom .fw-bold');
     const roleElements = document.querySelectorAll('.profile-role');
     const emailElements = document.querySelectorAll('.dropdown-header-custom .small.text-white-50');
@@ -431,7 +434,7 @@ function initAdminSession() {
     emailElements.forEach(el => { if (el) el.innerText = email; });
     if (avatarImg) avatarImg.src = avatarUrl;
 
-    return true;
+    return true; // Trả về true cho phép DOMContentLoaded chạy tiếp API
 }
 
 // Hàm xử lý đăng xuất
