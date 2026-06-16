@@ -480,103 +480,127 @@
       </script>
 
     <script>
-      const invoiceState = {
-        base: 1000000,
-        surcharge: 100000,
-        discount: 0,
-        total: 1100000,
-        depositRatio: 0.3,
-      };
+    // =====================================================================
+    // 1. KHỞI TẠO DỮ LIỆU TỪ SESSION STORAGE (TRẠM 2 TRUYỀN SANG)
+    // =====================================================================
+    document.addEventListener("DOMContentLoaded", () => {
+        const bookingId = sessionStorage.getItem('currentBookingId');
+        const depositAmountText = sessionStorage.getItem('currentDepositAmount'); // Dữ liệu dạng: "330.000 đ"
 
-      const formState = { emailValid: false, phoneValid: false };
-
-      const elTotal = document.getElementById("totalAmount");
-      const elBtnSubmit = document.getElementById("btnSubmitCheckout");
-      const elDiscountRow = document.getElementById("discountRow");
-      const elDiscountAmount = document.getElementById("discountAmount");
-      const elVoucherMsg = document.getElementById("voucherMsg");
-      const inputVoucher = document.getElementById("voucherCode");
-
-      const formatVND = (num) => new Intl.NumberFormat("vi-VN").format(num) + " đ";
-
-      function applyVoucher() {
-        const code = inputVoucher.value.trim().toUpperCase();
-        if (code === "") return;
-
-        if (code === "SUMMER26") {
-          invoiceState.discount = 100000;
-          elVoucherMsg.style.display = "block";
-          elVoucherMsg.style.color = "var(--color-1)";
-          elVoucherMsg.innerHTML = '<i class="fa-solid fa-circle-check me-1"></i> Áp dụng mã thành công!';
-          document.getElementById("discountName").innerText = code;
-          elDiscountAmount.innerText = formatVND(invoiceState.discount).replace(" đ", "");
-          elDiscountRow.style.display = "flex";
-        } else {
-          invoiceState.discount = 0;
-          elVoucherMsg.style.display = "block";
-          elVoucherMsg.style.color = "#e53e3e";
-          elVoucherMsg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã giảm giá không hợp lệ hoặc đã hết hạn.';
-          elDiscountRow.style.display = "none";
+        // Bảo mật luồng: Nếu không có ID chuyến đi (do khách vào thẳng link), đuổi về trang Đặt xe
+        if (!bookingId || !depositAmountText) {
+            alert("Không tìm thấy thông tin đơn hàng đang chờ thanh toán. Vui lòng đặt lại chuyến!");
+            window.location.replace("../../pages/findCar.html");
+            return;
         }
-        updateTotal();
-      }
 
-      function updateTotal() {
-        invoiceState.total = invoiceState.base + invoiceState.surcharge - invoiceState.discount;
-        const deposit = invoiceState.total * invoiceState.depositRatio;
+        // Đổ dữ liệu tiền cọc lên UI
+        document.getElementById('totalAmount').innerText = depositAmountText;
+        document.getElementById('btnSubmitCheckout').innerText = `Thanh toán cọc ${depositAmountText}`;
 
-        elTotal.innerText = formatVND(invoiceState.total);
-        elBtnSubmit.innerText = `Thanh toán cọc ${formatVND(deposit)}`;
-      }
+        // Tùy chọn: Tự động điền Email và Tên nếu khách đã đăng nhập (lấy từ localStorage)
+        const savedEmail = localStorage.getItem('email');
+        const savedName = localStorage.getItem('fullName');
+        if(savedEmail) {
+            document.getElementById('emailInput').value = savedEmail;
+            validateEmail(); // Gọi validate luôn để chuyển state sang true
+        }
+        if(savedName) document.getElementById('fullName').value = savedName;
+    });
 
-      function validateEmail() {
+    // =====================================================================
+    // 2. VALIDATE FORM (BẮT LỖI NGHIÊM NGẶT)
+    // =====================================================================
+    const formState = { emailValid: false, phoneValid: false };
+
+    function validateEmail() {
         const el = document.getElementById("emailInput");
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!regex.test(el.value) && el.value !== "") {
-          el.classList.add("is-invalid");
-          formState.emailValid = false;
-        } else if(el.value !== "") {
-          el.classList.remove("is-invalid");
-          formState.emailValid = true;
+        // Regex chuẩn kiểm tra email có @ và dấu chấm
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+        
+        if (el.value.trim() === "") {
+            el.classList.add("is-invalid");
+            formState.emailValid = false;
+        } else if (!regex.test(el.value.trim())) {
+            el.classList.add("is-invalid");
+            formState.emailValid = false;
+        } else {
+            el.classList.remove("is-invalid");
+            formState.emailValid = true;
         }
-      }
+    }
 
-      function validatePhone() {
+    function validatePhone() {
         const el = document.getElementById("phoneInput");
+        // Regex kiểm tra số điện thoại (chỉ chứa số, độ dài 10-11 ký tự)
         const regex = /^[0-9]{10,11}$/;
-        if (!regex.test(el.value) && el.value !== "") {
-          el.classList.add("is-invalid");
-          formState.phoneValid = false;
-        } else if(el.value !== "") {
-          el.classList.remove("is-invalid");
-          formState.phoneValid = true;
+        
+        if (el.value.trim() === "") {
+            el.classList.add("is-invalid");
+            formState.phoneValid = false;
+        } else if (!regex.test(el.value.trim())) {
+            el.classList.add("is-invalid");
+            formState.phoneValid = false;
+        } else {
+            el.classList.remove("is-invalid");
+            formState.phoneValid = true;
         }
-      }
+    }
 
-      function selectPayment(element) {
+    // =====================================================================
+    // 3. XỬ LÝ GIAO DIỆN PHỤ
+    // =====================================================================
+    function selectPayment(element) {
         document.querySelectorAll(".payment-card").forEach((card) => card.classList.remove("active"));
         element.classList.add("active");
-      }
+    }
 
-      function processCheckout() {
-        // Kích hoạt blur để check lại toàn bộ nếu khách ấn submit khi chưa điền
-        validateEmail(); validatePhone();
-        
-        if (!formState.emailValid || !formState.phoneValid) {
-          alert("Vui lòng điền đúng định dạng Email và Số điện thoại.");
-          return;
+    // Khóa tính năng Voucher ở bước này vì tổng tiền đã được chốt từ API /check-price ở Trạm 2
+    function applyVoucher() {
+        const msg = document.getElementById("voucherMsg");
+        msg.style.display = "block";
+        msg.style.color = "#e53e3e";
+        msg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã ưu đãi chỉ được áp dụng ở bước chọn lộ trình!';
+    }
+
+    // =====================================================================
+    // 4. MÔ PHỎNG XỬ LÝ GIAO DỊCH (MOCK UI) & ĐIỀU HƯỚNG
+    // =====================================================================
+    async function processCheckout() {
+        // 1. Ép chạy validate lại toàn bộ để đề phòng khách cố tình không nhập mà bấm luôn
+        validateEmail(); 
+        validatePhone();
+        const fullName = document.getElementById("fullName").value.trim();
+
+        // 2. Chặn lại nếu Form sai
+        if (!formState.emailValid || !formState.phoneValid || !fullName) {
+            alert("Vui lòng điền đầy đủ và đúng định dạng Họ tên, Email và Số điện thoại.");
+            return;
         }
 
+        // 3. Hiển thị hiệu ứng Loading trên nút
+        const elBtnSubmit = document.getElementById("btnSubmitCheckout");
+        const originalText = elBtnSubmit.innerText;
         elBtnSubmit.disabled = true;
-        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý giao dịch...';
+        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Hệ thống đang xử lý giao dịch...';
 
+        const bookingId = sessionStorage.getItem('currentBookingId');
+
+        // 4. Giả lập delay 2 giây của API Cổng thanh toán (VNPAY/MoMo...)
         setTimeout(() => {
-          alert("Thanh toán thành công! Chuẩn bị chuyển hướng đến trang theo dõi chuyến đi.");
-          window.location.href = "index.html";
-        }, 2000);
-      }
+            alert(`Giao dịch thanh toán cọc thành công!\nMã chuyến đi của bạn là: #${bookingId}`);
+            
+            // Xóa cache session để tránh tình trạng back lại trang này thanh toán lần 2
+            sessionStorage.removeItem('currentBookingId');
+            sessionStorage.removeItem('currentDepositAmount');
+            sessionStorage.removeItem('selectedVehicleId');
 
-      updateTotal();
-    </script>
+            // 5. Điều hướng sang trang Lịch sử chuyến đi
+            window.location.replace("tripHistory.html"); 
+        }, 2000);
+    }
+</script>
+
+    
   </body>
 </html>

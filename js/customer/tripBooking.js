@@ -729,8 +729,15 @@ window.applyVoucher = async function() {
 // ==========================================
 // 5. CHỐT ĐƠN (Submit Booking) & ĐIỀU HƯỚNG
 // ==========================================
+// ==========================================
+// 5. CHỐT ĐƠN (Submit Booking) & ĐIỀU HƯỚNG
+// ==========================================
 window.submitBooking = async function() {
-    if (!customerId) {
+    // FIX 1: Khai báo rõ ràng customerId và lấy Token từ localStorage
+    const customerId = parseInt(localStorage.getItem('customerId') || localStorage.getItem('accountId'));
+    const token = localStorage.getItem('accessToken');
+
+    if (!customerId || isNaN(customerId) || !token) {
         return Swal.fire({
             icon: 'info', title: 'Yêu cầu đăng nhập',
             text: 'Vui lòng đăng nhập để tiến hành chốt chuyến đi.',
@@ -773,17 +780,19 @@ window.submitBooking = async function() {
     try {
         const response = await fetch(`${CORE_API_BASE}/bookings`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // FIX 2: Bổ sung Token vào Header
+            },
             body: JSON.stringify(payload)
         });
         const data = await response.json();
 
         if (data.success) {
-            // LƯU DỮ LIỆU ĐỂ CHUYỂN QUA TRẠM 3 (THANH TOÁN CỌC)
-            sessionStorage.setItem('currentBookingId', data.bookingId);
-            // Ép kiểu số tiền cọc (bỏ chữ 'đ', bỏ dấu '.') để dễ tính toán ở trang sau
-            const rawDeposit = document.getElementById('depositDisplay').innerText.replace(/[. đ]/g, '');
-            sessionStorage.setItem('currentDepositAmount', rawDeposit);
+            // FIX 3: Lưu thẳng vào localStorage và giữ nguyên định dạng chuỗi "xxx.xxx đ" cho checkout.html
+            localStorage.setItem('currentBookingId', data.bookingId);
+            const formattedDeposit = document.getElementById('depositDisplay').innerText;
+            localStorage.setItem('currentDepositAmount', formattedDeposit);
             
             // Thông báo mượt mà trước khi chuyển trang
             Swal.fire({
