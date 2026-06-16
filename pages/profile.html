@@ -435,14 +435,14 @@
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       if (!accountId || accountId === 'undefined' || !isDriver) return;
 
-      // 🚀 HÀM ÉP HIỂN THỊ TOAST (XUYÊN THỦNG MỌI CSS BỊ LỖI)
+      // 🚀 HÀM ÉP HIỂN THỊ TOAST SIÊU MẠNH (XUYÊN THỦNG CSS)
       const showToastForce = (id) => {
           const el = document.getElementById(id);
           if (!el) return;
           el.classList.remove('d-none');
           el.style.setProperty('display', 'block', 'important');
           el.style.setProperty('opacity', '1', 'important');
-          el.style.setProperty('z-index', '999999', 'important'); // Ép nổi lên trên cùng
+          el.style.setProperty('z-index', '999999', 'important'); 
           el.classList.add('show');
           try { new bootstrap.Toast(el, { autohide: false }).show(); } catch(e) {}
       };
@@ -466,20 +466,17 @@
               if (inputPhone) { inputPhone.value = getVal('phoneNumber') || ''; inputPhone.removeAttribute('readonly'); }
               
               // ========================================================
-              // 🚀 BẮT DỮ LIỆU TỪ BACKEND MỚI
+              // 🚀 BẮT DỮ LIỆU TỪ BACKEND MỚI (CHỐNG LỖI PARSE BOOLEAN)
               // ========================================================
               currentApprovalStatus = String(getVal('approvalStatus') || 'PENDING').toUpperCase();
               
-              // Bắt trực tiếp giá trị boolean từ DB (thay thế cho việc check null Timestamp cũ)
-              const isTermsAccepted = data.termsAccepted === true; 
+              const rawTerms = getVal('termsAccepted');
+              const isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1);
               
-              // Lưu cờ vào bộ nhớ tạm để dự phòng cho các trang khác
-              localStorage.setItem('isTermsAccepted', isTermsAccepted);
+              localStorage.setItem('isTermsAccepted', isTermsAccepted ? 'true' : 'false');
               
-              // 1. QUYẾT ĐỊNH HIỂN THỊ TOAST CCCD (eKYC)
+              // 1. KIỂM TRA TOAST CCCD (eKYC)
               if (currentApprovalStatus !== 'APPROVED') {
-                  showToastForce('ekycWarningToast'); 
-                  
                   const ekycToastEl = document.getElementById('ekycWarningToast');
                   const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
                   if (ekycToastEl) {
@@ -499,32 +496,31 @@
                           if(toastSpan) toastSpan.innerHTML = "Tài khoản chưa xác thực. Vui lòng tải lên CCCD & Bằng lái xe!";
                       }
                   }
+                  showToastForce('ekycWarningToast'); 
               } else {
                   const el = document.getElementById('ekycWarningToast');
                   if (el) el.style.setProperty('display', 'none', 'important');
               }
 
-              // 2. QUYẾT ĐỊNH HIỂN THỊ TOAST ĐIỀU KHOẢN
-              if (isTermsAccepted) { 
+              // 2. KIỂM TRA TOAST ĐIỀU KHOẢN (Độc lập hoàn toàn với eKYC)
+              if (!isTermsAccepted) { 
+                  showToastForce('termsWarningToast'); // Hiển thị bảng bắt xác nhận chính sách
+              } else {
                   const el = document.getElementById('termsWarningToast');
                   if (el) el.style.setProperty('display', 'none', 'important');
-              } else {
-                  showToastForce('termsWarningToast'); // Ép hiển thị bảng bắt xác nhận chính sách
               }
 
           } else {
-              // 🚨 API BÁO FALSE -> ÉP BẬT CẢ 2 BẢNG CẢNH BÁO
+              // 🚨 NẾU CHƯA CÓ TRONG BẢNG DRIVER -> ÉP BẬT CẢ 2 CẢNH BÁO
               showToastForce('termsWarningToast');
               showToastForce('ekycWarningToast');
           }
       } catch (error) {
           console.error("Lỗi đồng bộ API Profile:", error);
-          // 🚨 LỖI SERVER HOẶC MẤT MẠNG -> ÉP BẬT CẢ 2 BẢNG CẢNH BÁO
           showToastForce('termsWarningToast');
           showToastForce('ekycWarningToast');
       }
   }
-
     async function updateProfile(event) {
         event.preventDefault();
         const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');

@@ -740,13 +740,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
  document.addEventListener("DOMContentLoaded", async function() {
       const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-      // Bỏ qua nếu là Khách hàng (Họ không cần đồng ý điều khoản của Đối tác)
+      // Bỏ qua nếu là Khách hàng
       if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') return;
 
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       const termsBox = document.getElementById('driverTermsAcceptanceBox');
       
-      // Hàm ép hiển thị Hộp Xác nhận
       const showBoxForce = () => {
           if (termsBox) {
               termsBox.classList.remove('d-none');
@@ -754,7 +753,6 @@ document.addEventListener("DOMContentLoaded", function() {
           }
       };
 
-      // 🚨 Nếu chưa có ID (Đang test chay), ép bung Checkbox
       if (!accountId || accountId === 'undefined') {
           showBoxForce();
           return;
@@ -766,9 +764,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
           if (result.success && result.data) {
               const data = result.data;
+              const getVal = (key) => {
+                  const lowerKey = key.toLowerCase();
+                  for (let k in data) { if (k.toLowerCase() === lowerKey && data[k] !== null) return data[k]; }
+                  return null;
+              };
               
-              // 🚀 BẮT TRỰC TIẾP GIÁ TRỊ BOOLEAN TỪ BACKEND
-              const isAccepted = data.termsAccepted === true;
+              // 🚀 BẮT TRỰC TIẾP GIÁ TRỊ BOOLEAN TỪ CỘT MỚI
+              const rawTerms = getVal('termsAccepted');
+              const isAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1);
 
               if (isAccepted) {
                   localStorage.setItem('isTermsAccepted', 'true');
@@ -781,14 +785,13 @@ document.addEventListener("DOMContentLoaded", function() {
                   showBoxForce();
               }
           } else {
-              showBoxForce(); // API lỗi -> Ép xác nhận
+              showBoxForce(); 
           }
       } catch (error) {
           console.error("Lỗi API Policy:", error);
           showBoxForce();
       }
   });
-  
   // Hàm gọi API POST để cập nhật trạng thái đồng ý điều khoản xuống DB
   async function acceptDriverTerms() {
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
