@@ -1268,6 +1268,10 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
     </script>
 
     <script>
+    /**
+     * Hàm xử lý khi khách hàng chọn xe
+     * @param {number} vehicleId - ID của loại xe được chọn
+     */
     function selectCarAndGo(vehicleId) {
         // Lưu ID xe vào LocalStorage
         localStorage.setItem('selectedVehicleId', vehicleId);
