@@ -643,3 +643,39 @@ img.rounded-circle.border-white {
 .apple-floating-controls button:hover {
     background: rgba(255, 255, 255, 0.15);
 }
+
+/* =========================================================
+   APPLE LIQUID GLASS - EMPTY STATE (KHI KHÔNG CÓ ẢNH)
+========================================================= */
+.doc-empty-state {
+    width: 100%;
+    height: 220px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px dashed rgba(255, 255, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.4);
+    transition: all 0.3s ease;
+}
+
+.doc-empty-state i {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.5;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+}
+
+.doc-empty-state span {
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.apple-doc-card:hover .doc-empty-state {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: rgba(255, 255, 255, 0.7);
+}
