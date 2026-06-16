@@ -523,3 +523,123 @@ img.rounded-circle.border-white {
 }
 .toast-premium.border-success { box-shadow: 0 10px 30px rgba(0, 177, 79, 0.2), inset 1px 1px 3px rgba(0, 177, 79, 0.5) !important; }
 .toast-premium.border-danger { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2), inset 1px 1px 3px rgba(239, 68, 68, 0.5) !important; }
+
+/* =========================================================
+   APPLE LIQUID GLASS MODAL SYSTEM
+========================================================= */
+
+/* 1. Làm mờ toàn bộ Background phía sau Modal */
+.glass-modal-blur {
+    background: rgba(0, 0, 0, 0.5) !important;
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+}
+
+/* 2. Style cho thân Modal (Khối kính lỏng) */
+.glass-modal-content {
+    background: linear-gradient(145deg, rgba(50, 50, 55, 0.65) 0%, rgba(20, 20, 25, 0.85) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px; /* Bo góc lớn chuẩn Apple */
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+/* 3. Nút Close (X) góc phải trên cùng */
+.apple-close-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.apple-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* 4. Khung chứa từng ảnh (Front/Back Document Card) */
+.apple-doc-card {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 12px;
+    position: relative;
+    overflow: hidden;
+}
+
+.doc-title-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    z-index: 10;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ekyc-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 5. Thanh Control (Zoom/Rotate) dạng viên thuốc (Pill) nổi */
+.apple-floating-controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(30, 30, 30, 0.7);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    display: flex;
+    gap: 8px;
+    padding: 6px 12px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.apple-doc-card:hover .apple-floating-controls {
+    opacity: 1; /* Chỉ hiện thanh control khi di chuột vào ảnh */
+}
+
+.apple-floating-controls button {
+    background: transparent;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.apple-floating-controls button:hover {
+    background: rgba(255, 255, 255, 0.15);
+}

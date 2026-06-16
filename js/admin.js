@@ -418,7 +418,7 @@ function initAdminSession() {
     // Nếu Role không tồn tại hoặc không phải ADMIN -> Lập tức đá văng
     if (userRole.toUpperCase() !== 'ADMIN') {
         console.warn("CẢNH BÁO BẢO MẬT: Phát hiện truy cập trái phép vào trang Admin!");
-        window.location.replace('../../403.html'); // Đá văng ra trang lỗi 403
+        window.location.replace('../error/403.html'); // Đá văng ra trang lỗi 403
         return false; // Trả về false để chặn toàn bộ API bên dưới chạy
     }
 
