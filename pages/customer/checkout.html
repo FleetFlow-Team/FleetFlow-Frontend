@@ -481,16 +481,17 @@
 
     <script>
     // =====================================================================
-    // 1. KHỞI TẠO DỮ LIỆU TỪ SESSION STORAGE (TRẠM 2 TRUYỀN SANG)
+    // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE (ĐỒNG BỘ VỚI TRIPBOOKING.JS)
     // =====================================================================
     document.addEventListener("DOMContentLoaded", () => {
-        const bookingId = sessionStorage.getItem('currentBookingId');
-        const depositAmountText = sessionStorage.getItem('currentDepositAmount'); // Dữ liệu dạng: "330.000 đ"
+        // Đã sửa: Sử dụng localStorage thay vì sessionStorage
+        const bookingId = localStorage.getItem('currentBookingId');
+        const depositAmountText = localStorage.getItem('currentDepositAmount'); 
 
         // Bảo mật luồng: Nếu không có ID chuyến đi (do khách vào thẳng link), đuổi về trang Đặt xe
         if (!bookingId || !depositAmountText) {
             alert("Không tìm thấy thông tin đơn hàng đang chờ thanh toán. Vui lòng đặt lại chuyến!");
-            window.location.replace("../../pages/findCar.html");
+            window.location.replace("../../pages/findCar.html"); 
             return;
         }
 
@@ -498,14 +499,17 @@
         document.getElementById('totalAmount').innerText = depositAmountText;
         document.getElementById('btnSubmitCheckout').innerText = `Thanh toán cọc ${depositAmountText}`;
 
-        // Tùy chọn: Tự động điền Email và Tên nếu khách đã đăng nhập (lấy từ localStorage)
+        // Tự động điền Email và Tên nếu khách đã đăng nhập (lấy từ localStorage)
         const savedEmail = localStorage.getItem('email');
         const savedName = localStorage.getItem('fullName');
-        if(savedEmail) {
+        
+        if (savedEmail) {
             document.getElementById('emailInput').value = savedEmail;
             validateEmail(); // Gọi validate luôn để chuyển state sang true
         }
-        if(savedName) document.getElementById('fullName').value = savedName;
+        if (savedName) {
+            document.getElementById('fullName').value = savedName;
+        }
     });
 
     // =====================================================================
@@ -584,16 +588,17 @@
         elBtnSubmit.disabled = true;
         elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Hệ thống đang xử lý giao dịch...';
 
-        const bookingId = sessionStorage.getItem('currentBookingId');
+        // Đã sửa: Lấy ID từ localStorage
+        const bookingId = localStorage.getItem('currentBookingId');
 
         // 4. Giả lập delay 2 giây của API Cổng thanh toán (VNPAY/MoMo...)
         setTimeout(() => {
             alert(`Giao dịch thanh toán cọc thành công!\nMã chuyến đi của bạn là: #${bookingId}`);
             
-            // Xóa cache session để tránh tình trạng back lại trang này thanh toán lần 2
-            sessionStorage.removeItem('currentBookingId');
-            sessionStorage.removeItem('currentDepositAmount');
-            sessionStorage.removeItem('selectedVehicleId');
+            // Xóa cache localStorage để tránh tình trạng back lại trang này thanh toán lần 2
+            localStorage.removeItem('currentBookingId');
+            localStorage.removeItem('currentDepositAmount');
+            localStorage.removeItem('selectedVehicleId'); // Xóa luôn ID xe đã chọn
 
             // 5. Điều hướng sang trang Lịch sử chuyến đi
             window.location.replace("tripHistory.html"); 
