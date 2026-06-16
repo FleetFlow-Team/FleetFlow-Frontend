@@ -408,7 +408,7 @@
         if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') return;
         
         initLocalProfileUI();
-        loadProfileDataFromAPI();
+        loadProfileDataFromAPI(true);
     });
 
     function initLocalProfileUI() {

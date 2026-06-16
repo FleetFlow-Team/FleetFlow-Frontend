@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // KIỂM TRA TRẠNG THÁI ĐIỀU KHOẢN TỪ BỘ NHỚ
-    const isTermsAccepted = localStorage.getItem('isTermsAccepted');
+    const isTermsAccepted = localStorage.getItem('termsAccepted'); // Đổi thành termsAccepted
     if (isTermsAccepted === 'false') {
         const termsToast = document.getElementById('termsWarningToast');
         if (termsToast) {
