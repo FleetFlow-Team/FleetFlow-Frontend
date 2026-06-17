@@ -204,6 +204,65 @@
          5. NÚT LIÊN HỆ TRÔI NỔI
       ========================================= */
       .floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
+
+      /* =========================================
+   6. HỘP XÁC NHẬN ĐIỀU KHOẢN TÀI XẾ (IN-PAGE GLASS)
+========================================= */
+.driver-terms-box {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(0, 143, 63, 0.2);
+    border-radius: 25px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 1px 1px 5px rgba(255, 255, 255, 1);
+    position: relative;
+    overflow: hidden;
+    margin-top: 40px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.driver-terms-box:hover {
+    box-shadow: 0 15px 35px rgba(0, 143, 63, 0.1), inset 1px 1px 5px rgba(255, 255, 255, 1);
+    transform: translateY(-3px);
+}
+
+.driver-terms-box::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--color-1) 0%, #008f3f 100%);
+    border-radius: 25px 0 0 25px;
+}
+
+.driver-terms-title {
+    color: var(--color-dark);
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.custom-checkbox-wrap .form-check-input {
+    width: 1.3em;
+    height: 1.3em;
+    margin-top: 0.15em;
+    border-color: var(--color-1);
+    cursor: pointer;
+}
+
+.custom-checkbox-wrap .form-check-input:checked {
+    background-color: var(--color-1);
+    border-color: var(--color-1);
+}
+
+.custom-checkbox-wrap .form-check-label {
+    color: #334155;
+    font-weight: 600;
+    font-size: 1.05rem;
+    cursor: pointer;
+    user-select: none;
+}
       
       @media (max-width: 1200px) {
     /* CHUYỂN BOTTOM BAR LƠ LỬNG KIỂU iOS */
@@ -291,6 +350,8 @@
     .floating-contact-buttons {
         bottom: 110px !important; 
     }
+
+    
 }
     </style>
   </head>
@@ -507,27 +568,35 @@
                 Điều phối viên sẽ lập tức <b>Đóng băng Hóa đơn</b>, tạm dừng trừ tiền thẻ để điều tra.
               </p>
             </section>
+
+            <div id="driverTermsAcceptanceBox" class="driver-terms-box p-4 p-md-5 d-none">
+              <div class="row align-items-center g-4">
+                <div class="col-md-7 col-lg-8">
+                  <h4 class="driver-terms-title mb-2">
+                    <i class="fa-solid fa-file-contract text-success me-2"></i> Xác nhận Điều khoản Đối tác
+                  </h4>
+                  <p class="policy-text mb-0" style="font-size: 0.95rem;">
+                    Vui lòng đọc kỹ các chính sách phía trên. Bạn cần xác nhận đồng ý với toàn bộ các điều khoản dịch vụ để hệ thống kích hoạt quyền nhận chuyến xe.
+                  </p>
+                </div>
+                
+                <div class="col-md-5 col-lg-4 d-flex flex-column align-items-md-end gap-3">
+                  <div class="form-check custom-checkbox-wrap m-0 d-flex align-items-center gap-2">
+                    <input class="form-check-input shadow-sm" type="checkbox" id="agreeTermsCheckbox" onchange="document.getElementById('btnAcceptTerms').disabled = !this.checked">
+                    <label class="form-check-label" for="agreeTermsCheckbox">
+                      Tôi đã đọc và đồng ý
+                    </label>
+                  </div>
+                  <button id="btnAcceptTerms" class="btn btn-success fw-bold px-4 py-2 w-100 shadow-sm" style="border-radius: 50px; font-size: 1.05rem;" disabled onclick="acceptDriverTerms()">
+                    Xác nhận ngay
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div id="driverTermsAcceptanceBox" class="position-fixed bottom-0 start-0 w-100 bg-dark border-top border-success p-3 d-none" style="z-index: 9999; box-shadow: 0 -5px 15px rgba(0,0,0,0.5);">
-        <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
-            <div class="text-white">
-                <h6 class="mb-1 fw-bold text-success"><i class="fa-solid fa-file-contract"></i> Xác nhận Điều khoản Đối tác Tài xế</h6>
-                <small class="text-white-50">Vui lòng đọc kỹ các chính sách phía trên. Bạn cần đồng ý với các điều khoản này để có thể bắt đầu nhận chuyến xe.</small>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <div class="form-check m-0">
-                    <input class="form-check-input border-success" type="checkbox" id="agreeTermsCheckbox" onchange="document.getElementById('btnAcceptTerms').disabled = !this.checked" style="cursor: pointer;">
-                    <label class="form-check-label text-white small" for="agreeTermsCheckbox" style="cursor: pointer;">
-                        Tôi đã đọc và đồng ý
-                    </label>
-                </div>
-                <button id="btnAcceptTerms" class="btn btn-success fw-bold px-4 rounded-pill" disabled onclick="acceptDriverTerms()">Xác nhận</button>
-            </div>
-        </div>
-    </div>
     </main>
 
     <footer>

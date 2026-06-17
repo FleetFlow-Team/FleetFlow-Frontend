@@ -494,18 +494,21 @@
                   if (ekycToastEl) {
                       const toastSpan = ekycToastEl.querySelector('.toast-body span');
                       const toastIcon = ekycToastEl.querySelector('i');
+                      
                       if (storedApproval === 'REJECTED') {
-                          ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed bottom-0 start-0 m-4 show";
+                          // Đã xóa bottom-0 và m-4 để không ghi đè inline style 3svh
+                          ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed start-0 show";
                           if(toastIcon) toastIcon.className = "fa-solid fa-circle-xmark fs-3 text-danger fa-beat mt-1";
                           if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>bị từ chối</b>. Vui lòng tải lại CCCD & Bằng lái!";
                       } else if (isEkycComplete) {
-                          ekycToastEl.className = "toast align-items-center border border-info shadow-lg position-fixed bottom-0 start-0 m-4 show";
+                          ekycToastEl.className = "toast align-items-center border border-info shadow-lg position-fixed start-0 show";
                           if(toastIcon) toastIcon.className = "fa-solid fa-clock-rotate-left fs-3 text-info fa-spin-pulse mt-1";
                           if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>đang chờ phê duyệt</b>. Vui lòng quay lại sau!";
                       } else {
-                          ekycToastEl.className = "toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4 show";
+                          // TRẠNG THÁI MẶC ĐỊNH: CHỈ SET CLASS, KHÔNG GHI ĐÈ INNERHTML
+                          ekycToastEl.className = "toast align-items-center border border-warning shadow-lg position-fixed start-0 show";
                           if(toastIcon) toastIcon.className = "fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1";
-                          if(toastSpan) toastSpan.innerHTML = "Tài khoản chưa xác thực. Vui lòng tải lên CCCD & Bằng lái xe!";
+                          // Lệnh toastSpan.innerHTML ở đây đã bị xóa bỏ hoàn toàn
                       }
                   }
                   showToastForce('ekycWarningToast'); 
@@ -694,27 +697,27 @@
       }
   }
     </script>
-    <!-- Box warning cho chính sách -->
-    <div id="termsWarningToast" class="toast align-items-center border border-danger shadow-lg position-fixed bottom-0 end-0 m-4" 
-         role="alert" style="z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; max-width: 350px;">
+    <!-- Box warning cho ekyc (Nằm sát dưới cùng) -->
+    <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed start-0" 
+         role="alert" style="bottom: 3svh; margin-left: 3svw; z-index: 10000; background: rgba(0,0,0,0.85); box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: none; width: calc(100vw - 6svw); max-width: 350px;">
+        <div class="d-flex p-3">
+            <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
+                <i class="fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1"></i> 
+                <span style="color: var(--color-2)">Tài khoản chưa xác thực. Vui lòng vào <a href="../profile.html" class="text-warning fw-bold">Hồ sơ</a> bổ sung CCCD và Bằng lái xe để nhận chuyến!</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('ekycWarningToast').style.display='none'"></button>
+        </div>
+    </div>
+
+    <!-- Box warning cho chính sách (Được đẩy lên cao hơn hộp ekyc 110px) -->
+    <div id="termsWarningToast" class="toast align-items-center border border-danger shadow-lg position-fixed start-0" 
+         role="alert" style="bottom: calc(3svh + 120px); margin-left: 3svw; z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; width: calc(100vw - 6svw); max-width: 350px;">
         <div class="d-flex p-3">
             <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
                 <i class="fa-solid fa-file-signature fs-3 text-danger fa-beat mt-1"></i> 
                 <span>Tài khoản của bạn chưa xác nhận điều khoản. Vui lòng vào <a href="../policy.html" class="text-danger fw-bold text-decoration-underline">Chính sách</a> để đọc và đồng ý!</span>
             </div>
             <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('termsWarningToast').style.display='none'"></button>
-        </div>
-    </div>
-
-    <!-- Box warning cho ekyc -->
-    <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed bottom-0 start-0 m-4" 
-         role="alert" style="z-index: 10000; background: rgba(255, 255, 255, 0.296); box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: none; max-width: 350px;">
-        <div class="d-flex p-3">
-            <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
-                <i class="fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1"></i> 
-                <span style="color: var(--text-color)">Tài khoản chưa xác thực. Vui lòng vào <a href="../profile.html" class="text-warning fw-bold">Hồ sơ</a> bổ sung CCCD và Bằng lái xe để nhận chuyến!</span>
-            </div>
-            <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('ekycWarningToast').style.display='none'"></button>
         </div>
     </div>
   </body>
