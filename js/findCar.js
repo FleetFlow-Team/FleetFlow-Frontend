@@ -116,4 +116,3 @@ function initBottomSheetUX() {
     window.addEventListener('mousemove', handleDragMove); 
     window.addEventListener('mouseup', handleDragEnd);
 }
-

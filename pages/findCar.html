@@ -310,6 +310,19 @@
     filter: drop-shadow(0 6px 10px rgba(0, 177, 79, 0.35));
 }
 
+.modal-blur-backdrop {
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .car-detail-modal-content {
+            background-color: #0f172a;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            color: white;
+        }
+
 
     </style>
 </head>
@@ -544,6 +557,32 @@
         <img class="ai-img" src="../assets/img/AI Logo.png" alt="Mở AI Chat" onclick="toggleChat()">
    
 </aside>
+
+<div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
+        <div class="modal-dialog modal-dialog-centered modal-lg position-relative" style="z-index: 1056;">
+            <div class="modal-content car-detail-modal-content overflow-hidden">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-circle-info me-2"></i>Hồ sơ Phương tiện</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-4" id="carDetailBody">
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-circle-notch fa-spin fs-2 text-success"></i>
+                        <p class="mt-2 text-white-50">Đang truy xuất thông tin...</p>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 pt-0 border-top border-secondary border-opacity-25 mt-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm" id="btnBookFromDetail">
+                        Tiến hành Đặt xe <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="modal-backdrop modal-blur-backdrop show position-fixed top-0 start-0 w-100 h-100" style="z-index: 1050; pointer-events: none;"></div>
+    </div>
     <footer>
       <div class="container reveal-on-scroll">
         <div class="row g-4">

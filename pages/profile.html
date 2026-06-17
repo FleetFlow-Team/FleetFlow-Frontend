@@ -406,7 +406,17 @@
             // Kích hoạt luồng Fetch API Khách hàng
             loadCustomerProfileFromAPI();
         } else {
-            // Kích hoạt luồng Fetch API Tài xế (Đã làm ở bước trước)
+            // 🚀 BỔ SUNG: Hiển thị box Bằng lái xe cho Đối tác Tài xế
+            const licenseSection = document.getElementById('driverLicenseSection');
+            if (licenseSection) {
+                licenseSection.classList.remove('d-none');
+            }
+
+            // Hiển thị thêm nút "Chế độ Tài xế" trên Mobile Navbar (nếu bạn muốn)
+            const mobileWorkspaceBtn = document.getElementById('mobileDriverWorkspaceBtn');
+            if (mobileWorkspaceBtn) mobileWorkspaceBtn.classList.remove('d-none');
+
+            // Kích hoạt luồng Fetch API Tài xế
             loadDriverProfileFromAPI(true);
         }
     });
