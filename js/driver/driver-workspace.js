@@ -237,7 +237,7 @@ async function fetchDriverIncomeSummary() {
         if (result.success && result.data) {
             const data = result.data;
 
-            // Đọc mảng monthlyBreakdown từ Backend trả về phục vụ vẽ chart
+            // Truyền mảng dữ liệu tháng vào hàm render Chart
             if (data.monthlyBreakdown && data.monthlyBreakdown.length > 0) {
                 renderIncomeChartFromBackend(data.monthlyBreakdown);
             }
@@ -304,43 +304,44 @@ function renderTransactionTableFromBackend(transactions) {
 }
 
 /**
- * Biến đổi dữ liệu nhóm theo tháng/năm từ Backend thành cấu trúc trục X, trục Y của Chart.js
- * @param {Array} monthlyData Mảng chứa các phần tử { month, year, monthlyNetIncome, totalTransactions }
+ * Biến đổi dữ liệu Backend thành cấu trúc hiển thị của Chart.js
+ * @param {Array} monthlyData Mảng từ API: { month, year, monthlyNetIncome, totalTransactions }
  */
 function renderIncomeChartFromBackend(monthlyData) {
     const chartEl = document.getElementById("incomeChart");
     if (!chartEl) return;
     const ctx = chartEl.getContext("2d");
 
+    // Clear biểu đồ cũ nếu đã tồn tại để tránh lỗi Hover "bóng ma" của Chart.js
     if (incomeChartInstance) {
         incomeChartInstance.destroy();
     }
 
-    // Đảo ngược mảng để hiển thị theo trình tự thời gian từ cũ đến mới (Backend đang ORDER BY DESC)
+    // LƯU Ý NGHIỆP VỤ: Đảo ngược mảng để vẽ biểu đồ theo trình tự thời gian (Cũ -> Mới)
     const sortedData = [...monthlyData].reverse();
 
-    // Map dữ liệu sang mảng nhãn (Labels) và mảng số liệu (Data) của Chart
-    const labels = sortedData.map(item => `Tháng ${item.month}/${item.year}`);
-    const netIncomes = sortedData.map(item => item.monthlyNetIncome || 0);
-    const transactionsCount = sortedData.map(item => item.totalTransactions || 0);
+    // Dùng hàm map() để bóc tách các trường dữ liệu thành 3 mảng độc lập
+    const labels = sortedData.map(item => `Tháng ${item.month}/${item.year}`); // Trục X
+    const netIncomes = sortedData.map(item => item.monthlyNetIncome || 0); // Trục Y
+    const transactionsCount = sortedData.map(item => item.totalTransactions || 0); // Tooltip phụ
 
+    // Tạo dải màu gradient từ Xanh lam đậm đến Xanh lam nhạt cho cột
     let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
     gradientBlue.addColorStop(0, "rgba(56, 189, 248, 0.8)");
     gradientBlue.addColorStop(1, "rgba(56, 189, 248, 0.2)");
 
+    // Khởi tạo Chart
     incomeChartInstance = new Chart(ctx, {
         type: "bar",
         data: {
             labels: labels,
-            datasets: [
-                {
-                    label: "Thu nhập thực nhận (Net)",
-                    data: netIncomes,
-                    backgroundColor: gradientBlue,
-                    borderRadius: 8,
-                    barThickness: 28,
-                }
-            ],
+            datasets: [{
+                label: "Thu nhập thực nhận (Net)",
+                data: netIncomes,
+                backgroundColor: gradientBlue,
+                borderRadius: 8,
+                barThickness: 28,
+            }],
         },
         options: {
             responsive: true,
@@ -351,6 +352,7 @@ function renderIncomeChartFromBackend(monthlyData) {
                     backgroundColor: "rgba(0,0,0,0.85)", 
                     cornerRadius: 8,
                     callbacks: {
+                        // Tích hợp UX: Hiển thị thêm số cuốc xe khi tài xế hover chuột vào cột
                         footer: (tooltipItems) => {
                             const index = tooltipItems[0].dataIndex;
                             return `Tổng số đơn: ${transactionsCount[index]} cuốc`;
