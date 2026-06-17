@@ -681,55 +681,6 @@
         }
     }
 
-    // (Giữ nguyên 2 hàm submitEkycProfile và fetchEkycApprovalDetails phía dưới của bạn...)
-    // ... [Copy paste phần eKYC cũ vào đây]
-    async function submitEkycProfile() {
-        const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-        if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
-
-        const idFront = document.getElementById('idFront').files[0];
-        const idBack = document.getElementById('idBack').files[0];
-        const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
-
-        if (!idFront || !idBack) return alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
-        
-        const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-        if (userRole !== 'CUSTOMER' && userRole !== 'KHÁCH HÀNG' && !licenseFront) {
-            return alert("Tài khoản của bạn là Đối tác Tài xế. Vui lòng tải lên thêm Bằng lái xe!");
-        }
-
-        const btn = document.getElementById('btnSubmitEkyc');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
-        btn.disabled = true;
-
-        const formData = new FormData();
-        formData.append('identityCard', idFront); 
-        if (licenseFront) formData.append('driverLicense', licenseFront); 
-
-        const endpoint = (currentApprovalStatus === 'REJECTED') ? 'documents/reupload' : 'documents/submit';
-
-        try {
-            const response = await fetch(`${DRIVER_API_BASE}/${endpoint}?accountID=${accountId}`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert(data.message); 
-                localStorage.setItem('isEkycComplete', 'true');
-                window.location.reload(); 
-            } else {
-                alert("Lỗi từ hệ thống: " + data.message);
-            }
-        } catch (error) {
-            alert("Không thể kết nối đến máy chủ.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
-    }
-
     async function fetchEkycApprovalDetails() {
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
@@ -754,7 +705,7 @@
               const btnSubmit = document.getElementById('btnSubmitEkyc');
               const formInputs = document.querySelectorAll('#ekycProfileForm input[type="file"]');
 
-              alertBox.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger');
+              alertBox.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger', 'alert-info');
 
               if (status === 'APPROVED') {
                   alertBox.classList.add('alert-success');
@@ -764,11 +715,23 @@
                   formInputs.forEach(input => input.disabled = true);
 
               } else if (status === 'PENDING') {
-                  alertBox.classList.add('alert-warning');
-                  alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
-                  alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Dispatcher sẽ tiến hành kiểm duyệt trong vòng 24h.';
-                  btnSubmit.style.display = 'none';
-                  formInputs.forEach(input => input.disabled = true);
+                  // 🚀 FIX LOGIC: Phân biệt "Mới tạo" và "Đã nộp chờ duyệt"
+                  const docs = data.documents || [];
+                  if (docs.length === 0) {
+                      // TRƯỜNG HỢP 1: Tài xế mới, chưa nộp giấy tờ nào -> HIỆN NÚT SUBMIT
+                      alertBox.classList.add('alert-warning');
+                      alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Chưa nộp hồ sơ';
+                      alertMsg.innerText = 'Vui lòng tải lên ảnh CCCD và Bằng lái xe để hệ thống xét duyệt.';
+                      btnSubmit.style.display = 'block'; 
+                      formInputs.forEach(input => input.disabled = false);
+                  } else {
+                      // TRƯỜNG HỢP 2: Đã nộp giấy tờ, đang chờ Admin duyệt -> ẨN NÚT SUBMIT
+                      alertBox.classList.add('alert-info');
+                      alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
+                      alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Admin sẽ tiến hành kiểm duyệt trong thời gian tới.';
+                      btnSubmit.style.display = 'none';
+                      formInputs.forEach(input => input.disabled = true);
+                  }
 
               } else if (status === 'REJECTED') {
                   alertBox.classList.add('alert-danger');
@@ -783,14 +746,73 @@
                           rejectText.innerText = rejectedDoc.rejectReason;
                       }
                   }
+                  btnSubmit.style.display = 'block'; // Kích hoạt lại nút Submit
                   btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-right me-2"></i> Tải lại hồ sơ';
                   btnSubmit.classList.replace('btn-login', 'btn-danger'); 
+                  formInputs.forEach(input => input.disabled = false);
               }
           }
       } catch (error) {
           console.error("Lỗi lấy chi tiết trạng thái kiểm duyệt (API 7):", error);
       }
     }
+
+    async function submitEkycProfile() {
+        const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+        if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
+
+        const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+        
+        // 🚀 FIX LOGIC: Khóa cứng hoàn toàn Khách hàng, không cho bấm Submit
+        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
+            return alert("Tính năng tải giấy tờ eKYC này chỉ dành cho Đối tác Tài xế.");
+        }
+
+        const idFront = document.getElementById('idFront').files[0];
+        const idBack = document.getElementById('idBack').files[0];
+        const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
+        const licenseBack = document.getElementById('licenseBack') ? document.getElementById('licenseBack').files[0] : null;
+
+        if (!idFront || !idBack) return alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
+        
+        // Bắt buộc chọn đủ 2 mặt Bằng lái (Mặc dù Backend Java hiện chỉ bóc 1 file)
+        if (!licenseFront || !licenseBack) {
+            return alert("Tài khoản của bạn là Đối tác Tài xế. Vui lòng tải lên đầy đủ 2 mặt Bằng lái xe!");
+        }
+
+        const btn = document.getElementById('btnSubmitEkyc');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
+        btn.disabled = true;
+
+        const formData = new FormData();
+        formData.append('identityCard', idFront); 
+        formData.append('driverLicense', licenseFront); 
+
+        const endpoint = (currentApprovalStatus === 'REJECTED') ? 'documents/reupload' : 'documents/submit';
+
+        try {
+            const response = await fetch(`${DRIVER_API_BASE}/${endpoint}?accountID=${accountId}`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message); 
+                localStorage.setItem('isEkycComplete', 'true');
+                window.location.reload(); 
+            } else {
+                // Sẽ ném ra lỗi nếu tài xế chưa accept Terms trong Policy
+                alert("Lỗi từ hệ thống: " + data.message); 
+            }
+        } catch (error) {
+            alert("Không thể kết nối đến máy chủ.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+    
     </script>
     <!-- Box warning cho ekyc (Nằm sát dưới cùng) -->
     <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed start-0" 
