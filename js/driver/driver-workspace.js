@@ -156,11 +156,15 @@ async function fetchDriverProfile() {
     }
 }
 
+// ============================================================================
+// ĐỒNG BỘ & SỬA LỖI LOGIC PHÂN HỆ TÀI CHÍNH (API 2, API 8, API 9)
+// ============================================================================
+
 /**
- * Gọi API GET /dashboard để lấy báo cáo doanh thu, chuyến đi và lịch sử giao dịch
+ * [API 2] Lấy các chỉ số KPI tổng quan hiển thị trên Dashboard 
  */
-async function fetchDriverDashboard() {
-    const accountId = localStorage.getItem('accountId');
+async function fetchDriverDashboardMetrics() {
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
     if (!accountId) return;
 
     try {
@@ -170,90 +174,184 @@ async function fetchDriverDashboard() {
         if (result.success && result.data) {
             const data = result.data;
 
-            // 1. Cập nhật 3 chỉ số KPI chính (Thu nhập, Số chuyến, Tiền thưởng)
-            document.getElementById('dashNetIncome').innerText = (data.netIncome || 0).toLocaleString("vi-VN");
-            document.getElementById('dashTotalTrips').innerText = data.totalTrips || 0;
-            document.getElementById('dashBonus').innerText = (data.bonus || 0).toLocaleString("vi-VN");
+            // Đố chuẩn key từ DriverDAO: totalEarnings, completedTrips, cancellationCompensation
+            const dashNetIncomeEl = document.getElementById('dashNetIncome');
+            const dashTotalTripsEl = document.getElementById('dashTotalTrips');
+            const dashBonusEl = document.getElementById('dashBonus');
 
-            // 2. Vẽ bảng chi tiết lịch sử giao dịch
-            renderTransactionTable(data.transactions || []);
-
-            // 3. Vẽ biểu đồ Chart.js (Dữ liệu tuần)
-            if (data.chartData) {
-                renderIncomeChart(data.chartData);
-            }
-        } else {
-            console.warn("Lỗi API Dashboard:", result.message);
+            if (dashNetIncomeEl) dashNetIncomeEl.innerText = (data.totalEarnings || 0).toLocaleString("vi-VN");
+            if (dashTotalTripsEl) dashTotalTripsEl.innerText = data.completedTrips || 0;
+            if (dashBonusEl) dashBonusEl.innerText = (data.cancellationCompensation || 0).toLocaleString("vi-VN");
+            
+            // Đồng bộ trạng thái kiểm duyệt nếu cần
+            if (data.approvalStatus) localStorage.setItem('approvalStatus', String(data.approvalStatus).toUpperCase());
+            if (data.availabilityStatus) localStorage.setItem('availabilityStatus', data.availabilityStatus);
         }
     } catch (error) {
-        console.error("Lỗi lấy dữ liệu Dashboard:", error);
+        console.error("Lỗi lấy chỉ số KPI Dashboard (API 2):", error);
+    }
+}
+
+/**
+ * [API 8] Lấy số dư ví hiện tại và mảng lịch sử giao dịch tăng/giảm tiền chi tiết
+ */
+async function fetchDriverWalletData() {
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+    if (!accountId) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/wallet?accountID=${accountId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const data = result.data;
+            
+            // Cập nhật lại Wallet Balance vào bộ nhớ cục bộ nếu cần dùng ở chỗ khác
+            if (data.walletBalance) {
+                localStorage.setItem('walletBalance', data.walletBalance);
+            }
+
+            // Gọi hàm render bảng giao dịch, truyền mảng 'transactions' thực tế từ Backend
+            renderTransactionTableFromBackend(data.transactions || []);
+        }
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu ví và lịch sử công nợ (API 8):", error);
         if (window.toastError) window.toastError.show();
     }
 }
 
-// ============================================================================
-// 5. RENDER GIAO DIỆN (UI RENDERERS)
-// ============================================================================
+/**
+ * [API 9] Lấy thống kê thu nhập và mảng doanh thu nhóm theo từng tháng/năm đổ vào biểu đồ
+ */
+async function fetchDriverIncomeSummary() {
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+    if (!accountId) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/income-summary?accountID=${accountId}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            const data = result.data;
+
+            // Đọc mảng monthlyBreakdown từ Backend trả về phục vụ vẽ chart
+            if (data.monthlyBreakdown && data.monthlyBreakdown.length > 0) {
+                renderIncomeChartFromBackend(data.monthlyBreakdown);
+            }
+        }
+    } catch (error) {
+        console.error("Lỗi lấy thống kê thu nhập dựng biểu đồ (API 9):", error);
+    }
+}
 
 /**
- * Vẽ biểu đồ cột thu nhập bằng Chart.js
- * @param {Object} chartData Đối tượng chứa labels, income (cước) và bonus (thưởng)
+ * Vẽ bảng chi tiết lịch sử giao dịch từ cấu trúc DriverEarning thực tế dưới DB
+ * @param {Array} transactions Mảng chứa các object trả về từ câu lệnh GET_DRIVER_WALLET_HISTORY
  */
-function renderIncomeChart(chartData) {
+function renderTransactionTableFromBackend(transactions) {
+    const tbody = document.getElementById('transactionTableBody');
+    if (!tbody) return;
+
+    if (transactions.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-white-50 py-4">Chưa có lịch sử biến động số dư nào.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    transactions.forEach(trx => {
+        // Cấu trúc map chuẩn cột: EarningID, BookingID, EarningType, FareShare, SurchargeShare, CompanyCommission, NetAmount, CreatedAt
+        const isCancellation = trx.earningType === 'CancellationCompensation';
+        const badgeColor = isCancellation ? 'warning' : 'info';
+        const typeText = isCancellation ? 'Đền bù hủy chuyến' : 'Cước chuyến đi';
+        const icon = isCancellation ? 'fa-hand-holding-dollar' : 'fa-car-side';
+        
+        // Định dạng ngày hiển thị mượt mà từ Timestamp
+        const formattedTime = trx.createdAt ? new Date(trx.createdAt).toLocaleString("vi-VN", { hour12: false }) : '...';
+        
+        // Tính tổng tiền Gross = FareShare + SurchargeShare + CancellationCompensation
+        const grossAmount = (trx.fareShare || 0) + (trx.surchargeShare || 0) + (trx.cancellationCompensation || 0);
+
+        html += `
+            <tr>
+                <td>
+                    <div class="fw-bold text-white">#GD-${trx.earningID}</div>
+                    <div class="text-white-50 small">Đơn: #BK-${trx.bookingID}</div>
+                    <div class="text-white-50 x-small" style="font-size: 0.75rem;">${formattedTime}</div>
+                </td>
+                <td>
+                    <span class="badge bg-${badgeColor} bg-opacity-25 text-${badgeColor} border border-${badgeColor} p-2">
+                        <i class="fa-solid ${icon} me-1"></i> ${typeText}
+                    </span>
+                </td>
+                <td class="text-white fw-bold">${grossAmount.toLocaleString("vi-VN")} đ</td>
+                <td class="text-danger fw-bold">
+                    ${trx.companyCommission > 0 ? '-' + trx.companyCommission.toLocaleString("vi-VN") + ' đ' : '<span class="badge bg-secondary bg-opacity-50 text-white border border-secondary">0% Phí</span>'}
+                </td>
+                <td class="text-success fw-bold fs-6">+ ${(trx.netAmount || 0).toLocaleString("vi-VN")} đ</td>
+            </tr>
+        `;
+    });
+    tbody.innerHTML = html;
+}
+
+/**
+ * Biến đổi dữ liệu nhóm theo tháng/năm từ Backend thành cấu trúc trục X, trục Y của Chart.js
+ * @param {Array} monthlyData Mảng chứa các phần tử { month, year, monthlyNetIncome, totalTransactions }
+ */
+function renderIncomeChartFromBackend(monthlyData) {
     const chartEl = document.getElementById("incomeChart");
     if (!chartEl) return;
     const ctx = chartEl.getContext("2d");
-    
-    // RẤT QUAN TRỌNG: Phải hủy (destroy) biểu đồ cũ trước khi vẽ cái mới 
-    // Nếu không Chart.js sẽ bị lỗi giật lag (hover bị nhấp nháy do 2 canvas đè nhau)
+
     if (incomeChartInstance) {
         incomeChartInstance.destroy();
     }
 
-    // Tạo màu gradient (chuyển sắc) cho cột xanh dương (Cước)
+    // Đảo ngược mảng để hiển thị theo trình tự thời gian từ cũ đến mới (Backend đang ORDER BY DESC)
+    const sortedData = [...monthlyData].reverse();
+
+    // Map dữ liệu sang mảng nhãn (Labels) và mảng số liệu (Data) của Chart
+    const labels = sortedData.map(item => `Tháng ${item.month}/${item.year}`);
+    const netIncomes = sortedData.map(item => item.monthlyNetIncome || 0);
+    const transactionsCount = sortedData.map(item => item.totalTransactions || 0);
+
     let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
     gradientBlue.addColorStop(0, "rgba(56, 189, 248, 0.8)");
     gradientBlue.addColorStop(1, "rgba(56, 189, 248, 0.2)");
-    
-    // Tạo màu gradient cho cột màu cam (Thưởng)
-    let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientOrange.addColorStop(0, "rgba(251, 191, 36, 0.8)");
-    gradientOrange.addColorStop(1, "rgba(251, 191, 36, 0.2)");
 
-    // Cấu hình vẽ Chart
     incomeChartInstance = new Chart(ctx, {
         type: "bar",
         data: {
-            labels: chartData.labels || ["T2", "T3", "T4", "T5", "T6", "T7", "CN"],
+            labels: labels,
             datasets: [
                 {
-                    label: "Cước chuyến đi",
-                    data: chartData.income || [0,0,0,0,0,0,0],
+                    label: "Thu nhập thực nhận (Net)",
+                    data: netIncomes,
                     backgroundColor: gradientBlue,
                     borderRadius: 8,
-                    barThickness: 24,
-                },
-                {
-                    label: "Thưởng / Phụ phí",
-                    data: chartData.bonus || [0,0,0,0,0,0,0],
-                    backgroundColor: gradientOrange,
-                    borderRadius: 8,
-                    barThickness: 24,
-                },
+                    barThickness: 28,
+                }
             ],
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            interaction: { mode: "index", intersect: false }, // Hover 1 lúc lên cả 2 cột
             plugins: {
                 legend: { position: "top", align: "end", labels: { color: "#ffffff", usePointStyle: true } },
-                tooltip: { backgroundColor: "rgba(0,0,0,0.8)", cornerRadius: 8 },
+                tooltip: { 
+                    backgroundColor: "rgba(0,0,0,0.85)", 
+                    cornerRadius: 8,
+                    callbacks: {
+                        footer: (tooltipItems) => {
+                            const index = tooltipItems[0].dataIndex;
+                            return `Tổng số đơn: ${transactionsCount[index]} cuốc`;
+                        }
+                    }
+                },
             },
             scales: {
-                x: { stacked: true, grid: { display: false }, ticks: { color: "rgba(255,255,255,0.7)" } },
+                x: { grid: { display: false }, ticks: { color: "rgba(255,255,255,0.7)" } },
                 y: { 
-                    stacked: true, 
                     border: { display: false }, 
                     grid: { color: "rgba(255,255,255,0.1)" }, 
                     ticks: { 
@@ -264,42 +362,6 @@ function renderIncomeChart(chartData) {
             },
         },
     });
-}
-
-/**
- * Đổ dữ liệu các giao dịch thành các hàng (<tr>) trong bảng
- * @param {Array} transactions Mảng các giao dịch từ Backend
- */
-function renderTransactionTable(transactions) {
-    const tbody = document.getElementById('transactionTableBody');
-    if(!tbody) return;
-
-    if (transactions.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-white-50 py-4">Chưa có giao dịch nào trong kỳ.</td></tr>`;
-        return;
-    }
-
-    let html = '';
-    transactions.forEach(trx => {
-        // Tùy chỉnh màu sắc Badge (Thẻ trạng thái) dựa theo loại giao dịch
-        const isPenalty = trx.type.includes('Phạt') || trx.type.includes('Hủy');
-        const badgeColor = isPenalty ? 'warning' : 'info';
-        const icon = isPenalty ? 'fa-hand-holding-dollar' : 'fa-car-side';
-        
-        html += `
-            <tr>
-                <td>
-                    <div class="fw-bold text-white">${trx.id}</div>
-                    <div class="text-white-50 small">${trx.time}</div>
-                </td>
-                <td><span class="badge bg-${badgeColor} bg-opacity-25 text-${badgeColor} border border-${badgeColor} p-2"><i class="fa-solid ${icon} me-1"></i> ${trx.type}</span></td>
-                <td class="text-white fw-bold">${(trx.gross || 0).toLocaleString("vi-VN")} đ</td>
-                <td class="text-danger fw-bold">${trx.discount ? '-' + trx.discount.toLocaleString("vi-VN") + ' đ' : '<span class="badge bg-secondary bg-opacity-50 text-white border border-secondary">Miễn phí</span>'}</td>
-                <td class="text-success fw-bold fs-6">+ ${(trx.net || 0).toLocaleString("vi-VN")} đ</td>
-            </tr>
-        `;
-    });
-    tbody.innerHTML = html;
 }
 
 // ============================================================================
