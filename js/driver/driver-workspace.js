@@ -5,6 +5,72 @@
  * Bao gồm: Xác thực phiên, Gọi API Dashboard/Profile, Vẽ Biểu đồ và Xử lý UI.
  * ============================================================================
  */
+// ============================================================================
+// [THÊM MỚI] XỬ LÝ KHỐI KÍNH TRƯỢT THEO MỤC LỤC
+// ============================================================================
+function updateDriverVerticalIndicator(activeLink) {
+    const verticalIndicator = document.getElementById("vertical-indicator");
+    if (!activeLink || !verticalIndicator) return;
+    
+    const container = activeLink.closest(".toc-list");
+    if (!container) return; 
+
+    const linkRect = activeLink.getBoundingClientRect();
+    const containerRect = container.getBoundingClientRect();
+    const topPos = linkRect.top - containerRect.top;
+    
+    verticalIndicator.style.transform = `translateY(${topPos}px)`;
+    verticalIndicator.style.height = `${linkRect.height}px`;
+}
+
+window.switchTab = function(tabId, element) {
+    // 1. Xóa class 'active' của tất cả các menu trên Desktop và Mobile
+    document.querySelectorAll("#driver-nav .toc-link, .bottom-nav-glass .nav-item")
+            .forEach(a => a.classList.remove("active"));
+    
+    // 2. Bôi sáng (active) menu vừa bấm vào
+    if(element.classList.contains('toc-link')) {
+        // Click trên Desktop
+        element.classList.add("active");
+        updateDriverVerticalIndicator(element); // [THÊM MỚI] Kéo cục kính chạy theo
+
+        // Đồng bộ bôi sáng xuống Mobile
+        document.querySelectorAll(`.bottom-nav-glass .nav-item`).forEach(a => { 
+            if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); 
+        });
+    } else {
+        // Click trên Mobile
+        element.classList.add("active");
+        
+        // Đồng bộ bôi sáng lên Desktop và ép cục kính chạy theo
+        document.querySelectorAll(`#driver-nav .toc-link`).forEach(a => { 
+            if(a.getAttribute("onclick").includes(tabId)) {
+                a.classList.add("active");
+                updateDriverVerticalIndicator(a); // [THÊM MỚI] Kéo cục kính chạy theo
+            }
+        });
+    }
+
+    // 3. Ẩn tất cả section và hiện section mục tiêu
+    document.querySelectorAll(".dashboard-section").forEach(sec => sec.classList.remove("active"));
+    const targetSection = document.getElementById(tabId);
+    if (targetSection) {
+        targetSection.classList.add("active");
+        // [THÊM MỚI] Cuộn trang mượt mà lên đầu section (tương tự hiệu ứng bên Dispatcher)
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 4. Kỹ thuật Lazy-Load chuẩn hóa theo API Backend mới (GIỮ NGUYÊN)
+    if (tabId === "tab-job-board") {
+        fetchDriverDashboardMetrics(); 
+    } else if (tabId === "tab-income") {
+        fetchDriverDashboardMetrics(); 
+        fetchDriverWalletData();       
+        fetchDriverIncomeSummary();    
+    } else if (tabId === "tab-account") {
+        fetchDriverProfile();          
+    }
+};
 
 // 1. KHAI BÁO CÁC BIẾN TOÀN CỤC & CẤU HÌNH API
 const API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
@@ -46,6 +112,20 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (e) {}
         }
     }
+
+    // [THÊM MỚI] Khởi tạo vị trí cục kính ban đầu cho tab đang kích hoạt mặc định
+    setTimeout(() => {
+        const initialActiveLink = document.querySelector("#driver-nav .toc-link.active");
+        if (initialActiveLink) {
+            updateDriverVerticalIndicator(initialActiveLink);
+        }
+    }, 150);
+
+    // [THÊM MỚI] Cập nhật lại vị trí khi thay đổi kích thước cửa sổ (Resize window)
+    window.addEventListener('resize', () => {
+        const currentActiveSidebar = document.querySelector("#driver-nav .toc-link.active");
+        updateDriverVerticalIndicator(currentActiveSidebar);
+    });
 
     window.toastError = new bootstrap.Toast(document.getElementById("systemErrorToast"), { delay: 3000 });
     window.toastConflict = new bootstrap.Toast(document.getElementById("conflictToast"), { delay: 3000 });
@@ -375,47 +455,6 @@ function renderIncomeChartFromBackend(monthlyData) {
     });
 }
 
-// ============================================================================
-// 6. XỬ LÝ SỰ KIỆN TƯƠNG TÁC (USER INTERACTIONS)
-// ============================================================================
-
-/**
- * Hàm điều hướng giữa các Tab (Trang chủ, Thu nhập, Tài khoản)
- * @param {string} tabId ID của thẻ Section cần mở
- * @param {HTMLElement} element Thẻ HTML (Link/Button) vừa được bấm vào
- */
-window.switchTab = function(tabId, element) {
-    
-    // 1. Xóa class 'active' của tất cả các menu trên Desktop và Mobile
-    document.querySelectorAll("#driver-nav .toc-link, .bottom-nav-glass .nav-item")
-            .forEach(a => a.classList.remove("active"));
-    
-    // 2. Bôi sáng (active) menu vừa bấm vào
-    if(element.classList.contains('toc-link')) {
-        // Nếu click trên Desktop -> Đồng bộ bôi sáng xuống Mobile
-        element.classList.add("active");
-        document.querySelectorAll(`.bottom-nav-glass .nav-item`).forEach(a => { if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); });
-    } else {
-        // Nếu click trên Mobile -> Đồng bộ bôi sáng lên Desktop
-        element.classList.add("active");
-        document.querySelectorAll(`#driver-nav .toc-link`).forEach(a => { if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); });
-    }
-
-    // 3. Ẩn tất cả section và hiện section mục tiêu
-    document.querySelectorAll(".dashboard-section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById(tabId).classList.add("active");
-
-    // 4. Kỹ thuật Lazy-Load chuẩn hóa theo API Backend mới
-    if (tabId === "tab-job-board") {
-        fetchDriverDashboardMetrics(); // Gọi API 2 nạp nhanh 3 số chỉ báo KPI ở màn chính
-    } else if (tabId === "tab-income") {
-        fetchDriverDashboardMetrics(); // Nạp KPI
-        fetchDriverWalletData();       // [API 8] Đổ dữ liệu lịch sử bảng công nợ
-        fetchDriverIncomeSummary();    // [API 9] Vẽ biểu đồ động theo tháng/năm
-    } else if (tabId === "tab-account") {
-        fetchDriverProfile();          // [API 1] Gọi lại hồ sơ cá nhân mới nhất
-    }
-};
 
 /**
  * Hàm giả lập thao tác nhấn nút "Nhận chuyến" của thẻ Open Job
