@@ -273,12 +273,15 @@ async function handleLogin(event) {
                 if (accId) localStorage.setItem('accountId', accId);
             }
 
-            // 3. LƯU THÔNG TIN CUSTOMER (KHÁCH HÀNG / TÀI XẾ) ĐỂ ĐẶT XE
-            // Backend có thể trả về customerId nằm ở ngoài data.customerId, hoặc trong data.customer.id
+            // 3. LƯU THÔNG TIN CUSTOMER (Cải tiến check điều kiện)
             let custId = data.customerId || (data.customer && data.customer.id) || (data.user && data.user.customerId);
             
-            if (custId) {
+            // FIX 2: Check tường minh, tránh bị bỏ qua nếu ID = 0
+            if (custId !== undefined && custId !== null) {
                 localStorage.setItem('customerId', custId);
+                console.log("Đã lưu CustomerID thành công:", custId); // Console log để theo dõi
+            } else {
+                console.warn("Backend không trả về CustomerID. Hãy check lại RoleName trong Database!");
             }
 
             // Dọn dẹp UI
