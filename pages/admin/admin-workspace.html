@@ -562,15 +562,98 @@
         </main>
     </div>
 
-    <div class="modal fade glass-modal-blur" id="addVehicleModal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content glass-modal-content">
-            <div class="modal-header border-0 px-4 pt-4 pb-2">
-                <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-car-side text-primary me-2"></i> Khởi tạo Xe Mới</h5>
-                <button type="button" class="btn-close btn-close-white fs-5" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="addVehicleModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content modern-modal-content">
+            
+            <!-- HEADER -->
+            <div class="modal-header border-0 px-4 pt-4 pb-0">
+                <h4 class="fw-bold text-white m-0 d-flex align-items-center">
+                    <div class="bg-success bg-opacity-25 text-success p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
+                        <i class="fa-solid fa-car-side"></i>
+                    </div>
+                    Khởi tạo Phương tiện
+                </h4>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body px-4 pb-4">
-                <p class="text-white-50">Form nhập liệu xe mới sẽ được tích hợp ở đây...</p>
+
+            <!-- BODY -->
+            <div class="modal-body p-4">
+                <form id="addVehicleForm" onsubmit="submitNewVehicle(event)">
+                    
+                    <!-- Nhóm 1: Thông tin Định danh -->
+                    <div class="modern-section-title mt-2"><i class="fa-regular fa-id-card me-2"></i>Thông tin Định danh</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="modern-label">Biển số kiểm soát <span class="text-danger">*</span></label>
+                            <input type="text" id="vLicensePlate" class="form-control modern-input" placeholder="VD: 51H-123.45" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modern-label">Phân loại Dịch vụ <span class="text-danger">*</span></label>
+                            <select id="vTypeId" class="form-select modern-select" required>
+                                <option value="1">Xe 4 chỗ Tiêu chuẩn</option>
+                                <option value="2">Xe 7 chỗ SUV/MPV</option>
+                                <option value="3">Xe 16 chỗ Du lịch</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modern-label">Hãng sản xuất <span class="text-danger">*</span></label>
+                            <input type="text" id="vBrand" class="form-control modern-input" placeholder="VD: VinFast, Honda..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modern-label">Tên dòng xe (Model) <span class="text-danger">*</span></label>
+                            <input type="text" id="vModel" class="form-control modern-input" placeholder="VD: VF8 Plus" required>
+                        </div>
+                    </div>
+
+                    <!-- Nhóm 2: Hồ sơ Pháp lý & Kỹ thuật -->
+                    <div class="modern-section-title"><i class="fa-solid fa-shield-halved me-2"></i>Hồ sơ Pháp lý & Kỹ thuật</div>
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="modern-label text-warning">Số khung (Chassis) <span class="text-danger">*</span></label>
+                            <input type="text" id="vChassis" class="form-control modern-input" placeholder="Nhập mã số khung bảo mật..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modern-label text-warning">Số máy (Engine) <span class="text-danger">*</span></label>
+                            <input type="text" id="vEngine" class="form-control modern-input" placeholder="Nhập mã số máy bảo mật..." required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modern-label">Số chỗ ngồi (Thực tế) <span class="text-danger">*</span></label>
+                            <input type="number" id="vSeatCount" class="form-control modern-input" value="5" min="2" max="50" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="modern-label">Số Km tích lũy (ODO) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" id="vKm" class="form-control modern-input text-success fw-bold border-end-0" value="0" required>
+                                <span class="input-group-text bg-transparent border-start-0 text-success fw-bold" style="border: 1px solid #334155; border-radius: 0 12px 12px 0;">km</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nhóm 3: Trạng thái & Ghi chú -->
+                    <div class="modern-section-title"><i class="fa-solid fa-tags me-2"></i>Vận hành & Thuộc tính</div>
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="modern-label">Trạng thái khởi động</label>
+                            <select id="vStatus" class="form-select modern-select text-white fw-bold">
+                                <option value="Available" selected>Sẵn sàng hoạt động ngay</option>
+                                <option value="Unavailable">Đang chờ bảo dưỡng / Tạm khóa</option>
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="modern-label">Đặc tả / Từ khóa AI phân tích</label>
+                            <textarea id="vDescription" class="form-control modern-input" rows="3" placeholder="Nhập các thuộc tính nổi bật: Xe điện, nội thất da, cốp rộng, có cửa sổ trời..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- FOOTER ACTIONS -->
+                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top" style="border-color: #334155 !important;">
+                        <button type="button" class="btn modern-btn-cancel px-5 py-3 fw-bold rounded-pill" data-bs-dismiss="modal">Hủy thao tác</button>
+                        <button type="submit" id="btnSubmitVehicle" class="btn modern-btn-submit px-5 py-3 fw-bolder rounded-pill">
+                            <i class="fa-solid fa-cloud-arrow-up me-2"></i>Lưu vào hệ thống
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

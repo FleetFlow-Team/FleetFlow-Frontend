@@ -715,3 +715,278 @@ window.executeRejectApi = async function(reason) {
         }
     }
 }
+
+// =========================================================================
+// PHÂN HỆ 4: QUẢN LÝ VÒNG ĐỜI XE (MASTER ADMIN FLEET MANAGEMENT)
+// Tích hợp API GET Danh sách và GET Chi tiết
+// =========================================================================
+
+const ADMIN_VEHICLE_API_URL = 'http://localhost:8080/FleetFlow/api/v1/admin/vehicles';
+let globalAdminVehicles = [];
+
+// 1. Tự động tải danh sách xe khi Admin vào trang
+document.addEventListener("DOMContentLoaded", () => {
+    fetchAndRenderAdminVehicles();
+});
+
+// 2. Hàm gọi API Lấy toàn bộ danh sách xe (GET)
+async function fetchAndRenderAdminVehicles() {
+    const tbody = document.getElementById("adminFleetList");
+    if (!tbody) return;
+
+    // Hiển thị trạng thái Loading chuyên nghiệp
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info"></i><div class="mt-2 text-white-50">Đang đồng bộ dữ liệu đội xe...</div></td></tr>`;
+
+    try {
+        const response = await fetch(ADMIN_VEHICLE_API_URL, {
+            method: 'GET',
+            credentials: 'include' // Bắt buộc gửi kèm Session Cookie xác thực quyền Admin
+        });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            globalAdminVehicles = result.data;
+            renderAdminVehicles(globalAdminVehicles);
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i> Lỗi: ${result.message || 'Không thể lấy dữ liệu'}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Lỗi fetch fleet:", error);
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-server me-2"></i> Mất kết nối đến máy chủ NetBeans.</td></tr>`;
+    }
+}
+
+// 3. Hàm Render dữ liệu lên UI Glassmorphism
+function renderAdminVehicles(vehicles) {
+    const tbody = document.getElementById("adminFleetList");
+    if (!tbody) return;
+    
+    if (vehicles.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5 text-white-50"><i class="fa-solid fa-car-tunnel fs-1 mb-3"></i><br>Hệ thống chưa có phương tiện nào.</td></tr>`;
+        return;
+    }
+
+    let html = '';
+    vehicles.forEach(v => {
+        // Tự động chọn Icon xe tùy thuộc vào số chỗ
+        const icon = (v.seatCount > 5) ? 'fa-truck-pickup' : 'fa-car-side';
+        
+        // Xử lý hiển thị UI cho Dropdown Đổi trạng thái
+        const isAvailable = (v.status === 'Available');
+        const statusColor = isAvailable ? 'success' : 'danger';
+        
+        // Cấu trúc Form Select cho API PUT thay đổi trạng thái sau này
+        const selectHtml = `
+            <select class="form-select form-select-sm glass-select text-${statusColor} fw-bold border-${statusColor}" onchange="changeVehicleStatus(${v.vehicleId}, this.value)">
+                <option value="Available" ${isAvailable ? 'selected' : ''}>Sẵn sàng hoạt động</option>
+                <option value="Unavailable" ${!isAvailable ? 'selected' : ''}>Khóa / Bảo dưỡng</option>
+            </select>
+        `;
+
+        html += `
+        <tr>
+            <td>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-white bg-opacity-10 rounded-3 p-2 text-center" style="width: 55px; border: 1px solid rgba(255,255,255,0.2);">
+                        <i class="fa-solid ${icon} fs-4 text-white-50"></i>
+                    </div>
+                    <div>
+                        <div class="fw-bold fs-6 text-white" style="letter-spacing: 0.5px;">${v.licensePlate}</div>
+                        <div class="small text-white-50 fw-medium mt-1">${v.brand} ${v.model} | ${v.seatCount} Chỗ</div>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div class="small text-info fw-bold mb-1" title="Số khung"><i class="fa-solid fa-barcode me-2"></i>SK: ${v.chassisNumber || 'Chưa cập nhật'}</div>
+                <div class="small text-warning fw-bold mb-1" title="Số máy"><i class="fa-solid fa-gear me-2"></i>SM: ${v.engineNumber || 'Chưa cập nhật'}</div>
+                <div class="small text-success fw-bold"><i class="fa-solid fa-gauge-high me-2"></i>ODO: ${(v.accumulatedKm || 0).toLocaleString('vi-VN')} km</div>
+            </td>
+            <td>
+                <div class="d-flex flex-wrap gap-1">
+                    <span class="badge bg-white bg-opacity-10 text-white border border-secondary">${v.typeName || 'Chưa phân loại'}</span>
+                </div>
+            </td>
+            <td>
+                <div class="d-flex align-items-center gap-2">
+                    ${selectHtml}
+                    <button class="btn-glass-action border-info text-info p-1 px-2 shadow-sm" onclick="viewAdminVehicleDetail(${v.vehicleId})" title="Xem chi tiết hồ sơ gốc">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                </div>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = html;
+}
+
+// 4. API GET: Xem chi tiết giấy tờ 1 phương tiện (GET /{id})
+window.viewAdminVehicleDetail = async function(id) {
+    try {
+        // Gọi nút bấm hiển thị trạng thái đang xử lý (tuỳ chọn)
+        showSystemToast("Đang truy xuất dữ liệu từ kho lưu trữ...", "success");
+
+        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, { 
+            method: 'GET',
+            credentials: 'include' 
+        });
+        const result = await response.json();
+        
+        if (result.success && result.data) {
+            const v = result.data;
+            // Hiện tại UI chưa có Modal chi tiết cho xe, ta hiển thị tạm bằng hộp thoại Browser Alert
+            // Sau này bạn có thể map dữ liệu này vào 1 Glass Modal tương tự eKycModal
+            alert(`🔍 HỒ SƠ LƯU TRỮ PHƯƠNG TIỆN #${v.vehicleId}\n` +
+                  `-----------------------------------------\n` +
+                  `Biển số kiểm soát: ${v.licensePlate}\n` +
+                  `Hãng & Dòng xe: ${v.brand} ${v.model} (${v.seatCount} Chỗ)\n\n` +
+                  `[THÔNG TIN PHÁP LÝ BẢO MẬT]\n` +
+                  `Số khung (Chassis): ${v.chassisNumber}\n` +
+                  `Số máy (Engine): ${v.engineNumber}\n` +
+                  `Đồng hồ ODO: ${v.accumulatedKm} km\n\n` +
+                  `Trạng thái: ${v.status === 'Available' ? 'Đang hoạt động' : 'Tạm khóa'}\n` +
+                  `Ghi chú: ${v.description || 'Không có mô tả bổ sung'}`);
+        } else {
+            showSystemToast(result.message || "Không tìm thấy dữ liệu phương tiện!", "error");
+        }
+    } catch (error) {
+        console.error("Lỗi lấy chi tiết xe:", error);
+        showSystemToast("Lỗi đường truyền! Vui lòng thử lại.", "error");
+    }
+};
+
+// 5. Chuẩn bị Luồng API PUT: Cập nhật trạng thái
+window.changeVehicleStatus = async function(id, newStatus) {
+    if(!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus === 'Available' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
+        // Rollback lại giá trị dropdown nếu user chọn Cancel
+        fetchAndRenderAdminVehicles(); 
+        return;
+    }
+    
+    // Nơi đây sẽ móc nối với lệnh fetch PUT xuống backend sau này.
+    // Tạm thời hiển thị Toast giả lập thành công:
+    showSystemToast(`Đã thay đổi trạng thái thành công cho phương tiện #${id}`, "success");
+    
+    // Ghi đè UI cho đồng bộ màu sắc
+    fetchAndRenderAdminVehicles();
+};
+
+// 5. API PUT: Cập nhật trạng thái xe (Bảo dưỡng / Hoạt động)
+window.changeVehicleStatus = async function(id, newStatus) {
+    if(!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus === 'Available' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
+        fetchAndRenderAdminVehicles(); // Khôi phục lại trạng thái cũ trên UI nếu chọn Cancel
+        return;
+    }
+    
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            // Chỉ cập nhật trạng thái
+            body: JSON.stringify({ status: newStatus })
+        });
+        
+        const result = await response.json();
+        if (response.ok && result.success) {
+            showSystemToast(`Đã thay đổi trạng thái thành công cho phương tiện #${id}`, "success");
+        } else {
+            showSystemToast(result.error || result.message || "Lỗi cập nhật trạng thái", "error");
+        }
+    } catch (error) {
+        showSystemToast("Mất kết nối máy chủ khi cập nhật.", "error");
+    } finally {
+        fetchAndRenderAdminVehicles(); // Đồng bộ lại Data bảng
+    }
+};
+
+// 6. API POST: Thêm mới phương tiện vào Fleet
+window.submitNewVehicle = async function(event) {
+    event.preventDefault(); // Chặn hành vi load lại trang mặc định của form
+    
+    const btn = document.getElementById('btnSubmitVehicle');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i>Đang lưu...';
+    btn.disabled = true;
+
+    // Bóc tách dữ liệu từ form
+    const payload = {
+        vehicleTypeId: parseInt(document.getElementById('vTypeId').value),
+        licensePlate: document.getElementById('vLicensePlate').value.trim(),
+        chassisNumber: document.getElementById('vChassis').value.trim(),
+        engineNumber: document.getElementById('vEngine').value.trim(),
+        brand: document.getElementById('vBrand').value.trim(),
+        model: document.getElementById('vModel').value.trim(),
+        seatCount: parseInt(document.getElementById('vSeatCount').value),
+        status: document.getElementById('vStatus').value,
+        accumulatedKm: parseInt(document.getElementById('vKm').value),
+        description: document.getElementById('vDescription').value.trim()
+    };
+
+    const token = localStorage.getItem('accessToken');
+
+    try {
+        // Có dấu "/" ở cuối theo đúng cấu hình API Servlet POST
+        const response = await fetch(ADMIN_VEHICLE_API_URL + "/", {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            showSystemToast("Đưa phương tiện mới vào hệ thống thành công!", "success");
+            
+            // Đóng Modal mượt mà & Xóa trắng Form
+            document.getElementById('addVehicleForm').reset();
+            const modalEl = document.getElementById('addVehicleModal');
+            bootstrap.Modal.getInstance(modalEl).hide();
+            
+            // Cập nhật lại danh sách xe
+            fetchAndRenderAdminVehicles();
+        } else {
+            showSystemToast("Lỗi: " + (result.error || result.message), "error");
+        }
+    } catch (error) {
+        console.error("Lỗi POST Vehicle:", error);
+        showSystemToast("Mất kết nối API Gateway.", "error");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+};
+
+// 7. API DELETE: Xóa phương tiện vĩnh viễn (Thanh lý)
+window.deleteAdminVehicle = async function(id, plate) {
+    if(!confirm(`⚠️ NGUY HIỂM: Bạn có chắc chắn muốn XÓA VĨNH VIỄN phương tiện biển số [${plate}] khỏi hệ thống?\nThao tác này không thể hoàn tác!`)) {
+        return;
+    }
+    
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+            showSystemToast(`Đã thanh lý thành công phương tiện [${plate}]`, "success");
+            fetchAndRenderAdminVehicles(); 
+        } else {
+            showSystemToast(result.error || result.message || "Xóa thất bại", "error");
+        }
+    } catch (error) {
+        showSystemToast("Mất kết nối máy chủ khi thực hiện Xóa.", "error");
+    }
+};
