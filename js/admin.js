@@ -495,11 +495,16 @@ window.fetchAndRenderEkycQueue = async function () {
                 <p class="mt-2 text-white-50 small fw-bold">Đang tải dữ liệu hồ sơ...</p>
             </td>
         </tr>`;
+    
+        const token = localStorage.getItem('accessToken'); // Lấy token
 
     try {
         const response = await fetch(`${ADMIN_API_BASE}/pending`, { 
             method: 'GET',
-            credentials: 'include' // Bắt buộc để gửi Session Cookie của Admin lên Backend
+            headers: {
+                'Authorization': `Bearer ${token}`, // Đính kèm token vào header
+                'Content-Type': 'application/json'
+            }
         });
         
         const result = await response.json();
@@ -607,9 +612,14 @@ async function approveEkyc() {
     }
 
     try {
+        // Thay thế đoạn fetch trong hàm approveEkyc
+        const token = localStorage.getItem('accessToken');
         const response = await fetch(`${ADMIN_API_BASE}/${currentViewingAccountId}/approve`, {
             method: 'POST',
-            credentials: 'include' // Bắt buộc để gửi Session Cookie lên Java Backend
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
 
         const data = await response.json();
@@ -734,13 +744,19 @@ async function fetchAndRenderAdminVehicles() {
     const tbody = document.getElementById("adminFleetList");
     if (!tbody) return;
 
-    // Hiển thị trạng thái Loading chuyên nghiệp
     tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info"></i><div class="mt-2 text-white-50">Đang đồng bộ dữ liệu đội xe...</div></td></tr>`;
+
+    // Lấy token từ localStorage
+    const token = localStorage.getItem('accessToken');
 
     try {
         const response = await fetch(ADMIN_VEHICLE_API_URL, {
             method: 'GET',
-            credentials: 'include' // Bắt buộc gửi kèm Session Cookie xác thực quyền Admin
+            // Bỏ credentials: 'include' đi vì bạn đang dùng JWT, không dùng Cookie
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
         const result = await response.json();
 
