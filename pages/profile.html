@@ -234,7 +234,7 @@
                       <i class="fa-solid fa-arrow-turn-down fa-rotate-90 me-2"></i>Lý do từ chối: <span id="ekycRejectReasonText" class="fw-normal"></span>
                   </p>
               </div>
-              
+
               <form id="ekycProfileForm" class="row g-4 mt-2">
                 <div class="col-12"><h5 class="text-dark fw-bold mb-0 fs-6">1. Căn cước công dân (Mặt trước & Mặt sau)</h5></div>
                 <div class="col-md-6">
@@ -528,6 +528,7 @@
               showToastForce('termsWarningToast');
               showToastForce('ekycWarningToast');
           }
+          fetchEkycApprovalDetails();
       } catch (error) {
           console.error("Lỗi API Profile:", error);
       }
@@ -620,6 +621,78 @@
             btn.disabled = false;
         }
     }
+
+    async function fetchEkycApprovalDetails() {
+      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+      const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+      
+      // Chỉ chạy logic này nếu là Tài xế (bỏ qua Khách hàng thuần)
+      if (!accountId || userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') return;
+
+      try {
+          const response = await fetch(`${DRIVER_API_BASE}/approval-status?accountID=${accountId}`);
+          const result = await response.json();
+
+          if (result.success && result.data) {
+              const data = result.data;
+              const status = String(data.approvalStatus).toUpperCase();
+              
+              // Cập nhật biến cờ toàn cục (đã có trong source của bạn)
+              currentApprovalStatus = status;
+
+              const alertBox = document.getElementById('ekycStatusAlert');
+              const alertTitle = document.getElementById('ekycAlertTitle');
+              const alertMsg = document.getElementById('ekycAlertMessage');
+              const rejectBox = document.getElementById('ekycRejectReasonBox');
+              const rejectText = document.getElementById('ekycRejectReasonText');
+              const alertDivider = document.getElementById('ekycAlertDivider');
+              const btnSubmit = document.getElementById('btnSubmitEkyc');
+              const formInputs = document.querySelectorAll('#ekycProfileForm input[type="file"]');
+
+              alertBox.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger');
+
+              if (status === 'APPROVED') {
+                  alertBox.classList.add('alert-success');
+                  alertTitle.innerHTML = '<i class="fa-solid fa-circle-check fs-4 me-2"></i> Hồ sơ đã được duyệt';
+                  alertMsg.innerText = 'Giấy tờ của bạn đã hợp lệ. Bạn hiện có thể nhận chuyến đi trên hệ thống FleetFlow.';
+                  
+                  // Khóa hoàn toàn form upload vì đã duyệt thành công
+                  btnSubmit.style.display = 'none';
+                  formInputs.forEach(input => input.disabled = true);
+
+              } else if (status === 'PENDING') {
+                  alertBox.classList.add('alert-warning');
+                  alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
+                  alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Dispatcher sẽ tiến hành kiểm duyệt trong vòng 24h.';
+                  
+                  // Khóa form để tránh tải tài liệu đè lên trong lúc chờ duyệt
+                  btnSubmit.style.display = 'none';
+                  formInputs.forEach(input => input.disabled = true);
+
+              } else if (status === 'REJECTED') {
+                  alertBox.classList.add('alert-danger');
+                  alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Hồ sơ bị từ chối';
+                  alertMsg.innerText = 'Rất tiếc, giấy tờ định danh của bạn không đạt yêu cầu. Vui lòng kiểm tra lý do bên dưới và tải lại TOÀN BỘ giấy tờ.';
+                  
+                  // Trích xuất lý do từ chối từ mảng documents (Lấy lý do đầu tiên tìm thấy)
+                  if (data.documents && data.documents.length > 0) {
+                      const rejectedDoc = data.documents.find(doc => doc.rejectReason != null && doc.rejectReason !== '');
+                      if (rejectedDoc) {
+                          alertDivider.classList.remove('d-none');
+                          rejectBox.classList.remove('d-none');
+                          rejectText.innerText = rejectedDoc.rejectReason;
+                      }
+                  }
+
+                  // Chuyển UI nút bấm sang chế độ Re-upload
+                  btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-right me-2"></i> Tải lại hồ sơ';
+                  btnSubmit.classList.replace('btn-login', 'btn-danger'); // Đổi sang màu đỏ cảnh báo
+              }
+          }
+      } catch (error) {
+          console.error("Lỗi lấy chi tiết trạng thái kiểm duyệt (API 7):", error);
+      }
+  }
     </script>
     <!-- Box warning cho chính sách -->
     <div id="termsWarningToast" class="toast align-items-center border border-danger shadow-lg position-fixed bottom-0 end-0 m-4" 

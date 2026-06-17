@@ -195,6 +195,9 @@ async function fetchDriverDashboardMetrics() {
 /**
  * [API 8] Lấy số dư ví hiện tại và mảng lịch sử giao dịch tăng/giảm tiền chi tiết
  */
+/**
+ * [API 8] Lấy số dư ví hiện tại và mảng lịch sử giao dịch chi tiết
+ */
 async function fetchDriverWalletData() {
     const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
     if (!accountId) return;
@@ -206,17 +209,17 @@ async function fetchDriverWalletData() {
         if (result.success && result.data) {
             const data = result.data;
             
-            // Cập nhật lại Wallet Balance vào bộ nhớ cục bộ nếu cần dùng ở chỗ khác
-            if (data.walletBalance) {
+            // Cập nhật Wallet Balance (Số dư ví) vào LocalStorage
+            // Dùng để logic chặn nhận chuyến nếu ví < 50k hoạt động chính xác
+            if (data.walletBalance !== undefined) {
                 localStorage.setItem('walletBalance', data.walletBalance);
             }
 
-            // Gọi hàm render bảng giao dịch, truyền mảng 'transactions' thực tế từ Backend
+            // Đổ mảng lịch sử giao dịch vào bảng (Table)
             renderTransactionTableFromBackend(data.transactions || []);
         }
     } catch (error) {
         console.error("Lỗi lấy dữ liệu ví và lịch sử công nợ (API 8):", error);
-        if (window.toastError) window.toastError.show();
     }
 }
 
