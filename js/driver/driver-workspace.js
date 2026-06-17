@@ -248,10 +248,11 @@ async function fetchDriverIncomeSummary() {
 }
 
 /**
- * Vẽ bảng chi tiết lịch sử giao dịch từ cấu trúc DriverEarning thực tế dưới DB
- * @param {Array} transactions Mảng chứa các object trả về từ câu lệnh GET_DRIVER_WALLET_HISTORY
+ * Render bảng lịch sử giao dịch từ cấu trúc DriverEarning
+ * @param {Array} transactions Mảng chứa các object trả về từ API 8
  */
 function renderTransactionTableFromBackend(transactions) {
+    // ID 'transactionTableBody' đã được chúng ta thêm vào file HTML ở bước trước
     const tbody = document.getElementById('transactionTableBody');
     if (!tbody) return;
 
@@ -262,35 +263,40 @@ function renderTransactionTableFromBackend(transactions) {
 
     let html = '';
     transactions.forEach(trx => {
-        // Cấu trúc map chuẩn cột: EarningID, BookingID, EarningType, FareShare, SurchargeShare, CompanyCommission, NetAmount, CreatedAt
-        const isCancellation = trx.earningType === 'CancellationCompensation';
+        // 1. Phân loại giao dịch dựa vào EarningType
+        const isCancellation = (trx.earningType === 'CancellationCompensation');
         const badgeColor = isCancellation ? 'warning' : 'info';
         const typeText = isCancellation ? 'Đền bù hủy chuyến' : 'Cước chuyến đi';
         const icon = isCancellation ? 'fa-hand-holding-dollar' : 'fa-car-side';
         
-        // Định dạng ngày hiển thị mượt mà từ Timestamp
+        // 2. Format thời gian (Giả định BE trả về chuẩn ISO String)
         const formattedTime = trx.createdAt ? new Date(trx.createdAt).toLocaleString("vi-VN", { hour12: false }) : '...';
         
-        // Tính tổng tiền Gross = FareShare + SurchargeShare + CancellationCompensation
+        // 3. Tính toán cột Tiền Gross (Tổng thu của cuốc xe trước khi trừ phí)
         const grossAmount = (trx.fareShare || 0) + (trx.surchargeShare || 0) + (trx.cancellationCompensation || 0);
 
+        // 4. Dựng HTML
         html += `
-            <tr>
-                <td>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td class="py-3">
                     <div class="fw-bold text-white">#GD-${trx.earningID}</div>
                     <div class="text-white-50 small">Đơn: #BK-${trx.bookingID}</div>
-                    <div class="text-white-50 x-small" style="font-size: 0.75rem;">${formattedTime}</div>
+                    <div class="text-white-50 mt-1" style="font-size: 0.75rem;">${formattedTime}</div>
                 </td>
-                <td>
-                    <span class="badge bg-${badgeColor} bg-opacity-25 text-${badgeColor} border border-${badgeColor} p-2">
+                <td class="py-3 align-middle">
+                    <span class="badge bg-${badgeColor} bg-opacity-25 text-${badgeColor} border border-${badgeColor} p-2 px-3 rounded-pill">
                         <i class="fa-solid ${icon} me-1"></i> ${typeText}
                     </span>
                 </td>
-                <td class="text-white fw-bold">${grossAmount.toLocaleString("vi-VN")} đ</td>
-                <td class="text-danger fw-bold">
-                    ${trx.companyCommission > 0 ? '-' + trx.companyCommission.toLocaleString("vi-VN") + ' đ' : '<span class="badge bg-secondary bg-opacity-50 text-white border border-secondary">0% Phí</span>'}
+                <td class="text-white fw-bold py-3 align-middle">${grossAmount.toLocaleString("vi-VN")} đ</td>
+                
+                <td class="text-danger fw-bold py-3 align-middle">
+                    ${trx.companyCommission > 0 
+                        ? '-' + trx.companyCommission.toLocaleString("vi-VN") + ' đ' 
+                        : '<span class="badge bg-secondary bg-opacity-50 text-white border border-secondary px-2">Miễn phí</span>'}
                 </td>
-                <td class="text-success fw-bold fs-6">+ ${(trx.netAmount || 0).toLocaleString("vi-VN")} đ</td>
+                
+                <td class="text-success fw-bold fs-5 py-3 align-middle">+ ${(trx.netAmount || 0).toLocaleString("vi-VN")} đ</td>
             </tr>
         `;
     });
