@@ -253,13 +253,8 @@
                     </section>
 
                     <section id="tab-income" class="dashboard-section">
-                        <!-- <div class="d-flex justify-content-between align-items-end mb-4">
+                        <div class="d-flex justify-content-between align-items-end mb-4">
                             <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-pie text-warning me-2"></i>Bảng điều khiển Tài chính</h4>
-                            <select class="form-select form-select-sm fw-bold glass-select w-auto" onchange="triggerApiAction(this)">
-                                <option value="this_week">Tuần này (14 - 20/06)</option>
-                                <option value="last_week">Tuần trước</option>
-                                <option value="this_month">Tháng này</option>
-                            </select>
                         </div>
 
                         <div class="row g-4 mb-4">
@@ -267,14 +262,13 @@
                                 <div class="glass-panel kpi-glass-card">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Thu nhập ròng</div>
-                                            <h3 class="text-white fw-bold mb-0">4.250.000 đ</h3>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng thu nhập ròng</div>
+                                            <h3 class="text-white fw-bold mb-0"><span id="dashNetIncome">0</span> đ</h3>
                                         </div>
                                         <div class="kpi-icon-glass bg-primary bg-opacity-25 text-primary">
                                             <i class="fa-solid fa-wallet"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i> +15% so với kỳ trước</div>
                                 </div>
                             </div>
                             
@@ -282,14 +276,13 @@
                                 <div class="glass-panel kpi-glass-card">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng chuyến xe</div>
-                                            <h3 class="text-info fw-bold mb-0">18 <span class="fs-6 text-white-50 fw-normal">Chuyến</span></h3>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng chuyến hoàn thành</div>
+                                            <h3 class="text-info fw-bold mb-0"><span id="dashTotalTrips">0</span> <span class="fs-6 text-white-50 fw-normal">Chuyến</span></h3>
                                         </div>
                                         <div class="kpi-icon-glass bg-info bg-opacity-25 text-info">
                                             <i class="fa-solid fa-car-side"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-danger"><i class="fa-solid fa-arrow-trend-down me-1"></i> -2% so với kỳ trước</div>
                                 </div>
                             </div>
 
@@ -297,29 +290,25 @@
                                 <div class="glass-panel kpi-glass-card">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Thưởng & Đền bù</div>
-                                            <h3 class="text-warning fw-bold mb-0">300.000 đ</h3>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Thưởng & Đền bù hủy</div>
+                                            <h3 class="text-warning fw-bold mb-0"><span id="dashBonus">0</span> đ</h3>
                                         </div>
                                         <div class="kpi-icon-glass bg-warning bg-opacity-25 text-warning">
                                             <i class="fa-solid fa-gift"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-white-50"><i class="fa-solid fa-minus me-1"></i> Không đổi</div>
                                 </div>
                             </div>
                         </div>
 
                         <div class="glass-panel mb-4">
-                            <h5 class="fw-bold text-white mb-4">Biểu đồ Doanh thu</h5>
+                            <h5 class="fw-bold text-white mb-4">Biểu đồ Doanh thu theo tháng</h5>
                             <div style="height: 300px;"><canvas id="incomeChart"></canvas></div>
                         </div>
 
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="fw-bold text-white m-0">Chi tiết Giao dịch</h5>
-                                <button class="btn-glass-action text-success border-success" onclick="triggerApiAction(this)">
-                                    <i class="fa-solid fa-file-excel me-2"></i> Xuất dữ liệu
-                                </button>
+                                <h5 class="fw-bold text-white m-0">Chi tiết Biến động Ví giao dịch</h5>
                             </div>
                             
                             <div class="table-glass-wrapper overflow-auto">
@@ -328,44 +317,16 @@
                                         <tr>
                                             <th>Mã GD & Thời gian</th>
                                             <th>Loại giao dịch</th>
-                                            <th>Cước / Phí (Gross)</th>
-                                            <th>Chiết khấu (60%)</th>
+                                            <th>Tổng (Gross)</th>
+                                            <th>Phí công ty</th>
                                             <th>Thực nhận (Net)</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div class="fw-bold text-white">#TRX-8821</div>
-                                                <div class="text-white-50 small">14/06/2026 • 14:30</div>
-                                            </td>
-                                            <td><span class="badge bg-info bg-opacity-25 text-info border border-info p-2"><i class="fa-solid fa-car-side me-1"></i> Cước chuyến đi</span></td>
-                                            <td class="text-white fw-bold">600.000 đ</td>
-                                            <td class="text-danger fw-bold">-360.000 đ</td>
-                                            <td class="text-success fw-bold fs-6">+ 240.000 đ</td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <div class="fw-bold text-white">#TRX-8820</div>
-                                                <div class="text-white-50 small">14/06/2026 • 09:15</div>
-                                            </td>
-                                            <td><span class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2"><i class="fa-solid fa-hand-holding-dollar me-1"></i> Phạt khách hủy</span></td>
-                                            <td class="text-white fw-bold">150.000 đ</td>
-                                            <td><span class="badge bg-secondary bg-opacity-50 text-white border border-secondary">Miễn phí</span></td>
-                                            <td class="text-success fw-bold fs-6">+ 150.000 đ</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody id="transactionTableBody">
+                                        </tbody>
                                 </table>
                             </div>
-                        </div> -->
-
-                        <h3 class="text-white fw-bold mb-0"><span id="dashNetIncome">0</span> đ</h3>
-
-                        <h3 class="text-info fw-bold mb-0"><span id="dashTotalTrips">0</span> <span class="fs-6 text-white-50 fw-normal">Chuyến</span></h3>
-
-                        <h3 class="text-warning fw-bold mb-0"><span id="dashBonus">0</span> đ</h3>
-
-                        <tbody id="transactionTableBody">    </tbody>
+                        </div>
                     </section>
 
                     <section id="tab-history" class="dashboard-section">
