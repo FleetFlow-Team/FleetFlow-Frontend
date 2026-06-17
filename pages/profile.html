@@ -174,41 +174,19 @@
               <form id="profileForm" class="row g-4 mt-2" onsubmit="updateProfile(event)">
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Họ và tên</label>
-                  <input
-                  id="inputFullName" readonly
-                    type="text"
-                    class="form-control custom-input"
-                    id="name"
-                    value="Trần Tiến Dũng"
-                  />
+                  <input id="inputFullName" type="text" class="form-control custom-input" />
                 </div>
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Số điện thoại</label>
-                  <input
-                    id="inputPhone"
-                    type="tel"
-                    class="form-control custom-input text-muted"
-                    value="0987654321"
-                    readonly
-                  />
+                  <input id="inputPhone" type="tel" class="form-control custom-input text-muted" />
                 </div>
                 <div class="col-md-6 form-floating-custom">
                   <label class="mb-2 fw-semibold">Email</label>
-                  <input
-                  id="inputEmail" readonly
-                    type="email"
-                    class="form-control custom-input"
-                    id="email"
-                  />
+                  <input id="inputEmail" readonly type="email" class="form-control custom-input bg-light" />
                 </div>
                 <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Ngày sinh</label>
-                  <input
-                    type="date"
-                    class="form-control custom-input"
-                    id="dob"
-                    value="2005-01-01"
-                  />
+                  <label class="mb-2 fw-semibold">Địa chỉ liên hệ</label>
+                  <input id="inputAddress" type="text" class="form-control custom-input" placeholder="VD: 38 Lê Lợi, Quận 1, TP.HCM" />
                 </div>
                 <div class="col-12 text-end mt-5">
                   <button type="submit" class="btn-login px-5 py-3 fs-6">
@@ -409,12 +387,26 @@
 
 <script>
     const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
+    const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customers';
     let currentApprovalStatus = 'PENDING'; 
 
     document.addEventListener("DOMContentLoaded", function() {
         // Lỏng hóa điều kiện: Bỏ qua nếu là Khách hàng, còn lại (Driver/Test) chạy hết
         const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') return;
+        // ========================================================
+        // ĐIỀU PHỐI (ROUTER): TÁCH LUỒNG KHÁCH HÀNG & TÀI XẾ
+        // ========================================================
+        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
+            // Khách hàng không cần xác thực CCCD/Bằng lái -> Ẩn tab eKYC đi cho gọn UI
+            const ekycTabBtn = document.querySelector('button[data-bs-target="#content-ekyc"]');
+            if (ekycTabBtn) ekycTabBtn.style.display = 'none';
+            
+            // Kích hoạt luồng Fetch API Khách hàng
+            loadCustomerProfileFromAPI();
+        } else {
+            // Kích hoạt luồng Fetch API Tài xế (Đã làm ở bước trước)
+            loadDriverProfileFromAPI(true);
+        }
         
         initLocalProfileUI();
         loadProfileDataFromAPI(true);
@@ -439,6 +431,104 @@
         if (userRole && document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
         if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
     }
+
+    // =========================================================================
+    // MODULE 1: API DÀNH CHO KHÁCH HÀNG (Sử dụng JWT Bearer Token)
+    // =========================================================================
+
+    /**
+     * [GET] Lấy chi tiết hồ sơ Khách hàng và Binding vào Input
+     */
+    async function loadCustomerProfileFromAPI() {
+        const token = localStorage.getItem('accessToken');
+        if (!token) return;
+
+        try {
+            const response = await fetch(`${CUSTOMER_API_BASE}/profile`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                const data = result.data;
+                
+                // 1. Điền (Binding) dữ liệu vào Form
+                const inputName = document.getElementById('inputFullName');
+                const inputPhone = document.getElementById('inputPhone');
+                const inputEmail = document.getElementById('inputEmail');
+                const inputAddress = document.getElementById('inputAddress');
+                
+                if (inputName) inputName.value = data.fullName || '';
+                if (inputPhone) inputPhone.value = data.phoneNumber || '';
+                if (inputEmail) inputEmail.value = data.email || '';
+                if (inputAddress) inputAddress.value = data.address || '';
+                
+                // 2. Lưu trữ các thông số nội bộ (Cực kỳ quan trọng cho TripBooking)
+                localStorage.setItem('customerId', data.customerId || '');
+                localStorage.setItem('accountId', data.accountId || '');
+                localStorage.setItem('debtBalance', data.debtBalance || '0');
+                localStorage.setItem('bookingStatus', data.bookingStatus || 'Active');
+                
+                initLocalProfileUI();
+            }
+        } catch (error) {
+            console.error("Lỗi API Customer Profile:", error);
+        }
+    }
+
+    /**
+     * [POST] Cập nhật hồ sơ Khách hàng
+     */
+    async function updateCustomerProfile(btn, originalText) {
+        const token = localStorage.getItem('accessToken');
+        if (!token) {
+            alert("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!");
+            return;
+        }
+
+        const fullName = document.getElementById('inputFullName')?.value.trim() || '';
+        const phoneNumber = document.getElementById('inputPhone')?.value.trim() || '';
+        const address = document.getElementById('inputAddress')?.value.trim() || '';
+
+        const params = new URLSearchParams();
+        if (fullName) params.append('fullName', fullName);
+        if (phoneNumber) params.append('phoneNumber', phoneNumber);
+        if (address) params.append('address', address);
+
+        try {
+            const response = await fetch(`${CUSTOMER_API_BASE}/profile/update`, {
+                method: 'POST',
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/x-www-form-urlencoded' 
+                },
+                body: params.toString()
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                alert("Cập nhật thông tin cá nhân thành công!");
+                localStorage.setItem('fullName', fullName);
+                initLocalProfileUI();
+            } else {
+                alert("Lỗi hệ thống: " + result.message);
+            }
+        } catch (error) {
+            alert("Không thể kết nối đến máy chủ.");
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+
+
+    // =========================================================================
+    // MODULE 2: API DÀNH CHO TÀI XẾ (Giữ nguyên logic cũ đã code chuẩn)
+    // =========================================================================
 
     async function loadProfileDataFromAPI(isDriver) {
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
