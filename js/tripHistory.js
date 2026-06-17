@@ -36,7 +36,7 @@ async function fetchTripHistory() {
     const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId');
     
     if (!customerId) {
-        return window.location.href = 'login.html'; // Ép văng ra login nếu mất session
+        return window.location.href = '../index.html'; // Ép văng ra login nếu mất session
     }
 
     const container = document.getElementById('tripListContainer');
