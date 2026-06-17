@@ -394,11 +394,15 @@ window.switchTab = function(tabId, element) {
     document.querySelectorAll(".dashboard-section").forEach(sec => sec.classList.remove("active"));
     document.getElementById(tabId).classList.add("active");
 
-    // 4. Kỹ thuật Lazy-Load (Chỉ gọi API khi nào cần thiết)
-    if (tabId === "tab-income") {
-        fetchDriverDashboard(); // Gọi API khi bấm vào tab Lịch sử Thu nhập
+    // 4. Kỹ thuật Lazy-Load chuẩn hóa theo API Backend mới
+    if (tabId === "tab-job-board") {
+        fetchDriverDashboardMetrics(); // Gọi API 2 nạp nhanh 3 số chỉ báo KPI ở màn chính
+    } else if (tabId === "tab-income") {
+        fetchDriverDashboardMetrics(); // Nạp KPI
+        fetchDriverWalletData();       // [API 8] Đổ dữ liệu lịch sử bảng công nợ
+        fetchDriverIncomeSummary();    // [API 9] Vẽ biểu đồ động theo tháng/năm
     } else if (tabId === "tab-account") {
-        fetchDriverProfile();   // Gọi lại API khi bấm vào Tài khoản để cập nhật dữ liệu mới nhất
+        fetchDriverProfile();          // [API 1] Gọi lại hồ sơ cá nhân mới nhất
     }
 };
 
