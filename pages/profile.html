@@ -387,12 +387,14 @@
 
 <script>
     const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
-    const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customers';
+    const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customers'; // THÊM API CỦA KHÁCH HÀNG
     let currentApprovalStatus = 'PENDING'; 
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Lỏng hóa điều kiện: Bỏ qua nếu là Khách hàng, còn lại (Driver/Test) chạy hết
+        initLocalProfileUI();
+        
         const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+        
         // ========================================================
         // ĐIỀU PHỐI (ROUTER): TÁCH LUỒNG KHÁCH HÀNG & TÀI XẾ
         // ========================================================
@@ -407,9 +409,6 @@
             // Kích hoạt luồng Fetch API Tài xế (Đã làm ở bước trước)
             loadDriverProfileFromAPI(true);
         }
-        
-        initLocalProfileUI();
-        loadProfileDataFromAPI(true);
     });
 
     function initLocalProfileUI() {
@@ -530,11 +529,10 @@
     // MODULE 2: API DÀNH CHO TÀI XẾ (Giữ nguyên logic cũ đã code chuẩn)
     // =========================================================================
 
-    async function loadProfileDataFromAPI(isDriver) {
+    async function loadDriverProfileFromAPI(isDriver) {
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       if (!accountId || accountId === 'undefined' || !isDriver) return;
 
-      // Hàm hiển thị Toast an toàn (Không bị Bootstrap/CSS ghi đè)
       const showToastForce = (id) => {
           const el = document.getElementById(id);
           if (!el) return;
@@ -542,7 +540,6 @@
           el.style.display = 'block';
           el.style.opacity = '1';
           el.style.zIndex = '999999';
-          // Ép reflow để CSS bắt kịp
           void el.offsetWidth;
           el.classList.add('show');
       };
@@ -554,30 +551,25 @@
           if (result.success && result.data) {
               const data = result.data; 
               
-              // Đổ dữ liệu vào Form
               const inputName = document.getElementById('inputFullName');
               const inputPhone = document.getElementById('inputPhone');
-              if (inputName && data.fullName) { inputName.value = data.fullName; inputName.removeAttribute('readonly'); }
-              if (inputPhone && data.phoneNumber) { inputPhone.value = data.phoneNumber; inputPhone.removeAttribute('readonly'); }
+              if (inputName && data.fullName) inputName.value = data.fullName;
+              if (inputPhone && data.phoneNumber) inputPhone.value = data.phoneNumber;
               
-              // 1. ĐỒNG BỘ TOÀN BỘ VÀO LOCAL STORAGE
               localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
               localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
               localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
               localStorage.setItem('termsAcceptedAt', data.termsAcceptedAt || '');
               localStorage.setItem('averageRating', data.averageRating || '0');
               localStorage.setItem('walletBalance', data.walletBalance || '0');
-              localStorage.setItem('createdAt', data.createdAt || '');
 
               let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? false;
               let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
               localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
               
-              // 2. HIỂN THỊ TOAST CẢNH BÁO
               const storedApproval = localStorage.getItem('approvalStatus');
               const storedTerms = localStorage.getItem('termsAccepted');
               
-              // Xử lý Toast EKYC
               if (storedApproval !== 'APPROVED') {
                   const ekycToastEl = document.getElementById('ekycWarningToast');
                   const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
@@ -586,7 +578,6 @@
                       const toastIcon = ekycToastEl.querySelector('i');
                       
                       if (storedApproval === 'REJECTED') {
-                          // Đã xóa bottom-0 và m-4 để không ghi đè inline style 3svh
                           ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed start-0 show";
                           if(toastIcon) toastIcon.className = "fa-solid fa-circle-xmark fs-3 text-danger fa-beat mt-1";
                           if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>bị từ chối</b>. Vui lòng tải lại CCCD & Bằng lái!";
@@ -595,10 +586,8 @@
                           if(toastIcon) toastIcon.className = "fa-solid fa-clock-rotate-left fs-3 text-info fa-spin-pulse mt-1";
                           if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>đang chờ phê duyệt</b>. Vui lòng quay lại sau!";
                       } else {
-                          // TRẠNG THÁI MẶC ĐỊNH: CHỈ SET CLASS, KHÔNG GHI ĐÈ INNERHTML
                           ekycToastEl.className = "toast align-items-center border border-warning shadow-lg position-fixed start-0 show";
                           if(toastIcon) toastIcon.className = "fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1";
-                          // Lệnh toastSpan.innerHTML ở đây đã bị xóa bỏ hoàn toàn
                       }
                   }
                   showToastForce('ekycWarningToast'); 
@@ -607,7 +596,6 @@
                   if (el) el.style.display = 'none';
               }
 
-              // Xử lý Toast TERMS (Sẽ hoạt động cho tài xế ID 5)
               if (storedTerms !== 'true') { 
                   showToastForce('termsWarningToast');
               } else {
@@ -627,24 +615,19 @@
       }
   }
 
-    async function updateProfile(event) {
-        event.preventDefault();
+    async function updateDriverProfile(btn, originalText) {
         const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
         if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
 
-        const inputName = document.getElementById('inputFullName');
-        const inputPhone = document.getElementById('inputPhone');
-        const fullName = inputName ? inputName.value.trim() : '';
-        const phoneNumber = inputPhone ? inputPhone.value.trim() : '';
-
-        const btn = event.submitter || document.activeElement; 
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang lưu...';
-        btn.disabled = true;
+        const fullName = document.getElementById('inputFullName')?.value.trim() || '';
+        const phoneNumber = document.getElementById('inputPhone')?.value.trim() || '';
 
         const params = new URLSearchParams();
         params.append('fullName', fullName);
         params.append('phoneNumber', phoneNumber);
+        
+        const currentStatus = localStorage.getItem('availabilityStatus') || 'OFFLINE';
+        params.append('availabilityStatus', currentStatus); // Bắt buộc cho API Tài xế
 
         try {
             const response = await fetch(`${DRIVER_API_BASE}/profile/update?accountID=${accountId}`, {
@@ -668,6 +651,28 @@
         }
     }
 
+
+    // =========================================================================
+    // HÀM ĐIỀU PHỐI (ROUTER) KHI BẤM NÚT "LƯU THAY ĐỔI"
+    // =========================================================================
+    async function updateProfile(event) {
+        event.preventDefault();
+        const btn = event.submitter || document.activeElement; 
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang lưu...';
+        btn.disabled = true;
+
+        const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+        
+        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
+            await updateCustomerProfile(btn, originalText);
+        } else {
+            await updateDriverProfile(btn, originalText);
+        }
+    }
+
+    // (Giữ nguyên 2 hàm submitEkycProfile và fetchEkycApprovalDetails phía dưới của bạn...)
+    // ... [Copy paste phần eKYC cũ vào đây]
     async function submitEkycProfile() {
         const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
         if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
@@ -719,7 +724,6 @@
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
       
-      // Chỉ chạy logic này nếu là Tài xế (bỏ qua Khách hàng thuần)
       if (!accountId || userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') return;
 
       try {
@@ -729,8 +733,6 @@
           if (result.success && result.data) {
               const data = result.data;
               const status = String(data.approvalStatus).toUpperCase();
-              
-              // Cập nhật biến cờ toàn cục (đã có trong source của bạn)
               currentApprovalStatus = status;
 
               const alertBox = document.getElementById('ekycStatusAlert');
@@ -748,8 +750,6 @@
                   alertBox.classList.add('alert-success');
                   alertTitle.innerHTML = '<i class="fa-solid fa-circle-check fs-4 me-2"></i> Hồ sơ đã được duyệt';
                   alertMsg.innerText = 'Giấy tờ của bạn đã hợp lệ. Bạn hiện có thể nhận chuyến đi trên hệ thống FleetFlow.';
-                  
-                  // Khóa hoàn toàn form upload vì đã duyệt thành công
                   btnSubmit.style.display = 'none';
                   formInputs.forEach(input => input.disabled = true);
 
@@ -757,8 +757,6 @@
                   alertBox.classList.add('alert-warning');
                   alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
                   alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Dispatcher sẽ tiến hành kiểm duyệt trong vòng 24h.';
-                  
-                  // Khóa form để tránh tải tài liệu đè lên trong lúc chờ duyệt
                   btnSubmit.style.display = 'none';
                   formInputs.forEach(input => input.disabled = true);
 
@@ -767,7 +765,6 @@
                   alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Hồ sơ bị từ chối';
                   alertMsg.innerText = 'Rất tiếc, giấy tờ định danh của bạn không đạt yêu cầu. Vui lòng kiểm tra lý do bên dưới và tải lại TOÀN BỘ giấy tờ.';
                   
-                  // Trích xuất lý do từ chối từ mảng documents (Lấy lý do đầu tiên tìm thấy)
                   if (data.documents && data.documents.length > 0) {
                       const rejectedDoc = data.documents.find(doc => doc.rejectReason != null && doc.rejectReason !== '');
                       if (rejectedDoc) {
@@ -776,16 +773,14 @@
                           rejectText.innerText = rejectedDoc.rejectReason;
                       }
                   }
-
-                  // Chuyển UI nút bấm sang chế độ Re-upload
                   btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-right me-2"></i> Tải lại hồ sơ';
-                  btnSubmit.classList.replace('btn-login', 'btn-danger'); // Đổi sang màu đỏ cảnh báo
+                  btnSubmit.classList.replace('btn-login', 'btn-danger'); 
               }
           }
       } catch (error) {
           console.error("Lỗi lấy chi tiết trạng thái kiểm duyệt (API 7):", error);
       }
-  }
+    }
     </script>
     <!-- Box warning cho ekyc (Nằm sát dưới cùng) -->
     <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed start-0" 
