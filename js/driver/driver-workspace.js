@@ -213,6 +213,16 @@ async function fetchDriverProfile() {
                 return;
             }
 
+            localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
+            if(data.phoneNumber) localStorage.setItem('phoneNumber', data.phoneNumber); // Rất quan trọng cho API 5
+            
+            // [THÊM MỚI] Đồng bộ nút gạt Toggle theo dữ liệu thực tế từ Database
+            const isOnline = (data.availabilityStatus === 'ONLINE');
+            const toggleInputs = document.querySelectorAll(".navOnlineToggle");
+            toggleInputs.forEach(input => {
+                input.checked = isOnline;
+            });
+
             // 3. RENDER UI CHO TÀI XẾ HỢP LỆ
             const accName = document.getElementById('accDriverName');
             const accAvatar = document.getElementById('accDriverAvatar');
@@ -516,3 +526,88 @@ window.removeCardSmoothly = function(card) {
         }, 400);
     }
 }
+
+// ============================================================================
+// 5. QUẢN LÝ TRẠNG THÁI HOẠT ĐỘNG (ONLINE / OFFLINE TOGGLE)
+// ============================================================================
+
+/**
+ * Xử lý sự kiện khi tài xế gạt nút "Nhận chuyến" / "Tạm nghỉ"
+ * Gọi API 5 (/profile/update) để lưu trạng thái xuống Database
+ */
+window.handleOnlineToggle = async function(currentInput) {
+    const walletBalance = parseFloat(localStorage.getItem('walletBalance') || 0);
+    const toggleInputs = document.querySelectorAll(".navOnlineToggle");
+
+    // 1. Kiểm tra ví: Dưới 50k không cho phép Online
+    if (walletBalance < 50000 && currentInput.checked) {
+        toggleInputs.forEach(input => input.checked = false);
+        const alertBanner = document.getElementById("walletAlertBanner");
+        if(alertBanner) alertBanner.style.display = "block";
+        return; // Dừng hàm, không gọi API
+    } else {
+        const alertBanner = document.getElementById("walletAlertBanner");
+        if(alertBanner) alertBanner.style.display = "none";
+    }
+
+    // Đồng bộ UI tất cả các nút gạt trên Mobile & Desktop
+    toggleInputs.forEach(input => input.checked = currentInput.checked);
+
+    // 2. Chuẩn bị gọi API 5
+    const accountId = localStorage.getItem('accountId');
+    if (!accountId) return;
+
+    const newStatus = currentInput.checked ? 'ONLINE' : 'OFFLINE';
+    
+    // Vì Backend ép buộc truyền đủ 3 tham số, ta lấy Name và Phone từ bộ nhớ đệm
+    const fullName = localStorage.getItem('fullName') || 'Tài xế';
+    const phoneNumber = localStorage.getItem('phoneNumber') || '0999999999';
+
+    const params = new URLSearchParams();
+    params.append('fullName', fullName);
+    params.append('phoneNumber', phoneNumber);
+    params.append('availabilityStatus', newStatus);
+
+    try {
+        // Khóa nút gạt để tránh spam click gây lỗi Transaction
+        toggleInputs.forEach(input => input.disabled = true);
+
+        const response = await fetch(`${API_BASE}/profile/update?accountID=${accountId}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params.toString()
+        });
+        
+        const result = await response.json();
+
+        if (result.success) {
+            // Lưu trạng thái mới vào LocalStorage
+            localStorage.setItem('availabilityStatus', newStatus);
+            
+            // Cập nhật thẻ hiển thị trạng thái ở Tab Tài khoản (Nếu có)
+            const accVehicle = document.getElementById('accDriverVehicle');
+            if(accVehicle) {
+                if(newStatus === 'ONLINE') {
+                    accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> Đang trực tuyến`;
+                    accVehicle.className = "badge bg-success bg-opacity-25 text-success border border-success p-2 px-3";
+                } else {
+                    accVehicle.innerHTML = `<i class="fa-solid fa-moon me-1"></i> Tạm nghỉ`;
+                    accVehicle.className = "badge bg-secondary bg-opacity-25 text-secondary border border-secondary p-2 px-3";
+                }
+            }
+        } else {
+            // Backend báo lỗi -> Hoàn tác (Revert) lại UI nút gạt
+            currentInput.checked = !currentInput.checked;
+            toggleInputs.forEach(input => input.checked = currentInput.checked);
+            alert("Lỗi hệ thống: " + result.message);
+        }
+    } catch (error) {
+        console.error("Lỗi API Update Status:", error);
+        currentInput.checked = !currentInput.checked;
+        toggleInputs.forEach(input => input.checked = currentInput.checked);
+        if (window.toastError) window.toastError.show();
+    } finally {
+        // Mở khóa lại nút gạt
+        toggleInputs.forEach(input => input.disabled = false);
+    }
+};
