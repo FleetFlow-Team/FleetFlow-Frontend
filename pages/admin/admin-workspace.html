@@ -248,70 +248,13 @@
                             <thead>
                                 <tr>
                                     <th width="30%">Biển số & Phương tiện</th>
-                                    <th width="25%">Giấy tờ pháp lý</th>
-                                    <th width="25%">Thuộc tính AI (Tags)</th>
+                                    <th width="30%">Giấy tờ & Định danh</th>
+                                    <th width="20%">Thuộc tính (Tags)</th>
                                     <th width="20%">Trạng thái hiện tại</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="bg-white bg-opacity-10 rounded-3 p-2 text-center" style="width: 55px; border: 1px solid rgba(255,255,255,0.2);">
-                                                <i class="fa-solid fa-car-side fs-4 text-white-50"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-bold fs-6 text-white" style="letter-spacing: 0.5px;">51H-123.45</div>
-                                                <div class="small text-white-50 fw-medium mt-1">VinFast VF8 Plus | 5 Chỗ</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small text-success fw-bold mb-1"><i class="fa-solid fa-shield-check me-1"></i> Đăng kiểm: Còn 150 ngày</div>
-                                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 200 ngày</div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <span class="badge bg-white bg-opacity-10 text-white border border-secondary"><i class="fa-solid fa-bolt text-warning me-1"></i> Xe Điện</span>
-                                            <span class="badge bg-white bg-opacity-10 text-white border border-secondary"><i class="fa-solid fa-suitcase text-info me-1"></i> Cốp rộng</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <select class="form-select form-select-sm glass-select text-success fw-bold border-success">
-                                            <option value="ready" selected>Sẵn sàng nhận chuyến</option>
-                                            <option value="maintenance">Chuyển sang bảo dưỡng</option>
-                                        </select>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center gap-3">
-                                            <div class="bg-white bg-opacity-10 rounded-3 p-2 text-center" style="width: 55px; border: 1px solid rgba(255,255,255,0.2);">
-                                                <i class="fa-solid fa-truck-pickup fs-4 text-white-50"></i>
-                                            </div>
-                                            <div>
-                                                <div class="fw-bold fs-6 text-white" style="letter-spacing: 0.5px;">51G-999.88</div>
-                                                <div class="small text-white-50 fw-medium mt-1">Toyota Fortuner | 7 Chỗ</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="small text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation fa-fade me-1"></i> Đăng kiểm: Đã hết hạn</div>
-                                        <div class="small text-success fw-bold"><i class="fa-solid fa-file-contract me-1"></i> Bảo hiểm: Còn 45 ngày</div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <span class="badge bg-white bg-opacity-10 text-white border border-secondary"><i class="fa-solid fa-mountain text-success me-1"></i> Gầm cao</span>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="badge bg-danger bg-opacity-25 text-danger border border-danger w-100 py-2" style="font-size: 0.85rem;">
-                                            <i class="fa-solid fa-lock me-1"></i> Hệ thống tự khóa
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
+                            <tbody id="adminFleetList">
+                                </tbody>
                         </table>
                     </div>
                 </div>
