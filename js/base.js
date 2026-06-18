@@ -305,7 +305,6 @@ async function handleLogin(event) {
             }
         } else {
             // NẾU ĐĂNG NHẬP SAI:
-            alert('Lỗi đăng nhập: ' + data.message);
             const pwdInput = document.getElementById('loginPassword');
             pwdInput.value = '';
             pwdInput.focus();
