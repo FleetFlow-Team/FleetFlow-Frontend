@@ -398,7 +398,7 @@
         // ========================================================
         // ĐIỀU PHỐI (ROUTER): TÁCH LUỒNG KHÁCH HÀNG & TÀI XẾ
         // ========================================================
-        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
+        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG' || userRole === 'ADMIN' ) {
             // Khách hàng không cần xác thực CCCD/Bằng lái -> Ẩn tab eKYC đi cho gọn UI
             const ekycTabBtn = document.querySelector('button[data-bs-target="#content-ekyc"]');
             if (ekycTabBtn) ekycTabBtn.style.display = 'none';
