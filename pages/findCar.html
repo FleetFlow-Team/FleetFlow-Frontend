@@ -310,17 +310,107 @@
     filter: drop-shadow(0 6px 10px rgba(0, 177, 79, 0.35));
 }
 
-.modal-blur-backdrop {
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            background-color: rgba(0, 0, 0, 0.4);
+/* =========================================================
+           APPLE GLASS MODAL (ĐỒNG BỘ GIAO DIỆN LOGIN)
+           ========================================================= */
+        
+        /* 1. Backdrop nền đen mờ bao phủ toàn màn hình */
+        .modal-backdrop.show {
+            background: rgba(0, 0, 0, 0.4) !important; 
+            backdrop-filter: blur(15px) !important; 
+            -webkit-backdrop-filter: blur(15px) !important;
+            opacity: 1 !important;
         }
-        .car-detail-modal-content {
-            background-color: #0f172a;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            color: white;
+
+        /* 2. Khung Box Kính Mờ (Base trên .glass-login-container) */
+        .glass-modal-container {
+            position: relative;
+            border-radius: 40px !important; /* Bo góc cực tròn */
+            background: rgba(255, 255, 255, 0.15) !important; /* Trắng mờ */
+            backdrop-filter: blur(40px) !important; 
+            -webkit-backdrop-filter: blur(40px) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        /* 3. Nút Tắt (X) góc phải trên cùng */
+        .glass-modal-close {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 2.5rem;
+            line-height: 1;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.4s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2));
+            z-index: 10;
+            padding: 0;
+        }
+        .glass-modal-close:hover {
+            color: #ffffff;
+            transform: scale(1.15) rotate(90deg);
+        }
+
+        /* 4. Nút bấm chính (Trắng xám giống Login) */
+        .glass-btn-primary {
+            height: 60px;
+            border-radius: 50px;
+            background: #e6e6e6;
+            color: #111111;
+            font-weight: 700;
+            font-size: 1.15rem;
+            border: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s var(--liquid-easing, ease);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .glass-btn-primary:hover {
+            background: #ffffff;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.25);
+        }
+
+        /* 5. Nút bấm phụ (Hủy/Đóng) */
+        .glass-btn-outline {
+            height: 60px;
+            border-radius: 50px;
+            background: rgba(0, 0, 0, 0.2);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 1.15rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .glass-btn-outline:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        /* 6. Các khối thông số xe (Dựa trên glass-input-field) */
+        .glass-info-box {
+            background: rgba(0, 0, 0, 0.25); /* Xám đen mờ bên trong */
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 25px; /* Bo tròn hoàn toàn */
+            padding: 15px 20px;
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        
+        .glass-radio-wrapper {
+            background: rgba(0, 0, 0, 0.25); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            border-radius: 50px; 
+            box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .glass-radio-wrapper:hover {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
 
@@ -479,14 +569,14 @@
                 <div class="glass-panel sort-bar mb-4">
                     <div class="glass-content d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                         <div class="text-secondary fw-medium">
-                            Tìm thấy <span class="highlight-text fw-bold fs-5">128</span> phương tiện gần bạn
+                            Tìm thấy <span class="highlight-text fw-bold fs-5" id="totalVehicleCount">0</span> phương tiện gần bạn
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <span class="text-nowrap small fw-bold text-uppercase text-secondary">Sắp xếp:</span>
-                            <select class="form-select glass-select border-0 fw-semibold text-dark">
-                                <option value="near" selected>Khoảng cách gần nhất   </option>
-                                <option value="priceAsc">Giá từ thấp đến cao</option>
-                                <option value="priceDesc">Giá từ cao đến thấp</option>
+                            <span class="text-nowrap small fw-bold text-uppercase text-secondary">Dịch vụ:</span>
+                            <select id="mainServiceSelect" class="form-select glass-select border-0 fw-semibold text-dark">
+                                <option value="DISTANCE" selected>Thuê xe theo chuyến</option>
+                                <option value="HOURLY">Thuê xe theo giờ</option>
+                                <option value="DAILY">Thuê xe theo ngày</option>
                             </select>
                         </div>
                     </div>
@@ -506,7 +596,7 @@
         </div>
     </div>
 
-    <div class="login-modal-overlay" id="loginModal">
+        <div class="login-modal-overlay" id="loginModal">
           <div class="glass-login-container">
             <button class="close-modal-btn" id="closeLoginModal">&times;</button>
             
@@ -527,10 +617,61 @@
             </form>
             <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
               <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
-              <a href="pages/register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
+              <a href="register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
             </div>
           </div>
         </div>
+
+        <div class="modal fade" id="welcomeServiceModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content glass-modal-container border-0">
+                    <button type="button" class="glass-modal-close" data-bs-dismiss="modal">&times;</button>
+                    
+                    <div class="modal-body p-4 p-md-5 text-center">
+                        <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 80px; object-fit: contain; margin-bottom: 10px;">
+                        <h3 class="glass-login-title mb-2" style="font-size: 2rem;">Loại Hình Dịch Vụ</h3>
+                        <p class="text-white-50 mb-4" style="font-size: 0.95rem;">Chọn nhu cầu thuê xe của bạn để hệ thống FleetFlow cá nhân hóa dữ liệu nhé.</p>
+                        
+                        <div class="d-flex flex-column gap-3 text-start mb-4 mt-2">
+                            <label class="liquid-checkbox-wrapper radio-type w-100 px-4 py-3 m-0 glass-radio-wrapper">
+                                <input type="radio" name="initServiceType" value="DISTANCE" checked />
+                                <span class="checkmark"></span>
+                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo chuyến</span>
+                            </label>
+                            <label class="liquid-checkbox-wrapper radio-type w-100 px-4 py-3 m-0 glass-radio-wrapper">
+                                <input type="radio" name="initServiceType" value="HOURLY" />
+                                <span class="checkmark"></span>
+                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo giờ</span>
+                            </label>
+                            <label class="liquid-checkbox-wrapper radio-type w-100 px-4 py-3 m-0 glass-radio-wrapper">
+                                <input type="radio" name="initServiceType" value="DAILY" />
+                                <span class="checkmark"></span>
+                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo ngày</span>
+                            </label>
+                        </div>
+                        
+                        <button type="button" class="glass-btn-primary w-100" onclick="confirmServiceSelection()">Xác nhận</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+<div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-modal-container border-0">
+            <button type="button" class="glass-modal-close" data-bs-dismiss="modal">&times;</button>
+            
+            <div class="modal-body p-4 p-md-5" id="carDetailBody">
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-circle-notch fa-spin fs-1 text-white"></i>
+                    <p class="mt-3 text-white-50 fs-5">Đang truy xuất hồ sơ xe...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </main>
 
 <aside class="ai-floating-widget">
@@ -564,30 +705,29 @@
 </aside>
 
 <div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
-        <div class="modal-dialog modal-dialog-centered modal-lg position-relative" style="z-index: 1056;">
-            <div class="modal-content car-detail-modal-content overflow-hidden">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-circle-info me-2"></i>Hồ sơ Phương tiện</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                
-                <div class="modal-body p-4" id="carDetailBody">
-                    <div class="text-center py-5">
-                        <i class="fa-solid fa-circle-notch fa-spin fs-2 text-success"></i>
-                        <p class="mt-2 text-white-50">Đang truy xuất thông tin...</p>
-                    </div>
-                </div>
-                
-                <div class="modal-footer border-0 pt-0 border-top border-secondary border-opacity-25 mt-3">
-                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm" id="btnBookFromDetail">
-                        Tiến hành Đặt xe <i class="fa-solid fa-arrow-right ms-2"></i>
-                    </button>
+    <div class="modal-dialog modal-dialog-centered modal-lg position-relative" style="z-index: 1056;">
+        <div class="modal-content car-detail-modal-content overflow-hidden">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-circle-info me-2"></i>Hồ sơ Phương tiện</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4" id="carDetailBody">
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-circle-notch fa-spin fs-2 text-success"></i>
+                    <p class="mt-2 text-white-50">Đang truy xuất thông tin...</p>
                 </div>
             </div>
+            
+            <div class="modal-footer border-0 pt-0 border-top border-secondary border-opacity-25 mt-3">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm" id="btnBookFromDetail">
+                    Tiến hành Đặt xe <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+            </div>
         </div>
-        <div class="modal-backdrop modal-blur-backdrop show position-fixed top-0 start-0 w-100 h-100" style="z-index: 1050; pointer-events: none;"></div>
     </div>
+</div>
     <footer>
       <div class="container reveal-on-scroll">
         <div class="row g-4">
@@ -951,195 +1091,305 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
     }
 
     // ==========================================================================
-    // 7. PHÂN HỆ KHÁM PHÁ XE (API: GET /vehicles) - CÓ PHÂN TRANG (18 XE/TRANG)
-    // ==========================================================================
+// 7. PHÂN HỆ KHÁM PHÁ XE & CHI TIẾT PHƯƠNG TIỆN (BẢN TỐI ƯU - KHÔNG FILTER)
+// ==========================================================================
 
-    const VEHICLE_API_URL = 'http://localhost:8080/FleetFlow/api/v1/vehicles';
-    let globalVehicles = [];
+const VEHICLE_API_URL = 'http://localhost:8080/FleetFlow/api/v1/vehicles';
+let globalVehicles = [];      // Mảng chứa toàn bộ dữ liệu xe từ Server
+let currentPage = 1;          // Trang hiện tại mặc định
+const itemsPerPage = 18;      // Số lượng xe hiển thị trên một trang
 
-    // [THÊM] Khai báo trạng thái phân trang
-    let currentPage = 1;
-    const itemsPerPage = 18; 
+document.addEventListener("DOMContentLoaded", () => {
+    fetchVehicles();
+});
 
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchVehicles();
-    });
-
-    async function fetchVehicles() {
-        try {
-            const response = await fetch(VEHICLE_API_URL);
-            const result = await response.json();
+/**
+ * Gọi API lấy toàn bộ danh sách xe từ Server
+ */
+async function fetchVehicles() {
+    try {
+        const response = await fetch(VEHICLE_API_URL);
+        const result = await response.json();
+        
+        if (result.data) {
+            globalVehicles = result.data;
+            // Sắp xếp xe tăng dần theo ID để hiển thị nhất quán
+            globalVehicles.sort((a, b) => (a.vehicleId || 0) - (b.vehicleId || 0));
             
-            if (result.data) {
-                globalVehicles = result.data;
-                
-                // Lưu toàn bộ 50 xe (hoặc hơn) vào localStorage cho trang Booking
-                localStorage.setItem('allVehicles', JSON.stringify(globalVehicles));
-                
-                // Render dữ liệu của Trang 1
-                renderVehiclesByPage(currentPage);
-            }
-        } catch (error) {
-            console.error("Lỗi tải danh sách phương tiện:", error);
+            // Lưu trữ mảng gốc vào localStorage phục vụ luồng xử lý trang Bản đồ/Booking
+            localStorage.setItem('allVehicles', JSON.stringify(globalVehicles));
+            
+            // Tiến hành vẽ giao diện trang đầu tiên
+            renderVehiclesByPage(currentPage);
         }
+    } catch (error) {
+        console.error("Hệ thống không thể tải danh sách phương tiện từ máy chủ:", error);
+    }
+}
+
+/**
+ * Render danh sách xe dựa theo trang được chọn
+ * @param {number} page - Số trang cần render
+ */
+function renderVehiclesByPage(page) {
+    const container = document.getElementById('vehicleListContainer');
+    if (!container) return;
+
+    // Tính toán vị trí cắt mảng dữ liệu (Phân trang thuần)
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const currentVehicles = globalVehicles.slice(startIndex, endIndex);
+
+    let html = '';
+    
+    // Cập nhật số lượng tổng xe hiển thị trên Sort Bar
+    const countText = document.querySelector('.sort-bar .highlight-text');
+    if(countText) countText.innerText = globalVehicles.length;
+
+    if (globalVehicles.length === 0) {
+        container.innerHTML = `
+            <div class="col-12 text-center py-5 text-secondary">
+                <i class="fa-solid fa-car-tunnel fs-1 mb-3"></i>
+                <h5 class="fw-bold">Hiện tại không có xe nào trên hệ thống</h5>
+            </div>`;
+        renderPaginationInfo(0, page);
+        return;
     }
 
-    // [MỚI] Hàm render xe dựa trên Trang hiện tại
-    function renderVehiclesByPage(page) {
-        const container = document.getElementById('vehicleListContainer');
-        if (!container) return;
+    currentVehicles.forEach(v => {
+        // Phân tích thông tin nhiên liệu và hộp số dựa vào chuỗi mô tả thực tế của API
+        let fuelType = (v.description && v.description.toLowerCase().includes("dầu")) ? "Dầu" : "Xăng";
+        if(v.description && v.description.toLowerCase().includes("điện")) fuelType = "Điện";
+        let transType = (v.description && v.description.toLowerCase().includes("số sàn")) ? "Số sàn" : "Tự động";
+        let mockOldPrice = v.seatCount > 5 ? "1.000.000" : "650.000";
+        let badgeClass = v.seatCount > 5 ? "badge-red" : "badge-yellow";
+        let discountText = v.seatCount > 5 ? "Giảm 15%" : "Giảm 10...";
 
-        // Tính toán cắt mảng (Lấy 18 xe tương ứng với trang)
-        const startIndex = (page - 1) * itemsPerPage;
-        const endIndex = startIndex + itemsPerPage;
-        const currentVehicles = globalVehicles.slice(startIndex, endIndex);
-
-        let html = '';
-        
-        // Cập nhật tổng số xe (Vẫn hiển thị đủ tổng số trong Database)
-        const countText = document.querySelector('.sort-bar .highlight-text');
-        if(countText) countText.innerText = globalVehicles.length;
-
-        // Chỉ loop qua 18 xe của trang này
-        currentVehicles.forEach(v => {
-            let fuelType = "Xăng";
-            if(v.description && v.description.toLowerCase().includes("dầu")) fuelType = "Dầu";
-            else if(v.description && v.description.toLowerCase().includes("điện")) fuelType = "Điện";
-
-            let transType = "Tự động";
-            if(v.description && v.description.toLowerCase().includes("số sàn")) transType = "Số sàn";
-
-            let mockPrice = v.seatCount > 5 ? "850.000" : "550.000";
-            let mockOldPrice = v.seatCount > 5 ? "1.000.000" : "650.000";
-            let badgeClass = v.seatCount > 5 ? "badge-red" : "badge-yellow";
-            let discountText = v.seatCount > 5 ? "Giảm 15%" : "Giảm 10%";
-
-            html += `
-            <div class="col-6 col-md-4 col-xl-4">
-                <div class="glass-card h-100 tilt-effect">
-                    <div class="glass-content d-flex flex-column h-100">
-                        <div class="vehicle-img-box position-relative">
-                            <div class="vehicle-badge-discount ${badgeClass}">${discountText}</div>
-                            <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="${v.brand} ${v.model}" class="v-img" loading="lazy" />
+        html += `
+        <div class="col-6 col-md-4 col-xl-4">
+            <div class="glass-card h-100 tilt-effect">
+                <div class="glass-content d-flex flex-column h-100">
+                    <div class="vehicle-img-box position-relative" style="cursor: pointer;" onclick="viewCarDetail('${v.vehicleId}')" title="Nhấn để xem chi tiết thông số">
+                        <div class="vehicle-badge-discount ${badgeClass}">Chi tiết <i class="fa-solid fa-up-right-and-down-left-from-center ms-1"></i></div>
+                        <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="${v.brand} ${v.model}" class="v-img" loading="lazy" />
+                    </div>
+                    
+                    <div class="vehicle-detail-content">
+                        <h5 class="v-title fw-bold text-dark">${v.brand} ${v.model}</h5>
+                        
+                        <div class="v-specs-container">
+                            <span class="v-spec-pill" title="Biển kiểm soát">
+                                <i class="fa-solid fa-hashtag"></i>${v.licensePlate}
+                            </span>
+                            <span class="v-spec-pill" title="Số chỗ ngồi">
+                                <i class="fa-solid fa-chair"></i>${v.seatCount} Chỗ
+                            </span>
+                            <span class="v-spec-pill" title="Nhiên liệu">
+                                <i class="fa-solid fa-gas-pump"></i>${fuelType}
+                            </span>
+                            <span class="v-spec-pill" title="Hộp số">
+                                <i class="fa-solid fa-gear"></i>${transType}
+                            </span>
                         </div>
-                        <div class="vehicle-detail-content">
-                            <h5 class="v-title fw-bold text-dark">${v.brand} ${v.model}</h5>
-                            
-                            <div class="v-specs d-flex flex-wrap gap-3 text-secondary small my-2 fw-medium">
-                                <span><i class="fa-solid fa-hashtag me-1"></i>${v.licensePlate}</span>
-                                <span><i class="fa-solid fa-chair me-1"></i>${v.seatCount} Chỗ</span>
-                            </div>
-                            
-                            <div class="v-specs d-flex gap-3 text-secondary small mb-3">
-                                <span><i class="fa-solid fa-gas-pump me-1"></i>${fuelType}</span>
-                                <span><i class="fa-solid fa-circle-dot me-1"></i>${transType}</span>
-                            </div>
-                            
-                            <div class="d-flex align-items-center justify-content-between pt-3 mt-auto border-top-glass-light">
-                                <div class="price-container d-flex flex-column">
-                                <span class="price-old">${mockOldPrice}</span>
-                                <div class="d-flex align-items-baseline gap-2">
-                                    <span class="price-current">${mockPrice}<span class="currency">đ</span></span>
-                                </div>
-                                </div>
-                                <button class="btn-liquid-book" onclick="selectCarAndGo(${v.vehicleId})">
-                                    <span class="text-dark text-decoration-none">Đặt xe</span>
-                                </button>
-                            </div>
+
+                        <div class="d-flex align-items-center justify-content-center pt-3 mt-auto border-top-glass-light">
+                            <button type="button" class="btn-liquid-book px-5" onclick="event.stopPropagation(); selectCarAndGo('${v.vehicleId}')">
+                                <span class="text-dark text-decoration-none fw-bold">Chọn xe</span>
+                            </button>
                         </div>
                     </div>
                 </div>
-            </div>`;
-        });
+            </div>
+        </div>`;
+    });
 
-        container.innerHTML = html;
-        
-        // Gọi hàm tạo nút phân trang
-        renderPaginationInfo(globalVehicles.length, page);
-        
-        initTiltEffect();
-    }
+    container.innerHTML = html;
+    renderPaginationInfo(globalVehicles.length, page);
+    if (typeof initTiltEffect === 'function') initTiltEffect();
+}
 
-    // [MỚI] Hàm vẽ Nút phân trang tự động
-    function renderPaginationInfo(totalItems, currentPage) {
-        const totalPages = Math.ceil(totalItems / itemsPerPage);
-        const paginationContainer = document.getElementById('paginationContainer');
-        if (!paginationContainer) return;
+// ------------------------------------------------------------------
+// C. API GET /{id}: XEM CHI TIẾT XE VÀ HIỂN THỊ MODAL (APPLE DESIGN)
+// ------------------------------------------------------------------
+window.viewCarDetail = async function(id) {
+    const modalEl = document.getElementById('carDetailModal');
+    const modalBody = document.getElementById('carDetailBody');
+    
+    if (!modalEl || !modalBody) return;
 
-        let html = '';
+    // 1. Khởi tạo và Bật Modal Bootstrap
+    const modalInstance = bootstrap.Modal.getOrCreateInstance(modalEl);
+    modalInstance.show();
 
-        // Nếu không có xe nào, ẩn thanh phân trang
-        if (totalPages === 0) {
-            paginationContainer.innerHTML = '';
-            return;
-        }
+    // 2. Trạng thái Loading chuẩn Apple (Đơn giản, tinh tế)
+    modalBody.innerHTML = `
+        <div class="text-center py-5">
+            <i class="fa-solid fa-circle-notch fa-spin fs-1 text-white"></i>
+            <p class="mt-3 text-white-50 fs-5 fw-medium">Đang truy xuất hồ sơ xe...</p>
+        </div>`;
 
-        // Nút Trước (Prev)
-        if (currentPage === 1) {
-            html += `<li class="page-item disabled"><a class="page-link" href="javascript:void(0)"><i class="fa-solid fa-chevron-left"></i></a></li>`;
-        } else {
-            html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="changePage(${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></a></li>`;
-        }
+    try {
+        // 3. Gọi API Lấy chi tiết xe
+        const response = await fetch(`${VEHICLE_API_URL}/${id}`);
+        const result = await response.json();
 
-        // Nút Số trang (1, 2, 3...)
-        for (let i = 1; i <= totalPages; i++) {
-            if (i === currentPage) {
-                html += `<li class="page-item active"><a class="page-link" href="javascript:void(0)">${i}</a></li>`;
-            } else {
-                html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="changePage(${i})">${i}</a></li>`;
-            }
-        }
-
-        // Nút Sau (Next)
-        if (currentPage === totalPages) {
-            html += `<li class="page-item disabled"><a class="page-link" href="javascript:void(0)"><i class="fa-solid fa-chevron-right"></i></a></li>`;
-        } else {
-            html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="changePage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></a></li>`;
-        }
-
-        paginationContainer.innerHTML = html;
-    }
-
-    // [MỚI] Sự kiện khi click chuyển trang
-    window.changePage = function(pageNumber) {
-        currentPage = pageNumber;
-        renderVehiclesByPage(currentPage);
-        
-        // Tạo UX Cuộn mượt mà lên đầu danh sách xe
-        const listTop = document.getElementById('vehicleListContainer').offsetTop - 100;
-        window.scrollTo({ top: listTop, behavior: 'smooth' });
-    };
-
-    function initTiltEffect() {
-        const cards = document.querySelectorAll('.tilt-effect');
-
-        cards.forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left; 
-                const y = e.clientY - rect.top;  
-                
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-                
-                const rotateX = ((y - centerY) / centerY) * -8;
-                const rotateY = ((x - centerX) / centerX) * 8;
-
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-                card.style.transition = `transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2)`;
-            });
+        if (result.success && result.data) {
+            const v = result.data;
             
-            card.addEventListener('mouseenter', () => {
-                card.style.transition = `transform 0.1s ease`;
-            });
-        });
+            // Xử lý Tags AI chuẩn Pill Badge của iOS
+            const tagsHtml = v.tags 
+                ? v.tags.split(',').map(t => `<span class="badge" style="background: rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); margin: 0 6px 8px 0; backdrop-filter: blur(5px);">${t.trim()}</span>`).join('') 
+                : '<span class="text-white-50 small fw-medium">Không có phân tích bổ sung</span>';
+            
+            // 4. Đổ dữ liệu vào UI Apple Glass
+            modalBody.innerHTML = `
+                <div class="row g-4 align-items-center">
+                    <div class="col-md-5 text-center">
+                        <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" class="img-fluid w-100" style="border-radius: 28px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.5);" alt="${v.brand}">
+                    </div>
+                    
+                    <div class="col-md-7 ps-md-4 text-start">
+                        <h3 class="glass-login-title mb-1">${v.brand} ${v.model}</h3>
+                        <div class="mb-4 d-inline-block px-4 py-1" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 50px; font-weight: 600; font-size: 0.85rem;">
+                            ${v.typeName || 'Hạng xe tiêu chuẩn'}
+                        </div>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <div class="glass-info-box">
+                                    <div class="text-white-50 small mb-1 fw-medium"><i class="fa-solid fa-hashtag me-1"></i> Biển kiểm soát</div>
+                                    <div class="fw-bold fs-5 text-white">${v.licensePlate}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="glass-info-box">
+                                    <div class="text-white-50 small mb-1 fw-medium"><i class="fa-solid fa-chair me-1"></i> Chỗ ngồi</div>
+                                    <div class="fw-bold fs-5 text-white">${v.seatCount} Ghế</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="glass-info-box">
+                                    <div class="text-white-50 small mb-1 fw-medium"><i class="fa-solid fa-gauge-high me-1"></i> Tích lũy (ODO)</div>
+                                    <div class="fw-bold fs-6" style="color: #4ade80;">${(v.accumulatedKm || 0).toLocaleString('vi-VN')} km</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="glass-info-box">
+                                    <div class="text-white-50 small mb-1 fw-medium"><i class="fa-solid fa-shield-halved me-1"></i> Trạng thái</div>
+                                    <div class="fw-bold fs-6 ${v.status === 'Available' ? 'text-white' : 'text-danger'}">${v.status === 'Available' ? 'Sẵn sàng phục vụ' : 'Đang bận'}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4 mt-2">
+                            <div class="text-white-50 small mb-2 fw-medium"><i class="fa-solid fa-tags me-1"></i> Nhãn phân tích AI</div>
+                            <div class="d-flex flex-wrap">${tagsHtml}</div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="text-white-50 small mb-1 fw-medium"><i class="fa-solid fa-circle-info me-1"></i> Thông tin bổ sung</div>
+                            <p class="text-white opacity-75 m-0" style="font-size: 0.9rem; line-height: 1.5;">
+                                ${v.description || 'Phương tiện thuộc hệ thống quản lý của FleetFlow.'}
+                            </p>
+                        </div>
+
+                        <div class="d-flex gap-3 mt-4 pt-3 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+                            <button type="button" class="glass-btn-outline w-50" data-bs-dismiss="modal">Trở lại</button>
+                            <button type="button" class="glass-btn-primary w-50" id="btnBookFromDetailInner">
+                                Chọn xe <i class="fa-solid fa-arrow-right ms-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>`;
+
+            // 5. Gán sự kiện cực kì an toàn cho nút "Đặt xe ngay"
+            const btnBookInner = document.getElementById('btnBookFromDetailInner');
+            if (btnBookInner) {
+                btnBookInner.onclick = (e) => {
+                    // Chặn sự kiện nổi bọt (Bubble), tránh việc click nhầm gây lỗi Modal
+                    e.stopPropagation(); 
+                    
+                    // Nếu xe không sẵn sàng, cảnh báo nhẹ nhàng
+                    if (v.status !== 'Available') {
+                        alert("Phương tiện này hiện không sẵn sàng. Vui lòng chọn xe khác!");
+                        return;
+                    }
+
+                    // Điều hướng sang trang Booking
+                    selectCarAndGo(v.vehicleId); 
+                };
+            }
+        } else {
+            modalBody.innerHTML = `
+                <div class="text-center py-5">
+                    <i class="fa-solid fa-triangle-exclamation fs-1 mb-3" style="color: #ef4444;"></i>
+                    <h5 class="text-white fw-bold mb-2">Không tải được dữ liệu</h5>
+                    <p class="text-white-50">${result.message}</p>
+                    <button class="glass-btn-outline px-4 mt-3 mx-auto" data-bs-dismiss="modal">Đóng</button>
+                </div>`;
+        }
+    } catch (error) {
+        console.error("Lỗi xem chi tiết xe:", error);
+        modalBody.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fa-solid fa-server fs-1 mb-3" style="color: #ef4444;"></i>
+                <h5 class="text-white fw-bold mb-2">Lỗi kết nối</h5>
+                <p class="text-white-50">Mất kết nối đến máy chủ FleetFlow!</p>
+                <button class="glass-btn-outline px-4 mt-3 mx-auto" data-bs-dismiss="modal">Đóng</button>
+            </div>`;
     }
+};
+
+/**
+ * Xử lý vẽ thanh số nút phân trang tự động dựa trên tổng số xe hiện có
+ */
+function renderPaginationInfo(totalItems, currentPage) {
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const paginationContainer = document.getElementById('paginationContainer');
+    if (!paginationContainer) return;
+
+    let html = '';
+    if (totalPages <= 1) {
+        paginationContainer.innerHTML = '';
+        return;
+    }
+
+    // Nút điều hướng lùi trang (Prev)
+    if (currentPage === 1) {
+        html += `<li class="page-item disabled"><a class="page-link" href="javascript:void(0)"><i class="fa-solid fa-chevron-left"></i></a></li>`;
+    } else {
+        html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="changePage(${currentPage - 1})"><i class="fa-solid fa-chevron-left"></i></a></li>`;
+    }
+
+    // Vòng lặp vẽ số trang riêng lẻ
+    for (let i = 1; i <= totalPages; i++) {
+        if (i === currentPage) {
+            html += `<li class="page-item active"><a class="page-link" href="javascript:void(0)">${i}</a></li>`;
+        } else {
+            html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="changePage(${i})">${i}</a></li>`;
+        }
+    }
+
+    // Nút điều hướng tiến trang (Next)
+    if (currentPage === totalPages) {
+        html += `<li class="page-item disabled"><a class="page-link" href="javascript:void(0)"><i class="fa-solid fa-chevron-right"></i></a></li>`;
+    } else {
+        html += `<li class="page-item"><a class="page-link" href="javascript:void(0)" onclick="changePage(${currentPage + 1})"><i class="fa-solid fa-chevron-right"></i></a></li>`;
+    }
+
+    paginationContainer.innerHTML = html;
+}
+
+/**
+ * Lắng nghe hành động chuyển trang và cuộn giao diện ngược lên đầu danh sách xe
+ */
+window.changePage = function(pageNumber) {
+    currentPage = pageNumber;
+    renderVehiclesByPage(currentPage);
+    
+    const listTop = document.getElementById('vehicleListContainer').offsetTop - 100;
+    window.scrollTo({ top: listTop, behavior: 'smooth' });
+};
 
   
 </script>

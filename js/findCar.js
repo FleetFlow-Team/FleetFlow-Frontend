@@ -117,3 +117,38 @@ function initBottomSheetUX() {
     window.addEventListener('mouseup', handleDragEnd);
 }
 
+// ==========================================================================
+// 8. LOGIC POPUP CHỌN DỊCH VỤ KHI VỪA VÀO TRANG
+// ==========================================================================
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Tự động bật Modal Chọn dịch vụ khi trang vừa tải xong
+    // Sử dụng setTimeout 300ms để đảm bảo UI mượt mà, không bị giật khung hình
+    setTimeout(() => {
+        const welcomeModalEl = document.getElementById('welcomeServiceModal');
+        if (welcomeModalEl) {
+            const modalInstance = bootstrap.Modal.getOrCreateInstance(welcomeModalEl);
+            modalInstance.show();
+        }
+    }, 300);
+});
+
+// Hàm xử lý khi khách hàng bấm nút "Xác nhận dịch vụ"
+window.confirmServiceSelection = function() {
+    // 1. Lấy giá trị từ Radio Button mà khách hàng vừa chọn trong Box
+    const selectedService = document.querySelector('input[name="initServiceType"]:checked').value;
+    
+    // 2. Cập nhật thẻ Select (Dropdown) nằm trên thanh công cụ Sort-bar ở phía ngoài
+    const mainSelect = document.getElementById('mainServiceSelect');
+    if (mainSelect) {
+        mainSelect.value = selectedService;
+    }
+    
+    // 3. (Tùy chọn) Lưu vào LocalStorage để trang Đặt Chuyến (tripBooking.html) biết khách hàng đang chọn hình thức gì
+    localStorage.setItem('bookingType', selectedService);
+    
+    // 4. Đóng Box (Modal)
+    const welcomeModalEl = document.getElementById('welcomeServiceModal');
+    const modalInstance = bootstrap.Modal.getInstance(welcomeModalEl);
+    modalInstance.hide();
+};
