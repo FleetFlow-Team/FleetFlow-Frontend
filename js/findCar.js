@@ -165,7 +165,6 @@ window.confirmServiceSelection = function() {
 // ==========================================================================
 // 9. PHÂN HỆ KHÁM PHÁ XE, BỘ LỌC (FILTER) & SẮP XẾP (SORT) - HOÀN THIỆN 100%
 // ==========================================================================
-
 const VEHICLE_API_URL = 'http://localhost:8080/FleetFlow/api/v1/vehicles';
 let globalVehicles = [];      // Mảng gốc chứa toàn bộ dữ liệu xe từ Server
 let filteredVehicles = [];    // Mảng sau khi đã qua bộ lọc và sắp xếp
@@ -445,10 +444,15 @@ function renderVehiclesByPage(page) {
 
     currentVehicles.forEach(v => {
         // Tách nhiên liệu và hộp số từ mô tả
+        // Dùng dữ liệu thật từ API, giữ lại logic fallback hộp số
         const descLower = (v.description || '').toLowerCase();
-        let fuelType = descLower.includes("dầu") ? "Dầu" : "Xăng";
-        if(descLower.includes("điện")) fuelType = "Điện";
+        let fuelType = v.fuelType || 'Xăng'; 
         let transType = (descLower.includes("số sàn") || descLower.includes("mt")) ? "Số sàn" : "Tự động";
+
+        // Xử lý hình ảnh: Ưu tiên ảnh từ DB, nếu null thì dùng ảnh placeholder
+        let carImage = (v.imagePath && v.imagePath.trim() !== '') 
+            ? v.imagePath 
+            : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
 
         // Giá xe
         const rawPrice = getMockPrice(v);
@@ -465,7 +469,7 @@ function renderVehiclesByPage(page) {
                 <div class="glass-content d-flex flex-column h-100">
                     <div class="vehicle-img-box position-relative" style="cursor: pointer;" onclick="viewCarDetail('${v.vehicleId}')" title="Nhấn để xem chi tiết thông số">
                         <div class="vehicle-badge-discount ${badgeClass}">Chi tiết <i class="fa-solid fa-up-right-and-down-left-from-center ms-1"></i></div>
-                        <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="${v.brand} ${v.model}" class="v-img" loading="lazy" />
+                        <img src="${carImage}" alt="${v.brand} ${v.model}" class="v-img" loading="lazy" />
                     </div>
                     
                     <div class="vehicle-detail-content">
@@ -596,10 +600,11 @@ window.viewCarDetail = async function(id) {
         if (result.success && result.data) {
             const v = result.data;
             
-            const tagsHtml = v.tags 
-                ? v.tags.split(',').map(t => `<span class="badge" style="background: rgba(255,255,255,0.15); color: #fff; font-size: 0.85rem; padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); margin: 0 6px 8px 0; backdrop-filter: blur(5px);">${t.trim()}</span>`).join('') 
-                : '<span class="text-white-50 small fw-medium">Không có phân tích bổ sung</span>';
-            
+            // Lấy bù hình ảnh từ mảng cache vì API findById không trả về imagePath
+            const cachedCar = globalVehicles.find(car => car.vehicleId == id);
+            let modalImage = (cachedCar && cachedCar.imagePath && cachedCar.imagePath.trim() !== '') 
+                ? cachedCar.imagePath 
+                : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
             // Xử lý giá tiền dịch vụ cho modal
             const rawPrice = getMockPrice(v);
             const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
@@ -615,7 +620,7 @@ window.viewCarDetail = async function(id) {
             modalBody.innerHTML = `
                 <div class="row g-4 align-items-center">
                     <div class="col-md-5 text-center">
-                        <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" class="img-fluid w-100" style="border-radius: 28px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.5);" alt="${v.brand}">
+                        <img src="${modalImage}" class="img-fluid w-100" style="border-radius: 28px; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.5);" alt="${v.brand}">
                     </div>
                     
                     <div class="col-md-7 ps-md-4 text-start">
