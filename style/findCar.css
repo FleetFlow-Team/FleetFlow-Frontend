@@ -6,6 +6,28 @@
    1. THIẾT LẬP LAYOUT CHUNG & NỀN TẢNG
 ========================================= */
 
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ép Body luôn cao tối thiểu bằng 100% chiều cao màn hình */
+}
+
+main {
+    flex-grow: 1; /* Khúc ngoặt quan trọng: Ép thẻ main tự động nở rộng đẩy Footer xuống đáy */
+    display: flex;
+    flex-direction: column;
+}
+
+main > .container-base {
+    flex-grow: 1; 
+    display: flex;
+    flex-direction: column;
+}
+
+main > .container-base > .row {
+    flex-grow: 1; /* Ép lưới Grid chứa Sidebar và danh sách xe nở tối đa */
+}
+
 
 /* HIỆU ỨNG HOVER BUNG DROPDOWN (CHỈ DÀNH CHO DESKTOP) */
 @media (min-width: 992px) {
@@ -20,6 +42,8 @@
 ========================================= */
 .filter-sidebar {
     background-color: var(--color-2);
+    height: max-content; /* Đảm bảo Sidebar chỉ cao bằng nội dung bên trong nó */
+    margin-bottom: 40px;
     border-radius: 50px;
     padding: 24px;
     position: sticky;
@@ -72,6 +96,8 @@
     background-color: var(--color-2);
     border-radius: 50px;
     padding: 16px 24px;
+    width: 100%; /* Ép luôn bung full 100% chiều ngang của cột */
+    flex-shrink: 0;
 }
 
 .sort-bar::after { clip-path: inset(10px round 50px); }
