@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../../style/base.css">
     <link rel="stylesheet" href="../../style/pages/dispatcher.css">
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
-    <script src="../../js/base.js"></script>
+    
 </head>
 <body>
     <div class="luxury-glow-bg">
@@ -82,7 +82,7 @@
         
         <hr class="divider-custom">
         
-        <a href="../../index.html" class="dropdown-item-custom text-danger fw-bold logout-item">
+        <a href="javascript:void(0)" onclick="handleDispatcherLogout()" class="dropdown-item-custom text-danger fw-bold logout-item">
             <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
         </a>
     </div>
@@ -202,6 +202,33 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tbody>
+                            <tr>
+                                <td><strong>#16</strong></td>
+                                <td>Trần Khách Hàng</td>
+                                <td>Đà Nẵng <i class="fa-solid fa-arrow-right mx-1"></i> Huế</td>
+                                <td><span class="glass-badge bg-secondary text-white">Chờ duyệt</span></td>
+                                <td>
+                                    <button class="btn-glass-action text-success border-success fw-bold w-100 mb-2" onclick="approveBooking(16, this)">
+                                        <i class="fa-solid fa-check me-1"></i> Duyệt
+                                    </button>
+                                    <button class="btn-glass-action text-danger border-danger fw-bold w-100" onclick="rejectBooking(16, this)">
+                                        <i class="fa-solid fa-xmark me-1"></i> Từ chối
+                                    </button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td><strong>#8091</strong></td>
+                                <td>Nguyễn Văn A</td>
+                                <td>HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</td>
+                                <td><span class="glass-badge bg-info text-white">Đã duyệt</span></td>
+                                <td>
+                                    <button class="btn-glass-action text-primary border-primary fw-bold" onclick="dispatchDriver(8091, this)">
+                                        Phân tài
+                                    </button>
+                                </td>
+                            </tr>
                         <tr>
                             <td><strong>#TR-8091</strong></td>
                             <td>Nguyễn Văn A</td>
@@ -297,7 +324,43 @@
             <i class="fa-solid fa-triangle-exclamation text-danger"></i><span>Khiếu nại</span>
         </a>
     </nav>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
+        <div id="systemErrorToast" class="toast align-items-center text-white bg-dark border-0 glass-panel" role="alert" aria-live="assertive" aria-atomic="true" style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <div class="d-flex p-2">
+                <div class="toast-body d-flex align-items-center fw-medium" style="font-size: 0.95rem;">
+                    <i class="fa-solid fa-circle-check me-2 fs-5 text-success"></i> 
+                    <span id="toastMsg">Thao tác thành công!</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
     </main>
+
+    <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: rgba(20, 20, 20, 0.7); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 28px; box-shadow: 0 25px 50px rgba(0,0,0,0.5);">
+                <div class="modal-header border-0 pb-0 mt-2">
+                    <h5 class="modal-title fw-bold text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i>Từ chối chuyến đi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-4">
+                    <p class="text-white-50 mb-3" style="font-size: 0.95rem;">Vui lòng cung cấp lý do từ chối chuyến đi này. Thông tin sẽ được lưu vào lịch sử (Audit Log) để báo cáo.</p>
+                    
+                    <textarea id="rejectReasonInput" class="form-control w-100" rows="3" placeholder="Nhập lý do từ chối bắt buộc tại đây..." style="background: rgba(0, 0, 0, 0.103); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px; box-shadow: none; resize: none;"></textarea>
+                    
+                    <div id="rejectReasonError" class="text-danger mt-2 fw-medium d-none" style="font-size: 0.85rem;"><i class="fa-solid fa-circle-exclamation me-1"></i> Bắt buộc phải nhập lý do từ chối!</div>
+                </div>
+                
+                <div class="modal-footer border-0 pt-0 justify-content-end gap-2 pb-4 px-4">
+                    <button type="button" class="btn btn-outline-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" id="btnSubmitReject">Xác nhận Từ chối</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     
 
@@ -508,6 +571,10 @@ function showSystemToast(message, type = "success") {
     const bootstrapToast = new bootstrap.Toast(toastContainer, { delay: 4000 });
     bootstrapToast.show();
 }
+    
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../js/base.js"></script>
+    <script src="../../js/dispatcher.js"></script>
 </body>
 </html>
