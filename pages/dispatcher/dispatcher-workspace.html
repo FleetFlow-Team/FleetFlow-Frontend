@@ -179,73 +179,34 @@
     </div>
 
     <div id="trip-management" class="dashboard-section">
-        <div class="glass-panel">
-            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-route text-success me-2"></i> Quản lý chi tiết chuyến đi</h4>
+        <div class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2">
+            <button class="btn btn-glass-tab active" onclick="loadBookings('PENDING', 'tbody-pending')">
+                Chờ duyệt <span class="badge bg-danger rounded-pill ms-1" id="count-pending">0</span>
+            </button>
             
-            <div class="sliding-tabs-container">
-                <div id="tripTabIndicator" class="tab-indicator"></div>
-                <button class="tab-pill active" onclick="switchTripTab(this)">Tất cả</button>
-                <button class="tab-pill" onclick="switchTripTab(this)">Đang chờ</button>
-                <button class="tab-pill" onclick="switchTripTab(this)">Đang chạy</button>
-                <button class="tab-pill" onclick="switchTripTab(this)">Hoàn thành</button>
-            </div>
+            <button class="btn btn-glass-tab" onclick="loadBookings('APPROVED', 'tbody-approved')">
+                Chờ phân tài <span class="badge bg-warning text-dark rounded-pill ms-1" id="count-approved">0</span>
+            </button>
+            
+            <button class="btn btn-glass-tab" onclick="loadBookings('REJECTED', 'tbody-rejected')">
+                Đã từ chối <span class="badge bg-secondary rounded-pill ms-1" id="count-rejected">0</span>
+            </button>
+        </div>
 
-            <div class="table-glass-wrapper">
-                <table class="table-glass w-100">
-                    <thead>
-                        <tr>
-                            <th>Mã Chuyến</th>
-                            <th>Khách Hàng</th>
-                            <th>Lộ Trình</th>
-                            <th>Trạng Thái</th>
-                            <th>Thao Tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tbody>
-                            <tr>
-                                <td><strong>#16</strong></td>
-                                <td>Trần Khách Hàng</td>
-                                <td>Đà Nẵng <i class="fa-solid fa-arrow-right mx-1"></i> Huế</td>
-                                <td><span class="glass-badge bg-secondary text-white">Chờ duyệt</span></td>
-                                <td>
-                                    <button class="btn-glass-action text-success border-success fw-bold w-100 mb-2" onclick="approveBooking(16, this)">
-                                        <i class="fa-solid fa-check me-1"></i> Duyệt
-                                    </button>
-                                    <button class="btn-glass-action text-danger border-danger fw-bold w-100" onclick="rejectBooking(16, this)">
-                                        <i class="fa-solid fa-xmark me-1"></i> Từ chối
-                                    </button>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td><strong>#8091</strong></td>
-                                <td>Nguyễn Văn A</td>
-                                <td>HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</td>
-                                <td><span class="glass-badge bg-info text-white">Đã duyệt</span></td>
-                                <td>
-                                    <button class="btn-glass-action text-primary border-primary fw-bold" onclick="dispatchDriver(8091, this)">
-                                        Phân tài
-                                    </button>
-                                </td>
-                            </tr>
-                        <tr>
-                            <td><strong>#TR-8091</strong></td>
-                            <td>Nguyễn Văn A</td>
-                            <td>HCM <i class="fa-solid fa-arrow-right mx-1"></i> Vũng Tàu</td>
-                            <td><span class="glass-badge bg-warning text-dark">Đang chờ</span></td>
-                            <td><button class="btn-glass-action">Phân tài</button></td>
-                        </tr>
-                        <tr>
-                            <td><strong>#TR-8092</strong></td>
-                            <td>Trần Thị B</td>
-                            <td>Hà Nội <i class="fa-solid fa-arrow-right mx-1"></i> Hải Phòng</td>
-                            <td><span class="glass-badge bg-primary text-white">Đang chạy</span></td>
-                            <td><button class="btn-glass-action">Theo dõi</button></td>
-                        </tr>
+        <div class="table-responsive">
+            <table class="table table-glass align-middle">
+                <thead>
+                    <tr>
+                        <th width="12%">Mã Đơn</th>
+                        <th width="20%">Khách Hàng</th>
+                        <th width="43%">Lộ Trình & Dịch Vụ</th>
+                        <th width="10%">Trạng Thái</th>
+                        <th width="15%" class="text-center">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody-pending">
                     </tbody>
-                </table>
-            </div>
+            </table>
         </div>
     </div>
 

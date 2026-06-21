@@ -251,6 +251,189 @@
         .glass-panel { padding: 30px 20px !important; }
       }
 
+      /* =========================================
+   4. GIAO DIỆN FORM & INPUTS (PREMIUM GLASS)
+========================================= */
+.section-title { 
+    font-size: 1.3rem; 
+    font-weight: 800; 
+    margin-bottom: 24px; 
+    color: var(--color-dark); 
+    display: flex; 
+    align-items: center; 
+    gap: 10px;
+}
+
+.custom-input {
+    border-radius: 16px !important; /* Bo góc mượt thay vì tròn xoe */
+    background: rgba(255, 255, 255, 0.5) !important;
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
+    padding: 15px 20px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.custom-input:focus {
+    background: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15), 
+                0 4px 15px rgba(0, 0, 0, 0.05) !important;
+    border-color: var(--color-1) !important;
+    transform: translateY(-2px);
+}
+
+.form-floating label { 
+    margin-left: 10px; 
+    color: #64748b; 
+    font-weight: 500;
+}
+
+/* Chỉnh lại input group của Ngày giờ */
+.glass-input-group .input-group-text,
+.glass-input-group .form-control {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+.glass-input-group .input-group-text:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+}
+.glass-input-group .form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Payment Cards */
+.payment-options { display: flex; flex-direction: column; gap: 16px; }
+
+.payment-card {
+    padding: 18px 24px; 
+    cursor: pointer; 
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.4); 
+    border: 1px solid rgba(255, 255, 255, 0.6) !important;
+    border-radius: 16px !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin: 0;
+    /* Ghi đè xóa hiệu ứng lỏng ở thẻ nhỏ để giao diện sạch hơn */
+}
+.payment-card::after, .payment-card::before { display: none !important; }
+
+.payment-card:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); 
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.payment-card.active { 
+    border-color: var(--color-1) !important; 
+    background: rgba(255, 255, 255, 0.85); 
+    box-shadow: 0 8px 25px rgba(0, 177, 79, 0.1);
+}
+
+.pay-logo { height: 28px; object-fit: contain; }
+
+.custom-radio { 
+    width: 24px; 
+    height: 24px; 
+    border: 2px solid #cbd5e1; 
+    border-radius: 50%; 
+    margin-right: 15px; 
+    position: relative; 
+    transition: all 0.3s ease; 
+}
+.payment-card.active .custom-radio { border-color: var(--color-1); }
+.payment-card.active .custom-radio::after {
+    content: ""; 
+    position: absolute; top: 50%; left: 50%; 
+    transform: translate(-50%, -50%) scale(1);
+    width: 12px; height: 12px; 
+    background-color: var(--color-1); 
+    border-radius: 50%;
+    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* =========================================
+   Khối Hiển Thị Tiền Cọc (Deposit Box)
+========================================= */
+.deposit-box {
+    background: rgba(165, 252, 204, 0.489); /* Nền xanh lục cực nhạt, tiệp màu thương hiệu */
+    border: 1px solid rgba(0, 177, 79, 0.2); /* Viền xanh trong suốt */
+    border-radius: 16px; /* Đồng bộ góc bo 16px với form */
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.5); /* Tạo độ bóng bẩy nhẹ */
+}
+
+.deposit-box .deposit-label {
+    color: #475569; /* Chữ xám thanh lịch, dễ đọc trên nền sáng */
+    font-size: 1.05rem;
+}
+
+.deposit-box .deposit-label i {
+    color: var(--color-1, #00B14F);
+}
+
+.deposit-box .deposit-amount {
+    color: var(--color-1, #00B14F); /* Xanh chủ đạo */
+    text-shadow: 0 4px 15px rgba(0, 177, 79, 0.2); /* Phát sáng nhẹ nhàng */
+    letter-spacing: -0.5px;
+}
+
+@keyframes popIn {
+    0% { transform: translate(-50%, -50%) scale(0); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+/* =========================================
+   5. ORDER SUMMARY & NÚT SUBMIT
+========================================= */
+.sticky-summary { position: sticky; top: 100px; }
+
+.summary-car { 
+    display: flex; align-items: center; gap: 16px; 
+    margin-bottom: 24px; padding-bottom: 24px; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06); 
+}
+.summary-car img { 
+    width: 110px; height: 75px; 
+    object-fit: cover; 
+    border-radius: 12px; 
+    border: 1px solid rgba(255,255,255,0.8); 
+    box-shadow: 0 8px 16px rgba(0,0,0,0.08); 
+}
+
+.breakdown-row { 
+    display: flex; justify-content: space-between; 
+    margin-bottom: 14px; font-size: 1.05rem; 
+    color: #475569; align-items: center; 
+}
+.breakdown-row.discount { color: var(--color-1); display: none; }
+
+.breakdown-total { 
+    display: flex; justify-content: space-between; align-items: center; 
+    margin-top: 24px; padding-top: 24px; 
+    border-top: 1px solid rgba(0, 0, 0, 0.06); 
+}
+.breakdown-total .label { font-size: 1.2rem; font-weight: 800; color: var(--color-dark); }
+.breakdown-total .amount { font-size: 1.8rem; font-weight: 800; color: var(--color-1); }
+
+/* Voucher Box */
+.voucher-box { 
+    margin-bottom: 24px; padding-bottom: 24px; 
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06); 
+}
+
+
       @media (max-width: 1199.98px) {
             
             /* --- A. THANH ĐIỀU HƯỚNG ĐÁY (BOTTOM NAV iOS) --- */
@@ -376,24 +559,26 @@
               </div>
             </div>
 
-            <div class="col-md-6 mb-3">
-              <label class="form-label text-white-50 fw-medium small">Thời gian khởi hành <span class="text-danger">*</span></label>
-              <div class="input-group glass-input-group">
-                  <span class="input-group-text"><i class="fa-regular fa-calendar-check"></i></span>
-                  <input type="datetime-local" class="form-control" id="departureTime" required>
+            <div class="row g-4 mb-4">
+              <div class="col-md-6">
+                  <label class="form-label fw-medium">Thời gian khởi hành <span class="text-danger">*</span></label>
+                  <div class="input-group glass-input-group">
+                      <span class="input-group-text"><i class="fa-regular fa-calendar-check"></i></span>
+                      <input type="datetime-local" class="form-control" id="departureTime" required>
+                  </div>
+              </div>
+
+              <div class="col-md-6 d-none" id="durationContainer">
+                  <label class="form-label fw-medium" id="durationLabel">Thời lượng thuê</label>
+                  <div class="input-group glass-input-group">
+                      <span class="input-group-text"><i class="fa-solid fa-hourglass-half"></i></span>
+                      <input type="number" class="form-control" id="durationValue" min="1" value="1" placeholder="Nhập số...">
+                      <span class="input-group-text fw-bold text-success" id="durationUnit">Giờ</span>
+                  </div>
               </div>
           </div>
 
-          <div class="col-md-6 mb-3 d-none" id="durationContainer">
-              <label class="form-label text-white-50 fw-medium small" id="durationLabel">Thời lượng thuê</label>
-              <div class="input-group glass-input-group">
-                  <span class="input-group-text"><i class="fa-solid fa-hourglass-half"></i></span>
-                  <input type="number" class="form-control" id="durationValue" min="1" value="1" placeholder="Nhập số...">
-                  <span class="input-group-text fw-bold text-success" id="durationUnit">Giờ</span>
-              </div>
-          </div>
-
-            <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán (Cọc 30%)</h2>
+            <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán</h2>
             <div class="payment-options mt-3">
               <label class="payment-card active" onclick="selectPayment(this)">
                 <div class="d-flex align-items-center">
@@ -466,9 +651,9 @@
               <span class="amount" id="summaryTotal">0 ₫</span>
             </div>
 
-            <div class="d-flex justify-content-between mt-3 px-3 py-3 bg-dark rounded-3 border border-warning">
-              <span class="text-white-50 fw-medium">Cần thanh toán cọc (30%):</span>
-              <strong class="text-warning fs-5" id="summaryDeposit">0 ₫</strong>
+            <div class="deposit-box d-flex justify-content-between align-items-center mt-4 px-4 py-3">
+              <span class="deposit-label fw-medium"><i class="fa-solid fa-shield-check me-2"></i>Cần thanh toán cọc (30%):</span>
+              <strong class="deposit-amount fs-4" id="summaryDeposit">0 ₫</strong>
             </div>
 
             <button class="btn-submit" id="btnSubmitCheckout" onclick="processCheckout()">
