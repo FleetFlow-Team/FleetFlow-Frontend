@@ -627,6 +627,28 @@ window.viewCarDetail = async function(id) {
                 serviceLabel = 'chuyến';
             }
 
+            // ==========================================
+            // BỔ SUNG: TẠO DỮ LIỆU CHO BIẾN tagsHtml
+            // ==========================================
+            let tagsHtml = '';
+            // Style glassmorphism mờ nhẹ cho các thẻ tag
+            const tagStyle = 'background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 50px; font-size: 0.8rem; padding: 6px 14px; margin-right: 8px; margin-bottom: 8px; display: inline-block; font-weight: 500;';
+            
+            // 1. Tag Chỗ ngồi
+            if (v.seatCount) tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-chair me-1 text-success"></i>${v.seatCount} Chỗ</span>`;
+            
+            // 2. Tag Nhiên liệu
+            let fuel = v.fuelType || 'Xăng';
+            tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-gas-pump me-1 text-success"></i>${fuel}</span>`;
+            
+            // 3. Tag Hộp số
+            let trans = ((v.description || '').toLowerCase().includes('số sàn') || (v.description || '').toLowerCase().includes('mt')) ? 'Số sàn' : 'Tự động';
+            tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-gear me-1 text-success"></i>${trans}</span>`;
+            
+            // 4. Tag Hãng xe
+            if (v.brand) tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-shield-halved me-1 text-success"></i>Hãng ${v.brand}</span>`;
+            // ==========================================
+
             modalBody.innerHTML = `
                 <div class="row g-4 align-items-center">
                     <div class="col-md-5 text-center">
@@ -661,7 +683,7 @@ window.viewCarDetail = async function(id) {
                             <div class="col-6">
                                 <div class="glass-info-box">
                                     <div class="text-white-50 small mb-1 fw-medium"><i class="fa-solid fa-shield-halved me-1"></i> Trạng thái</div>
-                                    <div class="fw-bold fs-6 ${v.status === 'Available' ? 'text-white' : 'text-danger'}">${v.status === 'Available' ? 'Sẵn sàng phục vụ' : 'Đang bận'}</div>
+                                    <div class="fw-bold fs-6 ${v.status === 'AVAILABLE' ? 'text-white' : 'text-danger'}">${v.status === 'AVAILABLE' ? 'Sẵn sàng phục vụ' : 'Đang bận'}</div>
                                 </div>
                             </div>
                             <div class="col-12">
