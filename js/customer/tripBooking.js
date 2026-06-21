@@ -308,8 +308,8 @@ window.triggerMapCalculation = async function() {
         // 👉 1. Lưu khoảng cách và tọa độ vào biến toàn cục để dùng cho các API sau
         currentDistanceKm = routeData.distanceKm;
         tripCoordinates = {
-            pickupLat: pickupData.lat, pickupLng: pickupData.lng,
-            dropoffLat: dropoffData.lat, dropoffLng: dropoffData.lng
+            pickupLat: pickupData.lat, pickupLng: pickupData.lng, pickupAddress: pickupAddress,
+            dropoffLat: dropoffData.lat, dropoffLng: dropoffData.lng, dropoffAddress: dropoffAddress
         };
 
         if (currentDistanceKm < 20) {
@@ -547,15 +547,22 @@ window.calculateRealPrice = async function() {
         departureTimeStr = getFutureTime(2); 
     }
 
+    const tripDirection = document.querySelector('input[name="tripDirection"]:checked').value;
+
     const payload = {
         vehicleId: currentVehicleId,
         bookingType: "DISTANCE",
-        tripDirection: "ONE_WAY",
+        tripDirection: tripDirection, // Gửi loại hình xuống API
         distanceKm: currentDistanceKm,
         durationHours: 0,
         durationDays: 0,
         departureTime: departureTimeStr
     };
+
+    // Nếu là KHỨ HỒI: Tự động cộng thêm quãng đường chiều về (Bằng đúng chiều đi)
+    if (tripDirection === 'ROUND_TRIP') {
+        payload.returnDistanceKm = currentDistanceKm; 
+    }
 
     const baseFareEl = document.getElementById('baseFareDisplay'); 
     const totalFareEl = document.getElementById('totalFareDisplay'); 
@@ -727,120 +734,63 @@ window.applyVoucher = async function() {
     }
 };
 // ==========================================
-// 5. CHỐT ĐƠN (Submit Booking) & ĐIỀU HƯỚNG
-// ==========================================
-// ==========================================
-// 5. CHỐT ĐƠN (Submit Booking) & ĐIỀU HƯỚNG
+// 5. CHỐT ĐƠN VÀ ĐIỀU HƯỚNG SANG CHECKOUT (LUỒNG DISTANCE)
 // ==========================================
 window.submitBooking = async function() {
-    // FIX 1: Khai báo rõ ràng customerId và lấy Token từ localStorage
-    const customerId = parseInt(localStorage.getItem('customerId') || localStorage.getItem('accountId'));
-    const token = localStorage.getItem('accessToken');
-
-    if (!customerId || isNaN(customerId) || !token) {
-        return Swal.fire({
-            icon: 'info', title: 'Yêu cầu đăng nhập',
-            text: 'Vui lòng đăng nhập để tiến hành chốt chuyến đi.',
-            confirmButtonText: 'Đăng nhập ngay'
-        }).then((result) => {
-            if (result.isConfirmed) window.location.href = 'login.html';
-        });
-    }
+    const tripDirection = document.querySelector('input[name="tripDirection"]:checked').value;
+    const timeInput = document.getElementById('inputDepartureTime').value;
+    const returnTimeInput = document.getElementById('inputReturnTime').value;
 
     if (!tripCoordinates.pickupLat || !tripCoordinates.dropoffLat) {
-        return Swal.fire({ icon: 'warning', title: 'Thiếu tọa độ', text: 'Vui lòng chọn đầy đủ lộ trình trên bản đồ!' });
+        return Swal.fire({ icon: 'warning', title: 'Thiếu tọa độ', text: 'Vui lòng chọn đầy đủ lộ trình!' });
     }
 
-    const timeInput = document.getElementById('inputDepartureTime');
-    let departureTime = timeInput.value + ':00'; // Chuẩn ISO DateTime
-
-    const pickupAddress = document.getElementById('inputPickup').value;
-    const dropoffAddress = document.getElementById('inputDropoff').value;
-
-    const payload = {
-        customerId: customerId,
-        vehicleId: currentVehicleId,
-        voucherId: currentVoucherId,
-        bookingType: "DISTANCE",
-        tripDirection: "ONE_WAY",
-        pickupAddress: pickupAddress,
-        pickupLat: tripCoordinates.pickupLat,
-        pickupLng: tripCoordinates.pickupLng,
-        dropoffAddress: dropoffAddress,
-        dropoffLat: tripCoordinates.dropoffLat,
-        dropoffLng: tripCoordinates.dropoffLng,
-        departureTime: departureTime
-    };
-
-    // Khóa UI
-    const btn = document.getElementById('btnSubmitBooking');
-    btn.disabled = true; 
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
-
-    try {
-        const response = await fetch(`${CORE_API_BASE}/bookings`, {
-            method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // FIX 2: Bổ sung Token vào Header
-            },
-            body: JSON.stringify(payload)
-        });
-        const data = await response.json();
-
-        if (data.success) {
-            // FIX 3: Lưu thẳng vào localStorage và giữ nguyên định dạng chuỗi "xxx.xxx đ" cho checkout.html
-            localStorage.setItem('currentBookingId', data.bookingId);
-            const formattedDeposit = document.getElementById('depositDisplay').innerText;
-            localStorage.setItem('currentDepositAmount', formattedDeposit);
-            
-            // Thông báo mượt mà trước khi chuyển trang
-            Swal.fire({
-                icon: 'success',
-                title: 'Tạo chuyến thành công!',
-                text: 'Chuyển hướng đến trang thanh toán cọc...',
-                timer: 1500,
-                showConfirmButton: false
-            }).then(() => {
-                window.location.href = 'checkout.html';
-            });
-
-        } else {
-            // XỬ LÝ LỖI NGHIỆP VỤ TỪ BACKEND BẰNG SWEETALERT2
-            let errorTitle = 'Không thể đặt xe';
-            let actionBtn = 'Đóng';
-
-            // BR-27: Trùng lịch
-            if (data.error && data.error.includes("đã có lịch chạy")) {
-                errorTitle = 'Trùng lịch di chuyển';
-                actionBtn = 'Chọn giờ khác';
-            } 
-            // BR-22: Xe hỏng/bảo dưỡng
-            else if (data.error && data.error.includes("không sẵn sàng")) {
-                errorTitle = 'Xe tạm ngưng hoạt động';
-                actionBtn = 'Tìm xe khác';
-            }
-
-            Swal.fire({
-                icon: 'error',
-                title: errorTitle,
-                text: data.error || 'Đã có lỗi xảy ra. Vui lòng thử lại!',
-                confirmButtonText: actionBtn,
-                confirmButtonColor: '#e53e3e'
-            }).then((result) => {
-                if (result.isConfirmed && actionBtn === 'Tìm xe khác') {
-                    window.location.href = '../../pages/findCar.html';
-                }
-            });
-
-            btn.disabled = false; 
-            btn.innerHTML = 'Xác nhận đặt chuyến <i class="fa-solid fa-arrow-right ms-2"></i>';
-        }
-    } catch (error) {
-        new bootstrap.Toast(document.getElementById('systemErrorToast')).show();
-        btn.disabled = false; 
-        btn.innerHTML = 'Xác nhận đặt chuyến <i class="fa-solid fa-arrow-right ms-2"></i>';
+    if (tripDirection === 'ROUND_TRIP' && !returnTimeInput) {
+        return Swal.fire({ icon: 'warning', title: 'Thiếu giờ về', text: 'Bạn đã chọn Khứ hồi. Vui lòng nhập giờ quay về!' });
     }
+
+    // GHI TOÀN BỘ DỮ LIỆU VÀO BỘ NHỚ TRƯỚC KHI SANG TRANG CHECKOUT
+    localStorage.setItem('bookingType', 'DISTANCE');
+    localStorage.setItem('tripDirection', tripDirection);
+    localStorage.setItem('pickupAddress', document.getElementById('inputPickup').value);
+    localStorage.setItem('dropoffAddress', document.getElementById('inputDropoff').value);
+    
+    // Lưu tọa độ Điểm đi
+    localStorage.setItem('pickupLat', tripCoordinates.pickupLat);
+    localStorage.setItem('pickupLng', tripCoordinates.pickupLng);
+    localStorage.setItem('dropoffLat', tripCoordinates.dropoffLat);
+    localStorage.setItem('dropoffLng', tripCoordinates.dropoffLng);
+
+    // Lưu tọa độ chiều về nếu là Khứ hồi
+    if (tripDirection === 'ROUND_TRIP') {
+        localStorage.setItem('returnPickupAddress', document.getElementById('inputDropoff').value);
+        localStorage.setItem('returnPickupLat', tripCoordinates.dropoffLat);
+        localStorage.setItem('returnPickupLng', tripCoordinates.dropoffLng);
+        
+        localStorage.setItem('returnDropoffAddress', document.getElementById('inputPickup').value);
+        localStorage.setItem('returnDropoffLat', tripCoordinates.pickupLat);
+        localStorage.setItem('returnDropoffLng', tripCoordinates.pickupLng);
+        
+        localStorage.setItem('mapReturnTime', returnTimeInput + ':00');
+    }
+
+    localStorage.setItem('mapDepartureTime', timeInput + ':00');
+    localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal); 
+    if(currentVoucherId) localStorage.setItem('appliedVoucherId', currentVoucherId);
+
+    // Lưu tiền cọc dạng hiển thị (VD: 300.000 đ)
+    const formattedDeposit = document.getElementById('depositDisplay').innerText;
+    localStorage.setItem('currentDepositAmount', formattedDeposit);
+
+    Swal.fire({
+        icon: 'success',
+        title: 'Chốt lộ trình thành công!',
+        text: 'Chuyển hướng đến trang điền thông tin và thanh toán...',
+        timer: 1500,
+        showConfirmButton: false
+    }).then(() => {
+        window.location.href = 'checkout.html';
+    });
 };
 
 // Hàm hỗ trợ tạo giờ tương lai (format YYYY-MM-DDTHH:mm:ss)
@@ -851,3 +801,15 @@ function getFutureTime(hoursToAdd) {
     const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString();
     return localISO.slice(0, 19); 
 }
+
+window.toggleRoundTripUI = function() {
+    const direction = document.querySelector('input[name="tripDirection"]:checked').value;
+    const returnBox = document.getElementById('returnTimeBox');
+    if (direction === 'ROUND_TRIP') {
+        returnBox.classList.remove('d-none');
+    } else {
+        returnBox.classList.add('d-none');
+    }
+    // Tính lại giá khi khách đổi loại hình
+    if (currentDistanceKm >= 20) calculateRealPrice();
+};
