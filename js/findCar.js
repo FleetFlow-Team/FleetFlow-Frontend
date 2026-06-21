@@ -566,11 +566,21 @@ window.changePage = function(pageNumber) {
 };
 
 /**
- * Lưu ID xe vào LocalStorage và chuyển trang đặt chuyến
+ * Lưu ID xe vào LocalStorage và phân luồng chuyển trang
  */
 window.selectCarAndGo = function(vehicleId) {
     localStorage.setItem('selectedVehicleId', vehicleId);
-    window.location.href = '../pages/customer/tripBooking.html';
+    
+    // Lấy loại dịch vụ khách đang chọn
+    const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
+    
+    if (bookingType === 'HOURLY' || bookingType === 'DAILY') {
+        // Thuê Giờ/Ngày -> Chuyển thẳng tới trang Thanh Toán
+        window.location.href = '../pages/customer/checkout.html';
+    } else {
+        // Thuê theo chuyến -> Qua trang Map để vẽ lộ trình
+        window.location.href = '../pages/customer/tripBooking.html';
+    }
 };
 
 /**

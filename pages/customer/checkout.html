@@ -376,6 +376,23 @@
               </div>
             </div>
 
+            <div class="col-md-6 mb-3">
+              <label class="form-label text-white-50 fw-medium small">Thời gian khởi hành <span class="text-danger">*</span></label>
+              <div class="input-group glass-input-group">
+                  <span class="input-group-text"><i class="fa-regular fa-calendar-check"></i></span>
+                  <input type="datetime-local" class="form-control" id="departureTime" required>
+              </div>
+          </div>
+
+          <div class="col-md-6 mb-3 d-none" id="durationContainer">
+              <label class="form-label text-white-50 fw-medium small" id="durationLabel">Thời lượng thuê</label>
+              <div class="input-group glass-input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-hourglass-half"></i></span>
+                  <input type="number" class="form-control" id="durationValue" min="1" value="1" placeholder="Nhập số...">
+                  <span class="input-group-text fw-bold text-success" id="durationUnit">Giờ</span>
+              </div>
+          </div>
+
             <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán (Cọc 30%)</h2>
             <div class="payment-options mt-3">
               <label class="payment-card active" onclick="selectPayment(this)">
@@ -400,11 +417,19 @@
         <div class="col-lg-5">
           <div class="glass-panel p-5 sticky-summary">
             <div class="summary-car">
-              <img src="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=300" alt="VinFast VF8" />
+              <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="Car" id="checkoutCarImage" />
               <div>
-                <h5 class="fw-bold mb-1 text-dark">VinFast VF8 Plus 2023</h5>
-                <div class="text-muted fw-medium">Quận 1, HCM <i class="fa-solid fa-arrow-right mx-2 text-success"></i> Vũng Tàu</div>
-                <div class="text-muted small mt-2"><i class="fa-regular fa-clock me-1"></i> Khởi hành: 14:00 - Chủ Nhật, 15/08</div>
+                <h5 class="fw-bold mb-1 text-dark" id="checkoutCarName">Đang tải thông tin xe...</h5>
+                
+                <div class="text-muted fw-medium mt-1" id="checkoutCarRoute" style="font-size: 0.9rem;">
+                  <i class="fa-solid fa-location-dot me-1 text-danger"></i> <span id="routeText">Đang tải lộ trình...</span>
+                </div>
+                
+                <div class="text-muted small mt-2">
+                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                        <i class="fa-solid fa-car-side me-1"></i> <span id="checkoutServiceType">Dịch vụ</span>
+                    </span>
+                </div>
               </div>
             </div>
 
@@ -421,37 +446,34 @@
 
             <div class="breakdown-list">
               <div class="breakdown-row">
-                <span class="fw-medium">Giá cơ bản (110 km)</span>
-                <span class="fw-bold text-dark fs-5" id="basePrice">1.000.000 đ</span>
+                <span class="fw-medium">Cước phí gốc</span>
+                <span class="fw-bold text-dark fs-5" id="summaryBaseFare">0 ₫</span>
               </div>
 
-              <div class="breakdown-row">
-                <span class="fw-medium">Phụ phí cuối tuần (10%) <i class="fa-regular fa-circle-question ms-1 text-muted" title="Áp dụng cho Thứ 7, Chủ Nhật"></i></span>
-                <span class="fw-bold text-dark fs-5" id="surcharge">100.000 đ</span>
+              <div class="breakdown-row" id="weekendSurchargeRow" style="display: none !important;">
+                <span class="fw-medium text-warning">Phụ phí cuối tuần (+10%)</span>
+                <span class="fw-bold text-warning fs-5" id="summaryWeekend">0 ₫</span>
               </div>
 
               <div class="breakdown-row discount" id="discountRow">
                 <span class="fw-bold"><i class="fa-solid fa-tag me-2"></i>Mã giảm giá (<span id="discountName"></span>)</span>
-                <span class="fw-bold fs-5">- <span id="discountAmount">0</span> đ</span>
+                <span class="fw-bold fs-5">- <span id="discountAmount">0</span> ₫</span>
               </div>
             </div>
 
             <div class="breakdown-total">
-              <span class="label">Tổng cộng</span>
-              <span class="amount" id="totalAmount">1.100.000 đ</span>
+              <span class="label">Tổng tiền</span>
+              <span class="amount" id="summaryTotal">0 ₫</span>
             </div>
 
-            <div class="text-center text-muted mt-3" style="font-size: 0.85rem;">
-              <i class="fa-solid fa-circle-info me-1"></i> Giá chưa bao gồm phụ phí phát sinh dọc đường (BOT, phà).
+            <div class="d-flex justify-content-between mt-3 px-3 py-3 bg-dark rounded-3 border border-warning">
+              <span class="text-white-50 fw-medium">Cần thanh toán cọc (30%):</span>
+              <strong class="text-warning fs-5" id="summaryDeposit">0 ₫</strong>
             </div>
 
             <button class="btn-submit" id="btnSubmitCheckout" onclick="processCheckout()">
-              Thanh toán cọc 330.000 đ
+              Xác nhận Đặt xe
             </button>
-
-            <div class="trust-badges">
-              <i class="fa-solid fa-shield-halved text-success fs-5"></i> Mọi thông tin được mã hóa SSL 256-bit an toàn.
-            </div>
           </div>
         </div>
       </div>
@@ -484,48 +506,60 @@
     // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE (ĐỒNG BỘ VỚI TRIPBOOKING.JS)
     // =====================================================================
     document.addEventListener("DOMContentLoaded", () => {
-        // Đã sửa: Sử dụng localStorage thay vì sessionStorage
-        const bookingId = localStorage.getItem('currentBookingId');
+        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
         const depositAmountText = localStorage.getItem('currentDepositAmount'); 
 
-        // Bảo mật luồng: Nếu không có ID chuyến đi (do khách vào thẳng link), đuổi về trang Đặt xe
-        if (!bookingId || !depositAmountText) {
-            alert("Không tìm thấy thông tin đơn hàng đang chờ thanh toán. Vui lòng đặt lại chuyến!");
-            window.location.replace("../../pages/findCar.html"); 
-            return;
+        if (bookingType === 'DISTANCE') {
+            // 1. Ẩn các ô chọn ngày giờ
+            document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
+            document.getElementById('durationContainer').style.display = 'none';
+
+            // 2. ẨN VOUCHER VÀ CHI TIẾT GIÁ GỐC (Theo đúng yêu cầu của bạn)
+            const voucherBox = document.querySelector('.voucher-box');
+            if(voucherBox) voucherBox.style.display = 'none';
+            
+            // Ẩn các dòng breakdown (Cước phí gốc, Phụ phí cuối tuần, Khuyến mãi)
+            const breakdownRows = document.querySelectorAll('.breakdown-row');
+            breakdownRows.forEach(row => row.style.setProperty('display', 'none', 'important'));
+
+            // 3. Chỉ lấy Tổng tiền và Tiền cọc từ Map để in ra
+            const mapTotal = parseInt(localStorage.getItem('mapEstimatedTotal')) || 0;
+            const fmt = new Intl.NumberFormat('vi-VN');
+
+            document.getElementById('summaryTotal').innerText = fmt.format(mapTotal) + ' ₫';
+            document.getElementById('summaryDeposit').innerText = depositAmountText || '0 ₫';
+            
+            const btnSubmit = document.getElementById('btnSubmitCheckout');
+            btnSubmit.innerText = `Xác nhận Đặt xe - Cọc ${depositAmountText}`;
+            btnSubmit.disabled = false;
+
+            // 4. Tự động điền điểm đón vào ô Địa chỉ cho khách (Tránh bắt khách nhập lại)
+            document.getElementById('address').value = localStorage.getItem('pickupAddress') || '';
+
+        } else {
+            // Luồng HOURLY / DAILY: Vẫn giữ nguyên form nhập Voucher và hiển thị chi tiết giá
+            const btnSubmit = document.getElementById('btnSubmitCheckout');
+            if (btnSubmit) {
+                btnSubmit.innerText = 'Vui lòng chọn thời gian';
+                btnSubmit.disabled = true; 
+            }
         }
 
-        // Đổ dữ liệu tiền cọc lên UI
-        document.getElementById('totalAmount').innerText = depositAmountText;
-        document.getElementById('btnSubmitCheckout').innerText = `Thanh toán cọc ${depositAmountText}`;
-
-        // Tự động điền Email và Tên nếu khách đã đăng nhập (lấy từ localStorage)
+        // Tự động điền Email và Tên nếu khách đã đăng nhập
         const savedEmail = localStorage.getItem('email');
         const savedName = localStorage.getItem('fullName');
-        
-        if (savedEmail) {
-            document.getElementById('emailInput').value = savedEmail;
-            validateEmail(); // Gọi validate luôn để chuyển state sang true
-        }
-        if (savedName) {
-            document.getElementById('fullName').value = savedName;
-        }
+        if (savedEmail) { document.getElementById('emailInput').value = savedEmail; validateEmail(); }
+        if (savedName) document.getElementById('fullName').value = savedName;
     });
-
     // =====================================================================
     // 2. VALIDATE FORM (BẮT LỖI NGHIÊM NGẶT)
     // =====================================================================
-    const formState = { emailValid: false, phoneValid: false };
+    const formState = { emailValid: false, phoneValid: false, nameValid: false, addressValid: false };
 
     function validateEmail() {
         const el = document.getElementById("emailInput");
-        // Regex chuẩn kiểm tra email có @ và dấu chấm
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
-        
-        if (el.value.trim() === "") {
-            el.classList.add("is-invalid");
-            formState.emailValid = false;
-        } else if (!regex.test(el.value.trim())) {
+        if (el.value.trim() === "" || !regex.test(el.value.trim())) {
             el.classList.add("is-invalid");
             formState.emailValid = false;
         } else {
@@ -536,18 +570,36 @@
 
     function validatePhone() {
         const el = document.getElementById("phoneInput");
-        // Regex kiểm tra số điện thoại (chỉ chứa số, độ dài 10-11 ký tự)
         const regex = /^[0-9]{10,11}$/;
-        
-        if (el.value.trim() === "") {
-            el.classList.add("is-invalid");
-            formState.phoneValid = false;
-        } else if (!regex.test(el.value.trim())) {
+        if (el.value.trim() === "" || !regex.test(el.value.trim())) {
             el.classList.add("is-invalid");
             formState.phoneValid = false;
         } else {
             el.classList.remove("is-invalid");
             formState.phoneValid = true;
+        }
+    }
+
+    // --- HAI HÀM MỚI BỔ SUNG ---
+    function validateName() {
+        const el = document.getElementById("fullName");
+        if (el.value.trim() === "") {
+            el.classList.add("is-invalid");
+            formState.nameValid = false;
+        } else {
+            el.classList.remove("is-invalid");
+            formState.nameValid = true;
+        }
+    }
+
+    function validateAddress() {
+        const el = document.getElementById("address");
+        if (el.value.trim() === "") {
+            el.classList.add("is-invalid");
+            formState.addressValid = false;
+        } else {
+            el.classList.remove("is-invalid");
+            formState.addressValid = true;
         }
     }
 
@@ -560,33 +612,121 @@
     }
 
     // Khóa tính năng Voucher ở bước này vì tổng tiền đã được chốt từ API /check-price ở Trạm 2
-    function applyVoucher() {
+    // =====================================================================
+    // TÍCH HỢP API ÁP DỤNG MÃ GIẢM GIÁ (CHO HOURLY / DAILY)
+    // =====================================================================
+    async function applyVoucher() {
+        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
         const msg = document.getElementById("voucherMsg");
-        msg.style.display = "block";
-        msg.style.color = "#e53e3e";
-        msg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã ưu đãi chỉ được áp dụng ở bước chọn lộ trình!';
+
+        // Nếu là luồng Chuyến đi, chặn lại vì giá đã chốt ở trang Map
+        if (bookingType === 'DISTANCE') {
+            msg.style.display = "block";
+            msg.style.color = "#e53e3e";
+            msg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã ưu đãi theo chuyến vui lòng áp dụng ở bước chọn lộ trình!';
+            return;
+        }
+
+        const code = document.getElementById('voucherCode').value.trim();
+        if (!code) {
+            msg.style.display = "block";
+            msg.style.color = "#e53e3e";
+            msg.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng nhập mã!';
+            return;
+        }
+
+        // Bắt buộc khách phải chọn ngày giờ (để có giá gốc) trước khi áp mã
+        if (currentEstimatedTotal <= 0) {
+            msg.style.display = "block";
+            msg.style.color = "#e53e3e";
+            msg.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng chọn thời gian thuê trước khi áp mã!';
+            return;
+        }
+
+        const btnApply = document.getElementById('btnApplyVoucher');
+        const originalText = btnApply.innerText;
+        btnApply.disabled = true;
+        btnApply.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+        const customerId = localStorage.getItem('customerId') || 1;
+        const vehicleId = localStorage.getItem('selectedVehicleId');
+
+        try {
+            const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/vouchers/apply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customerId: parseInt(customerId),
+                    vehicleId: parseInt(vehicleId),
+                    code: code,
+                    estimatedTotal: currentEstimatedTotal
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // ÁP MÃ THÀNH CÔNG -> Bật hiển thị dòng Khuyến mãi
+                msg.style.display = "block";
+                msg.style.color = "#00B14F";
+                msg.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Áp dụng thành công mã ${result.code}!`;
+
+                const fmt = new Intl.NumberFormat('vi-VN');
+                document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
+                document.getElementById('discountName').innerText = result.code;
+                document.getElementById('discountAmount').innerText = fmt.format(result.discountAmount);
+
+                // Cập nhật Tổng tiền mới và Tiền cọc mới (30% của tổng mới)
+                document.getElementById('summaryTotal').innerText = fmt.format(result.finalTotal) + ' ₫';
+                
+                const newDeposit = Math.round(result.finalTotal * 0.3);
+                document.getElementById('summaryDeposit').innerText = fmt.format(newDeposit) + ' ₫';
+                document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(newDeposit) + ' ₫';
+
+                // Lưu lại ID của Voucher để ghim vào Đơn hàng lúc gửi đi
+                localStorage.setItem('appliedVoucherId', result.voucherId);
+                localStorage.setItem('currentDepositAmount', newDeposit); 
+
+            } else {
+                // ÁP MÃ THẤT BẠI (Backend báo lỗi hết hạn/ko đủ điều kiện)
+                msg.style.display = "block";
+                msg.style.color = "#e53e3e";
+                msg.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> ${result.error || 'Mã không hợp lệ'}`;
+                
+                document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
+                localStorage.removeItem('appliedVoucherId');
+            }
+        } catch (error) {
+            msg.style.display = "block";
+            msg.style.color = "#e53e3e";
+            msg.innerHTML = '<i class="fa-solid fa-wifi me-1"></i> Lỗi kết nối máy chủ!';
+        } finally {
+            btnApply.disabled = false;
+            btnApply.innerText = originalText;
+        }
     }
 
     // =====================================================================
     // 4. MÔ PHỎNG XỬ LÝ GIAO DỊCH (MOCK UI) & ĐIỀU HƯỚNG
     // =====================================================================
     async function processCheckout() {
-        // 1. Ép chạy validate lại toàn bộ để đề phòng khách cố tình không nhập mà bấm luôn
+        // 1. Ép hệ thống quét lỗi toàn bộ các ô nhập liệu một lần nữa
         validateEmail(); 
         validatePhone();
-        const fullName = document.getElementById("fullName").value.trim();
+        validateName();
+        validateAddress();
+        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
 
-        // 2. Chặn lại nếu Form sai
-        if (!formState.emailValid || !formState.phoneValid || !fullName) {
-            alert("Vui lòng điền đầy đủ và đúng định dạng Họ tên, Email và Số điện thoại.");
-            return;
+        // 2. Chặn đứng giao dịch nếu bất kỳ cờ (flag) nào bị false
+        if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
+            alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
+            return; // Dừng hàm tại đây, không cho gọi API
         }
 
-        // 3. Hiển thị hiệu ứng Loading trên nút
         const elBtnSubmit = document.getElementById("btnSubmitCheckout");
         const originalText = elBtnSubmit.innerText;
         elBtnSubmit.disabled = true;
-        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Hệ thống đang xử lý giao dịch...';
+        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
 
         // Đã sửa: Lấy ID từ localStorage
         const bookingId = localStorage.getItem('currentBookingId');
@@ -603,6 +743,291 @@
             // 5. Điều hướng sang trang Lịch sử chuyến đi
             window.location.replace("tripHistory.html"); 
         }, 2000);
+    }
+    
+    // =====================================================================
+    // 5. TÍCH HỢP API TÍNH GIÁ & ĐỔ DỮ LIỆU XE (FIX LỖI 1 & 2)
+    // =====================================================================
+    document.addEventListener("DOMContentLoaded", function() {
+        const bookingType = localStorage.getItem('bookingType') || 'HOURLY'; 
+        
+        // --- A. VÁ LỖI 1: XỬ LÝ ĐỔI NHÃN "GIỜ" / "NGÀY" ĐỘNG ---
+        const durationContainer = document.getElementById('durationContainer');
+        const durationLabel = document.getElementById('durationLabel');
+        const durationUnit = document.getElementById('durationUnit'); // Lấy thêm span Unit
+
+        if (bookingType === 'HOURLY') {
+            if(durationContainer) durationContainer.classList.remove('d-none');
+            if(durationLabel) durationLabel.innerText = "Số giờ thuê (Tối thiểu 1 giờ)";
+            if(durationUnit) durationUnit.innerText = "Giờ"; // Thay đổi chữ đuôi thành Giờ
+        } else if (bookingType === 'DAILY') {
+            if(durationContainer) durationContainer.classList.remove('d-none');
+            if(durationLabel) durationLabel.innerText = "Số ngày thuê (Tối thiểu 1 ngày)";
+            if(durationUnit) durationUnit.innerText = "Ngày"; // Thay đổi chữ đuôi thành Ngày
+        }
+
+        // Bắt sự kiện: Hễ khách đổi Ngày Giờ hoặc đổi Số Lượng là tính lại giá ngay lập tức
+        const departureTimeInput = document.getElementById('departureTime');
+        const durationInput = document.getElementById('durationValue');
+        if (departureTimeInput) departureTimeInput.addEventListener('change', fetchEstimatedPrice);
+        if (durationInput) durationInput.addEventListener('input', fetchEstimatedPrice);
+        
+        // --- B. VÁ LỖI 2: ĐỔ DỮ LIỆU XE & ẨN LỘ TRÌNH NẾU LÀ HOURLY/DAILY ---
+        const vehicleId = localStorage.getItem('selectedVehicleId');
+        // Mảng allVehicles đã được lưu sẵn từ lúc ở màn hình FindCar
+        const allVehicles = JSON.parse(localStorage.getItem('allVehicles') || '[]');
+        const selectedCar = allVehicles.find(v => v.vehicleId == vehicleId);
+
+        // 1. Đổ Tên và Hình ảnh thật của xe
+        if (selectedCar) {
+            document.getElementById('checkoutCarName').innerText = `${selectedCar.brand} ${selectedCar.model}`;
+            let carImage = (selectedCar.imagePath && selectedCar.imagePath.trim() !== '') 
+                ? (selectedCar.imagePath.startsWith('/') ? '..' + selectedCar.imagePath : '../' + selectedCar.imagePath)
+                : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+            document.getElementById('checkoutCarImage').src = carImage;
+        }
+
+        // 2. Đổ nội dung Lộ trình & Nhãn dịch vụ tùy theo BookingType
+        const routeText = document.getElementById('routeText');
+        const serviceType = document.getElementById('checkoutServiceType');
+        
+        if (bookingType === 'HOURLY') {
+            routeText.innerText = "Dịch vụ di chuyển nội đô";
+            serviceType.innerText = "Thuê xe theo Giờ";
+        } else if (bookingType === 'DAILY') {
+            routeText.innerText = "Dịch vụ di chuyển linh hoạt tự do";
+            serviceType.innerText = "Thuê xe theo Ngày";
+        } else {
+            // LUỒNG DISTANCE: Đọc địa chỉ và giờ giấc từ Map
+            const pickup = localStorage.getItem('pickupAddress') || 'Chưa xác định';
+            const dropoff = localStorage.getItem('dropoffAddress') || 'Chưa xác định';
+            const tripDir = localStorage.getItem('tripDirection') || 'ONE_WAY';
+            const depTime = localStorage.getItem('mapDepartureTime') || '';
+            const retTime = localStorage.getItem('mapReturnTime') || '';
+
+            // Hàm format lại giờ cho đẹp (Ví dụ: 2026-07-20T08:00:00 -> 08:00 - 20/07)
+            const fmtTime = (isoString) => {
+                if(!isoString) return '';
+                const d = new Date(isoString);
+                return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} ngày ${d.getDate()}/${d.getMonth()+1}`;
+            };
+
+            let routeHtml = `${pickup} <i class="fa-solid fa-arrow-right mx-1 text-success"></i> ${dropoff}`;
+            routeHtml += `<br><span class="text-secondary" style="font-size:0.8rem"><i class="fa-regular fa-clock me-1 mt-2"></i> Lượt đi: ${fmtTime(depTime)}</span>`;
+            
+            if (tripDir === 'ROUND_TRIP') {
+                routeHtml += `<br><span class="text-secondary" style="font-size:0.8rem"><i class="fa-solid fa-clock-rotate-left me-1 mt-1"></i> Lượt về: ${fmtTime(retTime)}</span>`;
+            }
+
+            routeText.innerHTML = routeHtml;
+            serviceType.innerText = tripDir === 'ROUND_TRIP' ? "Theo chuyến (Khứ hồi)" : "Theo chuyến (Một chiều)";
+        }
+    });
+
+    // BIẾN TOÀN CỤC: Lưu tổng tiền trước khi giảm giá
+    let currentEstimatedTotal = 0;
+
+    async function fetchEstimatedPrice() {
+        const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customer';
+        
+        const vehicleId = localStorage.getItem('selectedVehicleId') || 1;
+        const bookingType = localStorage.getItem('bookingType') || 'HOURLY';
+        let departureTime = document.getElementById('departureTime').value;
+        const durationVal = parseInt(document.getElementById('durationValue').value) || 0;
+
+        if (!departureTime || durationVal <= 0) return;
+        if (departureTime.length === 16) departureTime += ":00";
+
+        const payload = {
+            vehicleId: parseInt(vehicleId),
+            bookingType: bookingType,
+            tripDirection: "ONE_WAY", 
+            departureTime: departureTime
+        };
+
+        if (bookingType === 'HOURLY') payload.durationHours = durationVal;
+        else if (bookingType === 'DAILY') payload.durationDays = durationVal;
+        else return; 
+
+        try {
+            const response = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                const fmt = new Intl.NumberFormat('vi-VN');
+                
+                // LƯU LẠI GIÁ TRỊ GỐC ĐỂ DÙNG CHO API VOUCHER TÍNH TOÁN
+                currentEstimatedTotal = data.estimatedTotal;
+
+                // NẾU KHÁCH THAY ĐỔI GIỜ/NGÀY THUÊ -> HỦY VOUCHER ĐÃ ÁP DỤNG TRƯỚC ĐÓ (NẾU CÓ)
+                document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
+                document.getElementById('voucherMsg').style.display = 'none';
+                localStorage.removeItem('appliedVoucherId');
+
+                // Đổ dữ liệu giá gốc lên giao diện
+                document.getElementById('summaryBaseFare').innerText = fmt.format(data.baseFare) + ' ₫';
+                document.getElementById('summaryTotal').innerText = fmt.format(data.estimatedTotal) + ' ₫';
+                document.getElementById('summaryDeposit').innerText = fmt.format(data.deposit30Percent) + ' ₫';
+                
+                const weekendRow = document.getElementById('weekendSurchargeRow');
+                if (data.weekendSurcharge > 0) {
+                    weekendRow.style.setProperty('display', 'flex', 'important');
+                    document.getElementById('summaryWeekend').innerText = '+' + fmt.format(data.weekendSurcharge) + ' ₫';
+                } else {
+                    weekendRow.style.setProperty('display', 'none', 'important');
+                }
+
+                const btnSubmit = document.getElementById('btnSubmitCheckout');
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = 'Xác nhận Đặt xe ' + fmt.format(data.deposit30Percent) + ' ₫';
+
+                localStorage.setItem('currentDepositAmount', data.deposit30Percent);
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API tính giá:", error);
+        }
+    }
+
+    // =====================================================================
+    // 4. XỬ LÝ GIAO DỊCH VÀ TẠO ĐƠN ĐẶT XE (TỔNG HỢP 3 LUỒNG)
+    // =====================================================================
+    async function processCheckout() {
+        // 1. Ép hệ thống quét lỗi toàn bộ các ô nhập liệu một lần nữa
+        validateEmail(); 
+        validatePhone();
+        validateName();
+        validateAddress();
+        
+        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
+        const addressInput = document.getElementById("address").value.trim();
+
+        // 2. Chặn đứng giao dịch nếu Form sai hoặc bỏ trống
+        if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
+            alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
+            return;
+        }
+
+        const elBtnSubmit = document.getElementById("btnSubmitCheckout");
+        const originalText = elBtnSubmit.innerText;
+        elBtnSubmit.disabled = true;
+        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+
+        try {
+            // Lấy các tham số cơ bản
+            const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1; 
+            const vehicleId = localStorage.getItem('selectedVehicleId');
+            const appliedVoucherId = localStorage.getItem('appliedVoucherId');
+            const token = localStorage.getItem('accessToken');
+            
+            let payload = {};
+
+            // ===============================================
+            // NHÁNH 1: XỬ LÝ LUỒNG THEO GIỜ & THEO NGÀY
+            // ===============================================
+            if (bookingType === 'HOURLY' || bookingType === 'DAILY') {
+                let departureTime = document.getElementById('departureTime').value;
+                const durationVal = parseInt(document.getElementById('durationValue').value) || 0;
+
+                if (departureTime.length === 16) departureTime += ":00"; // Định dạng lại cho Java
+
+                payload = {
+                    customerId: parseInt(customerId),
+                    vehicleId: parseInt(vehicleId),
+                    bookingType: bookingType,
+                    tripDirection: "ONE_WAY",
+                    pickupAddress: addressInput,
+                    departureTime: departureTime
+                };
+
+                if (bookingType === 'HOURLY') payload.durationHours = durationVal;
+                else payload.durationDays = durationVal;
+            } 
+            // ===============================================
+            // NHÁNH 2: XỬ LÝ LUỒNG ĐI THEO CHUYẾN (DISTANCE)
+            // ===============================================
+            else {
+                const tripDirection = localStorage.getItem('tripDirection') || 'ONE_WAY';
+                
+                payload = {
+                    customerId: parseInt(customerId),
+                    vehicleId: parseInt(vehicleId),
+                    bookingType: "DISTANCE",
+                    tripDirection: tripDirection,
+                    // Ưu tiên địa chỉ khách có thể vừa sửa trên text input, nếu không lấy từ map
+                    pickupAddress: addressInput || localStorage.getItem('pickupAddress'), 
+                    pickupLat: parseFloat(localStorage.getItem('pickupLat')),
+                    pickupLng: parseFloat(localStorage.getItem('pickupLng')),
+                    dropoffAddress: localStorage.getItem('dropoffAddress'),
+                    dropoffLat: parseFloat(localStorage.getItem('dropoffLat')),
+                    dropoffLng: parseFloat(localStorage.getItem('dropoffLng')),
+                    departureTime: localStorage.getItem('mapDepartureTime'),
+                    distanceKm: parseFloat(localStorage.getItem('distanceKm'))
+                };
+
+                // Nếu là Khứ hồi, tự động đọc và đính kèm dữ liệu Chiều về (Return Trip)
+                if (tripDirection === 'ROUND_TRIP') {
+                    payload.returnPickupAddress = localStorage.getItem('returnPickupAddress');
+                    payload.returnPickupLat = parseFloat(localStorage.getItem('returnPickupLat'));
+                    payload.returnPickupLng = parseFloat(localStorage.getItem('returnPickupLng'));
+                    payload.returnDropoffAddress = localStorage.getItem('returnDropoffAddress');
+                    payload.returnDropoffLat = parseFloat(localStorage.getItem('returnDropoffLat'));
+                    payload.returnDropoffLng = parseFloat(localStorage.getItem('returnDropoffLng'));
+                    payload.returnTime = localStorage.getItem('mapReturnTime');
+                    payload.returnDistanceKm = parseFloat(localStorage.getItem('returnDistanceKm'));
+                }
+            }
+
+            // Gắn chung Voucher ID nếu khách đã áp mã (Cho cả 3 nhánh)
+            if (appliedVoucherId) {
+                payload.voucherId = parseInt(appliedVoucherId);
+            }
+
+            // Cấu hình Headers (Nhét Token bảo mật vào)
+            const headers = { 'Content-Type': 'application/json' };
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+
+            // 3. GỌI API TẠO ĐƠN XUỐNG BACKEND
+            const response = await fetch('http://localhost:8080/FleetFlow/api/v1/bookings', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+
+            // 4. XỬ LÝ KẾT QUẢ TRẢ VỀ
+            if (response.ok && result.success) {
+                alert(`Thanh toán cọc thành công!\nMã chuyến đi của bạn: #${result.bookingId}`);
+                
+                // Dọn rác LocalStorage sạch sẽ để tránh lỗi các chuyến sau
+                const keysToRemove = [
+                    'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress', 
+                    'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng', 
+                    'returnPickupAddress', 'returnDropoffAddress', 'returnPickupLat', 'returnPickupLng', 
+                    'returnDropoffLat', 'returnDropoffLng', 'mapDepartureTime', 'mapReturnTime', 
+                    'distanceKm', 'returnDistanceKm', 'mapBaseFare', 'mapWeekendSurcharge', 
+                    'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId'
+                ];
+                keysToRemove.forEach(k => localStorage.removeItem(k));
+                
+                // Điều hướng sang trang Lịch sử chuyến đi
+                window.location.replace("tripHistory.html"); 
+            } else {
+                alert("Rất tiếc, hệ thống từ chối: " + (result.error || result.message || "Lỗi không xác định"));
+                elBtnSubmit.disabled = false;
+                elBtnSubmit.innerText = originalText;
+            }
+
+        } catch (error) {
+            console.error("Lỗi:", error);
+            alert("Mất kết nối với máy chủ FleetFlow!");
+            elBtnSubmit.disabled = false;
+            elBtnSubmit.innerText = originalText;
+        }
     }
 </script>
 
