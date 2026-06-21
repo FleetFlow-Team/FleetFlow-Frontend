@@ -211,3 +211,133 @@ async function processRejectBooking() {
         pendingRejectButton = null;
     }
 }
+
+// ==========================================
+// 13. TẢI DANH SÁCH ĐƠN ĐẶT XE (TÍCH HỢP API GET)
+// ==========================================
+
+// Hàm gọi API lấy dữ liệu
+async function loadBookings(status, tbodyId) {
+    const tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+
+    // Hiển thị trạng thái đang tải
+    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin fs-4 text-secondary"></i><p class="mt-2 text-muted fw-medium">Đang tải dữ liệu hệ thống...</p></td></tr>';
+
+    try {
+        let url = `${DISPATCHER_API_BASE}/dispatcher/bookings`;
+        // Phân luồng URL theo đúng chuẩn Controller của bạn
+        if (status.toUpperCase() === 'PENDING') {
+            url += '/pending';
+        } else {
+            url += `?status=${status}`;
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            renderBookingTable(result.data, tbody, status);
+            
+            // Tự động cập nhật con số thống kê trên thẻ Tab (Nếu bạn có làm ID đếm số)
+            const countBadge = document.getElementById(`count-${status.toLowerCase()}`);
+            if (countBadge) countBadge.innerText = result.count;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Lỗi: ${result.error || 'Không thể tải dữ liệu'}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Lỗi:", error);
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Mất kết nối đến máy chủ Backend!</td></tr>';
+    }
+}
+
+// Hàm "Vẽ" dữ liệu lên bảng
+function renderBookingTable(bookings, tbody, currentTabStatus) {
+    if (!bookings || bookings.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4"><i class="fa-regular fa-folder-open fs-1 mb-2 opacity-50"></i><br>Không có đơn đặt xe nào.</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = ''; // Xóa rác loading
+    bookings.forEach(b => {
+        const tr = document.createElement('tr');
+        
+        // 1. Format Thời gian cực đẹp
+        let depTime = "";
+        if (b.departureTime) {
+            const d = new Date(b.departureTime);
+            depTime = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} - ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+        }
+
+        // 2. Xử lý Lộ trình tùy theo Loại hình (BookingType)
+        let routeHtml = "";
+        if (b.bookingType === 'HOURLY') {
+            routeHtml = `<strong>Di chuyển Nội đô HCM</strong> <br><small class="text-muted"><i class="fa-solid fa-location-dot me-1 text-danger"></i> Đón: ${b.pickupAddress}</small>`;
+        } else if (b.bookingType === 'DAILY') {
+            routeHtml = `<strong>Di chuyển Linh hoạt tự do</strong> <br><small class="text-muted"><i class="fa-solid fa-location-dot me-1 text-danger"></i> Đón: ${b.pickupAddress}</small>`;
+        } else {
+            routeHtml = `<strong>${b.pickupAddress}</strong> <i class="fa-solid fa-arrow-right mx-1 text-success"></i> <strong>${b.dropoffAddress || 'Chưa XĐ'}</strong>`;
+        }
+
+        // 3. Nhãn (Badge) Loại hình dịch vụ
+        let typeBadge = '';
+        if (b.bookingType === 'HOURLY') typeBadge = '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 ms-1">Theo giờ</span>';
+        else if (b.bookingType === 'DAILY') typeBadge = '<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 ms-1">Theo ngày</span>';
+        else typeBadge = '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 ms-1">Theo chuyến</span>';
+
+        if (b.tripDirection === 'ROUND_TRIP') typeBadge += ' <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 ms-1">Khứ hồi</span>';
+
+        // 4. Xử lý Nút Bấm & Badge Trạng thái
+        let badge = '';
+        let actionButtons = '';
+
+        if (b.status === 'PENDING') {
+            badge = `<span class="glass-badge bg-secondary text-white">Chờ duyệt</span>`;
+            actionButtons = `
+                <button class="btn-glass-action text-success border-success fw-bold w-100 mb-2" onclick="approveBooking(${b.bookingId}, this)">
+                    <i class="fa-solid fa-check me-1"></i> Duyệt
+                </button>
+                <button class="btn-glass-action text-danger border-danger fw-bold w-100" onclick="rejectBooking(${b.bookingId}, this)">
+                    <i class="fa-solid fa-xmark me-1"></i> Từ chối
+                </button>
+            `;
+        } else if (b.status === 'APPROVED') {
+            badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
+            actionButtons = `
+                <button class="btn-glass-action text-primary border-primary fw-bold w-100" onclick="dispatchDriver(${b.bookingId}, this)">
+                    Phân tài
+                </button>
+            `;
+        } else if (b.status === 'REJECTED') {
+            badge = `<span class="glass-badge bg-danger text-white"><i class="fa-solid fa-ban me-1"></i> Đã từ chối</span>`;
+            actionButtons = `<span class="text-danger fw-bold"><i class="fa-solid fa-xmark"></i> Đã hủy bỏ</span>`;
+        } else if (b.status === 'DISPATCHED') {
+            badge = `<span class="glass-badge bg-primary text-white"><i class="fa-solid fa-car-side me-1"></i> Đã phân tài</span>`;
+            actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+        }
+
+        tr.innerHTML = `
+            <td><strong>#${b.bookingId}</strong><br><small class="text-muted fw-medium">${b.vehicleName}<br>${b.licensePlate || ''}</small></td>
+            <td>
+                <div class="fw-bold text-dark">${b.customerName}</div>
+                <div class="small text-muted fw-medium"><i class="fa-solid fa-phone me-1 text-primary"></i>${b.customerPhone}</div>
+            </td>
+            <td>
+                <div style="font-size: 0.95rem;">${routeHtml} <div class="mt-1">${typeBadge}</div></div>
+                <div class="small text-muted mt-2 fw-medium"><i class="fa-regular fa-clock me-1 text-success"></i> Đi: ${depTime}</div>
+            </td>
+            <td>${badge}</td>
+            <td>${actionButtons}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// 5. TỰ ĐỘNG TẢI DỮ LIỆU KHI VỪA MỞ TRANG (Mặc định tải PENDING)
+document.addEventListener("DOMContentLoaded", () => {
+    loadBookings('PENDING', 'tbody-pending');
+});
