@@ -1,9 +1,19 @@
+// CẤU HÌNH API
 const DISPATCHER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1';
 
-// Lấy Token của Dispatcher để đính kèm vào Header
+// Header dùng cho GET (Không có Content-Type)
 function getAuthHeader() {
     const token = localStorage.getItem('accessToken');
     return token ? { 'Authorization': `Bearer ${token}` } : {};
+}
+
+// Header dùng cho POST/PUT (Bắt buộc phải có Content-Type)
+function postAuthHeader() {
+    const token = localStorage.getItem('accessToken');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+    };
 }
 
 // ==========================================
@@ -89,9 +99,16 @@ async function approveBooking(bookingId, buttonElement) {
                     badge.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> Đã duyệt';
                 }
                 
-                // Đổi nút bấm thành nút Phân tài (Chuẩn bị cho luồng tiếp theo)
+                // Thay vì gọi dispatchDriver, ta gọi đúng hàm openDispatchModal.
+                // Truyền tham số 0 vào vị trí vehicleId để Modal hiểu là cho phép Dispatcher tự nhập ID Xe.
+                // Đổi nút bấm thành nút Phân tài chuẩn Liquid Glass
                 const tdAction = buttonElement.parentElement;
-                tdAction.innerHTML = `<button class="btn-glass-action" onclick="dispatchDriver(${bookingId}, this)">Phân tài</button>`;
+                tdAction.innerHTML = `
+                    <button class="btn-glass-action btn-glass-dispatch fw-bold w-100" 
+                            onclick="openDispatchModal(${bookingId}, 0)">
+                        Phân tài
+                    </button>
+                `;
             }
         } else {
             // Nếu Backend báo lỗi (Ví dụ: Đơn đã bị người khác duyệt)
@@ -298,17 +315,23 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
         if (b.status === 'PENDING') {
             badge = `<span class="glass-badge bg-secondary text-white">Chờ duyệt</span>`;
             actionButtons = `
-                <button class="btn-glass-action text-success border-success fw-bold w-100 mb-2" onclick="approveBooking(${b.bookingId}, this)">
+                <button class="btn-glass-action btn-glass-approve fw-bold w-100 mb-2" onclick="approveBooking(${b.bookingId}, this)">
                     <i class="fa-solid fa-check me-1"></i> Duyệt
                 </button>
-                <button class="btn-glass-action text-danger border-danger fw-bold w-100" onclick="rejectBooking(${b.bookingId}, this)">
+                <button class="btn-glass-action btn-glass-reject fw-bold w-100" onclick="rejectBooking(${b.bookingId}, this)">
                     <i class="fa-solid fa-xmark me-1"></i> Từ chối
                 </button>
             `;
         } else if (b.status === 'APPROVED') {
             badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
+            
+            // Fallback an toàn cho vehicleId
+            const safeVehicleId = b.vehicleId || 0; 
+            
+            // Thay thế class cũ bằng btn-glass-dispatch
             actionButtons = `
-                <button class="btn-glass-action text-primary border-primary fw-bold w-100" onclick="dispatchDriver(${b.bookingId}, this)">
+                <button class="btn-glass-action btn-glass-dispatch fw-bold w-100" 
+                        onclick="openDispatchModal(${b.bookingId}, ${safeVehicleId})">
                     Phân tài
                 </button>
             `;
@@ -341,3 +364,93 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
 document.addEventListener("DOMContentLoaded", () => {
     loadBookings('PENDING', 'tbody-pending');
 });
+
+// ==========================================
+// 14. TÍCH HỢP API: PHÂN TÀI XẾ (DISPATCH)
+// ==========================================
+let dispatchModalInstance = null;
+let currentDispatchBookingId = null;
+
+// Hàm 1: Mở Modal và đổ dữ liệu mồi
+window.openDispatchModal = function(bookingId, vehicleId) {
+    currentDispatchBookingId = bookingId;
+    
+    document.getElementById('dispatchBookingIdDisplay').innerText = `#${bookingId}`;
+    document.getElementById('inputDriverId').value = '';
+    
+    // Nếu vehicleId = 0 (Chưa có xe), để trống cho Dispatcher tự nhập
+    document.getElementById('inputVehicleId').value = (vehicleId && vehicleId !== 0) ? vehicleId : ''; 
+
+    if (!dispatchModalInstance) {
+        dispatchModalInstance = new bootstrap.Modal(document.getElementById('dispatchModal'));
+    }
+    dispatchModalInstance.show();
+};
+
+// Hàm 2: Thực thi API khi bấm Xác nhận
+window.executeDispatch = async function() {
+    const driverInput = document.getElementById('inputDriverId').value.trim();
+    const vehicleInput = document.getElementById('inputVehicleId').value.trim();
+
+    // Bắt lỗi rỗng
+    if (!driverInput || !vehicleInput) {
+        showSystemToast("Vui lòng nhập đầy đủ ID Tài xế và ID Xe!", "error");
+        return;
+    }
+
+    // Ép kiểu an toàn (Chống lỗi NaN)
+    const driverIdInt = parseInt(driverInput, 10);
+    const vehicleIdInt = parseInt(vehicleInput, 10);
+
+    if (isNaN(driverIdInt) || isNaN(vehicleIdInt)) {
+        showSystemToast("ID Tài xế và ID Xe bắt buộc phải là số!", "error");
+        return;
+    }
+
+    const btnSubmit = document.getElementById('btnSubmitDispatch');
+    const originalText = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-1"></i> Đang xử lý...';
+    btnSubmit.disabled = true;
+
+    try {
+        console.log(`Đang gửi yêu cầu phân tài: Booking=${currentDispatchBookingId}, Driver=${driverIdInt}, Vehicle=${vehicleIdInt}`);
+        
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings/${currentDispatchBookingId}/dispatch`, {
+            method: 'POST',
+            headers: postAuthHeader(), // Phải chắc chắn hàm postAuthHeader() tồn tại trên cùng file
+            body: JSON.stringify({
+                driverId: driverIdInt,
+                vehicleId: vehicleIdInt
+            })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            showSystemToast(`Đã phân Tài xế #${driverIdInt} cho chuyến #${currentDispatchBookingId} thành công!`, "success");
+            
+            // Đóng Modal an toàn
+            if(dispatchModalInstance) {
+                dispatchModalInstance.hide();
+            }
+            
+            // Xóa phông nền đen (backdrop) bị kẹt nếu có
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) backdrop.remove();
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+
+            // Làm mới bảng danh sách
+            loadBookings('APPROVED', 'tbody-main');
+        } else {
+            showSystemToast(result.error || result.message || "Hệ thống từ chối phân tài!", "error");
+        }
+    } catch (error) {
+        console.error("Lỗi Fetch API Phân tài:", error);
+        showSystemToast("Mất kết nối máy chủ FleetFlow!", "error");
+    } finally {
+        btnSubmit.innerHTML = originalText;
+        btnSubmit.disabled = false;
+    }
+};

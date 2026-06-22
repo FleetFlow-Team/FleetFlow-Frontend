@@ -180,34 +180,26 @@
 
     <div id="trip-management" class="dashboard-section">
         <div class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2">
-            <button class="btn btn-glass-tab active" onclick="loadBookings('PENDING', 'tbody-pending')">
-                Chờ duyệt <span class="badge bg-danger rounded-pill ms-1" id="count-pending">0</span>
-            </button>
-            
-            <button class="btn btn-glass-tab" onclick="loadBookings('APPROVED', 'tbody-approved')">
-                Chờ phân tài <span class="badge bg-warning text-dark rounded-pill ms-1" id="count-approved">0</span>
-            </button>
-            
-            <button class="btn btn-glass-tab" onclick="loadBookings('REJECTED', 'tbody-rejected')">
-                Đã từ chối <span class="badge bg-secondary rounded-pill ms-1" id="count-rejected">0</span>
-            </button>
-        </div>
+    <button class="btn btn-glass-tab" onclick="loadBookings('PENDING', 'tbody-main')">
+        Chờ duyệt <span class="badge bg-success rounded-pill ms-1" id="count-pending">0</span>
+    </button>
+    
+    <button class="btn btn-glass-tab" onclick="loadBookings('APPROVED', 'tbody-main')">
+        Chờ phân tài <span class="badge bg-warning text-dark rounded-pill ms-1" id="count-approved">0</span>
+    </button>
+    
+    <button class="btn btn-glass-tab" onclick="loadBookings('REJECTED', 'tbody-main')">
+        Đã từ chối <span class="badge bg-danger rounded-pill ms-1" id="count-rejected">0</span>
+    </button>
+</div>
 
-        <div class="table-responsive">
-            <table class="table table-glass align-middle">
-                <thead>
-                    <tr>
-                        <th width="12%">Mã Đơn</th>
-                        <th width="20%">Khách Hàng</th>
-                        <th width="43%">Lộ Trình & Dịch Vụ</th>
-                        <th width="10%">Trạng Thái</th>
-                        <th width="15%" class="text-center">Thao Tác</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-pending">
-                    </tbody>
-            </table>
-        </div>
+<div class="table-responsive">
+    <table class="table table-glass align-middle">
+        <thead>...</thead>
+        <tbody id="tbody-main">
+        </tbody>
+    </table>
+</div>
     </div>
 
     <div id="driver-status" class="dashboard-section">
@@ -318,6 +310,35 @@
                 <div class="modal-footer border-0 pt-0 justify-content-end gap-2 pb-4 px-4">
                     <button type="button" class="btn btn-outline-light rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Hủy bỏ</button>
                     <button type="button" class="btn btn-danger rounded-pill px-4 fw-bold shadow-sm" id="btnSubmitReject">Xác nhận Từ chối</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dispatchModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card-30 border-0" style="background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(16px);">
+                <div class="modal-header border-bottom border-secondary border-opacity-10">
+                    <h5 class="modal-title fw-bold text-primary"><i class="fa-solid fa-user-plus me-2"></i>Phân công Tài xế</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 pt-4">
+                    <p class="text-muted small mb-4">Đang phân tài cho Mã chuyến đi: <strong id="dispatchBookingIdDisplay" class="text-dark fs-6">#--</strong></p>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary">ID Tài xế (Driver ID) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="inputDriverId" placeholder="Nhập ID tài xế (VD: 2)..." style="border-radius: 12px; height: 45px;">
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-secondary">ID Xe (Vehicle ID) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control text-primary fw-bold" id="inputVehicleId" placeholder="Nhập ID xe..." style="border-radius: 12px; height: 45px;">
+                        <div class="form-text text-success mt-1" style="font-size: 0.8rem"><i class="fa-solid fa-circle-info"></i> Hệ thống đã tự động điền ID xe do khách chọn ban đầu.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4 justify-content-center">
+                    <button type="button" class="btn btn-secondary px-4 rounded-pill fw-medium" data-bs-dismiss="modal">Hủy bỏ</button>
+                    <button type="button" class="btn btn-primary px-4 rounded-pill fw-bold shadow-sm" id="btnSubmitDispatch" onclick="executeDispatch()">Xác nhận Phân tài</button>
                 </div>
             </div>
         </div>
