@@ -137,12 +137,13 @@
     color: var(--color-1, #00B14F); 
 }
 
-        /* Thẻ Item Chuyến Đi Nổi 3D */
+        /* Thẻ Item Chuyến Đi Nổi 3D - Đã nâng cấp Layout */
         .trip-item-card {
-            padding: 24px 28px; margin-bottom: 25px; display: block; color: inherit; text-decoration: none; cursor: pointer;
+            padding: 20px 24px; margin-bottom: 20px; display: block; color: inherit; text-decoration: none; cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
         }
-        .trip-item-card:hover { transform: perspective(1000px) translateY(-8px) scale(1.02); box-shadow: 0 20px 40px rgba(0, 177, 79, 0.1); }
-        .trip-item-card:hover::after { background: rgba(255, 255, 255, 0.3); } /* Kính sáng lên khi hover */
+        .trip-item-card:hover { transform: perspective(1000px) translateY(-5px) scale(1.02); box-shadow: 0 15px 35px rgba(0, 177, 79, 0.15); border-color: rgba(0, 177, 79, 0.3) !important; }
+        .trip-item-card:hover::after { background: rgba(255, 255, 255, 0.4) !important; }
 
         /* Vạch trạng thái bằng shadow bên trong kính */
         .status-indicator { position: absolute; top: 0; left: 0; bottom: 0;  width: 6px; border-radius: 50px 0 0 50px; transition: width 0.3s ease; z-index: 3;}
@@ -252,6 +253,34 @@
     flex-direction: column;
     justify-content: space-between;
 }
+
+/* Bố cục Flex cho thẻ chuyến đi có ảnh xe */
+        .trip-card-layout { display: flex; gap: 20px; align-items: center; }
+        
+        .trip-thumbnail {
+            width: 110px; height: 75px; object-fit: cover; border-radius: 12px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1); border: 2px solid rgba(255,255,255,0.9);
+            flex-shrink: 0; background: #fff;
+        }
+
+        .trip-info-core { flex-grow: 1; }
+        .trip-price-status { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .status-indicator { position: absolute; top: 0; left: 0; bottom: 0;  width: 6px; border-radius: 50px 0 0 50px; transition: width 0.3s ease; z-index: 3;}
+        .trip-item-card:hover .status-indicator { width: 10px; }
+        .status-pending-card .status-indicator { background: linear-gradient(to bottom, #FFDE59, #f59e0b); }
+        .status-active-card .status-indicator { background: linear-gradient(to bottom, #60a5fa, #3b82f6); }
+        .status-completed-card .status-indicator { background: linear-gradient(to bottom, #34d399, #10b981); }
+        .status-cancelled-card .status-indicator { background: linear-gradient(to bottom, #f87171, #ef4444); }
+
+        .trip-status-badge { padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: inline-block; background: rgba(255,255,255,0.85); backdrop-filter: blur(5px); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .badge-pending { color: #d97706; border: 1px solid rgba(253, 230, 138, 0.8); }
+        .badge-active { color: #1d4ed8; border: 1px solid rgba(191, 219, 254, 0.8); }
+        .badge-completed { color: #166534; border: 1px solid rgba(167, 243, 208, 0.8); }
+        .badge-cancelled { color: #991b1b; border: 1px solid rgba(254, 202, 202, 0.8); }
+
+        .location-flow { font-size: 1.15rem; font-weight: 800; color: #1e293b; margin: 8px 0; display: flex; align-items: center; gap: 10px; }
+        .card-meta { font-size: 0.9rem; color: #64748b; display: flex; gap: 15px; font-weight: 600;}
 
 /* =========================================
    3. TỐI ƯU ĐỘ TRONG SUỐT CHO KÍNH LỎNG (LIQUID GLASS)
@@ -465,14 +494,10 @@
                     <div class="panel-card glass-card-30">
                         <div class="driver-profile">
                             <div class="driver-meta-box">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" alt="Driver" class="driver-avatar-img d-none" id="imgDriverAvatar">
-                                
-                                <div class="driver-avatar-img d-flex justify-content-center align-items-center bg-light border-0" id="iconCarAvatar" style="font-size: 24px; color: var(--color-1); box-shadow: 0 4px 10px rgba(0,177,79,0.2);">
-                                    <i class="fa-solid fa-car-side"></i>
-                                </div>
+                                <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="Car" class="trip-thumbnail" id="detailCarImage" style="width: 90px; height: 60px; margin-right: 5px;">
                                 
                                 <div>
-                                    <h5 class="fw-bold m-0 text-dark" id="lblMainInfo">--</h5>
+                                    <h5 class="fw-bold m-0 text-dark" id="lblMainInfo">Đang tải...</h5>
                                     <span class="text-muted fw-medium" id="lblSubInfo">--</span>
                                 </div>
                             </div>
