@@ -14,6 +14,8 @@
     
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
+    <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
     <script>
         // Nếu không tìm thấy Token trong LocalStorage, đá sang trang 403
         if (!localStorage.getItem('accessToken')) {
@@ -434,10 +436,10 @@
                     </div>
 
                     <!-- MAP: KÍNH LỎNG 30PX -->
-                    <div class="map-viewer-container glass-card-30">
-                        <div class="text-center">
+                    <div class="map-viewer-container glass-card-30" id="tripMapContainer">
+                        <div class="text-center w-100">
                             <i class="fa-solid fa-satellite-dish fs-2 text-success mb-2 d-block"></i>
-                            Mô phỏng Web-GPS FleetFlow thời gian thực
+                            Đang tải lộ trình di chuyển...
                         </div>
                     </div>
 
