@@ -193,20 +193,47 @@ window.viewTripDetails = async function(bookingId) {
                 document.getElementById('lblDropoffAddress').innerHTML = dropoffText;
             }
 
-            // 3. In Thông tin xe
-            document.getElementById('lblDriverName').innerText = "Hệ thống FleetFlow"; 
-            document.getElementById('lblCarSpecs').innerText = `${tripSummary.vehicleName} - ${tripSummary.licensePlate}`;
-            
-            // 4. KÍCH HOẠT VẼ BẢN ĐỒ (Nếu có tọa độ)
-            if (detail.pickupLat && detail.pickupLng && typeof vietmapgl !== 'undefined') {
-                drawTripMap(detail.pickupLat, detail.pickupLng, detail.dropoffLat, detail.dropoffLng, tDir);
+            // 3. XỬ LÝ HIỂN THỊ THÔNG TIN (CHỈ XE / HOẶC CÓ TÀI XẾ)
+            const imgDriver = document.getElementById('imgDriverAvatar');
+            const iconCar = document.getElementById('iconCarAvatar');
+            const btnCall = document.getElementById('btnCallDriver');
+            const lblMain = document.getElementById('lblMainInfo');
+            const lblSub = document.getElementById('lblSubInfo');
+
+            if (tripSummary.status === 'PENDING' || tripSummary.status === 'APPROVED' || tripSummary.status === 'REJECTED' || tripSummary.status === 'CANCELLED') {
+                // TRƯỜNG HỢP 1: ĐƠN MỚI CHƯA CÓ TÀI XẾ -> CHỈ HIỆN THÔNG TIN XE
+                if (imgDriver) imgDriver.classList.add('d-none');
+                if (iconCar) {
+                    iconCar.classList.remove('d-none');
+                    iconCar.classList.add('d-flex');
+                }
+                if (btnCall) btnCall.classList.add('d-none'); // Giấu nút gọi
+
+                // Tiêu đề: Tên Xe (Ví dụ: Hyundai Accent)
+                lblMain.innerText = tripSummary.vehicleName || "Đang tải thông tin xe";
+                
+                // Dòng phụ: Biển số (Ví dụ: Biển số: 51D-103.13)
+                lblSub.innerHTML = `<i class="fa-solid fa-hashtag me-1"></i> Biển số: <span class="text-uppercase">${tripSummary.licensePlate || "Chờ cập nhật"}</span>`;
+                
             } else {
-                document.getElementById('tripMapContainer').innerHTML = `
-                    <div class="text-center w-100 text-muted">
-                        <i class="fa-solid fa-map-location-dot fs-2 text-primary mb-2 d-block"></i>
-                        Lộ trình theo thời gian thực (Dành cho thuê giờ/ngày)
-                    </div>`;
+                // TRƯỜNG HỢP 2: ĐƠN ĐÃ ĐƯỢC PHÂN TÀI XẾ (DISPATCHED, IN_PROGRESS, COMPLETED)
+                if (imgDriver) imgDriver.classList.remove('d-none');
+                if (iconCar) {
+                    iconCar.classList.remove('d-flex');
+                    iconCar.classList.add('d-none');
+                }
+                if (btnCall) btnCall.classList.remove('d-none'); // Hiện nút gọi
+
+                // Tiêu đề: Tên Tài Xế (Ví dụ: Nguyễn Văn A)
+                lblMain.innerText = tripSummary.driverName || "Tài xế FleetFlow"; 
+                
+                // Dòng phụ: Tên Xe + Biển số (Ví dụ: Hyundai Accent • 51D-103.13)
+                lblSub.innerHTML = `<i class="fa-solid fa-car-side me-1"></i> ${tripSummary.vehicleName} • <span class="text-uppercase">${tripSummary.licensePlate || ""}</span>`;
+                
+                // Gắn số điện thoại tài xế vào nút gọi
+                if (btnCall) btnCall.href = `tel:${tripSummary.driverPhone || '19005335'}`;
             }
+            
 
             // 5. Cập nhật Hóa đơn 
             // (Nếu BackEnd của bạn đã nối bảng BookingPricing vào API này, nó sẽ đọc data.pricing. 

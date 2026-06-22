@@ -14,8 +14,7 @@
     
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
-    <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
-    <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
+    
     <script>
         // Nếu không tìm thấy Token trong LocalStorage, đá sang trang 403
         if (!localStorage.getItem('accessToken')) {
@@ -173,8 +172,6 @@
 
         .btn-return-back { display: inline-flex; align-items: center; gap: 8px; color: var(--color-1); font-weight: 700; cursor: pointer; margin-bottom: 30px; transition: transform 0.3s; padding: 10px 20px; border-radius: 50px; background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .btn-return-back:hover { transform: translateX(-8px); background: white; }
-
-        .map-viewer-container { width: 100%; height: 260px; display: flex; align-items: center; justify-content: center; margin-bottom: 35px; color: #475569; font-weight: 700; font-size: 1.1rem; }
 
         .vertical-timeline { position: relative; padding-left: 28px; border-left: 2px dashed rgba(0,0,0,0.15); margin-left: 14px; margin-bottom: 40px; }
         .timeline-node { position: relative; margin-bottom: 35px; }
@@ -435,14 +432,6 @@
                         <i class="fa-solid fa-arrow-left-long"></i> Trở lại danh sách
                     </div>
 
-                    <!-- MAP: KÍNH LỎNG 30PX -->
-                    <div class="map-viewer-container glass-card-30" id="tripMapContainer">
-                        <div class="text-center w-100">
-                            <i class="fa-solid fa-satellite-dish fs-2 text-success mb-2 d-block"></i>
-                            Đang tải lộ trình di chuyển...
-                        </div>
-                    </div>
-
                     <div class="d-flex justify-content-between align-items-center mb-4 mt-2">
                         <h3 class="fw-bold m-0 text-dark" style="letter-spacing: -0.5px;">Chi tiết lộ trình</h3>
                         <div id="detailBadgeContainer"></div>
@@ -460,7 +449,7 @@
                     </div>
 
                     <!-- THẺ TÀI XẾ: KÍNH LỎNG 30PX -->
-                    <div class="panel-card glass-card-30">
+                    <!-- <div class="panel-card glass-card-30">
                         <div class="driver-profile">
                             <div class="driver-meta-box">
                                 <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" alt="Driver Avatar" class="driver-avatar-img">
@@ -470,6 +459,25 @@
                                 </div>
                             </div>
                             <a href="tel:19005335" class="btn-call-trigger"><i class="fa-solid fa-phone-volume"></i></a>
+                        </div>
+                    </div> -->
+
+                    <div class="panel-card glass-card-30">
+                        <div class="driver-profile">
+                            <div class="driver-meta-box">
+                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200" alt="Driver" class="driver-avatar-img d-none" id="imgDriverAvatar">
+                                
+                                <div class="driver-avatar-img d-flex justify-content-center align-items-center bg-light border-0" id="iconCarAvatar" style="font-size: 24px; color: var(--color-1); box-shadow: 0 4px 10px rgba(0,177,79,0.2);">
+                                    <i class="fa-solid fa-car-side"></i>
+                                </div>
+                                
+                                <div>
+                                    <h5 class="fw-bold m-0 text-dark" id="lblMainInfo">--</h5>
+                                    <span class="text-muted fw-medium" id="lblSubInfo">--</span>
+                                </div>
+                            </div>
+                            
+                            <a href="#" class="btn-call-trigger d-none" id="btnCallDriver"><i class="fa-solid fa-phone-volume"></i></a>
                         </div>
                     </div>
 
