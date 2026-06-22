@@ -171,6 +171,19 @@ let filteredVehicles = [];    // Mảng sau khi đã qua bộ lọc và sắp x�
 let currentPage = 1;          // Trang hiện tại mặc định
 const itemsPerPage = 18;      // Số lượng xe hiển thị trên một trang
 
+// Cấu hình map cứng hình ảnh theo VehicleID từ Database
+const vehicleImageMap = {
+    1: 'ToyotaVios4.jpg', 2: 'HondaCity4.jpg', 3: 'HyundaiAccent4.jpg', 4: 'MazdaMazda34.jpg', 5: 'KiaSoluto4.jpg',
+    6: 'ToyotaVios4.jpg', 7: 'HondaCity4.jpg', 8: 'HyundaiAccent4.jpg', 9: 'MazdaMazda34.jpg', 10: 'KiaSoluto4.jpg',
+    11: 'ToyotaVios4.jpg', 12: 'HondaCity4.jpg', 13: 'HyundaiAccent4.jpg', 14: 'MazdaMazda34.jpg', 15: 'ToyotaInnova7.jpg',
+    16: 'MitsubishiXpander7.jpg', 17: 'HondaCR-V7.jpg', 18: 'HyundaiCustin7.jpg', 19: 'KiaCarens7.jpg', 20: 'ToyotaInnova7.jpg',
+    21: 'MitsubishiXpander7.jpg', 22: 'HondaCR-V7.jpg', 23: 'HyundaiCustin7.jpg', 24: 'KiaCarens7.jpg', 25: 'ToyotaInnova7.jpg',
+    26: 'MitsubishiXpander7.jpg', 27: 'HondaCR-V7.jpg', 28: 'HyundaiCustin7.jpg', 29: 'KiaCarnival9.jpg', 30: 'HyundaiSolatiLimo9.jpg',
+    31: 'FordTourneo9.jpg', 32: 'KiaCarnival9.jpg', 33: 'HyundaiSolatiLimo9.jpg', 34: 'FordTourneo9.jpg', 35: 'KiaCarnival9.jpg',
+    36: 'HyundaiSolatiLimo9.jpg', 37: 'FordTransit16.jpg', 38: 'HyundaiSolati16.jpg', 39: 'MercedesSprinter16.jpg', 40: 'FordTransit16.jpg',
+    41: 'HyundaiSolati16.jpg', 42: 'MercedesSprinter16.jpg', 43: 'ThacoTB7929.jpg', 44: 'HyundaiCounty29.jpg', 45: 'SamcoFelix29.jpg',
+    46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
+};
 /**
  * Khởi tạo tính năng xe, đăng ký các sự kiện tương tác bộ lọc
  */
@@ -406,7 +419,6 @@ function resetAllFilters() {
 
     applyFiltersAndSort();
 }
-
 /**
  * Render danh sách xe dựa theo phân trang hiện tại
  */
@@ -449,12 +461,13 @@ function renderVehiclesByPage(page) {
         let fuelType = v.fuelType || 'Xăng'; 
         let transType = (descLower.includes("số sàn") || descLower.includes("mt")) ? "Số sàn" : "Tự động";
 
-        // Xử lý hình ảnh: Ưu tiên ảnh từ DB, nếu null thì dùng ảnh placeholder
-        let carImage = (v.imagePath && v.imagePath.trim() !== '') 
-            ? v.imagePath 
+        // Xử lý hình ảnh: Ép cứng theo VehicleID từ bộ từ điển
+        let fileName = vehicleImageMap[v.vehicleId];
+        let carImage = fileName 
+            ? `../assets/img/car-show/ImageUrl/${fileName}`
             : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
-
         // Giá xe
+        
         const rawPrice = getMockPrice(v);
         let displayPrice = rawPrice;
         if (bookingType === 'HOURLY') {
@@ -610,10 +623,10 @@ window.viewCarDetail = async function(id) {
         if (result.success && result.data) {
             const v = result.data;
             
-            // Lấy bù hình ảnh từ mảng cache vì API findById không trả về imagePath
-            const cachedCar = globalVehicles.find(car => car.vehicleId == id);
-            let modalImage = (cachedCar && cachedCar.imagePath && cachedCar.imagePath.trim() !== '') 
-                ? cachedCar.imagePath 
+            // Xử lý hình ảnh Modal: Lấy trực tiếp theo ID từ bộ từ điển
+            let fileName = vehicleImageMap[id];
+            let modalImage = fileName 
+                ? `../assets/img/car-show/ImageUrl/${fileName}`
                 : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
             // Xử lý giá tiền dịch vụ cho modal
             const rawPrice = getMockPrice(v);
