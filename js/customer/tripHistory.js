@@ -145,15 +145,17 @@ function renderTripList(trips) {
         else if (trip.Brand && trip.Model) carName = `${trip.Brand} ${trip.Model}`;
         else if (trip.brand && trip.model) carName = `${trip.brand} ${trip.model}`;
 
-        const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || 0;
-        const pickup = trip.pickup || trip.PickupAddress || trip.pickupAddress || 'Đang chờ cập nhật';
-        const dropoff = trip.dropoff || trip.DropoffAddress || trip.dropoffAddress || 'Đang chờ cập nhật';
+        const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || parseInt(localStorage.getItem('currentDepositAmount')) || 0;
+        const pickup = trip.pickup || trip.PickupAddress || trip.pickupAddress || '--';
+        
+        // --- XỬ LÝ HIỂN THỊ ĐIỂM TRẢ & SỐ GIỜ/NGÀY ---
+        const bType = trip.bookingType || trip.BookingType || localStorage.getItem('bookingType') || 'DISTANCE';
+        const sHours = parseInt(localStorage.getItem('savedDurationHours')) || 1;
+        const sDays = parseInt(localStorage.getItem('savedDurationDays')) || 1;
 
-        // Xử lý chuỗi ngày tháng từ Database SQL (Từ 2026-06-25T... thành 25/06/2026)
-        let dateStr = trip.date || trip.DepartureTime || trip.departureTime || trip.CreatedAt || trip.createdAt || '--/--/----';
-        if (dateStr.includes('T') || (dateStr.includes('-') && dateStr.length >= 10)) {
-            dateStr = dateStr.substring(0, 10).split('-').reverse().join('/');
-        }
+        let dropoff = trip.dropoff || trip.DropoffAddress || trip.dropoffAddress || '--';
+        if (bType === 'HOURLY') dropoff = `Di chuyển nội đô (${sHours} giờ)`;
+        if (bType === 'DAILY') dropoff = `Di chuyển tự do (${sDays} ngày)`;
 
         // 4. XỬ LÝ BADGE TRẠNG THÁI
         const rawStatus = trip.status || trip.Status || "PENDING";
@@ -227,13 +229,27 @@ function viewTripDetail(bookingId) {
     
     const bId = trip.bookingId || trip.BookingID || trip.bookingID || "N/A";
     const pickup = trip.pickup || trip.PickupAddress || trip.pickupAddress || '--';
-    const dropoff = trip.dropoff || trip.DropoffAddress || trip.dropoffAddress || '--';
-    const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || 0;
+    
+    // --- LẤY DỮ LIỆU TỪ BỘ NHỚ LÀM DỰ PHÒNG ---
+    const bType = trip.bookingType || trip.BookingType || localStorage.getItem('bookingType') || 'DISTANCE';
+    const sHours = parseInt(localStorage.getItem('savedDurationHours')) || 1;
+    const sDays = parseInt(localStorage.getItem('savedDurationDays')) || 1;
+
+    let dropoffHTML = trip.dropoff || trip.DropoffAddress || trip.dropoffAddress || '--';
+    if (bType === 'HOURLY') {
+        dropoffHTML = `Di chuyển nội đô <span class="badge bg-primary ms-2">${sHours} Tiếng</span>`;
+    } else if (bType === 'DAILY') {
+        dropoffHTML = `Di chuyển tự do <span class="badge bg-success ms-2">${sDays} Ngày</span>`;
+    }
+
+    const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || parseInt(localStorage.getItem('currentDepositAmount')) || 0;
 
     document.getElementById('lblMainInfo').innerText = carName;
     document.getElementById('lblSubInfo').innerText = `Mã chuyến: #${bId}`;
     document.getElementById('lblPickupAddress').innerText = pickup;
-    document.getElementById('lblDropoffAddress').innerText = dropoff;
+    
+    // Dùng innerHTML để render được thẻ Badge màu sắc
+    document.getElementById('lblDropoffAddress').innerHTML = dropoffHTML;
     
     const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
     document.getElementById('lblBasePrice').innerText = fmtPrice;

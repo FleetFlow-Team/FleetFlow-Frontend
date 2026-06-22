@@ -1050,9 +1050,16 @@
             departureTime: departureTime
         };
 
-        if (bookingType === 'HOURLY') payload.durationHours = durationVal;
-        else if (bookingType === 'DAILY') payload.durationDays = durationVal;
-        else return; 
+
+        // BỔ SUNG LƯU LOCALSTORAGE ĐỂ CHUYỂN SANG HISTORY
+                if (bookingType === 'HOURLY') {
+                    payload.durationHours = durationVal;
+                    localStorage.setItem('savedDurationHours', durationVal);
+                } else {
+                    payload.durationDays = durationVal;
+                    localStorage.setItem('savedDurationDays', durationVal);
+                }
+                localStorage.setItem('savedDepartureTime', departureTime);
 
         try {
             const response = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
