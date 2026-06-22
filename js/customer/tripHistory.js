@@ -1,31 +1,4 @@
 // =====================================================================
-// 1. CẤU HÌNH MAP HÌNH ẢNH XE ĐỒNG BỘ TOÀN HỆ THỐNG
-// =====================================================================
-const vehicleImageMap = {
-    1: 'ToyotaVios4.jpg', 2: 'HondaCity4.jpg', 3: 'HyundaiAccent4.jpg', 4: 'MazdaMazda34.jpg', 5: 'KiaSoluto4.jpg',
-    6: 'ToyotaVios4.jpg', 7: 'HondaCity4.jpg', 8: 'HyundaiAccent4.jpg', 9: 'MazdaMazda34.jpg', 10: 'KiaSoluto4.jpg',
-    11: 'ToyotaVios4.jpg', 12: 'HondaCity4.jpg', 13: 'HyundaiAccent4.jpg', 14: 'MazdaMazda34.jpg', 15: 'ToyotaInnova7.jpg',
-    16: 'MitsubishiXpander7.jpg', 17: 'HondaCR-V7.jpg', 18: 'HyundaiCustin7.jpg', 19: 'KiaCarens7.jpg', 20: 'ToyotaInnova7.jpg',
-    21: 'MitsubishiXpander7.jpg', 22: 'HondaCR-V7.jpg', 23: 'HyundaiCustin7.jpg', 24: 'KiaCarens7.jpg', 25: 'ToyotaInnova7.jpg',
-    26: 'MitsubishiXpander7.jpg', 27: 'HondaCR-V7.jpg', 28: 'HyundaiCustin7.jpg', 29: 'KiaCarnival9.jpg', 30: 'HyundaiSolatiLimo9.jpg',
-    31: 'FordTourneo9.jpg', 32: 'KiaCarnival9.jpg', 33: 'HyundaiSolatiLimo9.jpg', 34: 'FordTourneo9.jpg', 35: 'KiaCarnival9.jpg',
-    36: 'HyundaiSolatiLimo9.jpg', 37: 'FordTransit16.jpg', 38: 'HyundaiSolati16.jpg', 39: 'MercedesSprinter16.jpg', 40: 'FordTransit16.jpg',
-    41: 'HyundaiSolati16.jpg', 42: 'MercedesSprinter16.jpg', 43: 'ThacoTB7929.jpg', 44: 'HyundaiCounty29.jpg', 45: 'SamcoFelix29.jpg',
-    46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
-};
-
-// Hàm tiện ích lấy đường dẫn ảnh chính xác từ ID xe
-function getCarImage(vehicleId) {
-    if (!vehicleId) return 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600'; // Fallback nếu API lỗi mất ID
-    
-    // Loại bỏ khoảng trắng hoặc ép kiểu về chuỗi để đảm bảo map chính xác
-    let fileName = vehicleImageMap[String(vehicleId).trim()];
-    return fileName 
-        ? `../../assets/img/car-show/ImageUrl/${fileName}`
-        : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
-}
-
-// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function() {
@@ -95,14 +68,11 @@ async function loadTripHistory() {
     const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
     
     try {
-        // GỌI API BACKEND THỰC TẾ (Mở comment khối này và xóa Mock Data khi ráp API)
-        /*
         const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/customer/${customerId}`);
         const result = await response.json();
         if(result.success && result.data) {
             globalTrips = result.data;
         }
-        */
         
         // DỮ LIỆU MẪU (Giả lập cả trường hợp DB SQL chuẩn hóa)
         globalTrips = [
@@ -132,14 +102,14 @@ function renderTripList(trips) {
     let html = '';
 
     trips.forEach(trip => {
-        // 1. BÓC TÁCH ID XE AN TOÀN (Bao cả trường hợp API trả về kiểu VehicleID hoa/thường)
+        // 1. BÓC TÁCH ID XE AN TOÀN
         const vId = trip.vehicleId || trip.VehicleID || trip.vehicleID || null;
         const bId = trip.bookingId || trip.BookingID || trip.bookingID || "N/A";
         
         // 2. LẤY ĐƯỜNG DẪN ẢNH TỪ BỘ TỪ ĐIỂN
         const carImgUrl = getCarImage(vId);
 
-        // 3. BÓC TÁCH DỮ LIỆU HIỂN THỊ AN TOÀN (Đề phòng API trả về null)
+        // 3. BÓC TÁCH DỮ LIỆU HIỂN THỊ AN TOÀN
         let carName = "Phương tiện FleetFlow";
         if (trip.carName) carName = trip.carName;
         else if (trip.Brand && trip.Model) carName = `${trip.Brand} ${trip.Model}`;
@@ -148,14 +118,27 @@ function renderTripList(trips) {
         const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || parseInt(localStorage.getItem('currentDepositAmount')) || 0;
         const pickup = trip.pickup || trip.PickupAddress || trip.pickupAddress || '--';
         
-        // --- XỬ LÝ HIỂN THỊ ĐIỂM TRẢ & SỐ GIỜ/NGÀY ---
-        const bType = trip.bookingType || trip.BookingType || localStorage.getItem('bookingType') || 'DISTANCE';
-        const sHours = parseInt(localStorage.getItem('savedDurationHours')) || 1;
-        const sDays = parseInt(localStorage.getItem('savedDurationDays')) || 1;
+        // --- SỬA LỖI 1 & 2: XỬ LÝ HOA/THƯỜNG VÀ HIỂN THỊ SỐ GIỜ/NGÀY ---
+        const bType = (trip.bookingType || trip.BookingType || localStorage.getItem('bookingType') || 'DISTANCE').toUpperCase();
+        
+        const sHours = trip.durationHours || trip.DurationHours || parseInt(localStorage.getItem('savedDurationHours')) || 1;
+        const sDays = trip.durationDays || trip.DurationDays || parseInt(localStorage.getItem('savedDurationDays')) || 1;
 
         let dropoff = trip.dropoff || trip.DropoffAddress || trip.dropoffAddress || '--';
         if (bType === 'HOURLY') dropoff = `Di chuyển nội đô (${sHours} giờ)`;
         if (bType === 'DAILY') dropoff = `Di chuyển tự do (${sDays} ngày)`;
+
+        // --- SỬA LỖI HIỂN THỊ NGÀY THÁNG BỊ UNDEFINED ---
+        let displayDate = "Chưa xác định";
+        const rawDate = trip.date || trip.DepartureTime || trip.departureTime || trip.createdAt;
+        if (rawDate) {
+            const d = new Date(rawDate);
+            if (!isNaN(d)) {
+                 displayDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}`;
+            } else {
+                 displayDate = rawDate; 
+            }
+        }
 
         // 4. XỬ LÝ BADGE TRẠNG THÁI
         const rawStatus = trip.status || trip.Status || "PENDING";
@@ -171,10 +154,9 @@ function renderTripList(trips) {
             statusClass = "status-cancelled-card"; badgeClass = "badge-cancelled"; statusText = "Đã hủy"; 
         }
 
-        // Format tiền tệ VNĐ
         const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
 
-        // Gắn sự kiện `onerror` vào ảnh để tránh lỗi biểu tượng ảnh vỡ nếu DB trả về ID lạ
+        // GẮN CHUỖI HTML ĐỘNG (Đã cập nhật biến displayDate)
         html += `
         <div class="trip-item-card glass-card-30 ${statusClass}" onclick="viewTripDetail(${bId})">
             <div class="status-indicator"></div>
@@ -183,8 +165,8 @@ function renderTripList(trips) {
                 
                 <div class="trip-info-core">
                     <div class="card-meta">
-                        <span><i class="fa-regular fa-calendar me-1 text-success"></i> ${dateStr}</span>
-                        <span> ${bId}</span>
+                        <span><i class="fa-regular fa-calendar me-1 text-success"></i> ${displayDate}</span>
+                        <span> MÃ: #${bId}</span>
                     </div>
                     <div class="location-flow">
                         ${pickup} <i class="fa-solid fa-arrow-right text-success" style="font-size: 0.85rem;"></i> ${dropoff}
@@ -206,57 +188,89 @@ function renderTripList(trips) {
 // =====================================================================
 // 4. LOGIC XEM CHI TIẾT & CHUYỂN TAB
 // =====================================================================
-function viewTripDetail(bookingId) {
-    // Tìm kiếm thông minh dù ID là String hay Number, camelCase hay PascalCase
-    const trip = globalTrips.find(t => (t.bookingId || t.BookingID || t.bookingID) == bookingId);
-    if (!trip) return;
-
-    // 1. Hiệu ứng chuyển màn hình 
-    document.getElementById('historyViewSection').classList.remove('view-active');
-    document.getElementById('detailsViewSection').classList.add('view-active');
-
-    // 2. GẮN HÌNH ẢNH XE VÀO MÀN CHI TIẾT AN TOÀN
-    const detailImg = document.getElementById('detailCarImage');
-    if (detailImg) {
-        const vId = trip.vehicleId || trip.VehicleID || trip.vehicleID || null;
-        detailImg.src = getCarImage(vId); 
-    }
-
-    // 3. Đổ Text Data an toàn (Tránh in ra undefined)
+async function viewTripDetail(bookingId) {
+    // 1. Tìm thông tin sơ bộ trong danh sách trước để lấy tên xe (Vì API chi tiết gốc chỉ trả về vehicleId)
+    const summaryTrip = globalTrips.find(t => (t.bookingId || t.BookingID || t.bookingID) == bookingId);
     let carName = "Phương tiện FleetFlow";
-    if (trip.carName) carName = trip.carName;
-    else if (trip.Brand && trip.Model) carName = `${trip.Brand} ${trip.Model}`;
-    
-    const bId = trip.bookingId || trip.BookingID || trip.bookingID || "N/A";
-    const pickup = trip.pickup || trip.PickupAddress || trip.pickupAddress || '--';
-    
-    // --- LẤY DỮ LIỆU TỪ BỘ NHỚ LÀM DỰ PHÒNG ---
-    const bType = trip.bookingType || trip.BookingType || localStorage.getItem('bookingType') || 'DISTANCE';
-    const sHours = parseInt(localStorage.getItem('savedDurationHours')) || 1;
-    const sDays = parseInt(localStorage.getItem('savedDurationDays')) || 1;
-
-    let dropoffHTML = trip.dropoff || trip.DropoffAddress || trip.dropoffAddress || '--';
-    if (bType === 'HOURLY') {
-        dropoffHTML = `Di chuyển nội đô <span class="badge bg-primary ms-2">${sHours} Tiếng</span>`;
-    } else if (bType === 'DAILY') {
-        dropoffHTML = `Di chuyển tự do <span class="badge bg-success ms-2">${sDays} Ngày</span>`;
+    if (summaryTrip) {
+        if (summaryTrip.carName) carName = summaryTrip.carName;
+        else if (summaryTrip.brand && summaryTrip.model) carName = `${summaryTrip.brand} ${summaryTrip.model}`;
+        else if (summaryTrip.Brand && summaryTrip.Model) carName = `${summaryTrip.Brand} ${summaryTrip.Model}`;
     }
 
-    const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || parseInt(localStorage.getItem('currentDepositAmount')) || 0;
+    try {
+        // 2. Gọi API thực tế từ BookingController để lấy đối tượng chi tiết (bao gồm cả khối detail)
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}`);
+        if (!response.ok) {
+            throw new Error("Không thể kết nối đến máy chủ để lấy thông tin chi tiết.");
+        }
+        
+        // Nhận Object Booking trọn vẹn từ Backend
+        const trip = await response.json();
 
-    document.getElementById('lblMainInfo').innerText = carName;
-    document.getElementById('lblSubInfo').innerText = `Mã chuyến: #${bId}`;
-    document.getElementById('lblPickupAddress').innerText = pickup;
-    
-    // Dùng innerHTML để render được thẻ Badge màu sắc
-    document.getElementById('lblDropoffAddress').innerHTML = dropoffHTML;
-    
-    const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
-    document.getElementById('lblBasePrice').innerText = fmtPrice;
-    document.getElementById('lblTotalAmount').innerText = fmtPrice;
-    
-    // Cuộn lên đầu trang
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+        // 3. Kích hoạt hiệu ứng ẩn/hiển thị màn hình chi tiết
+        document.getElementById('historyViewSection').classList.remove('view-active');
+        document.getElementById('detailsViewSection').classList.add('view-active');
+
+        // 4. Đồng bộ hình ảnh xe dựa vào vehicleId thực tế của chuyến đi
+        const detailImg = document.getElementById('detailCarImage');
+        if (detailImg) {
+            detailImg.src = getCarImage(trip.vehicleId); 
+        }
+
+        // 5. Đổ dữ liệu định danh lên giao diện
+        document.getElementById('lblMainInfo').innerText = carName;
+        document.getElementById('lblSubInfo').innerText = `Mã chuyến: #${trip.bookingId}`;
+
+        // 6. Khai thác dữ liệu từ khối cấu trúc lồng nhau "detail" của Backend
+        if (trip.detail) {
+            // Định dạng lại giờ đón khách hiển thị trên Timeline
+            if (trip.detail.departureTime) {
+                const depDate = new Date(trip.detail.departureTime);
+                document.getElementById('lblDepartureTime').innerText = !isNaN(depDate) 
+                    ? `${depDate.getHours().toString().padStart(2, '0')}:${depDate.getMinutes().toString().padStart(2, '0')}`
+                    : trip.detail.departureTime;
+            }
+
+            // Gắn địa chỉ đón khách thực tế
+            document.getElementById('lblPickupAddress').innerText = trip.detail.pickupAddress || '--';
+            
+            // Phân tích hiển thị điểm trả khách theo phương thức đặt xe (bookingType)
+            const bType = (trip.bookingType || 'DISTANCE').toUpperCase();
+            let dropoffHTML = trip.detail.dropoffAddress || '--';
+            
+            if (bType === 'HOURLY') {
+                dropoffHTML = `Di chuyển nội đô <span class="badge bg-primary ms-2">Theo Giờ</span>`;
+            } else if (bType === 'DAILY') {
+                dropoffHTML = `Di chuyển tự do <span class="badge bg-success ms-2">Theo Ngày</span>`;
+            } else {
+                // Nếu là hình thức tính theo khoảng cách, kiểm tra lộ trình khứ hồi công tác
+                const tDir = (trip.tripDirection || '').toUpperCase();
+                if (tDir === 'ROUND_TRIP') {
+                    dropoffHTML += `<br><span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 mt-2"><i class="fa-solid fa-arrows-turn-right me-1"></i> Chuyến Khứ Hồi</span>`;
+                }
+            }
+            document.getElementById('lblDropoffAddress').innerHTML = dropoffHTML;
+        }
+
+        // 7. Đồng bộ hiển thị hóa đơn tài chính (Lấy giá trị thực tế của chuyến đi)
+        const price = summaryTrip ? (summaryTrip.price || summaryTrip.TotalAmount || summaryTrip.estimatedTotal || 0) : 0;
+        const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
+        document.getElementById('lblBasePrice').innerText = fmtPrice;
+        document.getElementById('lblTotalAmount').innerText = fmtPrice;
+        
+        // 8. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (error) {
+        console.error("Lỗi xử lý luồng hiển thị chi tiết hành trình:", error);
+        // Tận dụng SweetAlert2 đã được import trong HTML của bạn để thông báo lỗi trực quan
+        Swal.fire({
+            icon: 'error',
+            title: 'Tải dữ liệu thất bại',
+            text: 'Hệ thống không thể truy xuất thông tin chi tiết lộ trình vào lúc này.'
+        });
+    }
 }
 
 function navigateBackToHistory() {
