@@ -1,11 +1,13 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FleetFlow - Thanh toán</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <link rel="icon" type="image/png" href="../../assets/img/FleetFlow - Logo.png" />
@@ -13,429 +15,663 @@
     <link rel="stylesheet" href="../../style/base.css" />
 
     <style>
-      /* =========================================
+        /* =========================================
          1. NỀN TRANG (BACKGROUND GRADIENT)
       ========================================= */
-      body {
-        font-family: "Inter", sans-serif;
-        color: var(--text-color);
-        min-height: 100vh;
-      }
-      /* =========================================
+        body {
+            font-family: "Inter", sans-serif;
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* =========================================
          2. BỘ FIX VIỀN LIQUID (BUFFER & CLIP 50px) 
       ========================================= */
-      .payment-card, .btn-submit, .btn-back {
-          border-radius: 50px;
-          border: 1px solid rgba(255, 255, 255, 0.5) !important;
-          overflow: visible;
-          position: relative;
-          z-index: 1;
-      }
+        .payment-card,
+        .btn-submit,
+        .btn-back {
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.5) !important;
+            overflow: visible;
+            position: relative;
+            z-index: 1;
+        }
 
-      .custom-navbar::after, .payment-card::after, .btn-submit::after, .btn-back::after {
-          content: ''; position: absolute;
-          inset: -12px !important; z-index: -1;
-          background: rgba(255, 255, 255, 0.2);
-          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-          filter: url(#liquid-distortion);
-          clip-path: inset(12px round 50px) !important;
-          transform: translateZ(0); will-change: transform, filter;
-          transition: all 0.4s ease;
-          border-radius: inherit; pointer-events: none;
-      }
+        .custom-navbar::after,
+        .payment-card::after,
+        .btn-submit::after,
+        .btn-back::after {
+            content: '';
+            position: absolute;
+            inset: -12px !important;
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            filter: url(#liquid-distortion);
+            clip-path: inset(12px round 50px) !important;
+            transform: translateZ(0);
+            will-change: transform, filter;
+            transition: all 0.4s ease;
+            border-radius: inherit;
+            pointer-events: none;
+        }
 
-      .custom-navbar::before, .payment-card::before, .btn-submit::before, .btn-back::before {
-          content: ''; position: absolute; inset: 0; z-index: -1;
-          border-radius: inherit; pointer-events: none;
-          box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.6), 
-                      inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
-          transition: all 0.4s ease;
-      }
-
-      .glass-panel > *, .custom-navbar > *, .payment-card > *, .btn-submit > *, .btn-back > * {
-          position: relative;
-          z-index: 2;
-      }
-
-    .glass-panel {
-    border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0) !important;
-    position: relative; 
-    isolation: isolate; 
-    transform-style: preserve-3d;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0,0,0,0.05); 
-    overflow: visible; 
-}
-
-/* Lớp kính lỏng (Liquid Layer) trào ra ngoài 12px */
-.glass-panel::after {
-    content: ''; 
-    position: absolute; 
-    inset: -12px !important; 
-    z-index: -1; 
-    backdrop-filter: blur(16px); 
-    -webkit-backdrop-filter: blur(16px);
-    filter: url(#liquid-distortion); 
-    clip-path: inset(12px round 50px) !important;
-    transform: translateZ(0); 
-    will-change: transform, filter;
-}
-
-/* Lớp bóng đổ 3D bên trong */
-.glass-panel::before {
-    content: ''; 
-    position: absolute; 
-    inset: 0; 
-    z-index: 2; 
-    border-radius: inherit; 
-    pointer-events: none;
-    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), 
+        .custom-navbar::before,
+        .payment-card::before,
+        .btn-submit::before,
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.6),
                 inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
-}
-      
-      .navbar-slogan { 
+            transition: all 0.4s ease;
+        }
 
-        color: var(--color-2); font-size: 1.2rem; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 1px; pointer-events: none;
-      }
+        .glass-panel>*,
+        .custom-navbar>*,
+        .payment-card>*,
+        .btn-submit>*,
+        .btn-back>* {
+            position: relative;
+            z-index: 2;
+        }
 
-      /* Nút Quay Lại Liquid */
-      .btn-back {
-        display: inline-flex; align-items: center; gap: 8px;
-        padding: 10px 24px; font-weight: 700; color: var(--color-dark);
-        margin-left: 20px; border: 1px solid rgba(255, 255, 255, 0.6) !important;
-        background: rgba(255, 255, 255, 0.4); text-decoration: none;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        transition: transform 0.4s var(--liquid-easing);
-      }
-      .btn-back::after { background: rgba(255, 255, 255, 0.5); }
-      .btn-back:hover { 
-          transform: translateX(-10px); color: var(--color-1); 
-          border-color: var(--color-1) !important; 
-      }
+        .glass-panel {
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0) !important;
+            position: relative;
+            isolation: isolate;
+            transform-style: preserve-3d;
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0, 0, 0, 0.05);
+            overflow: visible;
+        }
 
-      /* =========================================
+        /* Lớp kính lỏng (Liquid Layer) trào ra ngoài 12px */
+        .glass-panel::after {
+            content: '';
+            position: absolute;
+            inset: -12px !important;
+            z-index: -1;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            filter: url(#liquid-distortion);
+            clip-path: inset(12px round 50px) !important;
+            transform: translateZ(0);
+            will-change: transform, filter;
+        }
+
+        /* Lớp bóng đổ 3D bên trong */
+        .glass-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 2;
+            border-radius: inherit;
+            pointer-events: none;
+            box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5),
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .navbar-slogan {
+
+            color: var(--color-2);
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            pointer-events: none;
+        }
+
+        /* Nút Quay Lại Liquid */
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            font-weight: 700;
+            color: var(--color-dark);
+            margin-left: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            background: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.4s var(--liquid-easing);
+        }
+
+        .btn-back::after {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-back:hover {
+            transform: translateX(-10px);
+            color: var(--color-1);
+            border-color: var(--color-1) !important;
+        }
+
+        /* =========================================
          4. GIAO DIỆN FORM & INPUTS (LIQUID)
       ========================================= */
-      .section-title { font-size: 1.3rem; font-weight: 800; margin-bottom: 24px; color: var(--color-dark); display: flex; align-items: center; gap: 10px;}
-      
-      .custom-input {
-          border-radius: 30px !important;
-          background: rgba(255, 255, 255, 0.5) !important;
-          border: 1px solid rgba(255, 255, 255, 0.6) !important;
-          padding: 15px 20px; box-shadow: inset 1px 1px 3px rgba(0,0,0,0.02) !important;
-          transition: all 0.3s ease;
-      }
-      .custom-input:focus {
-          background: rgba(255, 255, 255, 0.8) !important;
-          box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15) !important;
-          border-color: var(--color-1) !important;
-      }
-      .form-floating label { margin-left: 10px; color: #64748b; }
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-      /* Payment Cards */
-      .payment-options { display: flex; flex-direction: column; gap: 16px; }
-      .payment-card {
-        padding: 18px 24px; cursor: pointer; display: flex; align-items: center; justify-content: space-between;
-        background: rgba(255, 255, 255, 0.3); transition: transform 0.4s var(--liquid-easing);
-        margin: 0;
-      }
-      .payment-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
-      .payment-card.active { 
-          border-color: var(--color-1) !important; 
-          background: rgba(255, 255, 255, 0.7); 
-      }
-      .payment-card.active::before { box-shadow: inset 0 0 0 2px var(--color-1); }
-      .pay-logo { height: 28px; object-fit: contain; }
+        .custom-input {
+            border-radius: 30px !important;
+            background: rgba(255, 255, 255, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            padding: 15px 20px;
+            box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.02) !important;
+            transition: all 0.3s ease;
+        }
 
-      .custom-radio { width: 22px; height: 22px; border: 2px solid #94a3b8; border-radius: 50%; margin-right: 15px; position: relative; transition: all 0.2s; }
-      .payment-card.active .custom-radio { border-color: var(--color-1); }
-      .payment-card.active .custom-radio::after {
-        content: ""; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-        width: 12px; height: 12px; background-color: var(--color-1); border-radius: 50%;
-      }
+        .custom-input:focus {
+            background: rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15) !important;
+            border-color: var(--color-1) !important;
+        }
 
-      /* =========================================
+        .form-floating label {
+            margin-left: 10px;
+            color: #64748b;
+        }
+
+        /* Payment Cards */
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .payment-card {
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.3);
+            transition: transform 0.4s var(--liquid-easing);
+            margin: 0;
+        }
+
+        .payment-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .payment-card.active {
+            border-color: var(--color-1) !important;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .payment-card.active::before {
+            box-shadow: inset 0 0 0 2px var(--color-1);
+        }
+
+        .pay-logo {
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .custom-radio {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #94a3b8;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            transition: all 0.2s;
+        }
+
+        .payment-card.active .custom-radio {
+            border-color: var(--color-1);
+        }
+
+        .payment-card.active .custom-radio::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background-color: var(--color-1);
+            border-radius: 50%;
+        }
+
+        /* =========================================
          5. ORDER SUMMARY & NÚT SUBMIT
       ========================================= */
-      .sticky-summary { position: sticky; top: 100px; }
-      
-      .summary-car { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px dashed rgba(0,0,0,0.1); }
-      .summary-car img { width: 100px; height: 65px; object-fit: cover; border-radius: 15px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .sticky-summary {
+            position: sticky;
+            top: 100px;
+        }
 
-      .breakdown-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 1rem; color: #475569; align-items: center; }
-      .breakdown-row.discount { color: var(--color-1); display: none; }
-      .breakdown-total { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding-top: 20px; border-top: 1px dashed rgba(0,0,0,0.1); }
-      .breakdown-total .label { font-size: 1.15rem; font-weight: 800; color: var(--color-dark); }
-      .breakdown-total .amount { font-size: 1.6rem; font-weight: 800; color: var(--color-1); }
+        .summary-car {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
 
-      /* Nút Thanh Toán (Green Liquid Effect) */
-      /* =========================================
+        .summary-car img {
+            width: 100px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 1rem;
+            color: #475569;
+            align-items: center;
+        }
+
+        .breakdown-row.discount {
+            color: var(--color-1);
+            display: none;
+        }
+
+        .breakdown-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .breakdown-total .label {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--color-dark);
+        }
+
+        .breakdown-total .amount {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--color-1);
+        }
+
+        /* Nút Thanh Toán (Green Liquid Effect) */
+        /* =========================================
          Nút Thanh Toán (Green Premium Glass)
       ========================================= */
-      .btn-submit {
-        width: 100%; 
-        padding: 18px; 
-        margin-top: 30px;
-        background: rgba(0, 177, 79, 0.9); /* Nền xanh lục trong suốt nhẹ */
-        color: white; 
-        font-size: 1.2rem; 
-        font-weight: 800;
-        border: 1px solid rgba(255, 255, 255, 0.5);
-        border-radius: 50px; /* Bo góc mượt mà tự nhiên không cần clip-path */
-        display: flex; align-items: center; justify-content: center;
-        
-        /* Hiệu ứng kính và bóng đổ nổi */
-        backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 8px 20px rgba(0, 177, 79, 0.25),
-                    inset 2px 2px 5px 0 rgba(255, 255, 255, 0.4), 
-                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
-        
-        transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease, background 0.4s ease;
-        cursor: pointer;
-      }
-      
-      .btn-submit:hover:not(:disabled) {
-        transform: perspective(500px) translateZ(20px) translateY(-5px); 
-        box-shadow: 0 15px 30px rgba(0, 177, 79, 0.4),
-                    inset 3px 3px 6px 0 rgba(255, 255, 255, 0.6), 
-                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
-        background: rgba(0, 177, 79, 1); /* Sáng hẳn lên khi hover */
-        color: white; 
-      }
-      
-      .btn-submit:disabled { 
-        filter: grayscale(100%); opacity: 0.7; transform: none; cursor: not-allowed; 
-      }
+        .btn-submit {
+            width: 100%;
+            padding: 18px;
+            margin-top: 30px;
+            background: rgba(0, 177, 79, 0.9);
+            /* Nền xanh lục trong suốt nhẹ */
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50px;
+            /* Bo góc mượt mà tự nhiên không cần clip-path */
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-      /* Voucher Box */
-      .voucher-box { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px dashed rgba(0,0,0,0.1); }
-     .btn-apply {
-        background: var(--color-3); /* Dùng biến màu vàng #ffde59 có sẵn của hệ thống */
-        color: #333333; /* Chữ màu tối để nổi bật trên nền vàng */
-        border: 1px solid rgba(255, 255, 255, 0.8);
-        border-radius: 30px; 
-        padding: 0 24px; 
-        font-weight: 800; 
-        
-        /* Đổ bóng 3D: Viền sáng bên trên, viền tối bên dưới và hào quang vàng hắt ra ngoài */
-        box-shadow: 0 4px 10px rgba(255, 222, 89, 0.3),
-                    inset 2px 2px 5px 0 rgba(255, 255, 255, 0.7), 
-                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
-                    
-        transition: transform 0.4s var(--liquid-easing), box-shadow 0.4s ease, background 0.3s;
-        cursor: pointer;
-      }
+            /* Hiệu ứng kính và bóng đổ nổi */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 8px 20px rgba(0, 177, 79, 0.25),
+                inset 2px 2px 5px 0 rgba(255, 255, 255, 0.4),
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
 
-      /* Hiệu ứng Hover - Sáng lên và nảy nhẹ */
-      .btn-apply:hover { 
-        background: #ffeb85; /* Vàng sáng rực rỡ hơn khi trỏ chuột */
-        color: #111111;
-        transform: translateY(-3px); 
-        box-shadow: 0 8px 18px rgba(255, 222, 89, 0.5),
-                    inset 3px 3px 6px 0 rgba(255, 255, 255, 0.9), 
-                    inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
-      }
+            transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease, background 0.4s ease;
+            cursor: pointer;
+        }
 
-      /* Hiệu ứng Active - Lún xuống khi click */
-      .btn-apply:active {
-        transform: translateY(1px);
-        box-shadow: 0 2px 5px rgba(255, 222, 89, 0.3),
-                    inset 2px 2px 5px 0 rgba(0, 0, 0, 0.05);
-      }
-      .trust-badges { display: flex; align-items: center; gap: 8px; justify-content: center; margin-top: 20px; color: #64748b; font-size: 0.9rem; font-weight: 500; }
+        .btn-submit:hover:not(:disabled) {
+            transform: perspective(500px) translateZ(20px) translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 177, 79, 0.4),
+                inset 3px 3px 6px 0 rgba(255, 255, 255, 0.6),
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.1);
+            background: rgba(0, 177, 79, 1);
+            /* Sáng hẳn lên khi hover */
+            color: white;
+        }
 
-      /* Responsive */
-      @media (max-width: 991px) {
-        .navbar-slogan { display: none; } /* Ẩn slogan trên đt để tiết kiệm chỗ */
-        .glass-panel { padding: 30px 20px !important; }
-      }
+        .btn-submit:disabled {
+            filter: grayscale(100%);
+            opacity: 0.7;
+            transform: none;
+            cursor: not-allowed;
+        }
 
-      /* =========================================
+        /* Voucher Box */
+        .voucher-box {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-apply {
+            background: var(--color-3);
+            /* Dùng biến màu vàng #ffde59 có sẵn của hệ thống */
+            color: #333333;
+            /* Chữ màu tối để nổi bật trên nền vàng */
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 30px;
+            padding: 0 24px;
+            font-weight: 800;
+
+            /* Đổ bóng 3D: Viền sáng bên trên, viền tối bên dưới và hào quang vàng hắt ra ngoài */
+            box-shadow: 0 4px 10px rgba(255, 222, 89, 0.3),
+                inset 2px 2px 5px 0 rgba(255, 255, 255, 0.7),
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+
+            transition: transform 0.4s var(--liquid-easing), box-shadow 0.4s ease, background 0.3s;
+            cursor: pointer;
+        }
+
+        /* Hiệu ứng Hover - Sáng lên và nảy nhẹ */
+        .btn-apply:hover {
+            background: #ffeb85;
+            /* Vàng sáng rực rỡ hơn khi trỏ chuột */
+            color: #111111;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 18px rgba(255, 222, 89, 0.5),
+                inset 3px 3px 6px 0 rgba(255, 255, 255, 0.9),
+                inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        /* Hiệu ứng Active - Lún xuống khi click */
+        .btn-apply:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 5px rgba(255, 222, 89, 0.3),
+                inset 2px 2px 5px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .trust-badges {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 20px;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 991px) {
+            .navbar-slogan {
+                display: none;
+            }
+
+            /* Ẩn slogan trên đt để tiết kiệm chỗ */
+            .glass-panel {
+                padding: 30px 20px !important;
+            }
+        }
+
+        /* =========================================
    4. GIAO DIỆN FORM & INPUTS (PREMIUM GLASS)
 ========================================= */
-.section-title { 
-    font-size: 1.3rem; 
-    font-weight: 800; 
-    margin-bottom: 24px; 
-    color: var(--color-dark); 
-    display: flex; 
-    align-items: center; 
-    gap: 10px;
-}
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--color-dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-.custom-input {
-    border-radius: 16px !important; /* Bo góc mượt thay vì tròn xoe */
-    background: rgba(255, 255, 255, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    padding: 15px 20px; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
-}
+        .custom-input {
+            border-radius: 16px !important;
+            /* Bo góc mượt thay vì tròn xoe */
+            background: rgba(255, 255, 255, 0.5) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
 
-.custom-input:focus {
-    background: rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15), 
+        .custom-input:focus {
+            background: rgba(255, 255, 255, 0.9) !important;
+            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15),
                 0 4px 15px rgba(0, 0, 0, 0.05) !important;
-    border-color: var(--color-1) !important;
-    transform: translateY(-2px);
-}
+            border-color: var(--color-1) !important;
+            transform: translateY(-2px);
+        }
 
-.form-floating label { 
-    margin-left: 10px; 
-    color: #64748b; 
-    font-weight: 500;
-}
+        .form-floating label {
+            margin-left: 10px;
+            color: #64748b;
+            font-weight: 500;
+        }
 
-/* Chỉnh lại input group của Ngày giờ */
-.glass-input-group .input-group-text,
-.glass-input-group .form-control {
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(10px);
-}
-.glass-input-group .input-group-text:first-child {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right: none;
-}
-.glass-input-group .form-control {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
+        /* Chỉnh lại input group của Ngày giờ */
+        .glass-input-group .input-group-text,
+        .glass-input-group .form-control {
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
 
-/* Payment Cards */
-.payment-options { display: flex; flex-direction: column; gap: 16px; }
+        .glass-input-group .input-group-text:first-child {
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+            border-right: none;
+        }
 
-.payment-card {
-    padding: 18px 24px; 
-    cursor: pointer; 
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between;
-    background: rgba(255, 255, 255, 0.4); 
-    border: 1px solid rgba(255, 255, 255, 0.6) !important;
-    border-radius: 16px !important;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin: 0;
-    /* Ghi đè xóa hiệu ứng lỏng ở thẻ nhỏ để giao diện sạch hơn */
-}
-.payment-card::after, .payment-card::before { display: none !important; }
+        .glass-input-group .form-control {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
 
-.payment-card:hover { 
-    transform: translateY(-3px); 
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05); 
-    background: rgba(255, 255, 255, 0.6);
-}
+        /* Payment Cards */
+        .payment-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
 
-.payment-card.active { 
-    border-color: var(--color-1) !important; 
-    background: rgba(255, 255, 255, 0.85); 
-    box-shadow: 0 8px 25px rgba(0, 177, 79, 0.1);
-}
+        .payment-card {
+            padding: 18px 24px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 16px !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            /* Ghi đè xóa hiệu ứng lỏng ở thẻ nhỏ để giao diện sạch hơn */
+        }
 
-.pay-logo { height: 28px; object-fit: contain; }
+        .payment-card::after,
+        .payment-card::before {
+            display: none !important;
+        }
 
-.custom-radio { 
-    width: 24px; 
-    height: 24px; 
-    border: 2px solid #cbd5e1; 
-    border-radius: 50%; 
-    margin-right: 15px; 
-    position: relative; 
-    transition: all 0.3s ease; 
-}
-.payment-card.active .custom-radio { border-color: var(--color-1); }
-.payment-card.active .custom-radio::after {
-    content: ""; 
-    position: absolute; top: 50%; left: 50%; 
-    transform: translate(-50%, -50%) scale(1);
-    width: 12px; height: 12px; 
-    background-color: var(--color-1); 
-    border-radius: 50%;
-    animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
+        .payment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+            background: rgba(255, 255, 255, 0.6);
+        }
 
-/* =========================================
+        .payment-card.active {
+            border-color: var(--color-1) !important;
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 8px 25px rgba(0, 177, 79, 0.1);
+        }
+
+        .pay-logo {
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .custom-radio {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .payment-card.active .custom-radio {
+            border-color: var(--color-1);
+        }
+
+        .payment-card.active .custom-radio::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            width: 12px;
+            height: 12px;
+            background-color: var(--color-1);
+            border-radius: 50%;
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* =========================================
    Khối Hiển Thị Tiền Cọc (Deposit Box)
 ========================================= */
-.deposit-box {
-    background: rgba(165, 252, 204, 0.489); /* Nền xanh lục cực nhạt, tiệp màu thương hiệu */
-    border: 1px solid rgba(0, 177, 79, 0.2); /* Viền xanh trong suốt */
-    border-radius: 16px; /* Đồng bộ góc bo 16px với form */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.5); /* Tạo độ bóng bẩy nhẹ */
-}
+        .deposit-box {
+            background: rgba(165, 252, 204, 0.489);
+            /* Nền xanh lục cực nhạt, tiệp màu thương hiệu */
+            border: 1px solid rgba(0, 177, 79, 0.2);
+            /* Viền xanh trong suốt */
+            border-radius: 16px;
+            /* Đồng bộ góc bo 16px với form */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.5);
+            /* Tạo độ bóng bẩy nhẹ */
+        }
 
-.deposit-box .deposit-label {
-    color: #475569; /* Chữ xám thanh lịch, dễ đọc trên nền sáng */
-    font-size: 1.05rem;
-}
+        .deposit-box .deposit-label {
+            color: #475569;
+            /* Chữ xám thanh lịch, dễ đọc trên nền sáng */
+            font-size: 1.05rem;
+        }
 
-.deposit-box .deposit-label i {
-    color: var(--color-1, #00B14F);
-}
+        .deposit-box .deposit-label i {
+            color: var(--color-1, #00B14F);
+        }
 
-.deposit-box .deposit-amount {
-    color: var(--color-1, #00B14F); /* Xanh chủ đạo */
-    text-shadow: 0 4px 15px rgba(0, 177, 79, 0.2); /* Phát sáng nhẹ nhàng */
-    letter-spacing: -0.5px;
-}
+        .deposit-box .deposit-amount {
+            color: var(--color-1, #00B14F);
+            /* Xanh chủ đạo */
+            text-shadow: 0 4px 15px rgba(0, 177, 79, 0.2);
+            /* Phát sáng nhẹ nhàng */
+            letter-spacing: -0.5px;
+        }
 
-@keyframes popIn {
-    0% { transform: translate(-50%, -50%) scale(0); }
-    100% { transform: translate(-50%, -50%) scale(1); }
-}
+        @keyframes popIn {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
 
-/* =========================================
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        /* =========================================
    5. ORDER SUMMARY & NÚT SUBMIT
 ========================================= */
-.sticky-summary { position: sticky; top: 100px; }
+        .sticky-summary {
+            position: sticky;
+            top: 100px;
+        }
 
-.summary-car { 
-    display: flex; align-items: center; gap: 16px; 
-    margin-bottom: 24px; padding-bottom: 24px; 
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06); 
-}
-.summary-car img { 
-    width: 110px; height: 75px; 
-    object-fit: cover; 
-    border-radius: 12px; 
-    border: 1px solid rgba(255,255,255,0.8); 
-    box-shadow: 0 8px 16px rgba(0,0,0,0.08); 
-}
+        .summary-car {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
 
-.breakdown-row { 
-    display: flex; justify-content: space-between; 
-    margin-bottom: 14px; font-size: 1.05rem; 
-    color: #475569; align-items: center; 
-}
-.breakdown-row.discount { color: var(--color-1); display: none; }
+        .summary-car img {
+            width: 110px;
+            height: 75px;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        }
 
-.breakdown-total { 
-    display: flex; justify-content: space-between; align-items: center; 
-    margin-top: 24px; padding-top: 24px; 
-    border-top: 1px solid rgba(0, 0, 0, 0.06); 
-}
-.breakdown-total .label { font-size: 1.2rem; font-weight: 800; color: var(--color-dark); }
-.breakdown-total .amount { font-size: 1.8rem; font-weight: 800; color: var(--color-1); }
+        .breakdown-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            font-size: 1.05rem;
+            color: #475569;
+            align-items: center;
+        }
 
-/* Voucher Box */
-.voucher-box { 
-    margin-bottom: 24px; padding-bottom: 24px; 
-    border-bottom: 1px solid rgba(0, 0, 0, 0.06); 
-}
+        .breakdown-row.discount {
+            color: var(--color-1);
+            display: none;
+        }
+
+        .breakdown-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .breakdown-total .label {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--color-dark);
+        }
+
+        .breakdown-total .amount {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--color-1);
+        }
+
+        /* Voucher Box */
+        .voucher-box {
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
 
 
-      @media (max-width: 1199.98px) {
-            
+        @media (max-width: 1199.98px) {
+
             /* --- A. THANH ĐIỀU HƯỚNG ĐÁY (BOTTOM NAV iOS) --- */
             .mobile-bottom-nav {
                 position: fixed;
@@ -451,44 +687,70 @@
                 border-radius: 50px;
                 z-index: 9999;
                 isolation: isolate;
-                
+
                 background: rgba(255, 255, 255, 0.65);
                 backdrop-filter: blur(25px);
                 -webkit-backdrop-filter: blur(25px);
                 border: 1px solid rgba(255, 255, 255, 0.8);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
-                            inset 1px 1px 3px rgba(255, 255, 255, 1);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2),
+                    inset 1px 1px 3px rgba(255, 255, 255, 1);
             }
 
             .mobile-bottom-nav::after {
-                content: ''; position: absolute; inset: -8px; z-index: -1;
-                backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-                filter: url(#liquid-distortion); clip-path: inset(8px round 50px);
-                background: transparent; border-radius: 60px;
+                content: '';
+                position: absolute;
+                inset: -8px;
+                z-index: -1;
+                backdrop-filter: blur(15px);
+                -webkit-backdrop-filter: blur(15px);
+                filter: url(#liquid-distortion);
+                clip-path: inset(8px round 50px);
+                background: transparent;
+                border-radius: 60px;
             }
 
             .mobile-bottom-nav .nav-link-center {
-                display: flex; flex-direction: column; justify-content: center; align-items: center;
-                padding: 8px 12px; width: auto; gap: 5px;
-                background: transparent; color: #64748b; border-radius: 20px;
-                transition: all 0.3s ease; text-decoration: none;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                padding: 8px 12px;
+                width: auto;
+                gap: 5px;
+                background: transparent;
+                color: #64748b;
+                border-radius: 20px;
+                transition: all 0.3s ease;
+                text-decoration: none;
             }
 
-            .mobile-bottom-nav .nav-link-center i { font-size: 1.3rem; }
-            .mobile-bottom-nav .nav-link-center .nav-text { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+            .mobile-bottom-nav .nav-link-center i {
+                font-size: 1.3rem;
+            }
+
+            .mobile-bottom-nav .nav-link-center .nav-text {
+                font-size: 0.65rem;
+                font-weight: 700;
+                white-space: nowrap;
+            }
 
             .mobile-bottom-nav .nav-link-center.active {
-                background: rgba(255, 255, 255, 0.95); color: var(--color-1);
+                background: rgba(255, 255, 255, 0.95);
+                color: var(--color-1);
                 box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
                 transform: translateY(-4px);
             }
 
-            .mobile-bottom-nav .nav-link-center:hover { transform: translateY(-4px); color: var(--color-dark); }
+            .mobile-bottom-nav .nav-link-center:hover {
+                transform: translateY(-4px);
+                color: var(--color-dark);
+            }
 
-          }
+        }
     </style>
-  </head>
-  <body class="bg-light-main">
+</head>
+
+<body class="bg-light-main">
     <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
         <defs>
             <filter id="liquid-distortion">
@@ -499,169 +761,189 @@
     </svg>
 
     <header>
-      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
-        <div class="container-base position-relative h-100">
-          <a class="navbar-brand brand-overflow" href="../../index.html">
-            <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
-          </a>
+        <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+            <div class="container-base position-relative h-100">
+                <a class="navbar-brand brand-overflow" href="../../index.html">
+                    <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo"
+                        class="logo-img" />
+                </a>
 
-          <div class="navbar-center-links d-none d-lg-flex">
-                <a href="../../index.html" class="nav-link-center">Trang chủ</a>
-                <a href="../customer/tripBooking.html" class="nav-link-center active">Đặt xe</a>
-                <a href="../customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
-                <a href="../../pages/policy.html" class="nav-link-center">Chính sách</a>
+                <div class="navbar-center-links d-none d-lg-flex">
+                    <a href="../../index.html" class="nav-link-center">Trang chủ</a>
+                    <a href="../customer/tripBooking.html" class="nav-link-center active">Đặt xe</a>
+                    <a href="../customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
+                    <a href="../../pages/policy.html" class="nav-link-center">Chính sách</a>
+                </div>
+
+                <div class="nav-right-actions">
+                    <a href="javascript:history.back()" class="btn-back">
+                        <i class="fa-solid fa-arrow-left"></i> <span>Trở về</span>
+                    </a>
+                </div>
             </div>
-
-          <div class="nav-right-actions">
-            <a href="javascript:history.back()" class="btn-back">
-            <i class="fa-solid fa-arrow-left"></i> <span>Trở về</span>
-          </a>
-          </div>
-        </div>
-      </nav>
+        </nav>
     </header>
 
-    <main class="container mb-5" style="margin-top: 80px !important; background-color: var(--bg-gradient-light) !important;">
-      <div class="row g-4">
-        <div class="col-lg-7">
-          <div class="glass-panel p-5 h-100">
-            <h2 class="section-title"><i class="fa-regular fa-envelope text-success"></i> Thông tin liên lạc</h2>
-            <div class="row g-4 mb-5 mt-1">
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="email" class="form-control custom-input" id="emailInput" placeholder="Email" onblur="validateEmail()" />
-                  <label>Email (Nhận hóa đơn điện tử)</label>
-                  <div class="invalid-feedback ms-3" id="emailError">Vui lòng nhập định dạng email hợp lệ.</div>
+    <main class="container mb-5"
+        style="margin-top: 80px !important; background-color: var(--bg-gradient-light) !important;">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="glass-panel p-5 h-100">
+                    <h2 class="section-title"><i class="fa-regular fa-envelope text-success"></i> Thông tin liên lạc
+                    </h2>
+                    <div class="row g-4 mb-5 mt-1">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="email" class="form-control custom-input" id="emailInput"
+                                    placeholder="Email" onblur="validateEmail()" />
+                                <label>Email (Nhận hóa đơn điện tử)</label>
+                                <div class="invalid-feedback ms-3" id="emailError">Vui lòng nhập định dạng email hợp lệ.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="tel" class="form-control custom-input" id="phoneInput"
+                                    placeholder="Số điện thoại" inputmode="numeric" onblur="validatePhone()" />
+                                <label>Số điện thoại</label>
+                                <div class="invalid-feedback ms-3" id="phoneError">Số điện thoại phải từ 10 chữ số.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title"><i class="fa-regular fa-user text-success"></i> Thông tin hành khách</h2>
+                    <div class="row g-4 mb-5 mt-1">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control custom-input" id="fullName"
+                                    placeholder="Họ và tên" />
+                                <label>Họ và tên</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="text" class="form-control custom-input" id="address"
+                                    placeholder="Địa chỉ" />
+                                <label>Địa điểm đón chi tiết</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-medium">Thời gian khởi hành <span
+                                    class="text-danger">*</span></label>
+                            <div class="input-group glass-input-group">
+                                <span class="input-group-text"><i class="fa-regular fa-calendar-check"></i></span>
+                                <input type="datetime-local" class="form-control" id="departureTime" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 d-none" id="durationContainer">
+                            <label class="form-label fw-medium" id="durationLabel">Thời lượng thuê</label>
+                            <div class="input-group glass-input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-hourglass-half"></i></span>
+                                <input type="number" class="form-control" id="durationValue" min="1" value="1"
+                                    placeholder="Nhập số...">
+                                <span class="input-group-text fw-bold text-success" id="durationUnit">Giờ</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán
+                    </h2>
+                    <div class="payment-options mt-3">
+                        <label class="payment-card active" onclick="selectPayment(this)">
+                            <div class="d-flex align-items-center">
+                                <div class="custom-radio"></div>
+                                <span class="fw-bold fs-5 text-dark">Ví điện tử MoMo</span>
+                            </div>
+                            <img src="../../assets/img/MOMO-Logo-App.png" alt="MoMo" class="pay-logo" />
+                        </label>
+
+                        <label class="payment-card" onclick="selectPayment(this)">
+                            <div class="d-flex align-items-center">
+                                <div class="custom-radio"></div>
+                                <span class="fw-bold fs-5 text-dark">Tiền mặt (Giao cho tài xế)</span>
+                            </div>
+                            <i class="fa-solid fa-money-bill-wave text-success fs-3"></i>
+                        </label>
+                    </div>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="tel" class="form-control custom-input" id="phoneInput" placeholder="Số điện thoại" inputmode="numeric" onblur="validatePhone()" />
-                  <label>Số điện thoại</label>
-                  <div class="invalid-feedback ms-3" id="phoneError">Số điện thoại phải từ 10 chữ số.</div>
-                </div>
-              </div>
             </div>
 
-            <h2 class="section-title"><i class="fa-regular fa-user text-success"></i> Thông tin hành khách</h2>
-            <div class="row g-4 mb-5 mt-1">
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" class="form-control custom-input" id="fullName" placeholder="Họ và tên" />
-                  <label>Họ và tên</label>
+            <div class="col-lg-5">
+                <div class="glass-panel p-5 sticky-summary">
+                    <div class="summary-car">
+                        <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="Car"
+                            id="checkoutCarImage" />
+                        <div>
+                            <h5 class="fw-bold mb-1 text-dark" id="checkoutCarName">Đang tải thông tin xe...</h5>
+
+                            <div class="text-muted fw-medium mt-1" id="checkoutCarRoute" style="font-size: 0.9rem;">
+                                <i class="fa-solid fa-location-dot me-1 text-danger"></i> <span id="routeText">Đang tải
+                                    lộ trình...</span>
+                            </div>
+
+                            <div class="text-muted small mt-2">
+                                <span
+                                    class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
+                                    <i class="fa-solid fa-car-side me-1"></i> <span id="checkoutServiceType">Dịch
+                                        vụ</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="voucher-box">
+                        <div class="d-flex gap-2">
+                            <div class="form-floating flex-grow-1">
+                                <input type="text" class="form-control custom-input text-uppercase fw-bold"
+                                    id="voucherCode" placeholder="Mã giảm giá" />
+                                <label>Nhập mã giảm giá</label>
+                            </div>
+                            <button class="btn-apply" id="btnApplyVoucher" onclick="applyVoucher()">Áp dụng</button>
+                        </div>
+                        <div id="voucherMsg" class="mt-2 ms-2 fw-semibold" style="font-size: 0.9rem; display: none;">
+                        </div>
+                    </div>
+
+                    <div class="breakdown-list">
+                        <div class="breakdown-row">
+                            <span class="fw-medium">Cước phí gốc</span>
+                            <span class="fw-bold text-dark fs-5" id="summaryBaseFare">0 ₫</span>
+                        </div>
+
+                        <div class="breakdown-row" id="weekendSurchargeRow" style="display: none !important;">
+                            <span class="fw-medium text-warning">Phụ phí cuối tuần (+10%)</span>
+                            <span class="fw-bold text-warning fs-5" id="summaryWeekend">0 ₫</span>
+                        </div>
+
+                        <div class="breakdown-row discount" id="discountRow">
+                            <span class="fw-bold"><i class="fa-solid fa-tag me-2"></i>Mã giảm giá (<span
+                                    id="discountName"></span>)</span>
+                            <span class="fw-bold fs-5">- <span id="discountAmount">0</span> ₫</span>
+                        </div>
+                    </div>
+
+                    <div class="breakdown-total">
+                        <span class="label">Tổng tiền</span>
+                        <span class="amount" id="summaryTotal">0 ₫</span>
+                    </div>
+
+                    <div class="deposit-box d-flex justify-content-between align-items-center mt-4 px-4 py-3">
+                        <span class="deposit-label fw-medium"><i class="fa-solid fa-shield-check me-2"></i>Cần thanh
+                            toán cọc (30%):</span>
+                        <strong class="deposit-amount fs-4" id="summaryDeposit">0 ₫</strong>
+                    </div>
+
+                    <button class="btn-submit" id="btnSubmitCheckout" onclick="processCheckout()">
+                        Xác nhận Đặt xe
+                    </button>
                 </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-floating">
-                  <input type="text" class="form-control custom-input" id="address" placeholder="Địa chỉ" />
-                  <label>Địa điểm đón chi tiết</label>
-                </div>
-              </div>
             </div>
-
-            <div class="row g-4 mb-4">
-              <div class="col-md-6">
-                  <label class="form-label fw-medium">Thời gian khởi hành <span class="text-danger">*</span></label>
-                  <div class="input-group glass-input-group">
-                      <span class="input-group-text"><i class="fa-regular fa-calendar-check"></i></span>
-                      <input type="datetime-local" class="form-control" id="departureTime" required>
-                  </div>
-              </div>
-
-              <div class="col-md-6 d-none" id="durationContainer">
-                  <label class="form-label fw-medium" id="durationLabel">Thời lượng thuê</label>
-                  <div class="input-group glass-input-group">
-                      <span class="input-group-text"><i class="fa-solid fa-hourglass-half"></i></span>
-                      <input type="number" class="form-control" id="durationValue" min="1" value="1" placeholder="Nhập số...">
-                      <span class="input-group-text fw-bold text-success" id="durationUnit">Giờ</span>
-                  </div>
-              </div>
-          </div>
-
-            <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán</h2>
-            <div class="payment-options mt-3">
-              <label class="payment-card active" onclick="selectPayment(this)">
-                <div class="d-flex align-items-center">
-                  <div class="custom-radio"></div>
-                  <span class="fw-bold fs-5 text-dark">Ví điện tử MoMo</span>
-                </div>
-                <img src="../../assets/img/MOMO-Logo-App.png" alt="MoMo" class="pay-logo" />
-              </label>
-
-              <label class="payment-card" onclick="selectPayment(this)">
-                <div class="d-flex align-items-center">
-                  <div class="custom-radio"></div>
-                  <span class="fw-bold fs-5 text-dark">Tiền mặt (Giao cho tài xế)</span>
-                </div>
-                <i class="fa-solid fa-money-bill-wave text-success fs-3"></i>
-              </label>
-            </div>
-          </div>
         </div>
-
-        <div class="col-lg-5">
-          <div class="glass-panel p-5 sticky-summary">
-            <div class="summary-car">
-              <img src="https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600" alt="Car" id="checkoutCarImage" />
-              <div>
-                <h5 class="fw-bold mb-1 text-dark" id="checkoutCarName">Đang tải thông tin xe...</h5>
-                
-                <div class="text-muted fw-medium mt-1" id="checkoutCarRoute" style="font-size: 0.9rem;">
-                  <i class="fa-solid fa-location-dot me-1 text-danger"></i> <span id="routeText">Đang tải lộ trình...</span>
-                </div>
-                
-                <div class="text-muted small mt-2">
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1">
-                        <i class="fa-solid fa-car-side me-1"></i> <span id="checkoutServiceType">Dịch vụ</span>
-                    </span>
-                </div>
-              </div>
-            </div>
-
-            <div class="voucher-box">
-              <div class="d-flex gap-2">
-                <div class="form-floating flex-grow-1">
-                  <input type="text" class="form-control custom-input text-uppercase fw-bold" id="voucherCode" placeholder="Mã giảm giá" />
-                  <label>Nhập mã giảm giá</label>
-                </div>
-                <button class="btn-apply" id="btnApplyVoucher" onclick="applyVoucher()">Áp dụng</button>
-              </div>
-              <div id="voucherMsg" class="mt-2 ms-2 fw-semibold" style="font-size: 0.9rem; display: none;"></div>
-            </div>
-
-            <div class="breakdown-list">
-              <div class="breakdown-row">
-                <span class="fw-medium">Cước phí gốc</span>
-                <span class="fw-bold text-dark fs-5" id="summaryBaseFare">0 ₫</span>
-              </div>
-
-              <div class="breakdown-row" id="weekendSurchargeRow" style="display: none !important;">
-                <span class="fw-medium text-warning">Phụ phí cuối tuần (+10%)</span>
-                <span class="fw-bold text-warning fs-5" id="summaryWeekend">0 ₫</span>
-              </div>
-
-              <div class="breakdown-row discount" id="discountRow">
-                <span class="fw-bold"><i class="fa-solid fa-tag me-2"></i>Mã giảm giá (<span id="discountName"></span>)</span>
-                <span class="fw-bold fs-5">- <span id="discountAmount">0</span> ₫</span>
-              </div>
-            </div>
-
-            <div class="breakdown-total">
-              <span class="label">Tổng tiền</span>
-              <span class="amount" id="summaryTotal">0 ₫</span>
-            </div>
-
-            <div class="deposit-box d-flex justify-content-between align-items-center mt-4 px-4 py-3">
-              <span class="deposit-label fw-medium"><i class="fa-solid fa-shield-check me-2"></i>Cần thanh toán cọc (30%):</span>
-              <strong class="deposit-amount fs-4" id="summaryDeposit">0 ₫</strong>
-            </div>
-
-            <button class="btn-submit" id="btnSubmitCheckout" onclick="processCheckout()">
-              Xác nhận Đặt xe
-            </button>
-          </div>
-        </div>
-      </div>
     </main>
 
     <div class="mobile-bottom-nav d-lg-none">
@@ -684,565 +966,566 @@
     </div>
 
     <script src="../../js/base.js">
-      </script>
+    </script>
 
     <script>
-    // =====================================================================
-    // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE (ĐỒNG BỘ VỚI TRIPBOOKING.JS)
-    // =====================================================================
-    document.addEventListener("DOMContentLoaded", () => {
-        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
-        const depositAmountText = localStorage.getItem('currentDepositAmount'); 
+        // =====================================================================
+        // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE (ĐỒNG BỘ VỚI TRIPBOOKING.JS)
+        // =====================================================================
+        document.addEventListener("DOMContentLoaded", () => {
+            const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
+            const depositAmountText = localStorage.getItem('currentDepositAmount');
 
-        if (bookingType === 'DISTANCE') {
-            // 1. Ẩn các ô chọn ngày giờ
-            document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
-            document.getElementById('durationContainer').style.display = 'none';
+            if (bookingType === 'DISTANCE') {
+                // 1. Ẩn các ô chọn ngày giờ
+                document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
+                document.getElementById('durationContainer').style.display = 'none';
 
-            // 2. ẨN VOUCHER VÀ CHI TIẾT GIÁ GỐC (Theo đúng yêu cầu của bạn)
-            const voucherBox = document.querySelector('.voucher-box');
-            if(voucherBox) voucherBox.style.display = 'none';
-            
-            // Ẩn các dòng breakdown (Cước phí gốc, Phụ phí cuối tuần, Khuyến mãi)
-            const breakdownRows = document.querySelectorAll('.breakdown-row');
-            breakdownRows.forEach(row => row.style.setProperty('display', 'none', 'important'));
+                // 2. ẨN VOUCHER VÀ CHI TIẾT GIÁ GỐC (Theo đúng yêu cầu của bạn)
+                const voucherBox = document.querySelector('.voucher-box');
+                if (voucherBox) voucherBox.style.display = 'none';
 
-            // 3. Chỉ lấy Tổng tiền và Tiền cọc từ Map để in ra
-            const mapTotal = parseInt(localStorage.getItem('mapEstimatedTotal')) || 0;
-            const fmt = new Intl.NumberFormat('vi-VN');
+                // Ẩn các dòng breakdown (Cước phí gốc, Phụ phí cuối tuần, Khuyến mãi)
+                const breakdownRows = document.querySelectorAll('.breakdown-row');
+                breakdownRows.forEach(row => row.style.setProperty('display', 'none', 'important'));
 
-            document.getElementById('summaryTotal').innerText = fmt.format(mapTotal) + ' ₫';
-            document.getElementById('summaryDeposit').innerText = depositAmountText || '0 ₫';
-            
-            const btnSubmit = document.getElementById('btnSubmitCheckout');
-            btnSubmit.innerText = `Xác nhận Đặt xe - Cọc ${depositAmountText}`;
-            btnSubmit.disabled = false;
-
-            // 4. Tự động điền điểm đón vào ô Địa chỉ cho khách (Tránh bắt khách nhập lại)
-            document.getElementById('address').value = localStorage.getItem('pickupAddress') || '';
-
-        } else {
-            // Luồng HOURLY / DAILY: Vẫn giữ nguyên form nhập Voucher và hiển thị chi tiết giá
-            const btnSubmit = document.getElementById('btnSubmitCheckout');
-            if (btnSubmit) {
-                btnSubmit.innerText = 'Vui lòng chọn thời gian';
-                btnSubmit.disabled = true; 
-            }
-        }
-
-        // Tự động điền Email và Tên nếu khách đã đăng nhập
-        const savedEmail = localStorage.getItem('email');
-        const savedName = localStorage.getItem('fullName');
-        if (savedEmail) { document.getElementById('emailInput').value = savedEmail; validateEmail(); }
-        if (savedName) document.getElementById('fullName').value = savedName;
-    });
-    // =====================================================================
-    // 2. VALIDATE FORM (BẮT LỖI NGHIÊM NGẶT)
-    // =====================================================================
-    const formState = { emailValid: false, phoneValid: false, nameValid: false, addressValid: false };
-
-    function validateEmail() {
-        const el = document.getElementById("emailInput");
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
-        if (el.value.trim() === "" || !regex.test(el.value.trim())) {
-            el.classList.add("is-invalid");
-            formState.emailValid = false;
-        } else {
-            el.classList.remove("is-invalid");
-            formState.emailValid = true;
-        }
-    }
-
-    function validatePhone() {
-        const el = document.getElementById("phoneInput");
-        const regex = /^[0-9]{10,11}$/;
-        if (el.value.trim() === "" || !regex.test(el.value.trim())) {
-            el.classList.add("is-invalid");
-            formState.phoneValid = false;
-        } else {
-            el.classList.remove("is-invalid");
-            formState.phoneValid = true;
-        }
-    }
-
-    // --- HAI HÀM MỚI BỔ SUNG ---
-    function validateName() {
-        const el = document.getElementById("fullName");
-        if (el.value.trim() === "") {
-            el.classList.add("is-invalid");
-            formState.nameValid = false;
-        } else {
-            el.classList.remove("is-invalid");
-            formState.nameValid = true;
-        }
-    }
-
-    function validateAddress() {
-        const el = document.getElementById("address");
-        if (el.value.trim() === "") {
-            el.classList.add("is-invalid");
-            formState.addressValid = false;
-        } else {
-            el.classList.remove("is-invalid");
-            formState.addressValid = true;
-        }
-    }
-
-    // =====================================================================
-    // 3. XỬ LÝ GIAO DIỆN PHỤ
-    // =====================================================================
-    function selectPayment(element) {
-        document.querySelectorAll(".payment-card").forEach((card) => card.classList.remove("active"));
-        element.classList.add("active");
-    }
-
-    // Khóa tính năng Voucher ở bước này vì tổng tiền đã được chốt từ API /check-price ở Trạm 2
-    // =====================================================================
-    // TÍCH HỢP API ÁP DỤNG MÃ GIẢM GIÁ (CHO HOURLY / DAILY)
-    // =====================================================================
-    async function applyVoucher() {
-        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
-        const msg = document.getElementById("voucherMsg");
-
-        // Nếu là luồng Chuyến đi, chặn lại vì giá đã chốt ở trang Map
-        if (bookingType === 'DISTANCE') {
-            msg.style.display = "block";
-            msg.style.color = "#e53e3e";
-            msg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã ưu đãi theo chuyến vui lòng áp dụng ở bước chọn lộ trình!';
-            return;
-        }
-
-        const code = document.getElementById('voucherCode').value.trim();
-        if (!code) {
-            msg.style.display = "block";
-            msg.style.color = "#e53e3e";
-            msg.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng nhập mã!';
-            return;
-        }
-
-        // Bắt buộc khách phải chọn ngày giờ (để có giá gốc) trước khi áp mã
-        if (currentEstimatedTotal <= 0) {
-            msg.style.display = "block";
-            msg.style.color = "#e53e3e";
-            msg.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng chọn thời gian thuê trước khi áp mã!';
-            return;
-        }
-
-        const btnApply = document.getElementById('btnApplyVoucher');
-        const originalText = btnApply.innerText;
-        btnApply.disabled = true;
-        btnApply.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-
-        const customerId = localStorage.getItem('customerId') || 1;
-        const vehicleId = localStorage.getItem('selectedVehicleId');
-
-        try {
-            const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/vouchers/apply', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    customerId: parseInt(customerId),
-                    vehicleId: parseInt(vehicleId),
-                    code: code,
-                    estimatedTotal: currentEstimatedTotal
-                })
-            });
-
-            const result = await response.json();
-
-            if (response.ok && result.success) {
-                // ÁP MÃ THÀNH CÔNG -> Bật hiển thị dòng Khuyến mãi
-                msg.style.display = "block";
-                msg.style.color = "#00B14F";
-                msg.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Áp dụng thành công mã ${result.code}!`;
-
+                // 3. Chỉ lấy Tổng tiền và Tiền cọc từ Map để in ra
+                const mapTotal = parseInt(localStorage.getItem('mapEstimatedTotal')) || 0;
                 const fmt = new Intl.NumberFormat('vi-VN');
-                document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
-                document.getElementById('discountName').innerText = result.code;
-                document.getElementById('discountAmount').innerText = fmt.format(result.discountAmount);
 
-                // Cập nhật Tổng tiền mới và Tiền cọc mới (30% của tổng mới)
-                document.getElementById('summaryTotal').innerText = fmt.format(result.finalTotal) + ' ₫';
-                
-                const newDeposit = Math.round(result.finalTotal * 0.3);
-                document.getElementById('summaryDeposit').innerText = fmt.format(newDeposit) + ' ₫';
-                document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(newDeposit) + ' ₫';
-
-                // Lưu lại ID của Voucher để ghim vào Đơn hàng lúc gửi đi
-                localStorage.setItem('appliedVoucherId', result.voucherId);
-                localStorage.setItem('currentDepositAmount', newDeposit); 
-
-            } else {
-                // ÁP MÃ THẤT BẠI (Backend báo lỗi hết hạn/ko đủ điều kiện)
-                msg.style.display = "block";
-                msg.style.color = "#e53e3e";
-                msg.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> ${result.error || 'Mã không hợp lệ'}`;
-                
-                document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
-                localStorage.removeItem('appliedVoucherId');
-            }
-        } catch (error) {
-            msg.style.display = "block";
-            msg.style.color = "#e53e3e";
-            msg.innerHTML = '<i class="fa-solid fa-wifi me-1"></i> Lỗi kết nối máy chủ!';
-        } finally {
-            btnApply.disabled = false;
-            btnApply.innerText = originalText;
-        }
-    }
-
-    // =====================================================================
-    // 4. MÔ PHỎNG XỬ LÝ GIAO DỊCH (MOCK UI) & ĐIỀU HƯỚNG
-    // =====================================================================
-    async function processCheckout() {
-        // 1. Ép hệ thống quét lỗi toàn bộ các ô nhập liệu một lần nữa
-        validateEmail(); 
-        validatePhone();
-        validateName();
-        validateAddress();
-        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
-
-        // 2. Chặn đứng giao dịch nếu bất kỳ cờ (flag) nào bị false
-        if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
-            alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
-            return; // Dừng hàm tại đây, không cho gọi API
-        }
-
-        const elBtnSubmit = document.getElementById("btnSubmitCheckout");
-        const originalText = elBtnSubmit.innerText;
-        elBtnSubmit.disabled = true;
-        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
-
-        // Đã sửa: Lấy ID từ localStorage
-        const bookingId = localStorage.getItem('currentBookingId');
-
-        // 4. Giả lập delay 2 giây của API Cổng thanh toán (VNPAY/MoMo...)
-        setTimeout(() => {
-            alert(`Giao dịch thanh toán cọc thành công!\nMã chuyến đi của bạn là: #${bookingId}`);
-            
-            // Xóa cache localStorage để tránh tình trạng back lại trang này thanh toán lần 2
-            localStorage.removeItem('currentBookingId');
-            localStorage.removeItem('currentDepositAmount');
-            localStorage.removeItem('selectedVehicleId'); // Xóa luôn ID xe đã chọn
-
-            // 5. Điều hướng sang trang Lịch sử chuyến đi
-            window.location.replace("tripHistory.html"); 
-        }, 2000);
-    }
-
-    // Cấu hình map cứng hình ảnh theo VehicleID từ Database (Đồng bộ với FindCar)
-    const vehicleImageMap = {
-        1: 'ToyotaVios4.jpg', 2: 'HondaCity4.jpg', 3: 'HyundaiAccent4.jpg', 4: 'MazdaMazda34.jpg', 5: 'KiaSoluto4.jpg',
-        6: 'ToyotaVios4.jpg', 7: 'HondaCity4.jpg', 8: 'HyundaiAccent4.jpg', 9: 'MazdaMazda34.jpg', 10: 'KiaSoluto4.jpg',
-        11: 'ToyotaVios4.jpg', 12: 'HondaCity4.jpg', 13: 'HyundaiAccent4.jpg', 14: 'MazdaMazda34.jpg', 15: 'ToyotaInnova7.jpg',
-        16: 'MitsubishiXpander7.jpg', 17: 'HondaCR-V7.jpg', 18: 'HyundaiCustin7.jpg', 19: 'KiaCarens7.jpg', 20: 'ToyotaInnova7.jpg',
-        21: 'MitsubishiXpander7.jpg', 22: 'HondaCR-V7.jpg', 23: 'HyundaiCustin7.jpg', 24: 'KiaCarens7.jpg', 25: 'ToyotaInnova7.jpg',
-        26: 'MitsubishiXpander7.jpg', 27: 'HondaCR-V7.jpg', 28: 'HyundaiCustin7.jpg', 29: 'KiaCarnival9.jpg', 30: 'HyundaiSolatiLimo9.jpg',
-        31: 'FordTourneo9.jpg', 32: 'KiaCarnival9.jpg', 33: 'HyundaiSolatiLimo9.jpg', 34: 'FordTourneo9.jpg', 35: 'KiaCarnival9.jpg',
-        36: 'HyundaiSolatiLimo9.jpg', 37: 'FordTransit16.jpg', 38: 'HyundaiSolati16.jpg', 39: 'MercedesSprinter16.jpg', 40: 'FordTransit16.jpg',
-        41: 'HyundaiSolati16.jpg', 42: 'MercedesSprinter16.jpg', 43: 'ThacoTB7929.jpg', 44: 'HyundaiCounty29.jpg', 45: 'SamcoFelix29.jpg',
-        46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
-    };
-    
-    // =====================================================================
-    // 5. TÍCH HỢP API TÍNH GIÁ & ĐỔ DỮ LIỆU XE (FIX LỖI 1 & 2)
-    // =====================================================================
-    document.addEventListener("DOMContentLoaded", function() {
-        const bookingType = localStorage.getItem('bookingType') || 'HOURLY'; 
-        
-        // --- A. VÁ LỖI 1: XỬ LÝ ĐỔI NHÃN "GIỜ" / "NGÀY" ĐỘNG ---
-        const durationContainer = document.getElementById('durationContainer');
-        const durationLabel = document.getElementById('durationLabel');
-        const durationUnit = document.getElementById('durationUnit'); // Lấy thêm span Unit
-
-        if (bookingType === 'HOURLY') {
-            if(durationContainer) durationContainer.classList.remove('d-none');
-            if(durationLabel) durationLabel.innerText = "Số giờ thuê (Tối thiểu 1 giờ)";
-            if(durationUnit) durationUnit.innerText = "Giờ"; // Thay đổi chữ đuôi thành Giờ
-        } else if (bookingType === 'DAILY') {
-            if(durationContainer) durationContainer.classList.remove('d-none');
-            if(durationLabel) durationLabel.innerText = "Số ngày thuê (Tối thiểu 1 ngày)";
-            if(durationUnit) durationUnit.innerText = "Ngày"; // Thay đổi chữ đuôi thành Ngày
-        }
-
-        // Bắt sự kiện: Hễ khách đổi Ngày Giờ hoặc đổi Số Lượng là tính lại giá ngay lập tức
-        const departureTimeInput = document.getElementById('departureTime');
-        const durationInput = document.getElementById('durationValue');
-        if (departureTimeInput) departureTimeInput.addEventListener('change', fetchEstimatedPrice);
-        if (durationInput) durationInput.addEventListener('input', fetchEstimatedPrice);
-        
-        // --- B. VÁ LỖI 2: ĐỔ DỮ LIỆU XE & ẨN LỘ TRÌNH NẾU LÀ HOURLY/DAILY ---
-        const vehicleId = localStorage.getItem('selectedVehicleId');
-        // Mảng allVehicles đã được lưu sẵn từ lúc ở màn hình FindCar
-        const allVehicles = JSON.parse(localStorage.getItem('allVehicles') || '[]');
-        const selectedCar = allVehicles.find(v => v.vehicleId == vehicleId);
-
-        // 1. Đổ Tên và Hình ảnh thật của xe (Đã chuẩn hóa path theo VehicleID)
-        if (selectedCar) {
-            document.getElementById('checkoutCarName').innerText = `${selectedCar.brand} ${selectedCar.model}`;
-            
-            // Lấy tên file từ từ điển
-            let fileName = vehicleImageMap[selectedCar.vehicleId];
-            
-            // Nối đường dẫn chuẩn (lùi 2 cấp thư mục ../../ vì file checkout đang nằm trong pages/customer)
-            let carImage = fileName 
-                ? `../../assets/img/car-show/ImageUrl/${fileName}`
-                : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
-                
-            document.getElementById('checkoutCarImage').src = carImage;
-        }
-
-        // 2. Đổ nội dung Lộ trình & Nhãn dịch vụ tùy theo BookingType
-        const routeText = document.getElementById('routeText');
-        const serviceType = document.getElementById('checkoutServiceType');
-        
-        if (bookingType === 'HOURLY') {
-            routeText.innerText = "Dịch vụ di chuyển nội đô";
-            serviceType.innerText = "Thuê xe theo Giờ";
-        } else if (bookingType === 'DAILY') {
-            routeText.innerText = "Dịch vụ di chuyển linh hoạt tự do";
-            serviceType.innerText = "Thuê xe theo Ngày";
-        } else {
-            // LUỒNG DISTANCE: Đọc địa chỉ và giờ giấc từ Map
-            const pickup = localStorage.getItem('pickupAddress') || 'Chưa xác định';
-            const dropoff = localStorage.getItem('dropoffAddress') || 'Chưa xác định';
-            const tripDir = localStorage.getItem('tripDirection') || 'ONE_WAY';
-            const depTime = localStorage.getItem('mapDepartureTime') || '';
-            const retTime = localStorage.getItem('mapReturnTime') || '';
-
-            // Hàm format lại giờ cho đẹp (Ví dụ: 2026-07-20T08:00:00 -> 08:00 - 20/07)
-            const fmtTime = (isoString) => {
-                if(!isoString) return '';
-                const d = new Date(isoString);
-                return `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} ngày ${d.getDate()}/${d.getMonth()+1}`;
-            };
-
-            let routeHtml = `${pickup} <i class="fa-solid fa-arrow-right mx-1 text-success"></i> ${dropoff}`;
-            routeHtml += `<br><span class="text-secondary" style="font-size:0.8rem"><i class="fa-regular fa-clock me-1 mt-2"></i> Lượt đi: ${fmtTime(depTime)}</span>`;
-            
-            if (tripDir === 'ROUND_TRIP') {
-                routeHtml += `<br><span class="text-secondary" style="font-size:0.8rem"><i class="fa-solid fa-clock-rotate-left me-1 mt-1"></i> Lượt về: ${fmtTime(retTime)}</span>`;
-            }
-
-            routeText.innerHTML = routeHtml;
-            serviceType.innerText = tripDir === 'ROUND_TRIP' ? "Theo chuyến (Khứ hồi)" : "Theo chuyến (Một chiều)";
-        }
-    });
-
-    // BIẾN TOÀN CỤC: Lưu tổng tiền trước khi giảm giá
-    let currentEstimatedTotal = 0;
-
-    async function fetchEstimatedPrice() {
-        const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customer';
-        
-        const vehicleId = localStorage.getItem('selectedVehicleId') || 1;
-        const bookingType = localStorage.getItem('bookingType') || 'HOURLY';
-        let departureTime = document.getElementById('departureTime').value;
-        const durationVal = parseInt(document.getElementById('durationValue').value) || 0;
-
-        if (!departureTime || durationVal <= 0) return;
-        if (departureTime.length === 16) departureTime += ":00";
-
-        const payload = {
-            vehicleId: parseInt(vehicleId),
-            bookingType: bookingType,
-            tripDirection: "ONE_WAY", 
-            departureTime: departureTime
-        };
-
-
-        // BỔ SUNG LƯU LOCALSTORAGE ĐỂ CHUYỂN SANG HISTORY
-                if (bookingType === 'HOURLY') {
-                    payload.durationHours = durationVal;
-                    localStorage.setItem('savedDurationHours', durationVal);
-                } else {
-                    payload.durationDays = durationVal;
-                    localStorage.setItem('savedDurationDays', durationVal);
-                }
-                localStorage.setItem('savedDepartureTime', departureTime);
-
-        try {
-            const response = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.success) {
-                const fmt = new Intl.NumberFormat('vi-VN');
-                
-                // LƯU LẠI GIÁ TRỊ GỐC ĐỂ DÙNG CHO API VOUCHER TÍNH TOÁN
-                currentEstimatedTotal = data.estimatedTotal;
-
-                // NẾU KHÁCH THAY ĐỔI GIỜ/NGÀY THUÊ -> HỦY VOUCHER ĐÃ ÁP DỤNG TRƯỚC ĐÓ (NẾU CÓ)
-                document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
-                document.getElementById('voucherMsg').style.display = 'none';
-                localStorage.removeItem('appliedVoucherId');
-
-                // Đổ dữ liệu giá gốc lên giao diện
-                document.getElementById('summaryBaseFare').innerText = fmt.format(data.baseFare) + ' ₫';
-                document.getElementById('summaryTotal').innerText = fmt.format(data.estimatedTotal) + ' ₫';
-                document.getElementById('summaryDeposit').innerText = fmt.format(data.deposit30Percent) + ' ₫';
-                
-                const weekendRow = document.getElementById('weekendSurchargeRow');
-                if (data.weekendSurcharge > 0) {
-                    weekendRow.style.setProperty('display', 'flex', 'important');
-                    document.getElementById('summaryWeekend').innerText = '+' + fmt.format(data.weekendSurcharge) + ' ₫';
-                } else {
-                    weekendRow.style.setProperty('display', 'none', 'important');
-                }
+                document.getElementById('summaryTotal').innerText = fmt.format(mapTotal) + ' ₫';
+                document.getElementById('summaryDeposit').innerText = depositAmountText || '0 ₫';
 
                 const btnSubmit = document.getElementById('btnSubmitCheckout');
+                btnSubmit.innerText = `Xác nhận Đặt xe - Cọc ${depositAmountText}`;
                 btnSubmit.disabled = false;
-                btnSubmit.innerText = 'Xác nhận Đặt xe ' + fmt.format(data.deposit30Percent) + ' ₫';
 
-                localStorage.setItem('currentDepositAmount', data.deposit30Percent);
-            }
-        } catch (error) {
-            console.error("Lỗi gọi API tính giá:", error);
-        }
-    }
+                // 4. Tự động điền điểm đón vào ô Địa chỉ cho khách (Tránh bắt khách nhập lại)
+                document.getElementById('address').value = localStorage.getItem('pickupAddress') || '';
 
-    // =====================================================================
-    // 4. XỬ LÝ GIAO DỊCH VÀ TẠO ĐƠN ĐẶT XE (TỔNG HỢP 3 LUỒNG)
-    // =====================================================================
-    async function processCheckout() {
-        // 1. Ép hệ thống quét lỗi toàn bộ các ô nhập liệu một lần nữa
-        validateEmail(); 
-        validatePhone();
-        validateName();
-        validateAddress();
-        
-        const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
-        const addressInput = document.getElementById("address").value.trim();
-
-        // 2. Chặn đứng giao dịch nếu Form sai hoặc bỏ trống
-        if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
-            alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
-            return;
-        }
-
-        const elBtnSubmit = document.getElementById("btnSubmitCheckout");
-        const originalText = elBtnSubmit.innerText;
-        elBtnSubmit.disabled = true;
-        elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
-
-        try {
-            // Lấy các tham số cơ bản
-            const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1; 
-            const vehicleId = localStorage.getItem('selectedVehicleId');
-            const appliedVoucherId = localStorage.getItem('appliedVoucherId');
-            const token = localStorage.getItem('accessToken');
-            
-            let payload = {};
-
-            // ===============================================
-            // NHÁNH 1: XỬ LÝ LUỒNG THEO GIỜ & THEO NGÀY
-            // ===============================================
-            if (bookingType === 'HOURLY' || bookingType === 'DAILY') {
-                let departureTime = document.getElementById('departureTime').value;
-                const durationVal = parseInt(document.getElementById('durationValue').value) || 0;
-
-                if (departureTime.length === 16) departureTime += ":00"; // Định dạng lại cho Java
-
-                payload = {
-                    customerId: parseInt(customerId),
-                    vehicleId: parseInt(vehicleId),
-                    bookingType: bookingType,
-                    tripDirection: "ONE_WAY",
-                    pickupAddress: addressInput,
-                    departureTime: departureTime
-                };
-
-                if (bookingType === 'HOURLY') payload.durationHours = durationVal;
-                else payload.durationDays = durationVal;
-            } 
-            // ===============================================
-            // NHÁNH 2: XỬ LÝ LUỒNG ĐI THEO CHUYẾN (DISTANCE)
-            // ===============================================
-            else {
-                const tripDirection = localStorage.getItem('tripDirection') || 'ONE_WAY';
-                
-                payload = {
-                    customerId: parseInt(customerId),
-                    vehicleId: parseInt(vehicleId),
-                    bookingType: "DISTANCE",
-                    tripDirection: tripDirection,
-                    // Ưu tiên địa chỉ khách có thể vừa sửa trên text input, nếu không lấy từ map
-                    pickupAddress: addressInput || localStorage.getItem('pickupAddress'), 
-                    pickupLat: parseFloat(localStorage.getItem('pickupLat')),
-                    pickupLng: parseFloat(localStorage.getItem('pickupLng')),
-                    dropoffAddress: localStorage.getItem('dropoffAddress'),
-                    dropoffLat: parseFloat(localStorage.getItem('dropoffLat')),
-                    dropoffLng: parseFloat(localStorage.getItem('dropoffLng')),
-                    departureTime: localStorage.getItem('mapDepartureTime'),
-                    distanceKm: parseFloat(localStorage.getItem('distanceKm'))
-                };
-
-                // Nếu là Khứ hồi, tự động đọc và đính kèm dữ liệu Chiều về (Return Trip)
-                if (tripDirection === 'ROUND_TRIP') {
-                    payload.returnPickupAddress = localStorage.getItem('returnPickupAddress');
-                    payload.returnPickupLat = parseFloat(localStorage.getItem('returnPickupLat'));
-                    payload.returnPickupLng = parseFloat(localStorage.getItem('returnPickupLng'));
-                    payload.returnDropoffAddress = localStorage.getItem('returnDropoffAddress');
-                    payload.returnDropoffLat = parseFloat(localStorage.getItem('returnDropoffLat'));
-                    payload.returnDropoffLng = parseFloat(localStorage.getItem('returnDropoffLng'));
-                    payload.returnTime = localStorage.getItem('mapReturnTime');
-                    payload.returnDistanceKm = parseFloat(localStorage.getItem('returnDistanceKm'));
+            } else {
+                // Luồng HOURLY / DAILY: Vẫn giữ nguyên form nhập Voucher và hiển thị chi tiết giá
+                const btnSubmit = document.getElementById('btnSubmitCheckout');
+                if (btnSubmit) {
+                    btnSubmit.innerText = 'Vui lòng chọn thời gian';
+                    btnSubmit.disabled = true;
                 }
             }
 
-            // Gắn chung Voucher ID nếu khách đã áp mã (Cho cả 3 nhánh)
-            if (appliedVoucherId) {
-                payload.voucherId = parseInt(appliedVoucherId);
+            // Tự động điền Email và Tên nếu khách đã đăng nhập
+            const savedEmail = localStorage.getItem('email');
+            const savedName = localStorage.getItem('fullName');
+            if (savedEmail) { document.getElementById('emailInput').value = savedEmail; validateEmail(); }
+            if (savedName) document.getElementById('fullName').value = savedName;
+        });
+        // =====================================================================
+        // 2. VALIDATE FORM (BẮT LỖI NGHIÊM NGẶT)
+        // =====================================================================
+        const formState = { emailValid: false, phoneValid: false, nameValid: false, addressValid: false };
+
+        function validateEmail() {
+            const el = document.getElementById("emailInput");
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (el.value.trim() === "" || !regex.test(el.value.trim())) {
+                el.classList.add("is-invalid");
+                formState.emailValid = false;
+            } else {
+                el.classList.remove("is-invalid");
+                formState.emailValid = true;
+            }
+        }
+
+        function validatePhone() {
+            const el = document.getElementById("phoneInput");
+            const regex = /^[0-9]{10,11}$/;
+            if (el.value.trim() === "" || !regex.test(el.value.trim())) {
+                el.classList.add("is-invalid");
+                formState.phoneValid = false;
+            } else {
+                el.classList.remove("is-invalid");
+                formState.phoneValid = true;
+            }
+        }
+
+        // --- HAI HÀM MỚI BỔ SUNG ---
+        function validateName() {
+            const el = document.getElementById("fullName");
+            if (el.value.trim() === "") {
+                el.classList.add("is-invalid");
+                formState.nameValid = false;
+            } else {
+                el.classList.remove("is-invalid");
+                formState.nameValid = true;
+            }
+        }
+
+        function validateAddress() {
+            const el = document.getElementById("address");
+            if (el.value.trim() === "") {
+                el.classList.add("is-invalid");
+                formState.addressValid = false;
+            } else {
+                el.classList.remove("is-invalid");
+                formState.addressValid = true;
+            }
+        }
+
+        // =====================================================================
+        // 3. XỬ LÝ GIAO DIỆN PHỤ
+        // =====================================================================
+        function selectPayment(element) {
+            document.querySelectorAll(".payment-card").forEach((card) => card.classList.remove("active"));
+            element.classList.add("active");
+        }
+
+        // Khóa tính năng Voucher ở bước này vì tổng tiền đã được chốt từ API /check-price ở Trạm 2
+        // =====================================================================
+        // TÍCH HỢP API ÁP DỤNG MÃ GIẢM GIÁ (CHO HOURLY / DAILY)
+        // =====================================================================
+        async function applyVoucher() {
+            const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
+            const msg = document.getElementById("voucherMsg");
+
+            // Nếu là luồng Chuyến đi, chặn lại vì giá đã chốt ở trang Map
+            if (bookingType === 'DISTANCE') {
+                msg.style.display = "block";
+                msg.style.color = "#e53e3e";
+                msg.innerHTML = '<i class="fa-solid fa-circle-xmark me-1"></i> Mã ưu đãi theo chuyến vui lòng áp dụng ở bước chọn lộ trình!';
+                return;
             }
 
-            // Cấu hình Headers (Nhét Token bảo mật vào)
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
+            const code = document.getElementById('voucherCode').value.trim();
+            if (!code) {
+                msg.style.display = "block";
+                msg.style.color = "#e53e3e";
+                msg.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng nhập mã!';
+                return;
+            }
 
-            // 3. GỌI API TẠO ĐƠN XUỐNG BACKEND
-            const response = await fetch('http://localhost:8080/FleetFlow/api/v1/bookings', {
-                method: 'POST',
-                headers: headers,
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
+            // Bắt buộc khách phải chọn ngày giờ (để có giá gốc) trước khi áp mã
+            if (currentEstimatedTotal <= 0) {
+                msg.style.display = "block";
+                msg.style.color = "#e53e3e";
+                msg.innerHTML = '<i class="fa-solid fa-circle-exclamation me-1"></i> Vui lòng chọn thời gian thuê trước khi áp mã!';
+                return;
+            }
 
-            // 4. XỬ LÝ KẾT QUẢ TRẢ VỀ
-            if (response.ok && result.success) {
-                alert(`Thanh toán cọc thành công!\nMã chuyến đi của bạn: #${result.bookingId}`);
-                
-                // Dọn rác LocalStorage sạch sẽ để tránh lỗi các chuyến sau
-                const keysToRemove = [
-                    'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress', 
-                    'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng', 
-                    'returnPickupAddress', 'returnDropoffAddress', 'returnPickupLat', 'returnPickupLng', 
-                    'returnDropoffLat', 'returnDropoffLng', 'mapDepartureTime', 'mapReturnTime', 
-                    'distanceKm', 'returnDistanceKm', 'mapBaseFare', 'mapWeekendSurcharge', 
-                    'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId'
-                ];
-                keysToRemove.forEach(k => localStorage.removeItem(k));
-                
-                // Điều hướng sang trang Lịch sử chuyến đi
-                window.location.replace("tripHistory.html"); 
+            const btnApply = document.getElementById('btnApplyVoucher');
+            const originalText = btnApply.innerText;
+            btnApply.disabled = true;
+            btnApply.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+            const customerId = localStorage.getItem('customerId') || 1;
+            const vehicleId = localStorage.getItem('selectedVehicleId');
+
+            try {
+                const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/vouchers/apply', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        customerId: parseInt(customerId),
+                        vehicleId: parseInt(vehicleId),
+                        code: code,
+                        estimatedTotal: currentEstimatedTotal
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // ÁP MÃ THÀNH CÔNG -> Bật hiển thị dòng Khuyến mãi
+                    msg.style.display = "block";
+                    msg.style.color = "#00B14F";
+                    msg.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Áp dụng thành công mã ${result.code}!`;
+
+                    const fmt = new Intl.NumberFormat('vi-VN');
+                    document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
+                    document.getElementById('discountName').innerText = result.code;
+                    document.getElementById('discountAmount').innerText = fmt.format(result.discountAmount);
+
+                    // Cập nhật Tổng tiền mới và Tiền cọc mới (30% của tổng mới)
+                    document.getElementById('summaryTotal').innerText = fmt.format(result.finalTotal) + ' ₫';
+
+                    const newDeposit = Math.round(result.finalTotal * 0.3);
+                    document.getElementById('summaryDeposit').innerText = fmt.format(newDeposit) + ' ₫';
+                    document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(newDeposit) + ' ₫';
+
+                    // Lưu lại ID của Voucher để ghim vào Đơn hàng lúc gửi đi
+                    localStorage.setItem('appliedVoucherId', result.voucherId);
+                    localStorage.setItem('currentDepositAmount', newDeposit);
+
+                } else {
+                    // ÁP MÃ THẤT BẠI (Backend báo lỗi hết hạn/ko đủ điều kiện)
+                    msg.style.display = "block";
+                    msg.style.color = "#e53e3e";
+                    msg.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> ${result.error || 'Mã không hợp lệ'}`;
+
+                    document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
+                    localStorage.removeItem('appliedVoucherId');
+                }
+            } catch (error) {
+                msg.style.display = "block";
+                msg.style.color = "#e53e3e";
+                msg.innerHTML = '<i class="fa-solid fa-wifi me-1"></i> Lỗi kết nối máy chủ!';
+            } finally {
+                btnApply.disabled = false;
+                btnApply.innerText = originalText;
+            }
+        }
+
+        // =====================================================================
+        // 4. MÔ PHỎNG XỬ LÝ GIAO DỊCH (MOCK UI) & ĐIỀU HƯỚNG
+        // =====================================================================
+        async function processCheckout() {
+            // 1. Ép hệ thống quét lỗi toàn bộ các ô nhập liệu một lần nữa
+            validateEmail();
+            validatePhone();
+            validateName();
+            validateAddress();
+            const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
+
+            // 2. Chặn đứng giao dịch nếu bất kỳ cờ (flag) nào bị false
+            if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
+                alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
+                return; // Dừng hàm tại đây, không cho gọi API
+            }
+
+            const elBtnSubmit = document.getElementById("btnSubmitCheckout");
+            const originalText = elBtnSubmit.innerText;
+            elBtnSubmit.disabled = true;
+            elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+
+            // Đã sửa: Lấy ID từ localStorage
+            const bookingId = localStorage.getItem('currentBookingId');
+
+            // 4. Giả lập delay 2 giây của API Cổng thanh toán (VNPAY/MoMo...)
+            setTimeout(() => {
+                alert(`Giao dịch thanh toán cọc thành công!\nMã chuyến đi của bạn là: #${bookingId}`);
+
+                // Xóa cache localStorage để tránh tình trạng back lại trang này thanh toán lần 2
+                localStorage.removeItem('currentBookingId');
+                localStorage.removeItem('currentDepositAmount');
+                localStorage.removeItem('selectedVehicleId'); // Xóa luôn ID xe đã chọn
+
+                // 5. Điều hướng sang trang Lịch sử chuyến đi
+                window.location.replace("tripHistory.html");
+            }, 2000);
+        }
+
+        // Cấu hình map cứng hình ảnh theo VehicleID từ Database (Đồng bộ với FindCar)
+        const vehicleImageMap = {
+            1: 'ToyotaVios4.jpg', 2: 'HondaCity4.jpg', 3: 'HyundaiAccent4.jpg', 4: 'MazdaMazda34.jpg', 5: 'KiaSoluto4.jpg',
+            6: 'ToyotaVios4.jpg', 7: 'HondaCity4.jpg', 8: 'HyundaiAccent4.jpg', 9: 'MazdaMazda34.jpg', 10: 'KiaSoluto4.jpg',
+            11: 'ToyotaVios4.jpg', 12: 'HondaCity4.jpg', 13: 'HyundaiAccent4.jpg', 14: 'MazdaMazda34.jpg', 15: 'ToyotaInnova7.jpg',
+            16: 'MitsubishiXpander7.jpg', 17: 'HondaCR-V7.jpg', 18: 'HyundaiCustin7.jpg', 19: 'KiaCarens7.jpg', 20: 'ToyotaInnova7.jpg',
+            21: 'MitsubishiXpander7.jpg', 22: 'HondaCR-V7.jpg', 23: 'HyundaiCustin7.jpg', 24: 'KiaCarens7.jpg', 25: 'ToyotaInnova7.jpg',
+            26: 'MitsubishiXpander7.jpg', 27: 'HondaCR-V7.jpg', 28: 'HyundaiCustin7.jpg', 29: 'KiaCarnival9.jpg', 30: 'HyundaiSolatiLimo9.jpg',
+            31: 'FordTourneo9.jpg', 32: 'KiaCarnival9.jpg', 33: 'HyundaiSolatiLimo9.jpg', 34: 'FordTourneo9.jpg', 35: 'KiaCarnival9.jpg',
+            36: 'HyundaiSolatiLimo9.jpg', 37: 'FordTransit16.jpg', 38: 'HyundaiSolati16.jpg', 39: 'MercedesSprinter16.jpg', 40: 'FordTransit16.jpg',
+            41: 'HyundaiSolati16.jpg', 42: 'MercedesSprinter16.jpg', 43: 'ThacoTB7929.jpg', 44: 'HyundaiCounty29.jpg', 45: 'SamcoFelix29.jpg',
+            46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
+        };
+
+        // =====================================================================
+        // 5. TÍCH HỢP API TÍNH GIÁ & ĐỔ DỮ LIỆU XE (FIX LỖI 1 & 2)
+        // =====================================================================
+        document.addEventListener("DOMContentLoaded", function () {
+            const bookingType = localStorage.getItem('bookingType') || 'HOURLY';
+
+            // --- A. VÁ LỖI 1: XỬ LÝ ĐỔI NHÃN "GIỜ" / "NGÀY" ĐỘNG ---
+            const durationContainer = document.getElementById('durationContainer');
+            const durationLabel = document.getElementById('durationLabel');
+            const durationUnit = document.getElementById('durationUnit'); // Lấy thêm span Unit
+
+            if (bookingType === 'HOURLY') {
+                if (durationContainer) durationContainer.classList.remove('d-none');
+                if (durationLabel) durationLabel.innerText = "Số giờ thuê (Tối thiểu 1 giờ)";
+                if (durationUnit) durationUnit.innerText = "Giờ"; // Thay đổi chữ đuôi thành Giờ
+            } else if (bookingType === 'DAILY') {
+                if (durationContainer) durationContainer.classList.remove('d-none');
+                if (durationLabel) durationLabel.innerText = "Số ngày thuê (Tối thiểu 1 ngày)";
+                if (durationUnit) durationUnit.innerText = "Ngày"; // Thay đổi chữ đuôi thành Ngày
+            }
+
+            // Bắt sự kiện: Hễ khách đổi Ngày Giờ hoặc đổi Số Lượng là tính lại giá ngay lập tức
+            const departureTimeInput = document.getElementById('departureTime');
+            const durationInput = document.getElementById('durationValue');
+            if (departureTimeInput) departureTimeInput.addEventListener('change', fetchEstimatedPrice);
+            if (durationInput) durationInput.addEventListener('input', fetchEstimatedPrice);
+
+            // --- B. VÁ LỖI 2: ĐỔ DỮ LIỆU XE & ẨN LỘ TRÌNH NẾU LÀ HOURLY/DAILY ---
+            const vehicleId = localStorage.getItem('selectedVehicleId');
+            // Mảng allVehicles đã được lưu sẵn từ lúc ở màn hình FindCar
+            const allVehicles = JSON.parse(localStorage.getItem('allVehicles') || '[]');
+            const selectedCar = allVehicles.find(v => v.vehicleId == vehicleId);
+
+            // 1. Đổ Tên và Hình ảnh thật của xe (Đã chuẩn hóa path theo VehicleID)
+            if (selectedCar) {
+                document.getElementById('checkoutCarName').innerText = `${selectedCar.brand} ${selectedCar.model}`;
+
+                // Lấy tên file từ từ điển
+                let fileName = vehicleImageMap[selectedCar.vehicleId];
+
+                // Nối đường dẫn chuẩn (lùi 2 cấp thư mục ../../ vì file checkout đang nằm trong pages/customer)
+                let carImage = fileName
+                    ? `../../assets/img/car-show/ImageUrl/${fileName}`
+                    : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+
+                document.getElementById('checkoutCarImage').src = carImage;
+            }
+
+            // 2. Đổ nội dung Lộ trình & Nhãn dịch vụ tùy theo BookingType
+            const routeText = document.getElementById('routeText');
+            const serviceType = document.getElementById('checkoutServiceType');
+
+            if (bookingType === 'HOURLY') {
+                routeText.innerText = "Dịch vụ di chuyển nội đô";
+                serviceType.innerText = "Thuê xe theo Giờ";
+            } else if (bookingType === 'DAILY') {
+                routeText.innerText = "Dịch vụ di chuyển linh hoạt tự do";
+                serviceType.innerText = "Thuê xe theo Ngày";
             } else {
-                alert("Rất tiếc, hệ thống từ chối: " + (result.error || result.message || "Lỗi không xác định"));
+                // LUỒNG DISTANCE: Đọc địa chỉ và giờ giấc từ Map
+                const pickup = localStorage.getItem('pickupAddress') || 'Chưa xác định';
+                const dropoff = localStorage.getItem('dropoffAddress') || 'Chưa xác định';
+                const tripDir = localStorage.getItem('tripDirection') || 'ONE_WAY';
+                const depTime = localStorage.getItem('mapDepartureTime') || '';
+                const retTime = localStorage.getItem('mapReturnTime') || '';
+
+                // Hàm format lại giờ cho đẹp (Ví dụ: 2026-07-20T08:00:00 -> 08:00 - 20/07)
+                const fmtTime = (isoString) => {
+                    if (!isoString) return '';
+                    const d = new Date(isoString);
+                    return `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ngày ${d.getDate()}/${d.getMonth() + 1}`;
+                };
+
+                let routeHtml = `${pickup} <i class="fa-solid fa-arrow-right mx-1 text-success"></i> ${dropoff}`;
+                routeHtml += `<br><span class="text-secondary" style="font-size:0.8rem"><i class="fa-regular fa-clock me-1 mt-2"></i> Lượt đi: ${fmtTime(depTime)}</span>`;
+
+                if (tripDir === 'ROUND_TRIP') {
+                    routeHtml += `<br><span class="text-secondary" style="font-size:0.8rem"><i class="fa-solid fa-clock-rotate-left me-1 mt-1"></i> Lượt về: ${fmtTime(retTime)}</span>`;
+                }
+
+                routeText.innerHTML = routeHtml;
+                serviceType.innerText = tripDir === 'ROUND_TRIP' ? "Theo chuyến (Khứ hồi)" : "Theo chuyến (Một chiều)";
+            }
+        });
+
+        // BIẾN TOÀN CỤC: Lưu tổng tiền trước khi giảm giá
+        let currentEstimatedTotal = 0;
+
+        async function fetchEstimatedPrice() {
+            const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customer';
+
+            const vehicleId = localStorage.getItem('selectedVehicleId') || 1;
+            const bookingType = localStorage.getItem('bookingType') || 'HOURLY';
+            let departureTime = document.getElementById('departureTime').value;
+            const durationVal = parseInt(document.getElementById('durationValue').value) || 0;
+
+            if (!departureTime || durationVal <= 0) return;
+            if (departureTime.length === 16) departureTime += ":00";
+
+            const payload = {
+                vehicleId: parseInt(vehicleId),
+                bookingType: bookingType,
+                tripDirection: "ONE_WAY",
+                departureTime: departureTime
+            };
+
+
+            // BỔ SUNG LƯU LOCALSTORAGE ĐỂ CHUYỂN SANG HISTORY
+            if (bookingType === 'HOURLY') {
+                payload.durationHours = durationVal;
+                localStorage.setItem('savedDurationHours', durationVal);
+            } else {
+                payload.durationDays = durationVal;
+                localStorage.setItem('savedDurationDays', durationVal);
+            }
+            localStorage.setItem('savedDepartureTime', departureTime);
+
+            try {
+                const response = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const fmt = new Intl.NumberFormat('vi-VN');
+
+                    // LƯU LẠI GIÁ TRỊ GỐC ĐỂ DÙNG CHO API VOUCHER TÍNH TOÁN
+                    currentEstimatedTotal = data.estimatedTotal;
+
+                    // NẾU KHÁCH THAY ĐỔI GIỜ/NGÀY THUÊ -> HỦY VOUCHER ĐÃ ÁP DỤNG TRƯỚC ĐÓ (NẾU CÓ)
+                    document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
+                    document.getElementById('voucherMsg').style.display = 'none';
+                    localStorage.removeItem('appliedVoucherId');
+
+                    // Đổ dữ liệu giá gốc lên giao diện
+                    document.getElementById('summaryBaseFare').innerText = fmt.format(data.baseFare) + ' ₫';
+                    document.getElementById('summaryTotal').innerText = fmt.format(data.estimatedTotal) + ' ₫';
+                    document.getElementById('summaryDeposit').innerText = fmt.format(data.deposit30Percent) + ' ₫';
+
+                    const weekendRow = document.getElementById('weekendSurchargeRow');
+                    if (data.weekendSurcharge > 0) {
+                        weekendRow.style.setProperty('display', 'flex', 'important');
+                        document.getElementById('summaryWeekend').innerText = '+' + fmt.format(data.weekendSurcharge) + ' ₫';
+                    } else {
+                        weekendRow.style.setProperty('display', 'none', 'important');
+                    }
+
+                    const btnSubmit = document.getElementById('btnSubmitCheckout');
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = 'Xác nhận Đặt xe ' + fmt.format(data.deposit30Percent) + ' ₫';
+
+                    localStorage.setItem('currentDepositAmount', data.deposit30Percent);
+                }
+            } catch (error) {
+                console.error("Lỗi gọi API tính giá:", error);
+            }
+        }
+
+        // =====================================================================
+        // 4. XỬ LÝ GIAO DỊCH VÀ TẠO ĐƠN ĐẶT XE (TỔNG HỢP 3 LUỒNG)
+        // =====================================================================
+        async function processCheckout() {
+            // 1. Ép hệ thống quét lỗi toàn bộ các ô nhập liệu một lần nữa
+            validateEmail();
+            validatePhone();
+            validateName();
+            validateAddress();
+
+            const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
+            const addressInput = document.getElementById("address").value.trim();
+
+            // 2. Chặn đứng giao dịch nếu Form sai hoặc bỏ trống
+            if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
+                alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
+                return;
+            }
+
+            const elBtnSubmit = document.getElementById("btnSubmitCheckout");
+            const originalText = elBtnSubmit.innerText;
+            elBtnSubmit.disabled = true;
+            elBtnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+
+            try {
+                // Lấy các tham số cơ bản
+                const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
+                const vehicleId = localStorage.getItem('selectedVehicleId');
+                const appliedVoucherId = localStorage.getItem('appliedVoucherId');
+                const token = localStorage.getItem('accessToken');
+
+                let payload = {};
+
+                // ===============================================
+                // NHÁNH 1: XỬ LÝ LUỒNG THEO GIỜ & THEO NGÀY
+                // ===============================================
+                if (bookingType === 'HOURLY' || bookingType === 'DAILY') {
+                    let departureTime = document.getElementById('departureTime').value;
+                    const durationVal = parseInt(document.getElementById('durationValue').value) || 0;
+
+                    if (departureTime.length === 16) departureTime += ":00"; // Định dạng lại cho Java
+
+                    payload = {
+                        customerId: parseInt(customerId),
+                        vehicleId: parseInt(vehicleId),
+                        bookingType: bookingType,
+                        tripDirection: "ONE_WAY",
+                        pickupAddress: addressInput,
+                        departureTime: departureTime
+                    };
+
+                    if (bookingType === 'HOURLY') payload.durationHours = durationVal;
+                    else payload.durationDays = durationVal;
+                }
+                // ===============================================
+                // NHÁNH 2: XỬ LÝ LUỒNG ĐI THEO CHUYẾN (DISTANCE)
+                // ===============================================
+                else {
+                    const tripDirection = localStorage.getItem('tripDirection') || 'ONE_WAY';
+
+                    payload = {
+                        customerId: parseInt(customerId),
+                        vehicleId: parseInt(vehicleId),
+                        bookingType: "DISTANCE",
+                        tripDirection: tripDirection,
+                        // Ưu tiên địa chỉ khách có thể vừa sửa trên text input, nếu không lấy từ map
+                        pickupAddress: addressInput || localStorage.getItem('pickupAddress'),
+                        pickupLat: parseFloat(localStorage.getItem('pickupLat')),
+                        pickupLng: parseFloat(localStorage.getItem('pickupLng')),
+                        dropoffAddress: localStorage.getItem('dropoffAddress'),
+                        dropoffLat: parseFloat(localStorage.getItem('dropoffLat')),
+                        dropoffLng: parseFloat(localStorage.getItem('dropoffLng')),
+                        departureTime: localStorage.getItem('mapDepartureTime'),
+                        distanceKm: parseFloat(localStorage.getItem('distanceKm'))
+                    };
+
+                    // Nếu là Khứ hồi, tự động đọc và đính kèm dữ liệu Chiều về (Return Trip)
+                    if (tripDirection === 'ROUND_TRIP') {
+                        payload.returnPickupAddress = localStorage.getItem('returnPickupAddress');
+                        payload.returnPickupLat = parseFloat(localStorage.getItem('returnPickupLat'));
+                        payload.returnPickupLng = parseFloat(localStorage.getItem('returnPickupLng'));
+                        payload.returnDropoffAddress = localStorage.getItem('returnDropoffAddress');
+                        payload.returnDropoffLat = parseFloat(localStorage.getItem('returnDropoffLat'));
+                        payload.returnDropoffLng = parseFloat(localStorage.getItem('returnDropoffLng'));
+                        payload.returnTime = localStorage.getItem('mapReturnTime');
+                        payload.returnDistanceKm = parseFloat(localStorage.getItem('returnDistanceKm'));
+                    }
+                }
+
+                // Gắn chung Voucher ID nếu khách đã áp mã (Cho cả 3 nhánh)
+                if (appliedVoucherId) {
+                    payload.voucherId = parseInt(appliedVoucherId);
+                }
+
+                // Cấu hình Headers (Nhét Token bảo mật vào)
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                // 3. GỌI API TẠO ĐƠN XUỐNG BACKEND
+                const response = await fetch('http://localhost:8080/FleetFlow/api/v1/bookings', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+
+                // 4. XỬ LÝ KẾT QUẢ TRẢ VỀ
+                if (response.ok && result.success) {
+                    alert(`Thanh toán cọc thành công!\nMã chuyến đi của bạn: #${result.bookingId}`);
+
+                    // Dọn rác LocalStorage sạch sẽ để tránh lỗi các chuyến sau
+                    const keysToRemove = [
+                        'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress',
+                        'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng',
+                        'returnPickupAddress', 'returnDropoffAddress', 'returnPickupLat', 'returnPickupLng',
+                        'returnDropoffLat', 'returnDropoffLng', 'mapDepartureTime', 'mapReturnTime',
+                        'distanceKm', 'returnDistanceKm', 'mapBaseFare', 'mapWeekendSurcharge',
+                        'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId'
+                    ];
+                    keysToRemove.forEach(k => localStorage.removeItem(k));
+
+                    // Điều hướng sang trang Lịch sử chuyến đi
+                    window.location.replace("tripHistory.html");
+                } else {
+                    alert("Rất tiếc, hệ thống từ chối: " + (result.error || result.message || "Lỗi không xác định"));
+                    elBtnSubmit.disabled = false;
+                    elBtnSubmit.innerText = originalText;
+                }
+
+            } catch (error) {
+                console.error("Lỗi:", error);
+                alert("Mất kết nối với máy chủ FleetFlow!");
                 elBtnSubmit.disabled = false;
                 elBtnSubmit.innerText = originalText;
             }
-
-        } catch (error) {
-            console.error("Lỗi:", error);
-            alert("Mất kết nối với máy chủ FleetFlow!");
-            elBtnSubmit.disabled = false;
-            elBtnSubmit.innerText = originalText;
         }
-    }
-</script>
+    </script>
 
-    
-  </body>
+
+</body>
+
 </html>

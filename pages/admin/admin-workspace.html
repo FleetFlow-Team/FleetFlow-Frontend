@@ -1,25 +1,30 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FleetFlow - Master Admin Workspace</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="../../style/pages/admin.css" />
-    
+
 
 </head>
+
 <body>
-    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg"
+        version="1.1">
         <defs>
             <filter id="liquid-distortion">
                 <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R"
+                    yChannelSelector="G" />
             </filter>
             <filter id="frosted">
                 <feTurbulence type="fractalNoise" baseFrequency="0.008 0.008" numOctaves="2" seed="92" result="noise" />
@@ -28,855 +33,1151 @@
             </filter>
         </defs>
     </svg>
-    
+
     <header>
-    <nav class="navbar dispatcher-navbar transition-all">
-        <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
-            
-            <a class="navbar-brand d-flex align-items-center" href="#">
-                <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" height="60px" class="me-2 logo-img" />
-            </a>
+        <nav class="navbar dispatcher-navbar transition-all">
+            <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
 
-            <div class="navbar-slogan text-white fw-medium fs-3 fst-italic d-none d-md-block">
-                Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span class="text-warning mx-1">•</span> An tâm
-            </div>
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" height="60px"
+                        class="me-2 logo-img" />
+                </a>
 
-            <div class="d-flex align-items-center gap-4 ms-auto">
-                
-                <div class="notification-glass position-relative" title="Thông báo">
-                    <i class="fa-regular fa-bell text-white fs-5"></i>
-                    <span class="notification-badge" id="notiCount">3</span>
-                </div>
-                
-                <div class="user-profile-dropdown">
-                    <div class="user-profile-trigger d-flex align-items-center">
-                        <div class="user-info-block text-end d-none d-sm-block me-3">
-                            <div class="fw-bold fs-6 lh-1 text-white profile-name">Đang tải...</div>
-                            <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75rem;">...</div>
-                        </div>
-                        <div class="glass-avatar">
-                            <img src="../../assets/img/default-avatar.png" alt="Avatar" />
-                        </div>
-                    </div>
-                    
-                    <div class="dropdown-menu-modern shadow-lg">                        
-                        <a href="#profile" class="dropdown-item-custom">
-                            <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
-                        </a>
-                        <a href="#settings" class="dropdown-item-custom">
-                            <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
-                        </a>
-                        
-                        <hr class="dropdown-divider-custom">
-                        
-                        <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
-                        </a>
-                    </div>
+                <div class="navbar-slogan text-white fw-medium fs-3 fst-italic d-none d-md-block">
+                    Tiện lợi <span class="text-warning mx-1">•</span> Nhanh chóng <span
+                        class="text-warning mx-1">•</span> An tâm
                 </div>
 
+                <div class="d-flex align-items-center gap-4 ms-auto">
+
+                    <div class="notification-glass position-relative" title="Thông báo">
+                        <i class="fa-regular fa-bell text-white fs-5"></i>
+                        <span class="notification-badge" id="notiCount">3</span>
+                    </div>
+
+                    <div class="user-profile-dropdown">
+                        <div class="user-profile-trigger d-flex align-items-center">
+                            <div class="user-info-block text-end d-none d-sm-block me-3">
+                                <div class="fw-bold fs-6 lh-1 text-white profile-name">Đang tải...</div>
+                                <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75rem;">...</div>
+                            </div>
+                            <div class="glass-avatar">
+                                <img src="../../assets/img/default-avatar.png" alt="Avatar" />
+                            </div>
+                        </div>
+
+                        <div class="dropdown-menu-modern shadow-lg">
+                            <a href="#profile" class="dropdown-item-custom">
+                                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
+                            </a>
+                            <a href="#settings" class="dropdown-item-custom">
+                                <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
+                            </a>
+
+                            <hr class="dropdown-divider-custom">
+
+                            <a href="#" class="dropdown-item-custom text-danger fw-bold logout-item">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
-        </div>
-    </nav>
-</header>
-<div class="luxury-glow-bg">
+        </nav>
+    </header>
+    <div class="luxury-glow-bg">
         <div class="glow-sphere sphere-1"></div>
         <div class="glow-sphere sphere-2"></div>
     </div>
 
-    <div class="container-fluid" style="padding-top: 40px; padding-bottom: 50px;"> 
+    <div class="container-fluid" style="padding-top: 40px; padding-bottom: 50px;">
         <div class="row px-xl-4">
             <div class="col-lg-3 mb-4">
                 <div class="sticky-top" style="top: 100px; width: 20rem;">
                     <div class="toc-header border-bottom border-secondary pb-3 mb-4 text-white">
                         <i class="fa-solid fa-layer-group me-2"></i> Bảng Điều Khiển
                     </div>
-                    
+
                     <div class="toc-container position-relative">
                         <div class="toc-indicator" id="vertical-indicator"></div>
                         <ul class="toc-list" id="admin-master-nav">
 
-                        <li>
-                            <a href="#tab-dashboard" class="toc-link active"><i class="fa-solid fa-chart-pie me-2"></i> Tổng quan</a>
-                        </li>
-                        
-                        <li class="menu-section-title">Quản lý Tài sản & Nhân sự</li>
-                        <li>
-                            <a href="#tab-fleet" class="toc-link"><i class="fa-solid fa-car me-2"></i> Vòng đời Xe</a>
-                        </li>
-                        <li>
-                            <a href="#tab-drivers" class="toc-link d-flex justify-content-between align-items-center">
-                                <span><i class="fa-solid fa-id-card-clip me-2"></i> Duyệt Hồ sơ</span>
-                                <span class="badge bg-warning text-dark rounded-pill shadow-sm">3</span>
-                            </a>
-                        </li>
-                        
-                        <li class="menu-section-title">Tài chính & Tiếp thị</li>
-                        <li>
-                            <a href="#tab-pricing" class="toc-link"><i class="fa-solid fa-file-invoice-dollar me-2"></i> Giá cước & Voucher</a>
-                        </li>
-                        <li>
-                            <a href="#tab-ai-marketing" class="toc-link"><i class="fa-solid fa-robot me-2"></i> Trợ lý AI & Marketing</a>
-                        </li>
-                        
-                        <li class="menu-section-title">Hệ thống & Phân quyền</li>
-                        <li>
-                            <a href="#tab-users" class="toc-link"><i class="fa-solid fa-users-gear me-2"></i> Tài khoản & RBAC</a>
-                        </li>
-                        <li>
-                            <a href="#tab-reports" class="toc-link"><i class="fa-solid fa-star me-2"></i> Báo cáo Chất lượng</a>
-                        </li>
-                        <li>
-                            <a href="#tab-audit" class="toc-link"><i class="fa-solid fa-server me-2"></i> Audit Log</a>
-                        </li>
-                    </ul>
+                            <li>
+                                <a href="#tab-dashboard" class="toc-link active"><i
+                                        class="fa-solid fa-chart-pie me-2"></i> Tổng quan</a>
+                            </li>
+
+                            <li class="menu-section-title">Quản lý Tài sản & Nhân sự</li>
+                            <li>
+                                <a href="#tab-fleet" class="toc-link"><i class="fa-solid fa-car me-2"></i> Vòng đời
+                                    Xe</a>
+                            </li>
+                            <li>
+                                <a href="#tab-drivers"
+                                    class="toc-link d-flex justify-content-between align-items-center">
+                                    <span><i class="fa-solid fa-id-card-clip me-2"></i> Duyệt Hồ sơ</span>
+                                    <span class="badge bg-warning text-dark rounded-pill shadow-sm">3</span>
+                                </a>
+                            </li>
+
+                            <li class="menu-section-title">Tài chính & Tiếp thị</li>
+                            <li>
+                                <a href="#tab-pricing" class="toc-link"><i
+                                        class="fa-solid fa-file-invoice-dollar me-2"></i> Giá cước & Voucher</a>
+                            </li>
+                            <li>
+                                <a href="#tab-ai-marketing" class="toc-link"><i class="fa-solid fa-robot me-2"></i> Trợ
+                                    lý AI & Marketing</a>
+                            </li>
+
+                            <li class="menu-section-title">Hệ thống & Phân quyền</li>
+                            <li>
+                                <a href="#tab-users" class="toc-link"><i class="fa-solid fa-users-gear me-2"></i> Tài
+                                    khoản & RBAC</a>
+                            </li>
+                            <li>
+                                <a href="#tab-reports" class="toc-link"><i class="fa-solid fa-star me-2"></i> Báo cáo
+                                    Chất lượng</a>
+                            </li>
+                            <li>
+                                <a href="#tab-audit" class="toc-link"><i class="fa-solid fa-server me-2"></i> Audit
+                                    Log</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-<div class="col-lg-9">
-        <main class="main-content">
-            
-            <section id="tab-dashboard" class="dashboard-section active">
-                
-                <div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
-                    <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-line text-info me-2"></i>Bảng Tổng Quan Hoạt Động</h4>
-                    <select class="form-select form-select-sm fw-bold glass-select w-auto" onchange="testGlobalError(this)">
-                        <option>Tháng này</option>
-                        <option>Tháng trước</option>
-                        <option>Test Lỗi Mạng</option>
-                    </select>
-                </div>
+            <div class="col-lg-9">
+                <main class="main-content">
 
-                <div class="row g-4 mb-4">
-                    <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
-                        <div class="glass-panel kpi-glass-card">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng Doanh Thu</div>
-                                    <h3 class="text-white fw-bold mb-0">1.45 Tỷ đ</h3>
-                                </div>
-                                <div class="kpi-icon-glass bg-primary bg-opacity-25 text-primary">
-                                    <i class="fa-solid fa-wallet"></i>
+                    <section id="tab-dashboard" class="dashboard-section active">
+
+                        <div class="d-flex justify-content-between align-items-end mb-4 fade-in-up">
+                            <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-line text-info me-2"></i>Bảng
+                                Tổng Quan Hoạt Động</h4>
+                            <select class="form-select form-select-sm fw-bold glass-select w-auto"
+                                onchange="testGlobalError(this)">
+                                <option>Tháng này</option>
+                                <option>Tháng trước</option>
+                                <option>Test Lỗi Mạng</option>
+                            </select>
+                        </div>
+
+                        <div class="row g-4 mb-4">
+                            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.1s;">
+                                <div class="glass-panel kpi-glass-card">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng Doanh Thu
+                                            </div>
+                                            <h3 class="text-white fw-bold mb-0">1.45 Tỷ đ</h3>
+                                        </div>
+                                        <div class="kpi-icon-glass bg-primary bg-opacity-25 text-primary">
+                                            <i class="fa-solid fa-wallet"></i>
+                                        </div>
+                                    </div>
+                                    <div class="small fw-bold text-success"><i
+                                            class="fa-solid fa-arrow-trend-up me-1"></i> +15% so với tháng trước</div>
                                 </div>
                             </div>
-                            <div class="small fw-bold text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i> +15% so với tháng trước</div>
-                        </div>
-                    </div>
-                    
-                    <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
-                        <div class="glass-panel kpi-glass-card">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <div class="text-white-50 small fw-bold text-uppercase mb-1">Lợi Nhuận Công Ty</div>
-                                    <h3 class="text-success fw-bold mb-0">580 Tr đ</h3>
-                                </div>
-                                <div class="kpi-icon-glass bg-success bg-opacity-25 text-success">
-                                    <i class="fa-solid fa-piggy-bank"></i>
+
+                            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.2s;">
+                                <div class="glass-panel kpi-glass-card">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Lợi Nhuận Công
+                                                Ty</div>
+                                            <h3 class="text-success fw-bold mb-0">580 Tr đ</h3>
+                                        </div>
+                                        <div class="kpi-icon-glass bg-success bg-opacity-25 text-success">
+                                            <i class="fa-solid fa-piggy-bank"></i>
+                                        </div>
+                                    </div>
+                                    <div class="small fw-bold text-success"><i
+                                            class="fa-solid fa-arrow-trend-up me-1"></i> +8.5% so với tháng trước</div>
                                 </div>
                             </div>
-                            <div class="small fw-bold text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i> +8.5% so với tháng trước</div>
-                        </div>
-                    </div>
 
-                    <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
-                        <div class="glass-panel kpi-glass-card">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <div class="text-white-50 small fw-bold text-uppercase mb-1">Chuyến Hoàn Thành</div>
-                                    <h3 class="text-white fw-bold mb-0">2,845</h3>
-                                </div>
-                                <div class="kpi-icon-glass bg-secondary bg-opacity-50 text-white">
-                                    <i class="fa-solid fa-car-side"></i>
+                            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.3s;">
+                                <div class="glass-panel kpi-glass-card">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Chuyến Hoàn
+                                                Thành</div>
+                                            <h3 class="text-white fw-bold mb-0">2,845</h3>
+                                        </div>
+                                        <div class="kpi-icon-glass bg-secondary bg-opacity-50 text-white">
+                                            <i class="fa-solid fa-car-side"></i>
+                                        </div>
+                                    </div>
+                                    <div class="small fw-bold text-success"><i
+                                            class="fa-solid fa-arrow-trend-up me-1"></i> +12% hoàn thành</div>
                                 </div>
                             </div>
-                            <div class="small fw-bold text-success"><i class="fa-solid fa-arrow-trend-up me-1"></i> +12% hoàn thành</div>
-                        </div>
-                    </div>
 
-                    <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
-                        <div class="glass-panel kpi-glass-card">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <div>
-                                    <div class="text-white-50 small fw-bold text-uppercase mb-1">Tỷ Lệ Hủy / Sự Cố</div>
-                                    <h3 class="text-danger fw-bold mb-0">4.2%</h3>
-                                </div>
-                                <div class="kpi-icon-glass bg-danger bg-opacity-25 text-danger">
-                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div class="col-xl-3 col-md-6 fade-in-up" style="animation-delay: 0.4s;">
+                                <div class="glass-panel kpi-glass-card">
+                                    <div class="d-flex justify-content-between align-items-start mb-3">
+                                        <div>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tỷ Lệ Hủy / Sự
+                                                Cố</div>
+                                            <h3 class="text-danger fw-bold mb-0">4.2%</h3>
+                                        </div>
+                                        <div class="kpi-icon-glass bg-danger bg-opacity-25 text-danger">
+                                            <i class="fa-solid fa-triangle-exclamation"></i>
+                                        </div>
+                                    </div>
+                                    <div class="small fw-bold text-danger"><i
+                                            class="fa-solid fa-arrow-trend-down me-1"></i> Tăng 1.2% cần lưu ý</div>
                                 </div>
                             </div>
-                            <div class="small fw-bold text-danger"><i class="fa-solid fa-arrow-trend-down me-1"></i> Tăng 1.2% cần lưu ý</div>
                         </div>
-                    </div>
-                </div>
 
-                <div class="row g-4 fade-in-up" style="animation-delay: 0.5s;">
-                    <div class="col-xl-8">
+                        <div class="row g-4 fade-in-up" style="animation-delay: 0.5s;">
+                            <div class="col-xl-8">
+                                <div class="glass-panel">
+                                    <h5 class="fw-bold text-white mb-4">Biểu đồ Doanh thu (30 ngày)</h5>
+                                    <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
+                                </div>
+                            </div>
+                            <div class="col-xl-4">
+                                <div class="glass-panel h-100">
+                                    <h5 class="fw-bold text-white mb-4">Trạng thái Chuyến đi</h5>
+                                    <div style="height: 300px; display: flex; justify-content: center;"><canvas
+                                            id="statusChart"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="glass-panel mt-4 fade-in-up" style="animation-delay: 0.6s;">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h5 class="fw-bold mb-2 text-white"><i
+                                            class="fa-solid fa-list-check text-info me-2"></i>Danh sách Chuyến đi Chi
+                                        tiết</h5>
+                                    <p class="text-white-50 small m-0">Xem chi tiết giao dịch, dòng tiền, lý do từ
+                                        chối/hủy chuyến theo trạng thái.</p>
+                                </div>
+
+                                <select id="dashboardStatusFilter"
+                                    class="form-select form-select-sm fw-bold glass-select w-auto"
+                                    onchange="fetchDashboardDetail(this.value)">
+                                    <option value="">-- Lọc theo Trạng thái --</option>
+                                    <option value="PENDING">Chờ duyệt (PENDING)</option>
+                                    <option value="APPROVED">Đã duyệt (APPROVED)</option>
+                                    <option value="DISPATCHED">Đang điều phối (DISPATCHED)</option>
+                                    <option value="REJECTED">Bị từ chối (REJECTED)</option>
+                                    <option value="CONFIRMED">Đã xác nhận (CONFIRMED)</option>
+                                    <option value="ONGOING">Đang di chuyển (ONGOING)</option>
+                                    <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
+                                    <option value="CANCELLED">Đã hủy (CANCELLED)</option>
+                                </select>
+                            </div>
+
+                            <div class="table-glass-wrapper overflow-auto" style="max-height: 500px;">
+                                <table class="table-glass w-100 mb-0" id="dashboardDetailTable">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr id="dashboardDetailHead">
+                                            <th width="15%">Mã chuyến</th>
+                                            <th width="25%">Khách hàng</th>
+                                            <th width="25%">Phương tiện</th>
+                                            <th width="15%">Loại chuyến</th>
+                                            <th width="20%">Thời gian tạo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboardDetailBody">
+                                        <tr>
+                                            <td colspan="5" class="text-center text-white-50 py-5">
+                                                <i class="fa-solid fa-filter me-2"></i> Vui lòng chọn Trạng thái ở góc
+                                                phải để xem danh sách chi tiết.
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </section>
+
+
+                    <section id="tab-fleet" class="dashboard-section">
                         <div class="glass-panel">
-                            <h5 class="fw-bold text-white mb-4">Biểu đồ Doanh thu (30 ngày)</h5>
-                            <div style="height: 300px;"><canvas id="revenueChart"></canvas></div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4">
-                        <div class="glass-panel h-100">
-                            <h5 class="fw-bold text-white mb-4">Trạng thái Chuyến đi</h5>
-                            <div style="height: 300px; display: flex; justify-content: center;"><canvas id="statusChart"></canvas></div>
-                        </div>
-                    </div>
-                </div>
-
-                
-                <div class="glass-panel mt-4 fade-in-up" style="animation-delay: 0.6s;">
-                    <div class="d-flex justify-content-between align-items-end mb-4">
-                        <div>
-                            <h5 class="fw-bold mb-2 text-white"><i class="fa-solid fa-list-check text-info me-2"></i>Danh sách Chuyến đi Chi tiết</h5>
-                            <p class="text-white-50 small m-0">Xem chi tiết giao dịch, dòng tiền, lý do từ chối/hủy chuyến theo trạng thái.</p>
-                        </div>
-                        
-                        <select id="dashboardStatusFilter" class="form-select form-select-sm fw-bold glass-select w-auto" onchange="fetchDashboardDetail(this.value)">
-                            <option value="">-- Lọc theo Trạng thái --</option>
-                            <option value="PENDING">Chờ duyệt (PENDING)</option>
-                            <option value="APPROVED">Đã duyệt (APPROVED)</option>
-                            <option value="DISPATCHED">Đang điều phối (DISPATCHED)</option>
-                            <option value="REJECTED">Bị từ chối (REJECTED)</option>
-                            <option value="CONFIRMED">Đã xác nhận (CONFIRMED)</option>
-                            <option value="ONGOING">Đang di chuyển (ONGOING)</option>
-                            <option value="COMPLETED">Hoàn thành (COMPLETED)</option>
-                            <option value="CANCELLED">Đã hủy (CANCELLED)</option>
-                        </select>
-                    </div>
-
-                    <div class="table-glass-wrapper overflow-auto" style="max-height: 500px;">
-                        <table class="table-glass w-100 mb-0" id="dashboardDetailTable">
-                            <thead style="position: sticky; top: 0; z-index: 10;">
-                                <tr id="dashboardDetailHead">
-                                    <th width="15%">Mã chuyến</th>
-                                    <th width="25%">Khách hàng</th>
-                                    <th width="25%">Phương tiện</th>
-                                    <th width="15%">Loại chuyến</th>
-                                    <th width="20%">Thời gian tạo</th>
-                                </tr>
-                            </thead>
-                            <tbody id="dashboardDetailBody">
-                                <tr>
-                                    <td colspan="5" class="text-center text-white-50 py-5">
-                                        <i class="fa-solid fa-filter me-2"></i> Vui lòng chọn Trạng thái ở góc phải để xem danh sách chi tiết.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </section>
-
-
-            <section id="tab-fleet" class="dashboard-section">
-                <div class="glass-panel">
-                    <div class="d-flex justify-content-between align-items-end mb-4">
-                        <div>
-                            <h4 class="fw-bold mb-2 text-white"><i class="fa-solid fa-car text-primary me-2"></i>Quản lý Vòng đời Xe (Fleet Lifecycle)</h4>
-                            <p class="text-white-50 small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám sát tự động hạn kiểm định pháp lý.</p>
-                        </div>
-                        <button class="btn-glass-action bg-primary text-white border-primary" data-bs-toggle="modal" data-bs-target="#addVehicleModal">
-                            <i class="fa-solid fa-plus me-2"></i> Khởi tạo xe mới
-                        </button>
-                    </div>
-
-                    <div class="table-glass-wrapper">
-                        <table class="table-glass w-100">
-                            <thead>
-                                <tr>
-                                    <th width="30%">Biển số & Phương tiện</th>
-                                    <th width="30%">Giấy tờ & Định danh</th>
-                                    <th width="20%">Thuộc tính (Tags)</th>
-                                    <th width="20%">Trạng thái hiện tại</th>
-                                </tr>
-                            </thead>
-                            <tbody id="adminFleetList">
-                                </tbody>
-                        </table>
-                    </div>
-                </div>
-
-            </section>
-
-
-            <section id="tab-drivers" class="dashboard-section">
-                <div class="glass-panel">
-                    <div class="d-flex justify-content-between align-items-end mb-4">
-                        <div>
-                            <h4 class="fw-bold mb-2 text-white"><i class="fa-solid fa-id-card-clip text-info me-2"></i>Kiểm duyệt Hồ sơ Tài xế</h4>
-                            <p class="text-white-50 small m-0">Xác thực chứng minh nhân dân/CCCD và bằng lái xe (eKYC) trước khi kích hoạt quyền giành đơn chuyến.</p>
-                        </div>
-                        <div class="input-group w-auto">
-                            <span class="input-group-text glass-input-addon border-end-0"><i class="fa-solid fa-magnifying-glass text-white-50"></i></span>
-                            <input type="text" class="form-control glass-input border-start-0" placeholder="Tìm tên, SĐT tài xế...">
-                        </div>
-                    </div>
-
-                    <div class="table-glass-wrapper">
-                        <table class="table-glass w-100">
-                            <thead>
-                                <tr>
-                                    <th width="30%">Họ Tên & Liên hệ</th>
-                                    <th width="20%">Thời gian nộp</th>
-                                    <th width="25%">Trạng thái eKYC</th>
-                                    <th width="25%" class="text-end">Hành động</th>
-                                </tr>
-                            </thead>
-                            <tbody id="ekycQueueList">
-                                
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-
-            <section id="tab-pricing" class="dashboard-section">
-                <div class="glass-panel">
-                    <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá & Khuyến mãi</h4>
-                    
-                    <div class="glass-panel mb-4 d-flex align-items-start gap-3 fade-in-up" style="background: rgba(255, 222, 89, 0.05); border-color: rgba(255, 222, 89, 0.2); padding: 20px;">
-                        <i class="fa-solid fa-circle-info fs-3 text-warning"></i>
-                        <div>
-                            <h5 class="fw-bold mb-1 fs-6 text-white">Quy tắc Nội suy Giá (BR-17)</h5>
-                            <p class="m-0 text-white-50" style="font-size: 0.9rem;">Admin chỉ được thiết lập Đơn giá cơ sở. Giá cước từng chuyến sẽ do thuật toán hệ thống tự động nội suy dựa trên Map API Directions. Tuyệt đối không can thiệp giá đơn lẻ.</p>
-                        </div>
-                    </div>
-
-                    <div class="row g-4">
-                        <div class="col-lg-6">
-                            <div class="glass-panel fade-in-up" style="animation-delay: 0.1s;">
-                                <h5 class="fw-bold mb-4 fs-6 text-white">Đơn giá Cơ bản (VNĐ / Km)</h5>
-                                <div class="mb-3">
-                                    <label class="form-label text-white-50 fw-bold small">Dòng xe 4 Chỗ Tiêu chuẩn</label>
-                                    <input type="number" class="form-control glass-input fw-bold fs-5" value="12000">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-2 text-white"><i
+                                            class="fa-solid fa-car text-primary me-2"></i>Quản lý Vòng đời Xe (Fleet
+                                        Lifecycle)</h4>
+                                    <p class="text-white-50 small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám
+                                        sát tự động hạn kiểm định pháp lý.</p>
                                 </div>
-                                <div class="mb-4">
-                                    <label class="form-label text-white-50 fw-bold small">Hệ số Lễ / Tết (%)</label>
-                                    <input type="number" class="form-control glass-input fw-bold fs-5" value="15">
-                                </div>
-                                <button class="btn-glass-action bg-primary text-white border-primary w-100 py-3 fw-bold" onclick="simulateSaveConfig(this)">
-                                    Lưu Cấu Hình Cơ Sở
+                                <button class="btn-glass-action bg-primary text-white border-primary"
+                                    data-bs-toggle="modal" data-bs-target="#addVehicleModal">
+                                    <i class="fa-solid fa-plus me-2"></i> Khởi tạo xe mới
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <section id="tab-ai-marketing" class="dashboard-section">
-                <div class="glass-panel">
-                    <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-robot text-info me-2"></i>Trợ lý AI & Chiến dịch Email</h4>
-                    <div class="row g-4">
-                        <div class="col-12">
-                            <div class="glass-panel">
-                                <h5 class="fw-bold mb-4 fs-6 text-white"><i class="fa-solid fa-brain me-2 text-warning"></i>Gán Thuộc tính AI (Kéo thả Tags)</h5>
-                                <div class="kanban-board">
-                                    <div class="kb-column-glass">
-                                        <h6 class="text-white-50 fw-bold small mb-3">Tags Khả dụng (Kéo sang phải)</h6>
-                                        <div class="kb-cards-container">
-                                            <div class="kanban-card-item" draggable="true"><i class="fa-solid fa-wheelchair text-info me-2"></i> Xe có xe lăn</div>
-                                            <div class="kanban-card-item" draggable="true"><i class="fa-solid fa-volume-xmark text-secondary me-2"></i> Tài xế yên tĩnh</div>
-                                            <div class="kanban-card-item" draggable="true"><i class="fa-solid fa-paw text-warning me-2"></i> Cho phép Thú cưng</div>
-                                            <div class="kanban-card-item" draggable="true"><i class="fa-solid fa-suitcase text-success me-2"></i> Cốp siêu rộng</div>
+                            <div class="table-glass-wrapper">
+                                <table class="table-glass w-100">
+                                    <thead>
+                                        <tr>
+                                            <th width="30%">Biển số & Phương tiện</th>
+                                            <th width="30%">Giấy tờ & Định danh</th>
+                                            <th width="20%">Thuộc tính (Tags)</th>
+                                            <th width="20%">Trạng thái hiện tại</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adminFleetList">
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                    </section>
+
+
+                    <section id="tab-drivers" class="dashboard-section">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-2 text-white"><i
+                                            class="fa-solid fa-id-card-clip text-info me-2"></i>Kiểm duyệt Hồ sơ Tài xế
+                                    </h4>
+                                    <p class="text-white-50 small m-0">Xác thực chứng minh nhân dân/CCCD và bằng lái xe
+                                        (eKYC) trước khi kích hoạt quyền giành đơn chuyến.</p>
+                                </div>
+                                <div class="input-group w-auto">
+                                    <span class="input-group-text glass-input-addon border-end-0"><i
+                                            class="fa-solid fa-magnifying-glass text-white-50"></i></span>
+                                    <input type="text" class="form-control glass-input border-start-0"
+                                        placeholder="Tìm tên, SĐT tài xế...">
+                                </div>
+                            </div>
+
+                            <div class="table-glass-wrapper">
+                                <table class="table-glass w-100">
+                                    <thead>
+                                        <tr>
+                                            <th width="30%">Họ Tên & Liên hệ</th>
+                                            <th width="20%">Thời gian nộp</th>
+                                            <th width="25%">Trạng thái eKYC</th>
+                                            <th width="25%" class="text-end">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ekycQueueList">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="tab-pricing" class="dashboard-section">
+                        <div class="glass-panel">
+                            <h4 class="fw-bold mb-4 text-white"><i
+                                    class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá &
+                                Khuyến mãi</h4>
+
+                            <div class="glass-panel mb-4 d-flex align-items-start gap-3 fade-in-up"
+                                style="background: rgba(255, 222, 89, 0.05); border-color: rgba(255, 222, 89, 0.2); padding: 20px;">
+                                <i class="fa-solid fa-circle-info fs-3 text-warning"></i>
+                                <div>
+                                    <h5 class="fw-bold mb-1 fs-6 text-white">Quy tắc Nội suy Giá (BR-17)</h5>
+                                    <p class="m-0 text-white-50" style="font-size: 0.9rem;">Admin chỉ được thiết lập Đơn
+                                        giá cơ sở. Giá cước từng chuyến sẽ do thuật toán hệ thống tự động nội suy dựa
+                                        trên Map API Directions. Tuyệt đối không can thiệp giá đơn lẻ.</p>
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-lg-5">
+                                    <div class="glass-panel fade-in-up" style="animation-delay: 0.1s;">
+                                        <h5 class="fw-bold mb-4 fs-6 text-white">Đơn giá Cơ bản (VNĐ / Km)</h5>
+                                        <div class="mb-3">
+                                            <label class="form-label text-white-50 fw-bold small">Dòng xe 4 Chỗ Tiêu
+                                                chuẩn</label>
+                                            <input type="number" class="form-control glass-input fw-bold fs-5"
+                                                value="12000">
                                         </div>
+                                        <div class="mb-4">
+                                            <label class="form-label text-white-50 fw-bold small">Hệ số Lễ / Tết
+                                                (%)</label>
+                                            <input type="number" class="form-control glass-input fw-bold fs-5"
+                                                value="15">
+                                        </div>
+                                        <button
+                                            class="btn-glass-action bg-primary text-white border-primary w-100 py-3 fw-bold"
+                                            onclick="simulateSaveConfig(this)">
+                                            Lưu Cấu Hình Cơ Sở
+                                        </button>
                                     </div>
-                                    <div class="kb-column-glass">
-                                        <h6 class="text-white-50 fw-bold small mb-3">Hồ sơ Phương tiện (Thả vào đây)</h6>
-                                        <div class="kb-cards-container target-dropzone">
-                                            <div class="kanban-card-item stable-tag text-center fw-bold fs-5 py-3">51H-123.45</div>
-                                            <div class="kanban-card-item stable-tag text-center fw-bold fs-5 py-3">60A-987.65</div>
+                                </div>
+
+                                <!-- CỘT QUẢN LÝ VOUCHER -->
+                                <div class="col-lg-7">
+                                    <div class="glass-panel fade-in-up" style="animation-delay: 0.2s;">
+                                        <div class="d-flex justify-content-between align-items-center mb-4">
+                                            <h5 class="fw-bold fs-6 text-white m-0"><i
+                                                    class="fa-solid fa-ticket text-warning me-2"></i>Quản lý Voucher
+                                            </h5>
+                                            <button class="btn-glass-action bg-success text-white border-success"
+                                                onclick="openVoucherModal()">+ Tạo mới</button>
+                                        </div>
+
+                                        <div class="d-flex gap-2 mb-3">
+                                            <select id="voucherStatusFilter"
+                                                class="form-select form-select-sm glass-select w-auto"
+                                                onchange="fetchVouchers()">
+                                                <option value="">Tất cả Trạng thái</option>
+                                                <option value="ACTIVE" selected>Đang kích hoạt (ACTIVE)</option>
+                                                <option value="INACTIVE">Vô hiệu hóa (INACTIVE)</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="table-glass-wrapper overflow-auto" style="max-height: 350px;">
+                                            <table class="table-glass w-100 mb-0">
+                                                <thead style="position: sticky; top: 0; z-index: 10;">
+                                                    <tr>
+                                                        <th>Mã Code</th>
+                                                        <th>Giảm giá</th>
+                                                        <th>Tối đa</th>
+                                                        <th>Hạn dùng</th>
+                                                        <th>Trạng thái</th>
+                                                        <th>Thao tác</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="voucherListBody">
+                                                    <tr>
+                                                        <td colspan="6" class="text-center text-white-50">Vui lòng đợi,
+                                                            đang tải...</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
 
-            <section id="tab-users" class="dashboard-section">
-                <div class="glass-panel">
-                    <div class="d-flex justify-content-between align-items-end mb-4">
-                        <div>
-                            <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-users-gear text-primary me-2"></i>Tài khoản & Phân quyền (RBAC)</h4>
-                            <p class="text-white-50 small m-0">Kiểm soát truy cập theo nguyên tắc Đặc quyền tối thiểu (Least Privilege).</p>
-                        </div>
-                        <button class="btn-glass-action bg-primary text-white border-primary fw-bold shadow-sm">
-                            <i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự
-                        </button>
-                    </div>
-
-                    <div class="row g-4">
-                        <div class="col-xl-4">
-                            <div class="glass-panel p-0 h-100 overflow-hidden">
-                                <div class="p-3 border-bottom border-secondary bg-white bg-opacity-10 fw-bold text-white">
-                                    <i class="fa-solid fa-users me-2 text-info"></i> Nhân sự Back-Office
-                                </div>
-                                
-                                <div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center rbac-user-item">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="https://ui-avatars.com/api/?name=Admin&background=random" class="rounded-circle border border-2 border-white" width="45" height="45">
-                                        <div>
-                                            <div class="fw-bold text-white fs-6">Trần Giám Đốc</div>
-                                            <div class="small text-white-50">ID: ADM-01</div>
+                    <section id="tab-ai-marketing" class="dashboard-section">
+                        <div class="glass-panel">
+                            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-robot text-info me-2"></i>Trợ lý
+                                AI & Chiến dịch Email</h4>
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <div class="glass-panel">
+                                        <h5 class="fw-bold mb-4 fs-6 text-white"><i
+                                                class="fa-solid fa-brain me-2 text-warning"></i>Gán Thuộc tính AI (Kéo
+                                            thả Tags)</h5>
+                                        <div class="kanban-board">
+                                            <div class="kb-column-glass">
+                                                <h6 class="text-white-50 fw-bold small mb-3">Tags Khả dụng (Kéo sang
+                                                    phải)</h6>
+                                                <div class="kb-cards-container">
+                                                    <div class="kanban-card-item" draggable="true"><i
+                                                            class="fa-solid fa-wheelchair text-info me-2"></i> Xe có xe
+                                                        lăn</div>
+                                                    <div class="kanban-card-item" draggable="true"><i
+                                                            class="fa-solid fa-volume-xmark text-secondary me-2"></i>
+                                                        Tài xế yên tĩnh</div>
+                                                    <div class="kanban-card-item" draggable="true"><i
+                                                            class="fa-solid fa-paw text-warning me-2"></i> Cho phép Thú
+                                                        cưng</div>
+                                                    <div class="kanban-card-item" draggable="true"><i
+                                                            class="fa-solid fa-suitcase text-success me-2"></i> Cốp siêu
+                                                        rộng</div>
+                                                </div>
+                                            </div>
+                                            <div class="kb-column-glass">
+                                                <h6 class="text-white-50 fw-bold small mb-3">Hồ sơ Phương tiện (Thả vào
+                                                    đây)</h6>
+                                                <div class="kb-cards-container target-dropzone">
+                                                    <div
+                                                        class="kanban-card-item stable-tag text-center fw-bold fs-5 py-3">
+                                                        51H-123.45</div>
+                                                    <div
+                                                        class="kanban-card-item stable-tag text-center fw-bold fs-5 py-3">
+                                                        60A-987.65</div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger p-2">Super Admin</span>
-                                </div>
-                                
-                                <div class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center rbac-user-item active-user">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=random" class="rounded-circle border border-2 border-white" width="45" height="45">
-                                        <div>
-                                            <div class="fw-bold text-white fs-6">Nguyễn Điều Phối</div>
-                                            <div class="small text-white-50">ID: DP-889</div>
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-primary bg-opacity-25 text-primary border border-primary p-2">Dispatcher</span>
-                                </div>
-                                
-                                <div class="p-3 d-flex justify-content-between align-items-center rbac-user-item">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="https://ui-avatars.com/api/?name=CSKH&background=random" class="rounded-circle border border-2 border-white" width="45" height="45">
-                                        <div>
-                                            <div class="fw-bold text-white fs-6">Lê CSKH</div>
-                                            <div class="small text-white-50">ID: CS-102</div>
-                                        </div>
-                                    </div>
-                                    <span class="badge bg-success bg-opacity-25 text-success border border-success p-2">Support</span>
                                 </div>
                             </div>
                         </div>
+                    </section>
 
-                        <div class="col-xl-8">
-                            <div class="table-glass-wrapper p-0 overflow-hidden h-100">
-                                <div class="p-3 border-bottom border-secondary bg-white bg-opacity-10 d-flex justify-content-between align-items-center">
-                                    <div class="fw-bold text-white"><i class="fa-solid fa-table-cells me-2 text-warning"></i> Ma trận Quyền hạn: <span class="text-primary">Dispatcher</span></div>
-                                    <button class="btn-glass-action text-white" onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
+                    <section id="tab-users" class="dashboard-section">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-users-gear text-primary me-2"></i>Tài khoản & Phân quyền
+                                        (RBAC)</h4>
+                                    <p class="text-white-50 small m-0">Kiểm soát truy cập theo nguyên tắc Đặc quyền tối
+                                        thiểu (Least Privilege).</p>
                                 </div>
-                                
-                                <div class="p-3">
-                                    <table class="table-glass w-100 mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th>Module / Chức năng</th>
-                                                <th class="text-center">Xem</th>
-                                                <th class="text-center">Thêm</th>
-                                                <th class="text-center">Sửa</th>
-                                                <th class="text-center">Xóa</th>
-                                                <th class="text-center text-warning">Duyệt/Khóa</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="fw-bold">Giám sát Hành trình</td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox" checked><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox" disabled><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox"><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox"><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox" checked><span class="slider-glass"></span></label></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="fw-bold">Hồ sơ Tài xế (eKYC)</td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox" checked><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox"><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox"><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox"><span class="slider-glass"></span></label></td>
-                                                <td class="text-center"><label class="switch-glass"><input type="checkbox"><span class="slider-glass"></span></label></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+                                <button class="btn-glass-action bg-primary text-white border-primary fw-bold shadow-sm">
+                                    <i class="fa-solid fa-user-plus me-2"></i> Thêm Nhân sự
+                                </button>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-xl-4">
+                                    <div class="glass-panel p-0 h-100 overflow-hidden">
+                                        <div
+                                            class="p-3 border-bottom border-secondary bg-white bg-opacity-10 fw-bold text-white">
+                                            <i class="fa-solid fa-users me-2 text-info"></i> Nhân sự Back-Office
+                                        </div>
+
+                                        <div
+                                            class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center rbac-user-item">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="https://ui-avatars.com/api/?name=Admin&background=random"
+                                                    class="rounded-circle border border-2 border-white" width="45"
+                                                    height="45">
+                                                <div>
+                                                    <div class="fw-bold text-white fs-6">Trần Giám Đốc</div>
+                                                    <div class="small text-white-50">ID: ADM-01</div>
+                                                </div>
+                                            </div>
+                                            <span
+                                                class="badge bg-danger bg-opacity-25 text-danger border border-danger p-2">Super
+                                                Admin</span>
+                                        </div>
+
+                                        <div
+                                            class="p-3 border-bottom border-secondary d-flex justify-content-between align-items-center rbac-user-item active-user">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="https://ui-avatars.com/api/?name=Dieu+Phoi&background=random"
+                                                    class="rounded-circle border border-2 border-white" width="45"
+                                                    height="45">
+                                                <div>
+                                                    <div class="fw-bold text-white fs-6">Nguyễn Điều Phối</div>
+                                                    <div class="small text-white-50">ID: DP-889</div>
+                                                </div>
+                                            </div>
+                                            <span
+                                                class="badge bg-primary bg-opacity-25 text-primary border border-primary p-2">Dispatcher</span>
+                                        </div>
+
+                                        <div
+                                            class="p-3 d-flex justify-content-between align-items-center rbac-user-item">
+                                            <div class="d-flex align-items-center gap-3">
+                                                <img src="https://ui-avatars.com/api/?name=CSKH&background=random"
+                                                    class="rounded-circle border border-2 border-white" width="45"
+                                                    height="45">
+                                                <div>
+                                                    <div class="fw-bold text-white fs-6">Lê CSKH</div>
+                                                    <div class="small text-white-50">ID: CS-102</div>
+                                                </div>
+                                            </div>
+                                            <span
+                                                class="badge bg-success bg-opacity-25 text-success border border-success p-2">Support</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-xl-8">
+                                    <div class="table-glass-wrapper p-0 overflow-hidden h-100">
+                                        <div
+                                            class="p-3 border-bottom border-secondary bg-white bg-opacity-10 d-flex justify-content-between align-items-center">
+                                            <div class="fw-bold text-white"><i
+                                                    class="fa-solid fa-table-cells me-2 text-warning"></i> Ma trận Quyền
+                                                hạn: <span class="text-primary">Dispatcher</span></div>
+                                            <button class="btn-glass-action text-white"
+                                                onclick="simulateSaveConfig(this)">Lưu Phân Quyền</button>
+                                        </div>
+
+                                        <div class="p-3">
+                                            <table class="table-glass w-100 mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Module / Chức năng</th>
+                                                        <th class="text-center">Xem</th>
+                                                        <th class="text-center">Thêm</th>
+                                                        <th class="text-center">Sửa</th>
+                                                        <th class="text-center">Xóa</th>
+                                                        <th class="text-center text-warning">Duyệt/Khóa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td class="fw-bold">Giám sát Hành trình</td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox" checked><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox" disabled><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox"><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox"><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox" checked><span
+                                                                    class="slider-glass"></span></label></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="fw-bold">Hồ sơ Tài xế (eKYC)</td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox" checked><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox"><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox"><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox"><span
+                                                                    class="slider-glass"></span></label></td>
+                                                        <td class="text-center"><label class="switch-glass"><input
+                                                                    type="checkbox"><span
+                                                                    class="slider-glass"></span></label></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
+                    </section>
 
-            <section id="tab-reports" class="dashboard-section">
-    <div class="glass-panel">
-        <div class="d-flex justify-content-between align-items-end mb-4">
-            <div>
-                <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-chart-area text-warning me-2"></i>Đo lường Chất lượng Dịch vụ</h4>
-                <p class="text-white-50 small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và sức khỏe vận hành.</p>
-            </div>
-            <button class="glass-liquid-btn fw-bold" onclick="simulateSaveConfig(this)">
-                <i class="fa-solid fa-file-export text-success me-2"></i> Xuất PDF
-            </button>
-        </div>
+                    <section id="tab-reports" class="dashboard-section">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-chart-area text-warning me-2"></i>Đo lường Chất lượng
+                                        Dịch vụ</h4>
+                                    <p class="text-white-50 small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và
+                                        sức khỏe vận hành.</p>
+                                </div>
+                                <button class="glass-liquid-btn fw-bold" onclick="simulateSaveConfig(this)">
+                                    <i class="fa-solid fa-file-export text-success me-2"></i> Xuất PDF
+                                </button>
+                            </div>
 
-        <div class="row g-4">
-            <div class="col-lg-5">
-                <div class="glass-panel p-4 h-100 d-flex flex-column">
-                    <h6 class="fw-bold mb-4 text-center text-white"><i class="fa-solid fa-satellite-dish me-2 text-info"></i> Phổ Điểm Đánh Giá Tài Xế</h6>
-                    <div style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 300px;">
-                        <canvas id="qualityRadarChart"></canvas>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-7">
-                <div class="glass-panel p-4 h-100 d-flex flex-column">
-                    <h6 class="fw-bold mb-4 text-white"><i class="fa-solid fa-chart-column me-2 text-danger"></i> Phân tích Lý do Hủy chuyến</h6>
-                    <div style="flex-grow: 1; min-height: 300px;">
-                        <canvas id="cancelReasonChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-            </section>
-
-            <section id="tab-audit" class="dashboard-section">
-                <div class="glass-panel">
-                    <div class="d-flex justify-content-between align-items-end mb-4">
-                        <div>
-                            <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-server text-primary me-2"></i>Nhật ký Hệ thống (Audit Log)</h4>
-                            <p class="text-white-50 small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất biến, Read-only.</p>
-                        </div>
-                        <div class="input-group w-auto shadow-sm">
-                            <span class="input-group-text glass-input-addon border-end-0"><i class="fa-solid fa-magnifying-glass text-white-50"></i></span>
-                            <input type="text" class="form-control glass-input border-start-0" placeholder="Tìm kiếm Audit ID, User...">
-                        </div>
-                    </div>
-
-                    <div class="table-glass-wrapper overflow-auto" style="max-height: 600px;">
-                        <table class="table-glass table-audit mb-0 w-100">
-                            <thead style="position: sticky; top: 0; z-index: 10;">
-                                <tr>
-                                    <th width="15%">Thời gian</th>
-                                    <th width="20%">Nhân sự (Who)</th>
-                                    <th width="15%">Hành động</th>
-                                    <th width="25%">Đối tượng (Target)</th>
-                                    <th width="15%">Thiết bị / IP</th>
-                                    <th width="10%" class="text-center">Chi tiết</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="fw-bold text-white">06/06/2026</div>
-                                        <div class="text-white-50 small">09:15:22</div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-primary">ADM-01</div>
-                                        <div class="text-white-50 small">Trần Giám Đốc</div>
-                                    </td>
-                                    <td><span class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3 fw-bold shadow-sm">UPDATE</span></td>
-                                    <td class="fw-bold text-white">Cấu hình Hệ số Lễ/Tết</td>
-                                    <td>
-                                        <div class="text-white-50 small">113.160.22.1</div>
-                                        <div class="text-white-50 small">Chrome / Mac OS</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <button class="btn-glass-action" onclick="openDiffModal()">Xem Diff</button>
-                                    </td>
-                                </tr>
-                                
-                                <tr>
-                                    <td>
-                                        <div class="fw-bold text-white">06/06/2026</div>
-                                        <div class="text-white-50 small">08:42:10</div>
-                                    </td>
-                                    <td>
-                                        <div class="fw-bold text-info">DP-889</div>
-                                        <div class="text-white-50 small">Nguyễn Điều Phối</div>
-                                    </td>
-                                    <td><span class="badge bg-info bg-opacity-25 text-info border border-info p-2 px-3 fw-bold shadow-sm">FREEZE</span></td>
-                                    <td class="fw-bold text-white">Hóa đơn chuyến #BK-9015</td>
-                                    <td>
-                                        <div class="text-white-50 small">113.160.22.5</div>
-                                        <div class="text-white-50 small">Safari / Windows</div>
-                                    </td>
-                                    <td class="text-center">
-                                        <button class="btn-glass-action">Xem Log</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </section>
-            
-        </main>
-    </div>
-
-    <div class="modal fade" id="addVehicleModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content modern-modal-content">
-            
-            <!-- HEADER -->
-            <div class="modal-header border-0 px-4 pt-4 pb-0">
-                <h4 class="fw-bold text-white m-0 d-flex align-items-center">
-                    <div class="bg-success bg-opacity-25 text-success p-2 rounded-3 me-3 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;">
-                        <i class="fa-solid fa-car-side"></i>
-                    </div>
-                    Khởi tạo Phương tiện
-                </h4>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-
-            <!-- BODY -->
-            <div class="modal-body p-4">
-                <form id="addVehicleForm" onsubmit="submitNewVehicle(event)">
-                    
-                    <!-- Nhóm 1: Thông tin Định danh -->
-                    <div class="modern-section-title mt-2"><i class="fa-regular fa-id-card me-2"></i>Thông tin Định danh</div>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="modern-label">Biển số kiểm soát <span class="text-danger">*</span></label>
-                            <input type="text" id="vLicensePlate" class="form-control modern-input" placeholder="VD: 51H-123.45" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="modern-label">Phân loại Dịch vụ <span class="text-danger">*</span></label>
-                            <select id="vTypeId" class="form-select modern-select" required>
-                                <option value="1">Xe 4 chỗ Tiêu chuẩn</option>
-                                <option value="2">Xe 7 chỗ SUV/MPV</option>
-                                <option value="3">Xe 16 chỗ Du lịch</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="modern-label">Hãng sản xuất <span class="text-danger">*</span></label>
-                            <input type="text" id="vBrand" class="form-control modern-input" placeholder="VD: VinFast, Honda..." required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="modern-label">Tên dòng xe (Model) <span class="text-danger">*</span></label>
-                            <input type="text" id="vModel" class="form-control modern-input" placeholder="VD: VF8 Plus" required>
-                        </div>
-                    </div>
-
-                    <!-- Nhóm 2: Hồ sơ Pháp lý & Kỹ thuật -->
-                    <div class="modern-section-title"><i class="fa-solid fa-shield-halved me-2"></i>Hồ sơ Pháp lý & Kỹ thuật</div>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <label class="modern-label text-warning">Số khung (Chassis) <span class="text-danger">*</span></label>
-                            <input type="text" id="vChassis" class="form-control modern-input" placeholder="Nhập mã số khung bảo mật..." required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="modern-label text-warning">Số máy (Engine) <span class="text-danger">*</span></label>
-                            <input type="text" id="vEngine" class="form-control modern-input" placeholder="Nhập mã số máy bảo mật..." required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="modern-label">Số chỗ ngồi (Thực tế) <span class="text-danger">*</span></label>
-                            <input type="number" id="vSeatCount" class="form-control modern-input" value="5" min="2" max="50" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="modern-label">Số Km tích lũy (ODO) <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="number" id="vKm" class="form-control modern-input text-success fw-bold border-end-0" value="0" required>
-                                <span class="input-group-text bg-transparent border-start-0 text-success fw-bold" style="border: 1px solid #334155; border-radius: 0 12px 12px 0;">km</span>
+                            <div class="row g-4">
+                                <div class="col-lg-5">
+                                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                                        <h6 class="fw-bold mb-4 text-center text-white"><i
+                                                class="fa-solid fa-satellite-dish me-2 text-info"></i> Phổ Điểm Đánh Giá
+                                            Tài Xế</h6>
+                                        <div
+                                            style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 300px;">
+                                            <canvas id="qualityRadarChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-7">
+                                    <div class="glass-panel p-4 h-100 d-flex flex-column">
+                                        <h6 class="fw-bold mb-4 text-white"><i
+                                                class="fa-solid fa-chart-column me-2 text-danger"></i> Phân tích Lý do
+                                            Hủy chuyến</h6>
+                                        <div style="flex-grow: 1; min-height: 300px;">
+                                            <canvas id="cancelReasonChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </section>
 
-                    <!-- Nhóm 3: Trạng thái & Ghi chú -->
-                    <div class="modern-section-title"><i class="fa-solid fa-tags me-2"></i>Vận hành & Thuộc tính</div>
-                    <div class="row g-3">
-                        <div class="col-md-12">
-                            <label class="modern-label">Trạng thái khởi động</label>
-                            <select id="vStatus" class="form-select modern-select text-white fw-bold">
-                                <option value="Available" selected>Sẵn sàng hoạt động ngay</option>
-                                <option value="Unavailable">Đang chờ bảo dưỡng / Tạm khóa</option>
-                            </select>
+                    <section id="tab-audit" class="dashboard-section">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-server text-primary me-2"></i>Nhật ký Hệ thống (Audit
+                                        Log)</h4>
+                                    <p class="text-white-50 small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất
+                                        biến, Read-only.</p>
+                                </div>
+                                <div class="input-group w-auto shadow-sm">
+                                    <span class="input-group-text glass-input-addon border-end-0"><i
+                                            class="fa-solid fa-magnifying-glass text-white-50"></i></span>
+                                    <input type="text" class="form-control glass-input border-start-0"
+                                        placeholder="Tìm kiếm Audit ID, User...">
+                                </div>
+                            </div>
+
+                            <div class="table-glass-wrapper overflow-auto" style="max-height: 600px;">
+                                <table class="table-glass table-audit mb-0 w-100">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th width="15%">Thời gian</th>
+                                            <th width="20%">Nhân sự (Who)</th>
+                                            <th width="15%">Hành động</th>
+                                            <th width="25%">Đối tượng (Target)</th>
+                                            <th width="15%">Thiết bị / IP</th>
+                                            <th width="10%" class="text-center">Chi tiết</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold text-white">06/06/2026</div>
+                                                <div class="text-white-50 small">09:15:22</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-primary">ADM-01</div>
+                                                <div class="text-white-50 small">Trần Giám Đốc</div>
+                                            </td>
+                                            <td><span
+                                                    class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3 fw-bold shadow-sm">UPDATE</span>
+                                            </td>
+                                            <td class="fw-bold text-white">Cấu hình Hệ số Lễ/Tết</td>
+                                            <td>
+                                                <div class="text-white-50 small">113.160.22.1</div>
+                                                <div class="text-white-50 small">Chrome / Mac OS</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn-glass-action" onclick="openDiffModal()">Xem
+                                                    Diff</button>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>
+                                                <div class="fw-bold text-white">06/06/2026</div>
+                                                <div class="text-white-50 small">08:42:10</div>
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-info">DP-889</div>
+                                                <div class="text-white-50 small">Nguyễn Điều Phối</div>
+                                            </td>
+                                            <td><span
+                                                    class="badge bg-info bg-opacity-25 text-info border border-info p-2 px-3 fw-bold shadow-sm">FREEZE</span>
+                                            </td>
+                                            <td class="fw-bold text-white">Hóa đơn chuyến #BK-9015</td>
+                                            <td>
+                                                <div class="text-white-50 small">113.160.22.5</div>
+                                                <div class="text-white-50 small">Safari / Windows</div>
+                                            </td>
+                                            <td class="text-center">
+                                                <button class="btn-glass-action">Xem Log</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <div class="col-12">
-                            <label class="modern-label">Đặc tả / Từ khóa AI phân tích</label>
-                            <textarea id="vDescription" class="form-control modern-input" rows="3" placeholder="Nhập các thuộc tính nổi bật: Xe điện, nội thất da, cốp rộng, có cửa sổ trời..."></textarea>
+                    </section>
+
+                </main>
+            </div>
+
+            <div class="modal fade" id="addVehicleModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content modern-modal-content">
+
+                        <!-- HEADER -->
+                        <div class="modal-header border-0 px-4 pt-4 pb-0">
+                            <h4 class="fw-bold text-white m-0 d-flex align-items-center">
+                                <div class="bg-success bg-opacity-25 text-success p-2 rounded-3 me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-car-side"></i>
+                                </div>
+                                Khởi tạo Phương tiện
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="modal-body p-4">
+                            <form id="addVehicleForm" onsubmit="submitNewVehicle(event)">
+
+                                <!-- Nhóm 1: Thông tin Định danh -->
+                                <div class="modern-section-title mt-2"><i class="fa-regular fa-id-card me-2"></i>Thông
+                                    tin Định danh</div>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="modern-label">Biển số kiểm soát <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="vLicensePlate" class="form-control modern-input"
+                                            placeholder="VD: 51H-123.45" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="modern-label">Phân loại Dịch vụ <span
+                                                class="text-danger">*</span></label>
+                                        <select id="vTypeId" class="form-select modern-select" required>
+                                            <option value="1">Xe 4 chỗ Tiêu chuẩn</option>
+                                            <option value="2">Xe 7 chỗ SUV/MPV</option>
+                                            <option value="3">Xe 16 chỗ Du lịch</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="modern-label">Hãng sản xuất <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="vBrand" class="form-control modern-input"
+                                            placeholder="VD: VinFast, Honda..." required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="modern-label">Tên dòng xe (Model) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="vModel" class="form-control modern-input"
+                                            placeholder="VD: VF8 Plus" required>
+                                    </div>
+                                </div>
+
+                                <!-- Nhóm 2: Hồ sơ Pháp lý & Kỹ thuật -->
+                                <div class="modern-section-title"><i class="fa-solid fa-shield-halved me-2"></i>Hồ sơ
+                                    Pháp lý & Kỹ thuật</div>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="modern-label text-warning">Số khung (Chassis) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="vChassis" class="form-control modern-input"
+                                            placeholder="Nhập mã số khung bảo mật..." required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="modern-label text-warning">Số máy (Engine) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" id="vEngine" class="form-control modern-input"
+                                            placeholder="Nhập mã số máy bảo mật..." required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="modern-label">Số chỗ ngồi (Thực tế) <span
+                                                class="text-danger">*</span></label>
+                                        <input type="number" id="vSeatCount" class="form-control modern-input" value="5"
+                                            min="2" max="50" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="modern-label">Số Km tích lũy (ODO) <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="number" id="vKm"
+                                                class="form-control modern-input text-success fw-bold border-end-0"
+                                                value="0" required>
+                                            <span
+                                                class="input-group-text bg-transparent border-start-0 text-success fw-bold"
+                                                style="border: 1px solid #334155; border-radius: 0 12px 12px 0;">km</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Nhóm 3: Trạng thái & Ghi chú -->
+                                <div class="modern-section-title"><i class="fa-solid fa-tags me-2"></i>Vận hành & Thuộc
+                                    tính</div>
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="modern-label">Trạng thái khởi động</label>
+                                        <select id="vStatus" class="form-select modern-select text-white fw-bold">
+                                            <option value="Available" selected>Sẵn sàng hoạt động ngay</option>
+                                            <option value="Unavailable">Đang chờ bảo dưỡng / Tạm khóa</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="modern-label">Đặc tả / Từ khóa AI phân tích</label>
+                                        <textarea id="vDescription" class="form-control modern-input" rows="3"
+                                            placeholder="Nhập các thuộc tính nổi bật: Xe điện, nội thất da, cốp rộng, có cửa sổ trời..."></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- FOOTER ACTIONS -->
+                                <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top"
+                                    style="border-color: #334155 !important;">
+                                    <button type="button" class="btn modern-btn-cancel px-5 py-3 fw-bold rounded-pill"
+                                        data-bs-dismiss="modal">Hủy thao tác</button>
+                                    <button type="submit" id="btnSubmitVehicle"
+                                        class="btn modern-btn-submit px-5 py-3 fw-bolder rounded-pill">
+                                        <i class="fa-solid fa-cloud-arrow-up me-2"></i>Lưu vào hệ thống
+                                    </button>
+                                </div>
+                            </form>
                         </div>
                     </div>
-
-                    <!-- FOOTER ACTIONS -->
-                    <div class="d-flex justify-content-end gap-3 mt-5 pt-3 border-top" style="border-color: #334155 !important;">
-                        <button type="button" class="btn modern-btn-cancel px-5 py-3 fw-bold rounded-pill" data-bs-dismiss="modal">Hủy thao tác</button>
-                        <button type="submit" id="btnSubmitVehicle" class="btn modern-btn-submit px-5 py-3 fw-bolder rounded-pill">
-                            <i class="fa-solid fa-cloud-arrow-up me-2"></i>Lưu vào hệ thống
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade glass-modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content glass-modal-content">
-            <div class="modal-header border-0 px-4 pt-4 pb-2">
-                <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-code-compare text-warning me-2"></i> Chi tiết Thay đổi (Audit Diff)</h5>
-                <button type="button" class="btn-close btn-close-white fs-5" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body px-4 pb-4">
-                <div class="d-flex justify-content-between text-white-50 small fw-bold mb-3 px-2 text-uppercase">
-                    <span><i class="fa-solid fa-clock-rotate-left me-1"></i> Dữ liệu Cũ (Before)</span>
-                    <span><i class="fa-solid fa-bolt text-warning me-1"></i> Dữ liệu Mới (After)</span>
                 </div>
-                
-                <div class="diff-container-glass d-flex gap-3">
-                    <div class="diff-box-glass diff-old w-50 p-4">
-                        <code class="text-white-50">
+            </div>
+
+            <div class="modal fade glass-modal-blur" id="diffModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content glass-modal-content">
+                        <div class="modal-header border-0 px-4 pt-4 pb-2">
+                            <h5 class="fw-bold text-white m-0"><i
+                                    class="fa-solid fa-code-compare text-warning me-2"></i> Chi tiết Thay đổi (Audit
+                                Diff)</h5>
+                            <button type="button" class="btn-close btn-close-white fs-5"
+                                data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body px-4 pb-4">
+                            <div
+                                class="d-flex justify-content-between text-white-50 small fw-bold mb-3 px-2 text-uppercase">
+                                <span><i class="fa-solid fa-clock-rotate-left me-1"></i> Dữ liệu Cũ (Before)</span>
+                                <span><i class="fa-solid fa-bolt text-warning me-1"></i> Dữ liệu Mới (After)</span>
+                            </div>
+
+                            <div class="diff-container-glass d-flex gap-3">
+                                <div class="diff-box-glass diff-old w-50 p-4">
+                                    <code class="text-white-50">
                             "holiday_multiplier": <del class="text-danger">10%</del>,<br><br>
                             "updated_by": "System"
                         </code>
-                    </div>
-                    <div class="diff-box-glass diff-new w-50 p-4">
-                        <code class="text-white">
+                                </div>
+                                <div class="diff-box-glass diff-new w-50 p-4">
+                                    <code class="text-white">
                             "holiday_multiplier": <ins class="text-success text-decoration-none fw-bold">15%</ins>,<br><br>
                             "updated_by": "ADM-01"
                         </code>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade glass-modal-blur" id="ekycModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-centered">
-        <div class="modal-content glass-modal-content overflow-hidden border-0 position-relative">
-            
-            <button type="button" class="apple-close-btn" data-bs-dismiss="modal" aria-label="Close" onclick="cancelReject()">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-
-            <div class="row g-0">
-                <div class="col-lg-4 p-5 border-end" style="border-color: rgba(255,255,255,0.1) !important; background: rgba(0,0,0,0.15);">
-                    <div class="mb-5">
-                        <div class="text-white-50 small fw-bold text-uppercase mb-2">Hồ sơ đối tác</div>
-                        <div class="fs-3 fw-bold text-white mb-2" id="modalDriverName">Đang tải...</div>
-                        <div class="text-white-50 mb-2" id="modalDriverPhone"><i class="fa-solid fa-phone me-2"></i>--</div>
-                        <div class="text-info small fw-bold bg-info bg-opacity-10 d-inline-block px-3 py-1 rounded-pill mt-2" id="modalDriverDate">
-                            Thời gian nộp: --
-                        </div>
-                    </div>
-
-                    <div id="rejectReasonContainer" class="mb-4 d-none">
-                        <label class="text-warning fw-bold small mb-2 d-block"><i class="fa-solid fa-triangle-exclamation me-1"></i> Lý do từ chối:</label>
-                        <textarea id="rejectReasonInput" class="form-control bg-dark border-secondary text-white mb-3" rows="3" placeholder="VD: Ảnh mờ, bằng lái không hợp lệ..."></textarea>
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-outline-secondary w-50 rounded-pill" onclick="cancelReject()">Hủy</button>
-                            <button class="btn btn-danger w-50 rounded-pill" onclick="executeRejectApi()">Gửi</button>
-                        </div>
-                    </div>
-
-                    <div id="ekycActionButtons" class="d-flex flex-column gap-3 mt-auto">
-                        <button class="btn btn-success py-3 fw-bold rounded-pill shadow-sm" onclick="approveEkyc()">
-                            <i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT
-                        </button>
-                        <button class="btn btn-outline-danger py-3 fw-bold rounded-pill" onclick="prepareReject()">
-                            <i class="fa-solid fa-times-circle me-2"></i> TỪ CHỐI
-                        </button>
-                    </div>
-                </div>
-
-                <div class="col-lg-8 p-5">
-                    <ul class="nav nav-pills custom-pills mb-4 gap-2" id="ekycTab" role="tablist">
-                        <li class="nav-item">
-                            <button class="nav-link active px-4 rounded-pill fw-bold" data-bs-toggle="tab" data-bs-target="#tab-cccd">Căn Cước Công Dân</button>
-                        </li>
-                        <li class="nav-item">
-                            <button class="nav-link px-4 rounded-pill fw-bold" data-bs-toggle="tab" data-bs-target="#tab-license">Bằng Lái Xe</button>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content" id="ekycTabContent">
-                        <!-- TAB CCCD -->
-                        <div class="tab-pane fade show active" id="tab-cccd">
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="apple-doc-card">
-                                        <div class="doc-title-badge">Mặt Trước</div>
-                                        <!-- Khối hiển thị khi KHÔNG có ảnh -->
-                                        <div class="doc-empty-state" id="cccdFrontEmpty">
-                                            <i class="fa-regular fa-image"></i>
-                                            <span>Chưa cập nhật</span>
-                                        </div>
-                                        <!-- Khối hiển thị khi CÓ ảnh -->
-                                        <img src="" class="ekyc-img d-none" id="cccdFrontImg">
-                                        <div class="apple-floating-controls d-none" id="cccdFrontControls">
-                                            <button onclick="zoomImg('cccdFrontImg', 1.2)" title="Phóng to"><i class="fa-solid fa-plus"></i></button>
-                                            <button onclick="zoomImg('cccdFrontImg', 0.8)" title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
-                                            <button onclick="rotateImg('cccdFrontImg')" title="Xoay ảnh"><i class="fa-solid fa-rotate-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="apple-doc-card">
-                                        <div class="doc-title-badge">Mặt Sau</div>
-                                        <div class="doc-empty-state" id="cccdBackEmpty">
-                                            <i class="fa-regular fa-image"></i>
-                                            <span>Chưa cập nhật</span>
-                                        </div>
-                                        <img src="" class="ekyc-img d-none" id="cccdBackImg">
-                                        <div class="apple-floating-controls d-none" id="cccdBackControls">
-                                            <button onclick="zoomImg('cccdBackImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
-                                            <button onclick="zoomImg('cccdBackImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
-                                            <button onclick="rotateImg('cccdBackImg')"><i class="fa-solid fa-rotate-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- TAB BẰNG LÁI -->
-                        <div class="tab-pane fade" id="tab-license">
-                            <div class="row g-4">
-                                <div class="col-md-6">
-                                    <div class="apple-doc-card">
-                                        <div class="doc-title-badge">Mặt Trước</div>
-                                        <div class="doc-empty-state" id="licenseFrontEmpty">
-                                            <i class="fa-regular fa-image"></i>
-                                            <span>Chưa cập nhật</span>
-                                        </div>
-                                        <img src="" class="ekyc-img d-none" id="licenseFrontImg">
-                                        <div class="apple-floating-controls d-none" id="licenseFrontControls">
-                                            <button onclick="zoomImg('licenseFrontImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
-                                            <button onclick="zoomImg('licenseFrontImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
-                                            <button onclick="rotateImg('licenseFrontImg')"><i class="fa-solid fa-rotate-right"></i></button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="apple-doc-card">
-                                        <div class="doc-title-badge">Mặt Sau</div>
-                                        <div class="doc-empty-state" id="licenseBackEmpty">
-                                            <i class="fa-regular fa-image"></i>
-                                            <span>Chưa cập nhật</span>
-                                        </div>
-                                        <img src="" class="ekyc-img d-none" id="licenseBackImg">
-                                        <div class="apple-floating-controls d-none" id="licenseBackControls">
-                                            <button onclick="zoomImg('licenseBackImg', 1.2)"><i class="fa-solid fa-plus"></i></button>
-                                            <button onclick="zoomImg('licenseBackImg', 0.8)"><i class="fa-solid fa-minus"></i></button>
-                                            <button onclick="rotateImg('licenseBackImg')"><i class="fa-solid fa-rotate-right"></i></button>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
-    <div id="systemErrorToast" class="toast align-items-center toast-premium border border-danger shadow-lg" role="alert">
-        <div class="d-flex p-3">
-            <div class="toast-body p-0 fw-bold fs-6 d-flex align-items-center gap-3 text-white">
-                <i class="fa-solid fa-circle-xmark fs-3 text-danger"></i> 
-                <span id="toastMsg">Thao tác thất bại. Lỗi kết nối!</span>
+            <div class="modal fade glass-modal-blur" id="ekycModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-xl modal-dialog-centered">
+                    <div class="modal-content glass-modal-content overflow-hidden border-0 position-relative">
+
+                        <button type="button" class="apple-close-btn" data-bs-dismiss="modal" aria-label="Close"
+                            onclick="cancelReject()">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+
+                        <div class="row g-0">
+                            <div class="col-lg-4 p-5 border-end"
+                                style="border-color: rgba(255,255,255,0.1) !important; background: rgba(0,0,0,0.15);">
+                                <div class="mb-5">
+                                    <div class="text-white-50 small fw-bold text-uppercase mb-2">Hồ sơ đối tác</div>
+                                    <div class="fs-3 fw-bold text-white mb-2" id="modalDriverName">Đang tải...</div>
+                                    <div class="text-white-50 mb-2" id="modalDriverPhone"><i
+                                            class="fa-solid fa-phone me-2"></i>--</div>
+                                    <div class="text-info small fw-bold bg-info bg-opacity-10 d-inline-block px-3 py-1 rounded-pill mt-2"
+                                        id="modalDriverDate">
+                                        Thời gian nộp: --
+                                    </div>
+                                </div>
+
+                                <div id="rejectReasonContainer" class="mb-4 d-none">
+                                    <label class="text-warning fw-bold small mb-2 d-block"><i
+                                            class="fa-solid fa-triangle-exclamation me-1"></i> Lý do từ chối:</label>
+                                    <textarea id="rejectReasonInput"
+                                        class="form-control bg-dark border-secondary text-white mb-3" rows="3"
+                                        placeholder="VD: Ảnh mờ, bằng lái không hợp lệ..."></textarea>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-outline-secondary w-50 rounded-pill"
+                                            onclick="cancelReject()">Hủy</button>
+                                        <button class="btn btn-danger w-50 rounded-pill"
+                                            onclick="executeRejectApi()">Gửi</button>
+                                    </div>
+                                </div>
+
+                                <div id="ekycActionButtons" class="d-flex flex-column gap-3 mt-auto">
+                                    <button class="btn btn-success py-3 fw-bold rounded-pill shadow-sm"
+                                        onclick="approveEkyc()">
+                                        <i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT
+                                    </button>
+                                    <button class="btn btn-outline-danger py-3 fw-bold rounded-pill"
+                                        onclick="prepareReject()">
+                                        <i class="fa-solid fa-times-circle me-2"></i> TỪ CHỐI
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-8 p-5">
+                                <ul class="nav nav-pills custom-pills mb-4 gap-2" id="ekycTab" role="tablist">
+                                    <li class="nav-item">
+                                        <button class="nav-link active px-4 rounded-pill fw-bold" data-bs-toggle="tab"
+                                            data-bs-target="#tab-cccd">Căn Cước Công Dân</button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button class="nav-link px-4 rounded-pill fw-bold" data-bs-toggle="tab"
+                                            data-bs-target="#tab-license">Bằng Lái Xe</button>
+                                    </li>
+                                </ul>
+
+                                <div class="tab-content" id="ekycTabContent">
+                                    <!-- TAB CCCD -->
+                                    <div class="tab-pane fade show active" id="tab-cccd">
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <div class="apple-doc-card">
+                                                    <div class="doc-title-badge">Mặt Trước</div>
+                                                    <!-- Khối hiển thị khi KHÔNG có ảnh -->
+                                                    <div class="doc-empty-state" id="cccdFrontEmpty">
+                                                        <i class="fa-regular fa-image"></i>
+                                                        <span>Chưa cập nhật</span>
+                                                    </div>
+                                                    <!-- Khối hiển thị khi CÓ ảnh -->
+                                                    <img src="" class="ekyc-img d-none" id="cccdFrontImg">
+                                                    <div class="apple-floating-controls d-none" id="cccdFrontControls">
+                                                        <button onclick="zoomImg('cccdFrontImg', 1.2)"
+                                                            title="Phóng to"><i class="fa-solid fa-plus"></i></button>
+                                                        <button onclick="zoomImg('cccdFrontImg', 0.8)"
+                                                            title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
+                                                        <button onclick="rotateImg('cccdFrontImg')" title="Xoay ảnh"><i
+                                                                class="fa-solid fa-rotate-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="apple-doc-card">
+                                                    <div class="doc-title-badge">Mặt Sau</div>
+                                                    <div class="doc-empty-state" id="cccdBackEmpty">
+                                                        <i class="fa-regular fa-image"></i>
+                                                        <span>Chưa cập nhật</span>
+                                                    </div>
+                                                    <img src="" class="ekyc-img d-none" id="cccdBackImg">
+                                                    <div class="apple-floating-controls d-none" id="cccdBackControls">
+                                                        <button onclick="zoomImg('cccdBackImg', 1.2)"><i
+                                                                class="fa-solid fa-plus"></i></button>
+                                                        <button onclick="zoomImg('cccdBackImg', 0.8)"><i
+                                                                class="fa-solid fa-minus"></i></button>
+                                                        <button onclick="rotateImg('cccdBackImg')"><i
+                                                                class="fa-solid fa-rotate-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TAB BẰNG LÁI -->
+                                    <div class="tab-pane fade" id="tab-license">
+                                        <div class="row g-4">
+                                            <div class="col-md-6">
+                                                <div class="apple-doc-card">
+                                                    <div class="doc-title-badge">Mặt Trước</div>
+                                                    <div class="doc-empty-state" id="licenseFrontEmpty">
+                                                        <i class="fa-regular fa-image"></i>
+                                                        <span>Chưa cập nhật</span>
+                                                    </div>
+                                                    <img src="" class="ekyc-img d-none" id="licenseFrontImg">
+                                                    <div class="apple-floating-controls d-none"
+                                                        id="licenseFrontControls">
+                                                        <button onclick="zoomImg('licenseFrontImg', 1.2)"><i
+                                                                class="fa-solid fa-plus"></i></button>
+                                                        <button onclick="zoomImg('licenseFrontImg', 0.8)"><i
+                                                                class="fa-solid fa-minus"></i></button>
+                                                        <button onclick="rotateImg('licenseFrontImg')"><i
+                                                                class="fa-solid fa-rotate-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="apple-doc-card">
+                                                    <div class="doc-title-badge">Mặt Sau</div>
+                                                    <div class="doc-empty-state" id="licenseBackEmpty">
+                                                        <i class="fa-regular fa-image"></i>
+                                                        <span>Chưa cập nhật</span>
+                                                    </div>
+                                                    <img src="" class="ekyc-img d-none" id="licenseBackImg">
+                                                    <div class="apple-floating-controls d-none"
+                                                        id="licenseBackControls">
+                                                        <button onclick="zoomImg('licenseBackImg', 1.2)"><i
+                                                                class="fa-solid fa-plus"></i></button>
+                                                        <button onclick="zoomImg('licenseBackImg', 0.8)"><i
+                                                                class="fa-solid fa-minus"></i></button>
+                                                        <button onclick="rotateImg('licenseBackImg')"><i
+                                                                class="fa-solid fa-rotate-right"></i></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <button type="button" class="btn-close btn-close-white ms-auto mt-1" data-bs-dismiss="toast"></button>
-        </div>
-    </div>
-</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="../../js/base.js"> </script>
+            <div class="modal fade glass-modal-blur" id="voucherModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content glass-modal-content">
+                        <div class="modal-header border-0 px-4 pt-4 pb-2">
+                            <h5 class="fw-bold text-white m-0" id="voucherModalTitle"><i
+                                    class="fa-solid fa-ticket text-warning me-2"></i>Tạo Voucher mới</h5>
+                            <button type="button" class="btn-close btn-close-white fs-5"
+                                data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body px-4 pb-4">
+                            <form id="voucherForm">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Mã Code *</label>
+                                        <input type="text" id="vCode" class="form-control glass-input fw-bold" required
+                                            placeholder="VD: SUMMER2026">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Loại Giảm Giá</label>
+                                        <select id="vDiscountType" class="form-select glass-select">
+                                            <option value="PERCENT">Phần trăm (%)</option>
+                                            <option value="FIXED_AMOUNT">Số tiền cố định (VNĐ)</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Giá trị Giảm *</label>
+                                        <input type="number" id="vDiscountValue" class="form-control glass-input"
+                                            required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Giảm tối đa (VNĐ)</label>
+                                        <input type="number" id="vMaxDiscount" class="form-control glass-input">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Đơn tối thiểu
+                                            (VNĐ)</label>
+                                        <input type="number" id="vMinBooking" class="form-control glass-input">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Loại xe áp dụng ID</label>
+                                        <input type="number" id="vVehicleTypeId" class="form-control glass-input"
+                                            value="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Từ ngày</label>
+                                        <input type="datetime-local" id="vValidFrom"
+                                            class="form-control glass-input text-white" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Đến ngày</label>
+                                        <input type="datetime-local" id="vValidTo"
+                                            class="form-control glass-input text-white" required>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                            <button type="button" class="btn btn-outline-secondary rounded-pill px-4 text-white"
+                                data-bs-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm"
+                                onclick="saveVoucher()">Lưu Voucher</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <script src="../../js/admin.js"></script>
+            <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
+                <div id="systemErrorToast" class="toast align-items-center toast-premium border border-danger shadow-lg"
+                    role="alert">
+                    <div class="d-flex p-3">
+                        <div class="toast-body p-0 fw-bold fs-6 d-flex align-items-center gap-3 text-white">
+                            <i class="fa-solid fa-circle-xmark fs-3 text-danger"></i>
+                            <span id="toastMsg">Thao tác thất bại. Lỗi kết nối!</span>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white ms-auto mt-1"
+                            data-bs-dismiss="toast"></button>
+                    </div>
+                </div>
+            </div>
+
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="../../js/api.js"></script>
+            <script src="../../js/base.js"> </script>
+
+            <script src="../../js/admin.js"></script>
+            <script src="../../js/admin/voucherManager.js"></script>
 </body>
+
 </html>

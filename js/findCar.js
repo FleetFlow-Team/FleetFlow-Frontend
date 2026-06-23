@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const systemErrorToastEl = document.getElementById('systemErrorToast');
     if (distanceToastEl && typeof bootstrap !== 'undefined') new bootstrap.Toast(distanceToastEl);
     if (systemErrorToastEl && typeof bootstrap !== 'undefined') new bootstrap.Toast(systemErrorToastEl);
-    
+
     // 2. Thiết lập thời gian tối thiểu cho Date input
     const inputTime = document.getElementById('inputDepartureTime');
     if (inputTime) {
@@ -24,10 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initBottomSheetUX() {
-    const sheet = document.getElementById('filterSheet'); 
-    const header = document.getElementById('filterHeader'); 
-    
-    if (!sheet || !header) return; 
+    const sheet = document.getElementById('filterSheet');
+    const header = document.getElementById('filterHeader');
+
+    if (!sheet || !header) return;
 
     let startY = 0;
     let currentY = 0;
@@ -40,15 +40,15 @@ function initBottomSheetUX() {
     // Chạm vào Header để Mở/Đóng (Đã fix lỗi bị liệt click)
     header.addEventListener('click', (e) => {
         // Bỏ qua nếu người dùng cố tình bấm vào nút "Xóa"
-        if(e.target.tagName.toLowerCase() === 'button') return; 
+        if (e.target.tagName.toLowerCase() === 'button') return;
 
         // Nếu khoảng cách ngón tay di chuyển > 10px thì xem như là vuốt, không kích hoạt Click
-        if (Math.abs(currentY - startY) > 10) return; 
-        
+        if (Math.abs(currentY - startY) > 10) return;
+
         if (window.innerWidth < 1200) {
             sheet.classList.toggle('expanded');
             // Thêm class này cho body để ẩn/hiện cục AI Chat
-            document.body.classList.toggle('filter-open'); 
+            document.body.classList.toggle('filter-open');
         }
     });
 
@@ -57,36 +57,36 @@ function initBottomSheetUX() {
         isDragging = true;
         startY = getClientY(e);
         currentY = startY;
-        
+
         // Dùng setProperty kèm 'important' để đánh bại CSS gốc
-        sheet.style.setProperty('transition', 'none', 'important'); 
+        sheet.style.setProperty('transition', 'none', 'important');
     }
 
     function handleDragMove(e) {
         if (!isDragging || window.innerWidth >= 1200) return;
-        
+
         currentY = getClientY(e);
         let deltaY = currentY - startY;
-        
-        if(sheet.classList.contains('expanded')) {
+
+        if (sheet.classList.contains('expanded')) {
             // Đang mở -> Ép kéo xuống
-            if(deltaY > 0) sheet.style.setProperty('transform', `translate(-50%, ${deltaY}px)`, 'important'); 
+            if (deltaY > 0) sheet.style.setProperty('transform', `translate(-50%, ${deltaY}px)`, 'important');
         } else {
             // Đang đóng -> Ép kéo lên
-            if(deltaY < 0) sheet.style.setProperty('transform', `translate(-50%, calc(100% - 85px + ${deltaY}px))`, 'important'); 
+            if (deltaY < 0) sheet.style.setProperty('transform', `translate(-50%, calc(100% - 85px + ${deltaY}px))`, 'important');
         }
     }
 
     function handleDragEnd(e) {
         if (!isDragging || window.innerWidth >= 1200) return;
         isDragging = false;
-        
+
         // Gỡ bỏ CSS inline để trả lại hiệu ứng nảy lỏng cho CSS gốc
-        sheet.style.removeProperty('transition'); 
-        sheet.style.removeProperty('transform'); 
-        
+        sheet.style.removeProperty('transition');
+        sheet.style.removeProperty('transform');
+
         let deltaY = currentY - startY;
-        
+
         if (sheet.classList.contains('expanded')) {
             if (deltaY > 50) {
                 sheet.classList.remove('expanded'); // Kéo xuống đủ xa -> Thu gọn
@@ -103,20 +103,20 @@ function initBottomSheetUX() {
         // DÒNG QUAN TRỌNG NHẤT: XÓA TRÍ NHỚ TỌA ĐỘ
         // Đảm bảo click vẫn hoạt động bình thường ở những lần sau
         // ========================================================
-        setTimeout(() => { 
-            startY = 0; 
-            currentY = 0; 
+        setTimeout(() => {
+            startY = 0;
+            currentY = 0;
         }, 50);
     }
 
     // Sự kiện Mobile (Touch)
-    header.addEventListener('touchstart', handleDragStart, {passive: true});
-    window.addEventListener('touchmove', handleDragMove, {passive: true}); 
+    header.addEventListener('touchstart', handleDragStart, { passive: true });
+    window.addEventListener('touchmove', handleDragMove, { passive: true });
     window.addEventListener('touchend', handleDragEnd);
 
     // Sự kiện PC (Mouse - dành cho test giả lập mobile)
     header.addEventListener('mousedown', handleDragStart);
-    window.addEventListener('mousemove', handleDragMove); 
+    window.addEventListener('mousemove', handleDragMove);
     window.addEventListener('mouseup', handleDragEnd);
 }
 
@@ -136,24 +136,24 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // Hàm xử lý khi khách hàng bấm nút "Xác nhận dịch vụ"
-window.confirmServiceSelection = function() {
+window.confirmServiceSelection = function () {
     // 1. Lấy giá trị từ Radio Button mà khách hàng vừa chọn trong Box
     const selectedService = document.querySelector('input[name="initServiceType"]:checked').value;
-    
+
     // 2. Cập nhật thẻ Select (Dropdown) nằm trên thanh công cụ Sort-bar ở phía ngoài
     const mainSelect = document.getElementById('mainServiceSelect');
     if (mainSelect) {
         mainSelect.value = selectedService;
     }
-    
+
     // 3. Lưu vào LocalStorage để trang Đặt Chuyến (tripBooking.html) biết khách hàng đang chọn hình thức gì
     localStorage.setItem('bookingType', selectedService);
-    
+
     // 4. Kích hoạt render lại giá dịch vụ tương ứng
     if (typeof applyFiltersAndSort === 'function') {
         applyFiltersAndSort();
     }
-    
+
     // 5. Đóng Box (Modal)
     const welcomeModalEl = document.getElementById('welcomeServiceModal');
     if (welcomeModalEl && typeof bootstrap !== 'undefined') {
@@ -251,16 +251,16 @@ function getMockPrice(v) {
     } else if (v.seatCount > 8) {
         base = 1800000;
     }
-    
+
     // Tùy biến nhẹ theo hãng xe
     const brandLower = (v.brand || '').toLowerCase();
     if (brandLower.includes('vinfast')) base += 100000;
     if (brandLower.includes('mazda')) base += 50000;
-    
+
     // Nhiên liệu điện đắt hơn
     const descLower = (v.description || '').toLowerCase();
     if (descLower.includes('điện')) base += 100000;
-    
+
     // Tránh trùng giá tuyệt đối cho các xe cùng nhóm bằng offset cố định dựa trên Id
     const idOffset = ((v.vehicleId || 0) % 5) * 50000;
     return base + idOffset;
@@ -273,15 +273,15 @@ async function fetchVehicles() {
     try {
         const response = await fetch(VEHICLE_API_URL);
         const result = await response.json();
-        
+
         if (result.data) {
             globalVehicles = result.data;
             // Sắp xếp xe tăng dần theo ID để hiển thị nhất quán ban đầu
             globalVehicles.sort((a, b) => (a.vehicleId || 0) - (b.vehicleId || 0));
-            
+
             // Lưu trữ mảng gốc phục vụ booking màn hình trong
             localStorage.setItem('allVehicles', JSON.stringify(globalVehicles));
-            
+
             // Áp dụng bộ lọc lần đầu
             applyFiltersAndSort();
         }
@@ -293,10 +293,10 @@ async function fetchVehicles() {
 /**
  * Áp dụng tất cả các bộ lọc hiện tại và sort dữ liệu
  */
-window.applyFiltersAndSort = function() {
+window.applyFiltersAndSort = function () {
     // 1. Lấy trạng thái của các check-box số chỗ ngồi
     const checkedSeats = Array.from(document.querySelectorAll('.filter-seat:checked')).map(el => parseInt(el.value));
-    
+
     // 2. Lấy hãng xe được chọn
     const filterBrand = document.getElementById('filterBrand');
     const brandVal = filterBrand ? filterBrand.value.toLowerCase() : '';
@@ -432,7 +432,7 @@ function renderVehiclesByPage(page) {
     const currentVehicles = filteredVehicles.slice(startIndex, endIndex);
 
     let html = '';
-    
+
     // Cập nhật tổng số xe hiển thị lên giao diện
     const countText = document.getElementById('totalVehicleCount');
     if (countText) countText.innerText = filteredVehicles.length;
@@ -458,16 +458,16 @@ function renderVehiclesByPage(page) {
         // Tách nhiên liệu và hộp số từ mô tả
         // Dùng dữ liệu thật từ API, giữ lại logic fallback hộp số
         const descLower = (v.description || '').toLowerCase();
-        let fuelType = v.fuelType || 'Xăng'; 
+        let fuelType = v.fuelType || 'Xăng';
         let transType = (descLower.includes("số sàn") || descLower.includes("mt")) ? "Số sàn" : "Tự động";
 
         // Xử lý hình ảnh: Ép cứng theo VehicleID từ bộ từ điển
         let fileName = vehicleImageMap[v.vehicleId];
-        let carImage = fileName 
+        let carImage = fileName
             ? `../assets/img/car-show/ImageUrl/${fileName}`
             : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
         // Giá xe
-        
+
         const rawPrice = getMockPrice(v);
         let displayPrice = rawPrice;
         if (bookingType === 'HOURLY') {
@@ -567,10 +567,10 @@ function renderPaginationInfo(totalItems, currentPage) {
 /**
  * Chuyển trang và cuộn giao diện lên đầu danh sách
  */
-window.changePage = function(pageNumber) {
+window.changePage = function (pageNumber) {
     currentPage = pageNumber;
     renderVehiclesByPage(currentPage);
-    
+
     const containerEl = document.getElementById('vehicleListContainer');
     if (containerEl) {
         const listTop = containerEl.offsetTop - 100;
@@ -581,12 +581,12 @@ window.changePage = function(pageNumber) {
 /**
  * Lưu ID xe vào LocalStorage và phân luồng chuyển trang
  */
-window.selectCarAndGo = function(vehicleId) {
+window.selectCarAndGo = function (vehicleId) {
     localStorage.setItem('selectedVehicleId', vehicleId);
-    
+
     // Lấy loại dịch vụ khách đang chọn
     const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
-    
+
     if (bookingType === 'HOURLY' || bookingType === 'DAILY') {
         // Thuê Giờ/Ngày -> Chuyển thẳng tới trang Thanh Toán
         window.location.href = '../pages/customer/checkout.html';
@@ -599,10 +599,10 @@ window.selectCarAndGo = function(vehicleId) {
 /**
  * Xem chi tiết xe và hiển thị Modal
  */
-window.viewCarDetail = async function(id) {
+window.viewCarDetail = async function (id) {
     const modalEl = document.getElementById('carDetailModal');
     const modalBody = document.getElementById('carDetailBody');
-    
+
     if (!modalEl || !modalBody) return;
 
     // 1. Khởi tạo và hiện Modal
@@ -622,10 +622,10 @@ window.viewCarDetail = async function(id) {
 
         if (result.success && result.data) {
             const v = result.data;
-            
+
             // Xử lý hình ảnh Modal: Lấy trực tiếp theo ID từ bộ từ điển
             let fileName = vehicleImageMap[id];
-            let modalImage = fileName 
+            let modalImage = fileName
                 ? `../assets/img/car-show/ImageUrl/${fileName}`
                 : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
             // Xử lý giá tiền dịch vụ cho modal
@@ -646,18 +646,18 @@ window.viewCarDetail = async function(id) {
             let tagsHtml = '';
             // Style glassmorphism mờ nhẹ cho các thẻ tag
             const tagStyle = 'background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; border-radius: 50px; font-size: 0.8rem; padding: 6px 14px; margin-right: 8px; margin-bottom: 8px; display: inline-block; font-weight: 500;';
-            
+
             // 1. Tag Chỗ ngồi
             if (v.seatCount) tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-chair me-1 text-success"></i>${v.seatCount} Chỗ</span>`;
-            
+
             // 2. Tag Nhiên liệu
             let fuel = v.fuelType || 'Xăng';
             tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-gas-pump me-1 text-success"></i>${fuel}</span>`;
-            
+
             // 3. Tag Hộp số
             let trans = ((v.description || '').toLowerCase().includes('số sàn') || (v.description || '').toLowerCase().includes('mt')) ? 'Số sàn' : 'Tự động';
             tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-gear me-1 text-success"></i>${trans}</span>`;
-            
+
             // 4. Tag Hãng xe
             if (v.brand) tagsHtml += `<span style="${tagStyle}"><i class="fa-solid fa-shield-halved me-1 text-success"></i>Hãng ${v.brand}</span>`;
             // ==========================================
@@ -732,12 +732,12 @@ window.viewCarDetail = async function(id) {
             const btnBookInner = document.getElementById('btnBookFromDetailInner');
             if (btnBookInner) {
                 btnBookInner.onclick = (e) => {
-                    e.stopPropagation(); 
+                    e.stopPropagation();
                     if (v.status !== 'Available') {
                         alert("Phương tiện này hiện không sẵn sàng. Vui lòng chọn xe khác!");
                         return;
                     }
-                    selectCarAndGo(v.vehicleId); 
+                    selectCarAndGo(v.vehicleId);
                 };
             }
         } else {
@@ -771,10 +771,10 @@ function initTiltEffect() {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
+
             const centerX = rect.width / 2;
             const centerY = rect.height / 2;
-            
+
             const rotateX = ((y - centerY) / centerY) * -8;
             const rotateY = ((x - centerX) / centerX) * 8;
 
@@ -787,7 +787,7 @@ function initTiltEffect() {
             card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
             card.style.transition = `transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2)`;
         });
-        
+
         card.addEventListener('mouseenter', () => {
             card.style.transition = `transform 0.1s ease`;
         });

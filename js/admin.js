@@ -11,7 +11,7 @@ let globalAdminVehicles = []; // Biến lưu danh sách xe
 
 document.addEventListener("DOMContentLoaded", function () {
     // 🚀 BẬT CHỐT CHẶN VÀ ĐỒNG BỘ NAVBAR ĐẦU TIÊN
-    if (!initAdminSession()) return; 
+    if (!initAdminSession()) return;
 
     // TẢI DỮ LIỆU BAN ĐẦU
     fetchAndRenderEkycQueue();
@@ -31,11 +31,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateVerticalIndicator(activeLink) {
         if (!activeLink || !verticalIndicator) return;
-        
+
         const linkRect = activeLink.getBoundingClientRect();
         const containerRect = activeLink.closest(".toc-list").getBoundingClientRect();
         const topPos = linkRect.top - containerRect.top;
-        
+
         verticalIndicator.style.transform = `translateY(${topPos}px)`;
         verticalIndicator.style.height = `${linkRect.height}px`;
     }
@@ -50,16 +50,16 @@ document.addEventListener("DOMContentLoaded", function () {
             if (this.getAttribute("href").startsWith("#")) {
                 e.preventDefault();
                 if (this.classList.contains("active")) return;
-                
+
                 tocLinks.forEach(l => l.classList.remove("active"));
                 this.classList.add("active");
                 updateVerticalIndicator(this);
-                
+
                 const targetId = this.getAttribute("href").substring(1);
                 sections.forEach(section => {
                     section.classList.remove("active");
                 });
-                
+
                 const targetSection = document.getElementById(targetId);
                 if (targetSection) {
                     targetSection.classList.add("active");
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
         new Chart(ctxRevenue, {
             type: "line",
             data: {
-                labels: Array.from({length: 15}, (_, i) => `Ngày ${i*2 + 1}`),
+                labels: Array.from({ length: 15 }, (_, i) => `Ngày ${i * 2 + 1}`),
                 datasets: [{
                     label: "Doanh thu (Triệu VNĐ)",
                     data: [45, 52, 49, 62, 58, 75, 80, 72, 88, 95, 89, 102, 115, 110, 125],
@@ -109,9 +109,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     pointHoverRadius: 7,
                     tension: 0.35,
                     fill: true,
-                    backgroundColor: function(context) {
+                    backgroundColor: function (context) {
                         const chart = context.chart;
-                        const {ctx, chartArea} = chart;
+                        const { ctx, chartArea } = chart;
                         if (!chartArea) return null;
                         const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
                         gradient.addColorStop(0, "rgba(0, 177, 79, 0.25)");
@@ -139,9 +139,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 datasets: [{
                     data: [0, 0, 0, 0], // Ban đầu để 0, API Dashboard sẽ tự đổ vào
                     backgroundColor: [
-                        "rgba(0, 177, 79, 0.75)", 
-                        "rgba(0, 122, 255, 0.75)", 
-                        "rgba(255, 222, 89, 0.75)", 
+                        "rgba(0, 177, 79, 0.75)",
+                        "rgba(0, 122, 255, 0.75)",
+                        "rgba(255, 222, 89, 0.75)",
                         "rgba(239, 68, 68, 0.75)"
                     ],
                     borderColor: "rgba(255, 255, 255, 0.15)",
@@ -261,7 +261,7 @@ function initAdminSession() {
     const email = localStorage.getItem('email') || 'admin@fleetflow.vn';
 
     if (userRole.toUpperCase() !== 'ADMIN') {
-        window.location.replace('../error/403.html'); 
+        window.location.replace('../error/403.html');
         return false;
     }
 
@@ -276,13 +276,13 @@ function initAdminSession() {
     emailElements.forEach(el => { if (el) el.innerText = email; });
     if (avatarImg) avatarImg.src = avatarUrl;
 
-    return true; 
+    return true;
 }
 
 function handleAdminLogout(e) {
     e.preventDefault();
     if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị?")) {
-        localStorage.clear(); 
+        localStorage.clear();
         window.location.replace('../../index.html');
     }
 }
@@ -291,10 +291,10 @@ window.showSystemToast = function (message, type = "success") {
     const toastContainer = document.getElementById("systemErrorToast");
     const toastMessageSpan = document.getElementById("toastMsg");
     if (!toastContainer || !toastMessageSpan) return;
-    
+
     toastMessageSpan.textContent = message;
     const iconElement = toastContainer.querySelector("i");
-    
+
     if (type === "error") {
         toastContainer.className = "toast align-items-center toast-premium border border-danger shadow-lg show";
         if (iconElement) iconElement.className = "fa-solid fa-circle-xmark fs-3 text-danger";
@@ -302,7 +302,7 @@ window.showSystemToast = function (message, type = "success") {
         toastContainer.className = "toast align-items-center toast-premium border border-success shadow-lg show";
         if (iconElement) iconElement.className = "fa-solid fa-circle-check fs-3 text-success";
     }
-    
+
     setTimeout(() => { toastContainer.classList.remove("show"); }, 4000);
 };
 
@@ -311,7 +311,7 @@ window.simulateSaveConfig = function (button) {
     const originalContent = button.innerHTML;
     button.disabled = true;
     button.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang ghi dữ liệu...`;
-    
+
     setTimeout(() => {
         button.disabled = false;
         button.innerHTML = originalContent;
@@ -342,10 +342,10 @@ window.currentDashboardFilter = { fromDate: '', toDate: '' };
 window.testGlobalError = function (selectElement) {
     if (!selectElement) return;
     const val = selectElement.value;
-    
+
     if (val === "Test Lỗi Mạng") {
         showSystemToast("Mất kết nối API Gateway. Vui lòng kiểm tra lại cấu hình định tuyến.", "error");
-        selectElement.selectedIndex = 0; 
+        selectElement.selectedIndex = 0;
         return;
     }
 
@@ -358,7 +358,7 @@ window.testGlobalError = function (selectElement) {
         window.currentDashboardFilter.fromDate = `${year}-${month}-01`;
         window.currentDashboardFilter.toDate = `${year}-${month}-${String(today.getDate()).padStart(2, '0')}`;
     } else if (val === "Tháng trước") {
-        let lastMonth = today.getMonth(); 
+        let lastMonth = today.getMonth();
         let year = today.getFullYear();
         if (lastMonth === 0) { lastMonth = 12; year--; }
         const lastDay = new Date(year, lastMonth, 0).getDate();
@@ -370,11 +370,11 @@ window.testGlobalError = function (selectElement) {
     fetchDashboardData(statusVal, window.currentDashboardFilter.fromDate, window.currentDashboardFilter.toDate);
 };
 
-window.fetchDashboardDetail = function(status) {
+window.fetchDashboardDetail = function (status) {
     fetchDashboardData(status, window.currentDashboardFilter.fromDate, window.currentDashboardFilter.toDate);
 };
 
-window.fetchDashboardData = async function(status = '', fromDate = '', toDate = '') {
+window.fetchDashboardData = async function (status = '', fromDate = '', toDate = '') {
     let url = ADMIN_DASHBOARD_API_URL + "?";
     if (status) url += `status=${status}&`;
     if (fromDate) url += `fromDate=${fromDate}&`;
@@ -384,7 +384,7 @@ window.fetchDashboardData = async function(status = '', fromDate = '', toDate = 
     const tbody = document.getElementById('dashboardDetailBody');
 
     try {
-        if(tbody && status) {
+        if (tbody && status) {
             tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin text-info fs-3"></i></td></tr>`;
         }
 
@@ -396,7 +396,7 @@ window.fetchDashboardData = async function(status = '', fromDate = '', toDate = 
 
         if (result.success && result.summary) {
             updateDashboardKPIs(result.summary);
-            
+
             if (window.globalStatusChart) {
                 const byStatus = result.summary.byStatus;
                 window.globalStatusChart.data.datasets[0].data = [
@@ -435,7 +435,7 @@ function updateDashboardKPIs(summary) {
 function renderDashboardTable(data, status) {
     const thead = document.getElementById('dashboardDetailHead');
     const tbody = document.getElementById('dashboardDetailBody');
-    if(!thead || !tbody) return;
+    if (!thead || !tbody) return;
 
     if (!data || data.length === 0) {
         tbody.innerHTML = `<tr><td colspan="6" class="text-center text-white-50 py-5">Hệ thống không ghi nhận dữ liệu cho trạng thái [${status}] trong thời gian này.</td></tr>`;
@@ -458,16 +458,16 @@ function renderDashboardTable(data, status) {
     } else {
         headerHtml += `<th width="20%">Ghi chú</th>`;
     }
-    
+
     headerHtml += `<th width="15%">Thời gian tạo</th>`;
     thead.innerHTML = headerHtml;
 
     let bodyHtml = "";
     data.forEach(item => {
         let timeStr = "Chưa cập nhật";
-        if(item.createdAt) {
+        if (item.createdAt) {
             const d = new Date(item.createdAt);
-            timeStr = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} <br> <span class="text-white-50 small">${d.toLocaleDateString('vi-VN')}</span>`;
+            timeStr = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')} <br> <span class="text-white-50 small">${d.toLocaleDateString('vi-VN')}</span>`;
         }
 
         bodyHtml += `<tr>`;
@@ -482,7 +482,7 @@ function renderDashboardTable(data, status) {
                 <div class="fw-bold text-white">${item.licensePlate || '--'}</div>
                 <div class="small text-white-50 mt-1">${item.vehicleName || 'Chưa điều xe'}</div>
             </td>`;
-            
+
         const isRoundTrip = item.tripDirection === "ROUND_TRIP";
         bodyHtml += `
             <td>
@@ -491,7 +491,7 @@ function renderDashboardTable(data, status) {
                     ${isRoundTrip ? '<i class="fa-solid fa-arrows-rotate me-1"></i> Khứ hồi' : '<i class="fa-solid fa-arrow-right me-1"></i> Một chiều'}
                 </span>
             </td>`;
-            
+
         if (status === "CANCELLED") {
             const penalty = item.penaltyAmount ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.penaltyAmount) : '0 đ';
             bodyHtml += `
@@ -543,7 +543,7 @@ window.zoomImg = function (imgId, factor) {
     const img = document.getElementById(imgId);
     let state = imageStates[imgId];
     if (img && state) {
-        state.scale = Math.max(0.5, Math.min(state.scale * factor, 3)); 
+        state.scale = Math.max(0.5, Math.min(state.scale * factor, 3));
         img.style.transform = `scale(${state.scale}) rotate(${state.rotate}deg)`;
     }
 };
@@ -560,12 +560,12 @@ window.rotateImg = function (imgId) {
 window.fetchAndRenderEkycQueue = async function () {
     const queueList = document.getElementById("ekycQueueList");
     if (!queueList) return;
-    
+
     queueList.innerHTML = `<tr><td colspan="4" class="text-center p-5"><i class="fa-solid fa-circle-notch fa-spin fs-2 text-info"></i><p class="mt-2 text-white-50 small fw-bold">Đang tải dữ liệu hồ sơ...</p></td></tr>`;
-    
-    const token = localStorage.getItem('accessToken'); 
+
+    const token = localStorage.getItem('accessToken');
     try {
-        const response = await fetch(`${ADMIN_API_BASE}/pending`, { 
+        const response = await fetch(`${ADMIN_API_BASE}/pending`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
         });
@@ -581,12 +581,12 @@ window.fetchAndRenderEkycQueue = async function () {
                 return;
             }
 
-            queueList.innerHTML = ""; 
+            queueList.innerHTML = "";
             currentPendingDrivers.forEach(driver => {
                 const dateStr = driver.createdAt || '';
                 const timeOnly = dateStr.includes(' ') ? dateStr.split(' ')[1].substring(0, 5) : '--:--';
                 const dateOnly = dateStr.includes(' ') ? dateStr.split(' ')[0] : 'Chưa cập nhật';
-                
+
                 let cccdUrl = '../../assets/img/default-doc.png';
                 let licenseUrl = '../../assets/img/default-doc.png';
 
@@ -596,7 +596,7 @@ window.fetchAndRenderEkycQueue = async function () {
                         if (doc.docType && doc.docType.toUpperCase() === 'DRIVERLICENSE') licenseUrl = doc.fileUrl;
                     });
                 }
-                
+
                 driver.extractedCccd = cccdUrl;
                 driver.extractedLicense = licenseUrl;
 
@@ -683,18 +683,18 @@ window.openEkycModal = function (accountId) {
     const rejectContainer = document.getElementById('rejectReasonContainer');
     const actionButtons = document.getElementById('ekycActionButtons');
     const rejectInput = document.getElementById('rejectReasonInput');
-    
+
     if (rejectContainer && actionButtons && rejectInput) {
-        rejectContainer.classList.add('d-none');     
-        actionButtons.classList.remove('d-none');    
-        rejectInput.value = '';                      
+        rejectContainer.classList.add('d-none');
+        actionButtons.classList.remove('d-none');
+        rejectInput.value = '';
     }
 
     const ekycModalEl = document.getElementById("ekycModal");
     if (ekycModalEl) bootstrap.Modal.getOrCreateInstance(ekycModalEl).show();
 };
 
-window.approveEkyc = async function() {
+window.approveEkyc = async function () {
     if (!currentViewingAccountId) return;
     const token = localStorage.getItem('accessToken');
     try {
@@ -711,19 +711,19 @@ window.approveEkyc = async function() {
     } catch (error) { alert("Mất kết nối đến máy chủ khi duyệt hồ sơ."); }
 };
 
-window.prepareReject = function() {
+window.prepareReject = function () {
     document.getElementById('ekycActionButtons').classList.add('d-none');
     document.getElementById('rejectReasonContainer').classList.remove('d-none');
     document.getElementById('rejectReasonInput').focus();
 };
 
-window.cancelReject = function() {
+window.cancelReject = function () {
     document.getElementById('rejectReasonContainer').classList.add('d-none');
     document.getElementById('rejectReasonInput').value = '';
     document.getElementById('ekycActionButtons').classList.remove('d-none');
 };
 
-window.executeRejectApi = async function() {
+window.executeRejectApi = async function () {
     const reason = document.getElementById('rejectReasonInput').value.trim();
     if (!reason) {
         alert("Vui lòng nhập lý do từ chối để tài xế biết cách khắc phục hồ sơ!");
@@ -753,7 +753,7 @@ window.executeRejectApi = async function() {
 
 const ADMIN_VEHICLE_API_URL = 'http://localhost:8080/FleetFlow/api/v1/admin/vehicles';
 
-window.fetchAndRenderAdminVehicles = async function() {
+window.fetchAndRenderAdminVehicles = async function () {
     const tbody = document.getElementById("adminFleetList");
     if (!tbody) return;
     tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info"></i><div class="mt-2 text-white-50">Đang đồng bộ dữ liệu đội xe...</div></td></tr>`;
@@ -780,7 +780,7 @@ window.fetchAndRenderAdminVehicles = async function() {
 function renderAdminVehicles(vehicles) {
     const tbody = document.getElementById("adminFleetList");
     if (!tbody) return;
-    
+
     if (vehicles.length === 0) {
         tbody.innerHTML = `<tr><td colspan="4" class="text-center py-5 text-white-50"><i class="fa-solid fa-car-tunnel fs-1 mb-3"></i><br>Hệ thống chưa có phương tiện nào.</td></tr>`;
         return;
@@ -791,7 +791,7 @@ function renderAdminVehicles(vehicles) {
         const icon = (v.seatCount > 5) ? 'fa-truck-pickup' : 'fa-car-side';
         const isAvailable = (v.status === 'Available');
         const statusColor = isAvailable ? 'success' : 'danger';
-        
+
         const selectHtml = `
             <select class="form-select form-select-sm glass-select text-${statusColor} fw-bold border-${statusColor}" onchange="changeVehicleStatus(${v.vehicleId}, this.value)">
                 <option value="Available" ${isAvailable ? 'selected' : ''}>Sẵn sàng hoạt động</option>
@@ -835,33 +835,33 @@ function renderAdminVehicles(vehicles) {
     tbody.innerHTML = html;
 }
 
-window.viewAdminVehicleDetail = async function(id) {
+window.viewAdminVehicleDetail = async function (id) {
     showSystemToast("Đang truy xuất dữ liệu từ kho lưu trữ...", "success");
     const token = localStorage.getItem('accessToken');
     try {
-        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, { 
+        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
         const result = await response.json();
-        
+
         if (result.success && result.data) {
             const v = result.data;
             alert(`🔍 HỒ SƠ LƯU TRỮ PHƯƠNG TIỆN #${v.vehicleId}\n` +
-                  `-----------------------------------------\n` +
-                  `Biển số kiểm soát: ${v.licensePlate}\n` +
-                  `Hãng & Dòng xe: ${v.brand} ${v.model} (${v.seatCount} Chỗ)\n\n` +
-                  `Số khung: ${v.chassisNumber}\n` +
-                  `Số máy: ${v.engineNumber}\n` +
-                  `ODO: ${v.accumulatedKm} km\n\n` +
-                  `Trạng thái: ${v.status === 'Available' ? 'Đang hoạt động' : 'Tạm khóa'}`);
+                `-----------------------------------------\n` +
+                `Biển số kiểm soát: ${v.licensePlate}\n` +
+                `Hãng & Dòng xe: ${v.brand} ${v.model} (${v.seatCount} Chỗ)\n\n` +
+                `Số khung: ${v.chassisNumber}\n` +
+                `Số máy: ${v.engineNumber}\n` +
+                `ODO: ${v.accumulatedKm} km\n\n` +
+                `Trạng thái: ${v.status === 'Available' ? 'Đang hoạt động' : 'Tạm khóa'}`);
         } else showSystemToast(result.message || "Không tìm thấy dữ liệu phương tiện!", "error");
     } catch (error) { showSystemToast("Lỗi đường truyền! Vui lòng thử lại.", "error"); }
 };
 
-window.changeVehicleStatus = async function(id, newStatus) {
-    if(!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus === 'Available' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
-        fetchAndRenderAdminVehicles(); 
+window.changeVehicleStatus = async function (id, newStatus) {
+    if (!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus === 'Available' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
+        fetchAndRenderAdminVehicles();
         return;
     }
     const token = localStorage.getItem('accessToken');
@@ -878,7 +878,7 @@ window.changeVehicleStatus = async function(id, newStatus) {
     finally { fetchAndRenderAdminVehicles(); }
 };
 
-window.submitNewVehicle = async function(event) {
+window.submitNewVehicle = async function (event) {
     event.preventDefault();
     const btn = document.getElementById('btnSubmitVehicle');
     const originalText = btn.innerHTML;
@@ -917,8 +917,8 @@ window.submitNewVehicle = async function(event) {
     finally { btn.innerHTML = originalText; btn.disabled = false; }
 };
 
-window.deleteAdminVehicle = async function(id, plate) {
-    if(!confirm(`⚠️ XÓA VĨNH VIỄN phương tiện [${plate}] khỏi hệ thống?`)) return;
+window.deleteAdminVehicle = async function (id, plate) {
+    if (!confirm(`⚠️ XÓA VĨNH VIỄN phương tiện [${plate}] khỏi hệ thống?`)) return;
     const token = localStorage.getItem('accessToken');
     try {
         const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
@@ -928,7 +928,7 @@ window.deleteAdminVehicle = async function(id, plate) {
         const result = await response.json();
         if (response.ok && result.success) {
             showSystemToast(`Đã thanh lý thành công [${plate}]`, "success");
-            fetchAndRenderAdminVehicles(); 
+            fetchAndRenderAdminVehicles();
         } else showSystemToast(result.error || result.message, "error");
     } catch (error) { showSystemToast("Lỗi đường truyền", "error"); }
 };

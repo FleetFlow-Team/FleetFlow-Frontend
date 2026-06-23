@@ -1,5 +1,5 @@
 // GIAO DIỆN
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // 1. Lấy dữ liệu từ localStorage
     const fullName = localStorage.getItem('fullName');
     const accessToken = localStorage.getItem('accessToken');
@@ -35,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function() {
             `;
 
             // Kích hoạt sự kiện Đăng xuất
-            document.getElementById('btnLogout').addEventListener('click', function(e) {
+            document.getElementById('btnLogout').addEventListener('click', function (e) {
                 e.preventDefault();
-                if(confirm('Bạn có chắc chắn muốn đăng xuất khỏi FleetFlow?')) {
+                if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi FleetFlow?')) {
                     localStorage.clear(); // Xóa token
                     window.location.reload(); // Tải lại trang (sẽ tự quay về trạng thái chưa đăng nhập)
                 }
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function() {
         // --- GIAO DIỆN MOBILE ---
         if (btnMobile) {
             btnMobile.href = "profile.html"; // Trỏ về trang cá nhân thay vì trang login
-            
+
             btnMobile.innerHTML = `
                 <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 22px; height: 22px; border-radius: 50%; margin-bottom: 3px;" />
                 <span class="nav-text">Tài khoản</span>
@@ -114,7 +114,7 @@ let currentVoucherId = null; // Lưu ID voucher nếu áp dụng thành công
 
 // Khởi tạo bản đồ VietMap GL
 const map = new vietmapgl.Map({
-    container: 'fleetMap', 
+    container: 'fleetMap',
     style: `https://maps.vietmap.vn/maps/styles/tm/style.json?apikey=${VIETMAP_API_KEY}`,
     center: [106.702872, 10.774339], // Mặc định trung tâm TP.HCM
     zoom: 13
@@ -127,7 +127,7 @@ map.on('load', () => {
     // Ẩn placeholder loading
     const placeholder = document.getElementById('mapPlaceholder');
     if (placeholder) placeholder.style.setProperty('display', 'none', 'important');
-    
+
     // Thêm Source và Layer để vẽ lộ trình
     map.addSource('route', {
         'type': 'geojson',
@@ -172,7 +172,7 @@ function decodePolyline(str, precision = 5) {
         do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
         longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
         lat += latitude_change; lng += longitude_change;
-        coordinates.push([lng / factor, lat / factor]); 
+        coordinates.push([lng / factor, lat / factor]);
     }
     return coordinates;
 }
@@ -182,7 +182,7 @@ function clearRouteOnMap() {
     if (map.getSource('route')) {
         map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: [] } });
     }
-    
+
     // Xóa ghim điểm đón / trả cũ
     if (currentPickupMarker) currentPickupMarker.remove();
     if (currentDropoffMarker) currentDropoffMarker.remove();
@@ -213,7 +213,7 @@ async function fetchRoute(pLat, pLng, dLat, dLng) {
 // 4. LUỒNG XỬ LÝ CHÍNH & VẼ BẢN ĐỒ
 // ==========================================
 
-window.triggerMapCalculation = async function() {
+window.triggerMapCalculation = async function () {
     const pickupAddress = document.getElementById('inputPickup').value.trim();
     const dropoffAddress = document.getElementById('inputDropoff').value.trim();
     const btnSubmitBooking = document.getElementById('btnSubmitBooking');
@@ -239,7 +239,7 @@ window.triggerMapCalculation = async function() {
 
         // B2: Validate Khoảng cách
         const distanceData = await fetchDistanceValidation(
-            pickupData.lat, pickupData.lng, 
+            pickupData.lat, pickupData.lng,
             dropoffData.lat, dropoffData.lng
         );
 
@@ -247,7 +247,7 @@ window.triggerMapCalculation = async function() {
             const toastBody = document.querySelector('#distanceErrorToast .toast-body');
             toastBody.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> ${distanceData.error || 'Khoảng cách không hợp lệ.'}`;
             new bootstrap.Toast(document.getElementById('distanceErrorToast')).show();
-            
+
             clearRouteOnMap();
             distValueText.innerText = "--";
             return;
@@ -255,7 +255,7 @@ window.triggerMapCalculation = async function() {
 
         // B3: Lấy Lộ trình
         const routeData = await fetchRoute(
-            pickupData.lat, pickupData.lng, 
+            pickupData.lat, pickupData.lng,
             dropoffData.lat, dropoffData.lng
         );
 
@@ -283,7 +283,7 @@ window.triggerMapCalculation = async function() {
         // Tạo element DOM cho Điểm Đón
         const elPickup = document.createElement('div');
         elPickup.className = 'map-marker-pickup';
-        
+
         // Tạo element DOM cho Điểm Trả
         const elDropoff = document.createElement('div');
         elDropoff.className = 'map-marker-dropoff';
@@ -294,8 +294,8 @@ window.triggerMapCalculation = async function() {
             .addTo(map);
 
         // Gắn Marker Trả lên bản đồ (tâm ở góc nhọn dưới cùng)
-        currentDropoffMarker = new vietmapgl.Marker({ 
-            element: elDropoff, 
+        currentDropoffMarker = new vietmapgl.Marker({
+            element: elDropoff,
             anchor: 'bottom'
         })
             .setLngLat(endCoord)
@@ -322,7 +322,7 @@ window.triggerMapCalculation = async function() {
             const toastBody = document.querySelector('#distanceErrorToast .toast-body');
             toastBody.innerHTML = `<i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> Quãng đường ${currentDistanceKm}km quá ngắn. Tối thiểu phải >= 20km!`;
             new bootstrap.Toast(document.getElementById('distanceErrorToast')).show();
-            
+
             return; // Dừng luồng, không gọi báo giá
         }
 
@@ -331,7 +331,7 @@ window.triggerMapCalculation = async function() {
         // Cập nhật UI Thành công
         distValueText.innerText = currentDistanceKm;
         distBadge.classList.add('active-route');
-        
+
         // 👉 2. TỰ ĐỘNG GỌI API BÁO GIÁ ĐỘNG NGAY KHI CÓ KHOẢNG CÁCH!
         calculateRealPrice();
 
@@ -352,38 +352,38 @@ window.triggerMapCalculation = async function() {
 // ==========================================
 
 // Đảo chiều điểm đón - trả
-window.swapLocations = function() {
+window.swapLocations = function () {
     const pickupInput = document.getElementById('inputPickup');
     const dropoffInput = document.getElementById('inputDropoff');
-    
+
     let temp = pickupInput.value;
     pickupInput.value = dropoffInput.value;
     dropoffInput.value = temp;
-    
+
     triggerMapCalculation();
 };
 
 // Hiển thị dropdown gợi ý địa điểm (Mockup)
-window.showMockAutocomplete = function(dropdownId) {
+window.showMockAutocomplete = function (dropdownId) {
     // Ẩn tất cả dropdown trước
     document.querySelectorAll('.autocomplete-dropdown').forEach(el => el.style.display = 'none');
-    
+
     const dropdown = document.getElementById(dropdownId);
     if (dropdown) dropdown.style.display = 'block';
 };
 
 // Chọn địa điểm từ dropdown
-window.selectLocation = function(inputId, text, dropdownId) {
+window.selectLocation = function (inputId, text, dropdownId) {
     document.getElementById(inputId).value = text;
     document.getElementById(dropdownId).style.display = 'none';
     triggerMapCalculation();
 };
 
 // Ẩn dropdown khi click ra ngoài
-document.addEventListener('click', function(event) {
+document.addEventListener('click', function (event) {
     const isClickInsidePickup = document.getElementById('inputPickup').contains(event.target);
     const isClickInsideDropoff = document.getElementById('inputDropoff').contains(event.target);
-    
+
     const pickupDropdown = document.getElementById('pickupDropdown');
     const dropoffDropdown = document.getElementById('dropoffDropdown');
 
@@ -392,14 +392,14 @@ document.addEventListener('click', function(event) {
 });
 
 // Validate thời gian khởi hành (Phải cách hiện tại ít nhất 120 phút)
-window.validateDepartureTime = function() {
+window.validateDepartureTime = function () {
     const inputTime = document.getElementById('inputDepartureTime');
     const errorMsg = document.getElementById('timeErrorMsg');
     const btnSubmitBooking = document.getElementById('btnSubmitBooking');
     const distValueText = document.getElementById('distValue').innerText;
 
     if (!inputTime || !inputTime.value) {
-        if(btnSubmitBooking) btnSubmitBooking.disabled = true;
+        if (btnSubmitBooking) btnSubmitBooking.disabled = true;
         return;
     }
 
@@ -414,7 +414,7 @@ window.validateDepartureTime = function() {
     } else {
         inputTime.classList.remove('is-invalid');
         errorMsg.classList.remove('d-block');
-        
+
         // Mở nút nếu đã có khoảng cách hợp lệ
         if (distValueText !== "--" && !distValueText.includes('spinner')) {
             btnSubmitBooking.disabled = false;
@@ -423,7 +423,7 @@ window.validateDepartureTime = function() {
 };
 
 // Xử lý nút Chốt lộ trình
-window.simulateBookingSubmit = function() {
+window.simulateBookingSubmit = function () {
     const btn = document.getElementById('btnSubmitBooking');
     btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...`;
     btn.disabled = true;
@@ -446,7 +446,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const systemErrorToastEl = document.getElementById('systemErrorToast');
     if (distanceToastEl) new bootstrap.Toast(distanceToastEl);
     if (systemErrorToastEl) new bootstrap.Toast(systemErrorToastEl);
-    
+
     // 2. Thiết lập thời gian tối thiểu cho Date input
     const inputTime = document.getElementById('inputDepartureTime');
     if (inputTime) {
@@ -462,8 +462,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function initBottomSheetUX() {
     const sheet = document.getElementById('bookingSheet');
     const header = document.getElementById('sheetHeader');
-    
-    if (!sheet || !header) return; 
+
+    if (!sheet || !header) return;
 
     let startY = 0;
     let currentY = 0;
@@ -491,27 +491,27 @@ function initBottomSheetUX() {
 
     function handleDragMove(e) {
         if (!isDragging || window.innerWidth >= 1200) return;
-        
+
         currentY = getClientY(e);
         let deltaY = currentY - startY;
-        
-        if(sheet.classList.contains('expanded')) {
-            if(deltaY > 0) sheet.style.transform = `translate(-50%, ${deltaY}px)`; // Đang vuốt xuống
+
+        if (sheet.classList.contains('expanded')) {
+            if (deltaY > 0) sheet.style.transform = `translate(-50%, ${deltaY}px)`; // Đang vuốt xuống
         } else {
-            if(deltaY < 0) sheet.style.transform = `translate(-50%, calc(100% - 190px + ${deltaY}px))`; // Đang vuốt lên
+            if (deltaY < 0) sheet.style.transform = `translate(-50%, calc(100% - 190px + ${deltaY}px))`; // Đang vuốt lên
         }
     }
 
     function handleDragEnd(e) {
         if (!isDragging || window.innerWidth >= 1200) return;
         isDragging = false;
-        
+
         // Trả lại hiệu ứng transition
-        sheet.style.transition = ''; 
-        sheet.style.transform = ''; 
-        
+        sheet.style.transition = '';
+        sheet.style.transform = '';
+
         let deltaY = currentY - startY;
-        
+
         if (sheet.classList.contains('expanded')) {
             if (deltaY > 50) sheet.classList.remove('expanded'); // Kéo xuống đủ xa -> Thu gọn
         } else {
@@ -520,31 +520,31 @@ function initBottomSheetUX() {
     }
 
     // Sự kiện Mobile (Touch)
-    header.addEventListener('touchstart', handleDragStart, {passive: true});
-    window.addEventListener('touchmove', handleDragMove, {passive: true}); 
+    header.addEventListener('touchstart', handleDragStart, { passive: true });
+    window.addEventListener('touchmove', handleDragMove, { passive: true });
     window.addEventListener('touchend', handleDragEnd);
 
     // Sự kiện PC (Mouse - dành cho test giả lập mobile)
     header.addEventListener('mousedown', handleDragStart);
-    window.addEventListener('mousemove', handleDragMove); 
+    window.addEventListener('mousemove', handleDragMove);
     window.addEventListener('mouseup', handleDragEnd);
 }
 
 // ==========================================
 // 3. BÁO GIÁ TỰ ĐỘNG (Check-price API)
 // ==========================================
-window.calculateRealPrice = async function() {
+window.calculateRealPrice = async function () {
     // Không gọi API nếu chưa có xe hoặc khoảng cách chưa hợp lệ
     if (!currentVehicleId || currentDistanceKm < 20) return;
 
     const timeInput = document.getElementById('inputDepartureTime');
     let departureTimeStr = null;
-    
+
     // Nối thêm ':00' (giây) để đồng bộ định dạng Timestamp
     if (timeInput && timeInput.value) {
-        departureTimeStr = timeInput.value + ':00'; 
+        departureTimeStr = timeInput.value + ':00';
     } else {
-        departureTimeStr = getFutureTime(2); 
+        departureTimeStr = getFutureTime(2);
     }
 
     const tripDirection = document.querySelector('input[name="tripDirection"]:checked').value;
@@ -561,12 +561,12 @@ window.calculateRealPrice = async function() {
 
     // Nếu là KHỨ HỒI: Tự động cộng thêm quãng đường chiều về (Bằng đúng chiều đi)
     if (tripDirection === 'ROUND_TRIP') {
-        payload.returnDistanceKm = currentDistanceKm; 
+        payload.returnDistanceKm = currentDistanceKm;
     }
 
-    const baseFareEl = document.getElementById('baseFareDisplay'); 
-    const totalFareEl = document.getElementById('totalFareDisplay'); 
-    const depositEl = document.getElementById('depositDisplay'); 
+    const baseFareEl = document.getElementById('baseFareDisplay');
+    const totalFareEl = document.getElementById('totalFareDisplay');
+    const depositEl = document.getElementById('depositDisplay');
     const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
 
     try {
@@ -627,7 +627,7 @@ window.calculateRealPrice = async function() {
     } catch (error) {
         // IN LỖI RA CONSOLE ĐỂ DEBUG
         console.error("🚨 Lỗi Cực Kỳ Rõ Ràng Tại API Check-Price:", error.message || error);
-        
+
         if (baseFareEl) baseFareEl.innerText = '----';
         if (totalFareEl) totalFareEl.innerText = '---';
         if (depositEl) depositEl.innerText = '--';
@@ -646,9 +646,9 @@ document.getElementById('inputDepartureTime').addEventListener('change', () => {
 // 4. ÁP MÃ VOUCHER (/vouchers/apply)
 // ==========================================
 
-window.applyVoucher = async function() {
+window.applyVoucher = async function () {
     const code = document.getElementById('voucherInput').value.trim();
-    
+
     // Lấy customerId từ localStorage (Giả định bạn đã lưu lúc đăng nhập)
     const customerId = parseInt(localStorage.getItem('customerId'));
 
@@ -678,7 +678,7 @@ window.applyVoucher = async function() {
         code: code,
         customerId: customerId,
         estimatedTotal: currentEstimatedTotal,
-        vehicleTypeId: vehicleTypeId 
+        vehicleTypeId: vehicleTypeId
     };
 
     const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
@@ -690,7 +690,7 @@ window.applyVoucher = async function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
-        
+
         const data = await res.json();
 
         // 5. Xử lý kết quả trả về
@@ -698,14 +698,14 @@ window.applyVoucher = async function() {
             // Cập nhật giá mới lên UI theo response từ API
             document.getElementById('discountDisplay').innerText = `-${fVND(data.discountAmount)}`;
             document.getElementById('totalFareDisplay').innerText = fVND(data.finalTotal);
-            
+
             // Tính toán và cập nhật lại số tiền cọc (30% của tổng tiền sau giảm giá)
             const newDeposit = data.finalTotal * 0.3;
-            document.getElementById('depositDisplay').innerText = fVND(newDeposit); 
-            
+            document.getElementById('depositDisplay').innerText = fVND(newDeposit);
+
             // Lưu ID voucher vào biến toàn cục để gửi kèm lúc tạo Booking
-            currentVoucherId = data.voucherId; 
-            
+            currentVoucherId = data.voucherId;
+
             Swal.fire({
                 icon: 'success',
                 title: 'Áp dụng thành công!',
@@ -717,26 +717,26 @@ window.applyVoucher = async function() {
             // Hiển thị lỗi từ Backend (Hết hạn, sai xe, không tồn tại...)
             Swal.fire({ icon: 'error', title: 'Mã không hợp lệ', text: data.error || 'Voucher không khả dụng.' });
             document.getElementById('voucherInput').value = '';
-            
+
             // Reset lại UI về giá gốc nếu mã bị lỗi/khách nhập sai mã khác
             currentVoucherId = null;
             document.getElementById('discountDisplay').innerText = '0 đ';
             document.getElementById('totalFareDisplay').innerText = fVND(currentEstimatedTotal);
             document.getElementById('depositDisplay').innerText = fVND(currentEstimatedTotal * 0.3);
         }
-    } catch (e) { 
+    } catch (e) {
         console.error("Lỗi áp dụng voucher:", e);
-        new bootstrap.Toast(document.getElementById('systemErrorToast')).show(); 
-    } finally { 
+        new bootstrap.Toast(document.getElementById('systemErrorToast')).show();
+    } finally {
         // Trả lại UI cho nút bấm
-        btn.innerHTML = origText; 
-        btn.disabled = false; 
+        btn.innerHTML = origText;
+        btn.disabled = false;
     }
 };
 // ==========================================
 // 5. CHỐT ĐƠN VÀ ĐIỀU HƯỚNG SANG CHECKOUT (LUỒNG DISTANCE)
 // ==========================================
-window.submitBooking = async function() {
+window.submitBooking = async function () {
     const tripDirection = document.querySelector('input[name="tripDirection"]:checked').value;
     const timeInput = document.getElementById('inputDepartureTime').value;
     const returnTimeInput = document.getElementById('inputReturnTime').value;
@@ -754,7 +754,7 @@ window.submitBooking = async function() {
     localStorage.setItem('tripDirection', tripDirection);
     localStorage.setItem('pickupAddress', document.getElementById('inputPickup').value);
     localStorage.setItem('dropoffAddress', document.getElementById('inputDropoff').value);
-    
+
     // Lưu tọa độ Điểm đi
     localStorage.setItem('pickupLat', tripCoordinates.pickupLat);
     localStorage.setItem('pickupLng', tripCoordinates.pickupLng);
@@ -766,17 +766,17 @@ window.submitBooking = async function() {
         localStorage.setItem('returnPickupAddress', document.getElementById('inputDropoff').value);
         localStorage.setItem('returnPickupLat', tripCoordinates.dropoffLat);
         localStorage.setItem('returnPickupLng', tripCoordinates.dropoffLng);
-        
+
         localStorage.setItem('returnDropoffAddress', document.getElementById('inputPickup').value);
         localStorage.setItem('returnDropoffLat', tripCoordinates.pickupLat);
         localStorage.setItem('returnDropoffLng', tripCoordinates.pickupLng);
-        
+
         localStorage.setItem('mapReturnTime', returnTimeInput + ':00');
     }
 
     localStorage.setItem('mapDepartureTime', timeInput + ':00');
-    localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal); 
-    if(currentVoucherId) localStorage.setItem('appliedVoucherId', currentVoucherId);
+    localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal);
+    if (currentVoucherId) localStorage.setItem('appliedVoucherId', currentVoucherId);
 
     // Lưu tiền cọc dạng hiển thị (VD: 300.000 đ)
     const formattedDeposit = document.getElementById('depositDisplay').innerText;
@@ -799,10 +799,10 @@ function getFutureTime(hoursToAdd) {
     d.setHours(d.getHours() + hoursToAdd);
     // Tính toán bù múi giờ (Local time)
     const localISO = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString();
-    return localISO.slice(0, 19); 
+    return localISO.slice(0, 19);
 }
 
-window.toggleRoundTripUI = function() {
+window.toggleRoundTripUI = function () {
     const direction = document.querySelector('input[name="tripDirection"]:checked').value;
     const returnBox = document.getElementById('returnTimeBox');
     if (direction === 'ROUND_TRIP') {
