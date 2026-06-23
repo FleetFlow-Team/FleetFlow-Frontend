@@ -144,7 +144,7 @@ let tripMapInstance = null; // Biến toàn cục giữ trạng thái Bản đ�
 
 window.viewTripDetails = async function(bookingId) {
     selectedTripId = bookingId;
-    const tripSummary = globalTripData.find(t => t.bookingId === bookingId);
+    const tripSummary = globalTripData.find(t => t.bookingId == bookingId); // Dùng == để tránh lỗi type mismatch
     if (!tripSummary) return;
 
     // Kích hoạt animation trượt màn hình sang Panel Chi tiết
@@ -157,7 +157,7 @@ window.viewTripDetails = async function(bookingId) {
     document.getElementById('lblDropoffAddress').innerHTML = '<i class="fa-solid fa-spinner fa-spin text-muted"></i> Đang truy xuất dữ liệu...';
 
     try {
-        // GỌI API LẤY CHI TIẾT ĐƠN HÀNG (Kèm Tọa độ)
+        // Trỏ trực tiếp về BookingController thay vì CustomerBookingController
         const res = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}`, {
             method: 'GET',
             headers: getAuthHeaders()
@@ -166,34 +166,44 @@ window.viewTripDetails = async function(bookingId) {
 
         if (res.ok && data.detail) {
             const detail = data.detail;
-            const bType = data.bookingType;
-            const tDir = data.tripDirection;
+            const bType = data.bookingType || tripSummary.bookingType || 'DISTANCE';
+            const tDir = data.tripDirection || tripSummary.tripDirection || 'ONE_WAY';
 
-            // 1. In thời gian khởi hành
-            const d = new Date(detail.departureTime);
-            document.getElementById('lblDepartureTime').innerText = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}`;
+            // 1. FIX LỖI DATE SAFARI: Chuẩn hóa khoảng trắng thành chữ T
+            const rawTime = detail.departureTime || tripSummary.departureTime;
+            const isoTime = rawTime ? rawTime.replace(' ', 'T').split('.')[0] : null;
+            
+            if (isoTime) {
+                const d = new Date(isoTime);
+                document.getElementById('lblDepartureTime').innerText = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('lblDepartureTime').innerText = "Chưa cập nhật";
+            }
 
-            // 2. Phân luồng In Địa chỉ tùy Dịch vụ
-            document.getElementById('lblPickupAddress').innerText = detail.pickupAddress || tripSummary.pickupAddress;
+            // 2. FIX LỖI CHUỖI "null": Kiểm tra nghiêm ngặt chuỗi "null" từ BE
+            const safePickup = (detail.pickupAddress && detail.pickupAddress !== "null") ? detail.pickupAddress : tripSummary.pickupAddress;
+            document.getElementById('lblPickupAddress').innerText = safePickup || '--';
             
             if (bType === 'HOURLY') {
-                document.getElementById('lblDropoffAddress').innerHTML = `Thuê di chuyển nội đô <span class="badge bg-primary ms-2">${detail.durationHours} Tiếng</span>`;
+                // FIX LỖI THIẾU DATA: Fallback fallback về tripSummary
+                const hours = detail.durationHours || tripSummary.durationHours || 1;
+                document.getElementById('lblDropoffAddress').innerHTML = `Thuê di chuyển nội đô <span class="badge bg-primary ms-2">${hours} Tiếng</span>`;
             } else if (bType === 'DAILY') {
-                document.getElementById('lblDropoffAddress').innerHTML = `Thuê di chuyển tự do <span class="badge bg-success ms-2">${detail.durationDays} Ngày</span>`;
+                const days = detail.durationDays || tripSummary.durationDays || 1;
+                document.getElementById('lblDropoffAddress').innerHTML = `Thuê di chuyển tự do <span class="badge bg-success ms-2">${days} Ngày</span>`;
             } else {
-                // Luồng Chuyến đi (DISTANCE)
-                let dropoffText = detail.dropoffAddress || tripSummary.dropoffAddress;
+                let safeDropoff = (detail.dropoffAddress && detail.dropoffAddress !== "null") ? detail.dropoffAddress : tripSummary.dropoffAddress;
+                let dropoffText = safeDropoff || '--';
                 
-                // Nếu là Khứ hồi, bóc tách giờ về và hiển thị nổi bật
                 if (tDir === 'ROUND_TRIP' && detail.returnTime) {
-                    const rd = new Date(detail.returnTime);
+                    const rd = new Date(detail.returnTime.replace(' ', 'T').split('.')[0]);
                     const rTime = `${rd.getHours().toString().padStart(2, '0')}:${rd.getMinutes().toString().padStart(2, '0')} - ${rd.getDate().toString().padStart(2, '0')}/${(rd.getMonth()+1).toString().padStart(2, '0')}`;
                     dropoffText += `<br><span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 mt-2"><i class="fa-solid fa-clock-rotate-left me-1"></i> Chiều về lúc: ${rTime}</span>`;
                 }
                 document.getElementById('lblDropoffAddress').innerHTML = dropoffText;
             }
 
-            // 3. XỬ LÝ HIỂN THỊ THÔNG TIN (CHỈ XE / HOẶC CÓ TÀI XẾ)
+            // 3. Render Profile Hình ảnh xe/Tài xế
             const imgDriver = document.getElementById('imgDriverAvatar');
             const iconCar = document.getElementById('iconCarAvatar');
             const btnCall = document.getElementById('btnCallDriver');
@@ -201,54 +211,29 @@ window.viewTripDetails = async function(bookingId) {
             const lblSub = document.getElementById('lblSubInfo');
 
             if (tripSummary.status === 'PENDING' || tripSummary.status === 'APPROVED' || tripSummary.status === 'REJECTED' || tripSummary.status === 'CANCELLED') {
-                // TRƯỜNG HỢP 1: ĐƠN MỚI CHƯA CÓ TÀI XẾ -> CHỈ HIỆN THÔNG TIN XE
                 if (imgDriver) imgDriver.classList.add('d-none');
-                if (iconCar) {
-                    iconCar.classList.remove('d-none');
-                    iconCar.classList.add('d-flex');
-                }
-                if (btnCall) btnCall.classList.add('d-none'); // Giấu nút gọi
+                if (iconCar) { iconCar.classList.remove('d-none'); iconCar.classList.add('d-flex'); }
+                if (btnCall) btnCall.classList.add('d-none'); 
 
-                // Tiêu đề: Tên Xe (Ví dụ: Hyundai Accent)
-                lblMain.innerText = tripSummary.vehicleName || "Đang tải thông tin xe";
-                
-                // Dòng phụ: Biển số (Ví dụ: Biển số: 51D-103.13)
+                lblMain.innerText = tripSummary.vehicleName || "Phương tiện FleetFlow";
                 lblSub.innerHTML = `<i class="fa-solid fa-hashtag me-1"></i> Biển số: <span class="text-uppercase">${tripSummary.licensePlate || "Chờ cập nhật"}</span>`;
-                
             } else {
-                // TRƯỜNG HỢP 2: ĐƠN ĐÃ ĐƯỢC PHÂN TÀI XẾ (DISPATCHED, IN_PROGRESS, COMPLETED)
                 if (imgDriver) imgDriver.classList.remove('d-none');
-                if (iconCar) {
-                    iconCar.classList.remove('d-flex');
-                    iconCar.classList.add('d-none');
-                }
-                if (btnCall) btnCall.classList.remove('d-none'); // Hiện nút gọi
+                if (iconCar) { iconCar.classList.remove('d-flex'); iconCar.classList.add('d-none'); }
+                if (btnCall) btnCall.classList.remove('d-none'); 
 
-                // Tiêu đề: Tên Tài Xế (Ví dụ: Nguyễn Văn A)
                 lblMain.innerText = tripSummary.driverName || "Tài xế FleetFlow"; 
-                
-                // Dòng phụ: Tên Xe + Biển số (Ví dụ: Hyundai Accent • 51D-103.13)
                 lblSub.innerHTML = `<i class="fa-solid fa-car-side me-1"></i> ${tripSummary.vehicleName} • <span class="text-uppercase">${tripSummary.licensePlate || ""}</span>`;
-                
-                // Gắn số điện thoại tài xế vào nút gọi
                 if (btnCall) btnCall.href = `tel:${tripSummary.driverPhone || '19005335'}`;
             }
-            
 
-            // 5. Cập nhật Hóa đơn 
-            // (Nếu BackEnd của bạn đã nối bảng BookingPricing vào API này, nó sẽ đọc data.pricing. 
-            // Nếu chưa, hệ thống sẽ Fallback hiện số Km/Giờ)
-            // ==============================================================
-            // 5. PHỤC HỒI HÓA ĐƠN BẰNG CÁCH GỌI NGƯỢC LẠI API CHECK-PRICE
-            // ==============================================================
+            // 4. Phục hồi chi phí (Fallback API check-price)
             if (data.pricing) {
-                // Dự phòng nếu tương lai Backend của bạn có trả về giá
                 document.getElementById('lblBasePrice').innerText = data.pricing.baseFare.toLocaleString('vi-VN') + ' ₫';
                 document.getElementById('lblSurcharge').innerText = data.pricing.weekendSurcharge ? '+' + data.pricing.weekendSurcharge.toLocaleString('vi-VN') + ' ₫' : '0 ₫';
                 document.getElementById('lblDiscount').innerText = data.pricing.discountAmount ? '-' + data.pricing.discountAmount.toLocaleString('vi-VN') + ' ₫' : '0 ₫';
                 document.getElementById('lblTotalAmount').innerText = data.pricing.estimatedTotal.toLocaleString('vi-VN') + ' ₫';
             } else {
-                // TỰ ĐỘNG KHÔI PHỤC HÓA ĐƠN TỪ CÁC THÔNG SỐ CỦA CHUYẾN ĐI
                 document.getElementById('lblBasePrice').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
                 document.getElementById('lblTotalAmount').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
@@ -256,24 +241,21 @@ window.viewTripDetails = async function(bookingId) {
                     vehicleId: tripSummary.vehicleId,
                     bookingType: bType,
                     tripDirection: tDir,
-                    // Cắt bỏ phần mili-giây nếu có để API check-price không bị lỗi parse Date
-                    departureTime: detail.departureTime.split('.')[0] 
+                    // FIX: Đảm bảo format chuẩn cho Request Check-Price
+                    departureTime: isoTime || new Date().toISOString().split('.')[0]
                 };
 
-                // Phân luồng đẩy tham số cho API
                 if (bType === 'DISTANCE') {
                     pricePayload.distanceKm = detail.distanceKm || tripSummary.distanceKm || 0;
-                    if (tDir === 'ROUND_TRIP') {
-                        pricePayload.returnDistanceKm = detail.returnDistanceKm || detail.distanceKm || 0;
-                    }
+                    if (tDir === 'ROUND_TRIP') pricePayload.returnDistanceKm = detail.returnDistanceKm || detail.distanceKm || 0;
                 } else if (bType === 'HOURLY') {
-                    pricePayload.durationHours = detail.durationHours || 1;
+                    pricePayload.durationHours = detail.durationHours || tripSummary.durationHours || 1;
                 } else if (bType === 'DAILY') {
-                    pricePayload.durationDays = detail.durationDays || 1;
+                    pricePayload.durationDays = detail.durationDays || tripSummary.durationDays || 1;
                 }
 
                 try {
-                    const priceRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/bookings/check-price', {
+                    const priceRes = await fetch(`${CUSTOMER_API_BASE}/bookings/check-price`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(pricePayload)
@@ -284,36 +266,31 @@ window.viewTripDetails = async function(bookingId) {
                         const fmt = new Intl.NumberFormat('vi-VN');
                         document.getElementById('lblBasePrice').innerText = fmt.format(priceData.baseFare) + ' ₫';
                         document.getElementById('lblSurcharge').innerText = priceData.weekendSurcharge > 0 ? '+' + fmt.format(priceData.weekendSurcharge) + ' ₫' : '0 ₫';
-                        
-                        // Backend Get History không có giá trị Voucher thực tế, ta chỉ hiện dòng thông báo
                         document.getElementById('lblDiscount').innerText = tripSummary.voucherId ? 'Đã áp dụng mã' : '0 ₫'; 
-                        
                         document.getElementById('lblTotalAmount').innerText = fmt.format(priceData.estimatedTotal) + ' ₫';
                     } else {
                         document.getElementById('lblTotalAmount').innerText = 'Lỗi tính giá';
                     }
                 } catch(e) {
-                    console.error("Không thể khôi phục giá:", e);
                     document.getElementById('lblTotalAmount').innerText = 'Không xác định';
                 }
             }
-
         } else {
             alert('Không thể tải chi tiết lộ trình: ' + (data.error || 'Lỗi không xác định'));
             navigateBackToHistory();
         }
     } catch(e) {
-        console.error(e);
-        alert('Mất kết nối máy chủ khi lấy chi tiết chuyến đi!');
+        console.error("Crash trong viewTripDetails:", e);
+        alert('Có lỗi xảy ra trong quá trình truy xuất dữ liệu chi tiết!');
         navigateBackToHistory();
     }
 
-    // 6. Xử lý Sinh Badge Status & Nút Hủy (Action Grid)
+    // 5. Build Grid Nút Hành động & Trạng thái
     const badgeContainer = document.getElementById('detailBadgeContainer');
     if(tripSummary.status === 'PENDING') badgeContainer.innerHTML = '<span class="trip-status-badge badge-pending">Đang chờ duyệt</span>';
-    if(['APPROVED', 'DISPATCHED', 'IN_PROGRESS'].includes(tripSummary.status)) badgeContainer.innerHTML = '<span class="trip-status-badge badge-active">Đang tiến hành</span>';
-    if(tripSummary.status === 'COMPLETED') badgeContainer.innerHTML = '<span class="trip-status-badge badge-completed">Hoàn thành</span>';
-    if(tripSummary.status === 'REJECTED' || tripSummary.status === 'CANCELLED') badgeContainer.innerHTML = '<span class="trip-status-badge badge-cancelled">Đã hủy</span>';
+    else if(['APPROVED', 'DISPATCHED', 'IN_PROGRESS'].includes(tripSummary.status)) badgeContainer.innerHTML = '<span class="trip-status-badge badge-active">Đang tiến hành</span>';
+    else if(tripSummary.status === 'COMPLETED') badgeContainer.innerHTML = '<span class="trip-status-badge badge-completed">Hoàn thành</span>';
+    else badgeContainer.innerHTML = '<span class="trip-status-badge badge-cancelled">Đã hủy</span>';
 
     const actionGrid = document.getElementById('detailActionGrid');
     if (tripSummary.status === 'PENDING' || tripSummary.status === 'APPROVED') {
