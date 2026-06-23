@@ -454,3 +454,184 @@ window.executeDispatch = async function() {
         btnSubmit.disabled = false;
     }
 };
+// ==========================================
+// 15. TÍCH HỢP BẢN ĐỒ LIVE TRACKING (DISPATCHER MAP)
+// GET /api/v1/dispatcher/map
+// ==========================================
+
+let dispatcherMap = null; 
+let activeMarkers = {};   // Object lưu trữ các xe đang chạy { bookingId: markerInstance }
+let mapInterval = null;   // Biến giữ vòng lặp gọi API
+
+// Tách hàm tạm dừng API để HTML có thể gọi
+window.pauseMapTracking = function() {
+    if (mapInterval) {
+        clearInterval(mapInterval);
+        mapInterval = null;
+    }
+};
+
+// HÀM KHỞI TẠO BẢN ĐỒ VÀ VÒNG LẶP GỌI API
+window.initDispatcherMap = function() {
+    // 1. NẾU BẢN ĐỒ CHƯA TỒN TẠI -> KHỞI TẠO
+    if (!dispatcherMap) {
+        dispatcherMap = new vietmapgl.Map({
+            container: 'dispatcherMapContainer',
+            // style: 'https://maps.vietmap.vn/mt/tm/style.json?apikey=9c63b68ed14a6f2327e9f9fa0170ce81f6f5e0678471c64d', Link url cũ gây lỗi
+            style: 'https://maps.vietmap.vn/maps/styles/tm/style.json?apikey=9c63b68ed14a6f2327e9f9fa0170ce81f6f5e0678471c64d',
+            
+            center: [106.660172, 10.762622], // Tọa độ trung tâm TP.HCM
+            zoom: 12
+        });
+
+        dispatcherMap.addControl(new vietmapgl.NavigationControl(), 'top-right');
+
+        // Bắt sự kiện 'load' của bản đồ để chắc chắn style đường phố đã tải xong
+        dispatcherMap.on('load', () => {
+            console.log("✅ VietMap đã tải nền đường phố thành công!");
+            dispatcherMap.resize(); // Ép kích thước ngay khi load xong
+            
+            // Bắt đầu gọi API lấy xe
+            fetchLiveMapData();
+            mapInterval = setInterval(fetchLiveMapData, 30000);
+        });
+    } else {
+        // 2. NẾU BẢN ĐỒ ĐÃ TỒN TẠI (Chỉ là đang chuyển qua lại giữa các Tab)
+        if (!mapInterval) {
+            fetchLiveMapData();
+            mapInterval = setInterval(fetchLiveMapData, 30000);
+        }
+    }
+
+    // ==========================================
+    // CÚ CHỐT: CHIẾN THUẬT RESIZE ÉP BUỘC KHI CHUYỂN TAB
+    // ==========================================
+    let resizeCount = 0;
+    const forceResize = setInterval(() => {
+        if (dispatcherMap) {
+            dispatcherMap.resize();
+        }
+        resizeCount++;
+        if (resizeCount > 5) clearInterval(forceResize); // Dừng lại sau 1 giây
+    }, 200);
+};
+
+// HÀM GỌI API XUỐNG BACKEND
+async function fetchLiveMapData() {
+    try {
+        const headers = getAuthHeader();
+
+        // 1. CHẶN NGAY TỪ CLIENT: Nếu không có token, không thèm gọi API đỡ tốn tài nguyên
+        if (!headers['Authorization']) {
+            console.error("Lỗi: Không tìm thấy Token trong LocalStorage.");
+            window.pauseMapTracking();
+            return;
+        }
+
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/map`, {
+            method: 'GET',
+            headers: headers
+        });
+        
+        // 2. XỬ LÝ LỖI 401 TỪ BACKEND TRẢ VỀ
+        if (response.status === 401 || response.status === 403) {
+            console.error("Token hết hạn hoặc không có quyền truy cập. Dừng quét map.");
+            
+            // Dừng vòng lặp gọi API 30s
+            if (typeof window.pauseMapTracking === 'function') {
+                window.pauseMapTracking();
+            }
+            
+            // Báo lỗi cho Dispatcher
+            if (typeof showSystemToast === 'function') {
+                showSystemToast("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!", "error");
+            }
+            
+            // Đợi 2 giây rồi đá văng về trang Login an toàn
+            setTimeout(() => {
+                if (typeof window.handleDispatcherLogout === 'function') {
+                    window.handleDispatcherLogout();
+                } else {
+                    localStorage.clear();
+                    window.location.href = '../../index.html';
+                }
+            }, 2000);
+            
+            return; // Thoát hàm ngay lập tức
+        }
+
+        // 3. NẾU MỌI THỨ OK -> ĐỔ DỮ LIỆU RA BẢN ĐỒ
+        const result = await response.json();
+        if (response.ok && result.success) {
+            updateMapMarkers(result.data);
+        }
+
+    } catch (error) {
+        console.error("Lỗi lấy dữ liệu Live Map (Mất mạng hoặc Backend sập):", error);
+    }
+}
+
+// HÀM XỬ LÝ DỊCH CHUYỂN XE TRÊN BẢN ĐỒ
+function updateMapMarkers(ongoingTrips) {
+    if (!dispatcherMap || !ongoingTrips) return;
+
+    const currentOngoingIds = [];
+
+    // Duyệt qua từng chiếc xe Backend trả về
+    ongoingTrips.forEach(trip => {
+        const bId = trip.bookingId;
+        const lng = parseFloat(trip.longitude);
+        const lat = parseFloat(trip.latitude);
+        
+        if (isNaN(lng) || isNaN(lat)) return;
+
+        currentOngoingIds.push(bId);
+
+        // Tính toán thời gian trễ (nếu cần đổi màu marker sau này)
+        const recordedTime = new Date(trip.recordedAt);
+        const timeString = recordedTime.toLocaleTimeString('vi-VN');
+
+        const popupHtml = `
+            <div style="padding: 5px; text-align: center; font-family: 'Inter', sans-serif;">
+                <h6 class="fw-bold mb-1 text-primary">Chuyến #${bId}</h6>
+                <div class="small fw-medium mb-1"><i class="fa-solid fa-car-side text-secondary"></i> ID Xe: ${trip.vehicleId || 'N/A'}</div>
+                <div class="text-success small fw-bold" style="font-size: 0.75rem;">
+                    <i class="fa-solid fa-satellite-dish live-pulse"></i> ${timeString}
+                </div>
+            </div>
+        `;
+
+        if (activeMarkers[bId]) {
+            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ mới
+            activeMarkers[bId].setLngLat([lng, lat]);
+            activeMarkers[bId].getPopup().setHTML(popupHtml);
+        } else {
+            // NẾU LÀ XE MỚI -> Tạo Marker mới
+            const popup = new vietmapgl.Popup({ offset: 25, closeButton: false }).setHTML(popupHtml);
+            
+            const el = document.createElement('div');
+            el.className = 'live-car-marker';
+            // Styling cứng luôn cho chắc chắn (Phòng trường hợp thiếu CSS)
+            el.innerHTML = `
+                <div style="background: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid #00B14F;">
+                    <i class="fa-solid fa-car-side" style="color: #00B14F; font-size: 16px;"></i>
+                </div>
+            `;
+
+            const newMarker = new vietmapgl.Marker(el)
+                .setLngLat([lng, lat])
+                .setPopup(popup)
+                .addTo(dispatcherMap);
+                
+            activeMarkers[bId] = newMarker;
+        }
+    });
+
+    // DỌN RÁC (Xóa xe đã hoàn thành khỏi map)
+    Object.keys(activeMarkers).forEach(storedBookingId => {
+        if (!currentOngoingIds.includes(parseInt(storedBookingId))) {
+            activeMarkers[storedBookingId].remove(); 
+            delete activeMarkers[storedBookingId];   
+        }
+    });
+}
