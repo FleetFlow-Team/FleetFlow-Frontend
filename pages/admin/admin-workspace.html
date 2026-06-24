@@ -133,6 +133,9 @@
 
                             <li class="menu-section-title">Hệ thống & Phân quyền</li>
                             <li>
+                                <a href="#tab-customers" class="toc-link"><i class="fa-solid fa-users me-2"></i> Khách hàng & Nợ</a>
+                            </li>
+                            <li>
                                 <a href="#tab-users" class="toc-link"><i class="fa-solid fa-users-gear me-2"></i> Tài
                                     khoản & RBAC</a>
                             </li>
@@ -505,6 +508,49 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section id="tab-customers" class="dashboard-section" style="display: none;">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-users text-info me-2"></i>Quản lý Khách hàng & Công nợ</h4>
+                                    <p class="text-white-50 small m-0">Kiểm soát danh sách khách hàng, công nợ và trạng thái khóa/mở khóa tài khoản.</p>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <div class="search-box position-relative">
+                                        <input type="text" class="form-control form-control-sm glass-input ps-5" placeholder="Tìm tên, SĐT...">
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-info text-white" onclick="fetchAndRenderCustomers()">
+                                        <i class="fa-solid fa-rotate-right me-1"></i> Làm mới
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 500px;">
+                                <table class="table-glass w-100 mb-0">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Khách hàng</th>
+                                            <th>Liên hệ</th>
+                                            <th>Công nợ hiện tại</th>
+                                            <th>Trạng thái</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customerListBody">
+                                        <!-- Dữ liệu render từ JS -->
+                                        <tr>
+                                            <td colspan="6" class="text-center text-white-50 py-4">
+                                                <i class="fa-solid fa-circle-notch fa-spin text-info me-2"></i>Đang đồng bộ dữ liệu...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </section>
@@ -1247,6 +1293,7 @@
 
             <script src="../../js/admin.js"></script>
             <script src="../../js/admin/voucherManager.js"></script>
+            <script src="../../js/admin/customerManager.js"></script>
 </body>
 
 </html>
