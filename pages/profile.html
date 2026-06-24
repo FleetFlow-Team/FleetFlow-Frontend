@@ -157,6 +157,14 @@
               >
                 <i class="fa-solid fa-lock me-2"></i> Đổi mật khẩu
               </button>
+              <button
+                class="btn-hero shadow"
+                data-bs-toggle="pill"
+                data-bs-target="#content-wallet"
+                onclick="loadWalletHistory()"
+              >
+                <i class="fa-solid fa-wallet me-2"></i> Ví của tôi
+              </button>
             </div>
           </div>
         </aside>
@@ -284,6 +292,19 @@
                 </div>
               </form>
             </div>
+
+            <div class="tab-pane fade" id="content-wallet">
+              <h3 class="fw-bold mb-4 text-dark">
+                <i class="fa-solid fa-wallet me-2 text-success"></i> Lịch sử ví & Giao dịch
+              </h3>
+              
+              <div id="walletHistoryContainer" class="mt-4">
+                <div class="text-center text-muted py-4">
+                  <div class="spinner-border text-success spinner-border-sm me-2"></div> Đang tải lịch sử ví...
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
       </div>
@@ -388,7 +409,7 @@
 
 <script>
     const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
-    const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customers'; // THÊM API CỦA KHÁCH HÀNG
+    const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customer'; // THÊM API CỦA KHÁCH HÀNG
     let currentApprovalStatus = 'PENDING'; 
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -814,6 +835,94 @@
         }
     }
     
+    // =========================================================================
+    // TÍCH HỢP API: LỊCH SỬ VÍ & CÔNG NỢ (WALLET HISTORY)
+    // =========================================================================
+    async function loadWalletHistory() {
+        const container = document.getElementById('walletHistoryContainer');
+        if (!container) return;
+
+        const token = localStorage.getItem("accessToken");
+        if (!token) {
+            container.innerHTML = `<div class="alert alert-warning">Vui lòng đăng nhập để xem ví.</div>`;
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/wallet`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success && result.data) {
+                const transactions = result.data;
+
+                if (transactions.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-5 bg-white rounded-3 border">
+                            <i class="fa-solid fa-receipt fs-1 text-muted opacity-50 mb-3"></i>
+                            <h6 class="text-muted">Chưa có giao dịch nào phát sinh</h6>
+                        </div>`;
+                    return;
+                }
+
+                let htmlContent = '';
+                
+                transactions.forEach(tx => {
+                    // Logic nhận diện loại giao dịch
+                    const isPayment = tx.TransactionType === 'PAYMENT';
+                    
+                    // Lấy giá trị tuyệt đối (Bỏ dấu trừ của DB đi)
+                    const amountValue = Math.abs(tx.Amount);
+                    const formattedAmount = amountValue.toLocaleString('vi-VN') + ' đ';
+
+                    // CẤU HÌNH UI/UX DỰA TRÊN NGHIỆP VỤ:
+                    const colorClass = isPayment ? 'text-danger' : 'text-success'; // Đỏ nếu là PAYMENT, Xanh nếu REFUND
+                    const sign = isPayment ? '-' : '+';
+                    const icon = isPayment ? 'fa-arrow-trend-down' : 'fa-arrow-trend-up';
+                    const title = isPayment ? 'Thanh toán cước xe' : 'Hoàn tiền / Nạp ví';
+                    const bookingRef = tx.BookingID ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${tx.BookingID}</span>` : '';
+
+                    // Xử lý ngày tháng đẹp
+                    const dateObj = new Date(tx.CreatedAt);
+                    const formattedDate = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')} - ${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+
+                    // Gắn vào thẻ HTML siêu đẹp
+                    htmlContent += `
+                        <div class="d-flex justify-content-between align-items-center p-3 mb-3 bg-white rounded-3 shadow-sm border" style="transition: transform 0.2s;">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-circle d-flex justify-content-center align-items-center bg-opacity-10 ${isPayment ? 'bg-danger' : 'bg-success'}" style="width: 45px; height: 45px;">
+                                    <i class="fa-solid ${icon} ${colorClass} fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-bold text-dark d-flex align-items-center">
+                                        ${title} ${bookingRef}
+                                    </h6>
+                                    <small class="text-muted"><i class="fa-regular fa-clock me-1"></i> ${formattedDate}</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <h5 class="mb-0 fw-bold ${colorClass}">${sign} ${formattedAmount}</h5>
+                                <small class="text-muted" style="font-size: 0.75rem;">Mã GD: #${tx.TransactionID}</small>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = htmlContent;
+            } else {
+                container.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white">Lỗi tải dữ liệu: ${result.message || 'Không xác định'}</div>`;
+            }
+        } catch (error) {
+            console.error("Lỗi tải API Ví:", error);
+            container.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white"><i class="fa-solid fa-triangle-exclamation me-2"></i>Không thể kết nối đến máy chủ.</div>`;
+        }
+    }
     </script>
     <!-- Box warning cho ekyc (Nằm sát dưới cùng) -->
     <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed start-0" 
