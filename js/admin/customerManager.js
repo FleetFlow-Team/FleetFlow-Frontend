@@ -46,18 +46,21 @@ async function fetchAndRenderCustomers() {
     tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info mb-2"></i><div class="text-white-50">Đang đồng bộ dữ liệu...</div></td></tr>`;
 
     try {
-        // [TƯƠNG LAI] Khi BE có API, dùng code sau:
-        // const token = localStorage.getItem('accessToken');
-        // const response = await fetch(CUSTOMER_API_URL, {
-        //     headers: { 'Authorization': `Bearer ${token}` }
-        // });
-        // const result = await response.json();
-        // const customers = result.data || [];
+        // Gọi API thật
+        const token = localStorage.getItem('accessToken');
+        const response = await fetch(CUSTOMER_API_URL, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
 
-        // Hiện tại: Mô phỏng gọi API bằng timeout 500ms
-        setTimeout(() => {
-            renderCustomers(mockCustomers);
-        }, 500);
+        if (response.ok) {
+            // BE trả về trực tiếp mảng JSON
+            const customers = Array.isArray(result) ? result : [];
+            renderCustomers(customers);
+        } else {
+            console.error("Lỗi từ server:", result);
+            throw new Error(result.error || "Không thể tải danh sách khách hàng");
+        }
 
     } catch (error) {
         console.error("Lỗi khi tải danh sách khách hàng:", error);
@@ -80,35 +83,38 @@ function renderCustomers(customers) {
     const fmt = new Intl.NumberFormat('vi-VN');
 
     customers.forEach(c => {
-        // Hiển thị công nợ
-        let debtVal = c.CurrentDebt || 0;
+        // Lấy dữ liệu từ BE (key đã thay đổi theo api mới: customerId, email, status, debt)
+        let debtVal = c.debt || 0;
         let isDebtExceeded = debtVal <= -1000000;
         let debtHtml = debtVal < 0
-            ? `<span class="fw-bold fs-6 ${isDebtExceeded ? 'text-danger' : 'text-warning'}" ${isDebtExceeded ? 'style="text-shadow: 0 0 10px rgba(220,53,69,0.5);"' : ''}>${fmt.format(Math.abs(debtVal))} đ</span>`
-            : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2 py-1 rounded-pill fw-normal"><i class="fa-solid fa-check me-1"></i>Không có nợ</span>`;
+            ? `<span class="fw-bold ${isDebtExceeded ? 'text-danger' : 'text-warning'}">${fmt.format(Math.abs(debtVal))} đ</span>`
+            : `<span class="fw-bold text-success">Không có nợ</span>`;
 
         // Hiển thị trạng thái
-        let statusBadge = c.Status === 'ACTIVE'
-            ? '<span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 rounded-pill" style="box-shadow: 0 0 12px rgba(25,135,84,0.3);"></i> ACTIVE</span>'
-            : '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger px-3 py-2 rounded-pill" style="box-shadow: 0 0 12px rgba(220,53,69,0.3);"></i> LOCKED</span>';
+        let statusBadge = c.status === 'ACTIVE'
+            ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> ACTIVE</span>'
+            : '<span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary"><i class="fa-solid fa-lock me-1"></i> LOCKED</span>';
+
+        // Tên hiển thị (Tạm lấy phần trước @ của email làm tên)
+        let displayName = c.email ? c.email.split('@')[0] : '--';
 
         // Nút hành động
         let actionBtn = '';
-        if (c.Status === 'ACTIVE') {
-            actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="lockCustomerAccount(${c.CustomerID}, '${c.FullName}')" title="Khóa tài khoản">
+        if (c.status === 'ACTIVE') {
+            actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="lockCustomerAccount(${c.customerId}, '${c.email}')" title="Khóa tài khoản">
                             <i class="fa-solid fa-lock me-1"></i> Khóa
                          </button>`;
         } else {
-            actionBtn = `<button class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="unlockCustomerAccount(${c.CustomerID}, '${c.FullName}')" title="Mở khóa tài khoản">
+            actionBtn = `<button class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="unlockCustomerAccount(${c.customerId}, '${c.email}')" title="Mở khóa tài khoản">
                             <i class="fa-solid fa-unlock me-1"></i> Mở khóa
                          </button>`;
         }
 
         let row = `
             <tr>
-                <td class="text-info fw-bold">#${c.CustomerID}</td>
-                <td class="text-white fw-bold">${c.FullName || '--'}</td>
-                <td class="text-white-50"><i class="fa-solid fa-phone me-1"></i>${c.Phone || '--'}</td>
+                <td class="text-info fw-bold">#${c.customerId}</td>
+                <td class="text-white fw-bold">${displayName}</td>
+                <td class="text-white-50"><i class="fa-solid fa-envelope me-1"></i>${c.email || '--'}</td>
                 <td>${debtHtml}</td>
                 <td>${statusBadge}</td>
                 <td>${actionBtn}</td>
@@ -135,12 +141,8 @@ async function lockCustomerAccount(id, name) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Cập nhật mock data (để demo)
-            const idx = mockCustomers.findIndex(c => c.CustomerID === id);
-            if (idx !== -1) mockCustomers[idx].Status = 'LOCKED';
-
             showSystemToast(`Đã khóa thành công tài khoản "${name}"`, "success");
-            fetchAndRenderCustomers(); // Reload lại bảng
+            fetchAndRenderCustomers(); // Reload lại bảng từ API
         } else {
             showSystemToast(result.error || result.message || "Lỗi khi khóa tài khoản", "error");
         }
@@ -166,12 +168,8 @@ async function unlockCustomerAccount(id, name) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            // Cập nhật mock data (để demo)
-            const idx = mockCustomers.findIndex(c => c.CustomerID === id);
-            if (idx !== -1) mockCustomers[idx].Status = 'ACTIVE';
-
             showSystemToast(`Đã mở khóa thành công tài khoản "${name}"`, "success");
-            fetchAndRenderCustomers(); // Reload lại bảng
+            fetchAndRenderCustomers(); // Reload lại bảng từ API
         } else {
             // Lỗi xảy ra (VD: Khách còn nợ quá giới hạn) => Show lỗi trả về từ Backend
             showSystemToast(result.error || result.message || "Không thể mở khóa tài khoản", "error");
