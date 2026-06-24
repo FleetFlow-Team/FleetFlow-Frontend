@@ -84,7 +84,8 @@
                                 <i class="fa-solid fa-user-shield"></i> Hồ sơ định danh
                             </a>
                             <hr class="dropdown-divider-custom">
-                            <a href="../../index.html" class="dropdown-item-custom text-danger fw-bold logout-item">
+                            <a href="#" onclick="localStorage.clear(); window.location.replace('../../index.html'); return false;"
+                                class="dropdown-item-custom text-danger fw-bold logout-item">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
                             </a>
                         </div>
@@ -532,23 +533,95 @@
     </div>
 
 <div class="modal fade glass-modal-blur" id="successModal" tabindex="-1" data-bs-backdrop="static">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-            <div class="modal-content glass-modal-content border-0">
-                <div class="modal-body text-center p-5">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4" style="width: 100px; height: 100px;">
-                        <i class="fa-solid fa-check text-success" style="font-size: 3rem;"></i>
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content glass-modal-content border-0">
+            <div class="modal-body text-center p-5">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4"
+                    style="width: 100px; height: 100px;">
+                    <i class="fa-solid fa-check text-success" style="font-size: 3rem;"></i>
+                </div>
+                <h4 class="fw-bold text-white mb-3">Nhận chuyến thành công!</h4>
+                <p class="text-white-50 mb-4">Lộ trình đã được chuyển sang tab "Đã Nhận". Chúc bạn có một chuyến đi an
+                    toàn.</p>
+
+                <button type="button" class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6"
+                    onclick="goToAcceptedTab()">
+                    Đến Lộ trình ngay
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade glass-modal-blur" id="rejectModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content glass-modal-content border-0">
+            <div class="modal-body p-4">
+                <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Từ chối nhận
+                    chuyến</h5>
+                <p class="text-white-50 small mb-4">Vui lòng cho biết lý do bạn không thể nhận chuyến xe này. Việc từ
+                    chối nhiều có thể ảnh hưởng đến thuật toán phân bổ chuyến.</p>
+
+                <form id="rejectReasonForm">
+                    <div class="mb-2">
+                        <input type="radio" class="btn-check" name="rejectReason" id="reason1"
+                            value="Khoảng cách đón khách quá xa" checked>
+                        <label class="btn btn-outline-warning w-100 text-start" for="reason1">Khoảng cách đón khách quá
+                            xa</label>
                     </div>
-                    <h4 class="fw-bold text-white mb-3">Nhận chuyến thành công!</h4>
-                    <p class="text-white-50 mb-4">Lộ trình đã được chuyển sang tab "Đã Nhận". Chúc bạn có một chuyến đi an toàn.</p>
-                    
-                    <button type="button" class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6" onclick="goToAcceptedTab()">
-                        Đến Lộ trình ngay
-                    </button>
-                    
+                    <div class="mb-2">
+                        <input type="radio" class="btn-check" name="rejectReason" id="reason2"
+                            value="Xe đang gặp sự cố / Hỏng hóc">
+                        <label class="btn btn-outline-warning w-100 text-start" for="reason2">Xe đang gặp sự cố / Hỏng
+                            hóc</label>
+                    </div>
+                    <div class="mb-2">
+                        <input type="radio" class="btn-check" name="rejectReason" id="reason3"
+                            value="Đang bận việc cá nhân đột xuất">
+                        <label class="btn btn-outline-warning w-100 text-start" for="reason3">Đang bận việc cá nhân đột
+                            xuất</label>
+                    </div>
+                    <div class="mb-3">
+                        <input type="radio" class="btn-check" name="rejectReason" id="reason4" value="other">
+                        <label class="btn btn-outline-warning w-100 text-start" for="reason4">Lý do khác...</label>
+                    </div>
+                    <div class="mb-3" id="otherReasonContainer" style="display: none;">
+                        <input type="text" class="form-control bg-transparent text-white border-warning"
+                            id="otherReasonInput" placeholder="Nhập lý do cụ thể của bạn...">
+                    </div>
+                </form>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-warning w-50 fw-bold" id="btnSubmitReject"
+                        onclick="confirmRejectJob()">Xác nhận Từ chối</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="modal fade glass-modal-blur" id="completeTripModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content glass-modal-content border-0">
+            <div class="modal-body text-center p-5">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4"
+                    style="width: 100px; height: 100px;">
+                    <i class="fa-solid fa-flag-checkered text-success" style="font-size: 3rem;"></i>
+                </div>
+                <h4 class="fw-bold text-white mb-3">Chuyến đi hoàn tất!</h4>
+                <p class="text-white-50 mb-4">Chúc mừng bạn đã hoàn thành cuốc xe an toàn. Doanh thu chuyến đi đã được
+                    ghi nhận vào ví.</p>
+
+                <button type="button" class="btn-glass-action bg-success border-success text-white w-100 py-3 fs-6"
+                    data-bs-dismiss="modal" onclick="refreshAfterComplete()">
+                    Tiếp tục chờ chuyến mới
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <!-- <script type="module">
     import gsap from 'https://esm.sh/gsap@3.13.0'
