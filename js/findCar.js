@@ -581,7 +581,34 @@ window.changePage = function (pageNumber) {
 /**
  * Lưu ID xe vào LocalStorage và phân luồng chuyển trang
  */
-window.selectCarAndGo = function (vehicleId) {
+window.selectCarAndGo = async function (vehicleId) {
+    // Lấy token để gọi API kiểm tra trạng thái account
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+        try {
+            const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customers/profile', {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await response.json();
+            if (response.ok && result.success && result.data) {
+                // Nếu tài khoản bị khóa, chặn và hiển thị Modal
+                if (result.data.status === 'LOCKED') {
+                    if (typeof bootstrap !== 'undefined') {
+                        const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
+                        lockModal.show();
+                    } else {
+                        alert("Tài khoản của bạn đang bị tạm khóa. Không thể đặt xe mới.");
+                    }
+                    return; // Dừng lại, không cho chọn xe và không chuyển trang
+                }
+            }
+        } catch (err) {
+            console.warn("Không thể kiểm tra trạng thái khóa, bỏ qua check nội bộ:", err);
+        }
+    }
+
+    // Nếu bình thường thì tiếp tục lưu thông tin xe và chuyển trang
     localStorage.setItem('selectedVehicleId', vehicleId);
 
     // Lấy loại dịch vụ khách đang chọn
