@@ -42,6 +42,9 @@ async function fetchVouchers() {
                         <td class="small text-white-50">${v.ValidTo ? v.ValidTo.replace('T', ' ') : 'Vô thời hạn'}</td>
                         <td>${statusBadge}</td>
                         <td>
+                            <button class="btn btn-sm btn-outline-light rounded-pill px-2 me-1" onclick="viewVoucherDetail(${v.VoucherID})" title="Xem chi tiết">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
                             <button class="btn btn-sm btn-outline-info rounded-pill px-2 me-1" onclick="openVoucherModal(${v.VoucherID})" title="Sửa">
                                 <i class="fa-solid fa-pen"></i>
                             </button>
@@ -104,6 +107,56 @@ async function openVoucherModal(id = null) {
     }
 
     voucherModalInstance.show();
+}
+
+/**
+ * Mở modal Xem Chi tiết Voucher
+ */
+async function viewVoucherDetail(id) {
+    let detailModal = bootstrap.Modal.getInstance(document.getElementById('voucherDetailModal'));
+    if (!detailModal) {
+        detailModal = new bootstrap.Modal(document.getElementById('voucherDetailModal'));
+    }
+
+    try {
+        const res = await API.get(`${VOUCHER_API_URL}/${id}`);
+        if (res && res.success && res.data) {
+            const data = res.data;
+            
+            document.getElementById('detailVCode').innerText = data.Code || '--';
+            
+            const statusHtml = data.Status === 'ACTIVE' 
+                ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> Đang hoạt động</span>'
+                : '<span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary"><i class="fa-solid fa-lock me-1"></i> Đã vô hiệu hóa</span>';
+            document.getElementById('detailVStatus').innerHTML = statusHtml;
+
+            document.getElementById('detailVDiscountType').innerText = data.DiscountType === 'PERCENT' ? 'Phần trăm (%)' : 'Số tiền cố định';
+            
+            const discountVal = data.DiscountType === 'PERCENT' 
+                ? `${data.DiscountValue}%` 
+                : `${data.DiscountValue ? data.DiscountValue.toLocaleString() : 0} đ`;
+            document.getElementById('detailVDiscountValue').innerText = discountVal;
+
+            document.getElementById('detailVMaxDiscount').innerText = data.MaxDiscountAmount ? `${data.MaxDiscountAmount.toLocaleString()} đ` : 'Không giới hạn';
+            document.getElementById('detailVMinBooking').innerText = data.MinBookingValue ? `${data.MinBookingValue.toLocaleString()} đ` : 'Không giới hạn';
+
+            const vehicleTypes = {
+                1: 'Sedan 4 chỗ', 2: 'SUV/MPV 7 chỗ', 3: 'Limousine 9 chỗ',
+                4: 'Xe khách 16 chỗ', 5: 'Xe khách 29 chỗ', 6: 'Xe khách 45 chỗ'
+            };
+            document.getElementById('detailVVehicleType').innerText = data.ApplicableVehicleTypeID ? vehicleTypes[data.ApplicableVehicleTypeID] || 'Tất cả loại xe' : 'Tất cả loại xe';
+
+            document.getElementById('detailVValidFrom').innerText = data.ValidFrom ? data.ValidFrom.replace('T', ' ') : '--';
+            document.getElementById('detailVValidTo').innerText = data.ValidTo ? data.ValidTo.replace('T', ' ') : 'Vô thời hạn';
+
+            detailModal.show();
+        } else {
+            alert("Không tìm thấy dữ liệu voucher!");
+        }
+    } catch (err) {
+        console.error("Lỗi lấy chi tiết voucher", err);
+        alert("Lỗi! Không thể kết nối lấy chi tiết Voucher.");
+    }
 }
 
 /**

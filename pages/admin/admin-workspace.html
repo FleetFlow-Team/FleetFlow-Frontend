@@ -391,7 +391,7 @@
                             </div>
 
                             <div class="row g-4">
-                                <div class="col-lg-5">
+                                <div class="col-lg-12">
                                     <div class="glass-panel fade-in-up" style="animation-delay: 0.1s;">
                                         <h5 class="fw-bold mb-4 fs-6 text-white">Đơn giá Cơ bản (VNĐ / Km)</h5>
                                         <div class="mb-3">
@@ -415,7 +415,7 @@
                                 </div>
 
                                 <!-- CỘT QUẢN LÝ VOUCHER -->
-                                <div class="col-lg-7">
+                                <div class="col-lg-12">
                                     <div class="glass-panel fade-in-up" style="animation-delay: 0.2s;">
                                         <div class="d-flex justify-content-between align-items-center mb-4">
                                             <h5 class="fw-bold fs-6 text-white m-0"><i
@@ -429,8 +429,8 @@
                                             <select id="voucherStatusFilter"
                                                 class="form-select form-select-sm glass-select w-auto"
                                                 onchange="fetchVouchers()">
-                                                <option value="">Tất cả Trạng thái</option>
-                                                <option value="ACTIVE" selected>Đang kích hoạt (ACTIVE)</option>
+                                                <option value="" selected>Tất cả Trạng thái</option>
+                                                <option value="ACTIVE">Đang kích hoạt (ACTIVE)</option>
                                                 <option value="INACTIVE">Vô hiệu hóa (INACTIVE)</option>
                                             </select>
                                         </div>
@@ -1129,10 +1129,17 @@
                                         <input type="number" id="vMinBooking" class="form-control glass-input">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50 fw-bold small">Loại xe áp dụng ID</label>
-                                        <input type="number" id="vVehicleTypeId" class="form-control glass-input"
-                                            value="1">
+                                        <label class="form-label text-white-50 fw-bold small">Loại xe áp dụng</label>
+                                        <select id="vVehicleTypeId" class="form-select glass-select text-white">
+                                            <option value="1">Sedan 4 chỗ</option>
+                                            <option value="2">SUV/MPV 7 chỗ</option>
+                                            <option value="3">Limousine 9 chỗ</option>
+                                            <option value="4">Xe khách 16 chỗ</option>
+                                            <option value="5">Xe khách 29 chỗ</option>
+                                            <option value="6">Xe khách 45 chỗ</option>
+                                        </select>
                                     </div>
+
                                     <div class="col-md-6">
                                         <label class="form-label text-white-50 fw-bold small">Từ ngày</label>
                                         <input type="datetime-local" id="vValidFrom"
@@ -1151,6 +1158,68 @@
                                 data-bs-dismiss="modal">Hủy</button>
                             <button type="button" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm"
                                 onclick="saveVoucher()">Lưu Voucher</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade glass-modal-blur" id="voucherDetailModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content glass-modal-content">
+                        <div class="modal-header border-0 px-4 pt-4 pb-2">
+                            <h5 class="fw-bold text-white m-0"><i class="fa-solid fa-circle-info text-info me-2"></i>Chi
+                                tiết Voucher</h5>
+                            <button type="button" class="btn-close btn-close-white fs-5"
+                                data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body px-4 pb-4 text-white">
+                            <div class="p-3 bg-dark bg-opacity-25 rounded-3 mb-3 border border-secondary text-center">
+                                <h3 class="text-warning fw-bold mb-0" id="detailVCode" style="letter-spacing: 2px;">--
+                                </h3>
+                                <div class="mt-2" id="detailVStatus"></div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i class="fa-solid fa-percent me-1"></i>Loại
+                                        giảm giá</div>
+                                    <div class="fw-bold" id="detailVDiscountType">--</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-money-bill-wave me-1"></i>Giá trị giảm</div>
+                                    <div class="fw-bold text-success fs-5" id="detailVDiscountValue">--</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-arrow-down-up-across-line me-1"></i>Giảm tối đa</div>
+                                    <div class="fw-bold" id="detailVMaxDiscount">--</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-cart-shopping me-1"></i>Đơn tối thiểu</div>
+                                    <div class="fw-bold" id="detailVMinBooking">--</div>
+                                </div>
+                                <div class="col-12 border-top border-secondary pt-3 mt-3">
+                                    <div class="text-white-50 small mb-1"><i class="fa-solid fa-car me-1"></i>Loại xe áp
+                                        dụng</div>
+                                    <div class="fw-bold text-info" id="detailVVehicleType">--</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-calendar-check me-1"></i>Hiệu lực từ</div>
+                                    <div class="fw-bold" id="detailVValidFrom">--</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-calendar-xmark me-1"></i>Hết hạn vào</div>
+                                    <div class="fw-bold text-danger" id="detailVValidTo">--</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 px-4 pb-4 pt-0">
+                            <button type="button" class="btn btn-outline-light rounded-pill px-4 w-100"
+                                data-bs-dismiss="modal">Đóng</button>
                         </div>
                     </div>
                 </div>
