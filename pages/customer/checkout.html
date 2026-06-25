@@ -977,30 +977,46 @@
             const depositAmountText = localStorage.getItem('currentDepositAmount');
 
             if (bookingType === 'DISTANCE') {
-                // 1. Ẩn các ô chọn ngày giờ
+// 1. Ẩn các ô chọn ngày giờ
                 document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
                 document.getElementById('durationContainer').style.display = 'none';
 
-                // 2. ẨN VOUCHER VÀ CHI TIẾT GIÁ GỐC (Theo đúng yêu cầu của bạn)
+                // 2. ẨN LUÔN Ô NHẬP VOUCHER VÌ KHÁCH ĐÃ NHẬP Ở TRANG BẢN ĐỒ RỒI
                 const voucherBox = document.querySelector('.voucher-box');
                 if (voucherBox) voucherBox.style.display = 'none';
 
-                // Ẩn các dòng breakdown (Cước phí gốc, Phụ phí cuối tuần, Khuyến mãi)
-                const breakdownRows = document.querySelectorAll('.breakdown-row');
-                breakdownRows.forEach(row => row.style.setProperty('display', 'none', 'important'));
-
-                // 3. Chỉ lấy Tổng tiền và Tiền cọc từ Map để in ra
-                const mapTotal = parseInt(localStorage.getItem('mapEstimatedTotal')) || 0;
+                // 3. ĐỌC DỮ LIỆU TỪ TRANG MAP GỬI SANG
+                const mapTotal = parseFloat(localStorage.getItem('mapEstimatedTotal')) || 0; // Giá chưa giảm
+                currentEstimatedTotal = mapTotal; // Lưu gốc để gửi API tạo đơn
                 const fmt = new Intl.NumberFormat('vi-VN');
 
-                document.getElementById('summaryTotal').innerText = fmt.format(mapTotal) + ' ₫';
+                // Hiển thị Cước gốc
+                document.getElementById('summaryBaseFare').innerText = fmt.format(mapTotal) + ' ₫';
+
+                // Lấy thông tin Voucher (nếu có)
+                const appliedVoucherId = localStorage.getItem('appliedVoucherId');
+                const appliedVoucherCode = localStorage.getItem('appliedVoucherCode');
+                const appliedDiscountAmount = parseFloat(localStorage.getItem('appliedDiscountAmount')) || 0;
+                const mapFinalTotal = parseFloat(localStorage.getItem('mapFinalTotal')) || mapTotal;
+
+                // 4. LOGIC HIỂN THỊ: CÓ VOUCHER THÌ BẬT DÒNG KHUYẾN MÃI LÊN
+                if (appliedVoucherId && appliedVoucherCode) {
+                    document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
+                    document.getElementById('discountName').innerText = appliedVoucherCode;
+                    document.getElementById('discountAmount').innerText = fmt.format(appliedDiscountAmount);
+                    document.getElementById('summaryTotal').innerText = fmt.format(mapFinalTotal) + ' ₫';
+                } else {
+                    document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
+                    document.getElementById('summaryTotal').innerText = fmt.format(mapTotal) + ' ₫';
+                }
+
                 document.getElementById('summaryDeposit').innerText = depositAmountText || '0 ₫';
 
                 const btnSubmit = document.getElementById('btnSubmitCheckout');
                 btnSubmit.innerText = `Xác nhận Đặt xe - Cọc ${depositAmountText}`;
                 btnSubmit.disabled = false;
 
-                // 4. Tự động điền điểm đón vào ô Địa chỉ cho khách (Tránh bắt khách nhập lại)
+                // Tự động điền điểm đón
                 document.getElementById('address').value = localStorage.getItem('pickupAddress') || '';
 
             } else {
@@ -1078,15 +1094,14 @@
             element.classList.add("active");
         }
 
-        // Khóa tính năng Voucher ở bước này vì tổng tiền đã được chốt từ API /check-price ở Trạm 2
-        // =====================================================================
-        // TÍCH HỢP API ÁP DỤNG MÃ GIẢM GIÁ (CHO HOURLY / DAILY)
+// =====================================================================
+        // TÍCH HỢP API ÁP DỤNG MÃ GIẢM GIÁ (KHỚP BACKEND VOUCHER API)
         // =====================================================================
         async function applyVoucher() {
             const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
             const msg = document.getElementById("voucherMsg");
 
-            // Nếu là luồng Chuyến đi, chặn lại vì giá đã chốt ở trang Map
+            // Nếu là luồng DISTANCE (Theo chuyến), chặn lại vì giá đã chốt ở trang Map
             if (bookingType === 'DISTANCE') {
                 msg.style.display = "block";
                 msg.style.color = "#e53e3e";
@@ -1102,7 +1117,7 @@
                 return;
             }
 
-            // Bắt buộc khách phải chọn ngày giờ (để có giá gốc) trước khi áp mã
+            // Bắt buộc khách phải chọn ngày giờ để hệ thống có "Tổng tiền dự kiến" (estimatedTotal)
             if (currentEstimatedTotal <= 0) {
                 msg.style.display = "block";
                 msg.style.color = "#e53e3e";
@@ -1115,55 +1130,85 @@
             btnApply.disabled = true;
             btnApply.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
+            // Lấy CustomerID
             const customerId = localStorage.getItem('customerId') || 1;
+            
+            // TRÍCH XUẤT VEHICLE_TYPE_ID TỪ BỘ NHỚ (Sửa lỗi gửi nhầm vehicleId)
             const vehicleId = localStorage.getItem('selectedVehicleId');
+            const allVehicles = JSON.parse(localStorage.getItem('allVehicles') || '[]');
+            const selectedCar = allVehicles.find(v => v.vehicleId == vehicleId);
+            // Ưu tiên lấy vehicleTypeId, nếu không có fallback về 1 để tránh lỗi API
+            const vehicleTypeId = selectedCar ? (selectedCar.vehicleTypeId || selectedCar.VehicleTypeID || selectedCar.typeId || 1) : 1;
 
             try {
+                // Lấy token để gọi API an toàn
+                const token = localStorage.getItem('accessToken');
+                
                 const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/vouchers/apply', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}` 
+                    },
                     body: JSON.stringify({
-                        customerId: parseInt(customerId),
-                        vehicleId: parseInt(vehicleId),
                         code: code,
-                        estimatedTotal: currentEstimatedTotal
+                        customerId: parseInt(customerId),
+                        estimatedTotal: parseFloat(currentEstimatedTotal),
+                        vehicleTypeId: parseInt(vehicleTypeId)
                     })
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    // ÁP MÃ THÀNH CÔNG -> Bật hiển thị dòng Khuyến mãi
+                    // ÁP MÃ THÀNH CÔNG -> Bật hiển thị dòng Khuyến mãi và Tổng tiền mới
                     msg.style.display = "block";
                     msg.style.color = "#00B14F";
                     msg.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Áp dụng thành công mã ${result.code}!`;
 
                     const fmt = new Intl.NumberFormat('vi-VN');
+                    
+                    // Hiển thị số tiền giảm giá
                     document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
                     document.getElementById('discountName').innerText = result.code;
-                    document.getElementById('discountAmount').innerText = fmt.format(result.discountAmount);
+                    document.getElementById('discountAmount').innerText = fmt.format(parseFloat(result.discountAmount));
 
-                    // Cập nhật Tổng tiền mới và Tiền cọc mới (30% của tổng mới)
-                    document.getElementById('summaryTotal').innerText = fmt.format(result.finalTotal) + ' ₫';
+                    // Cập nhật Tổng tiền mới (finalTotal)
+                    const finalTotal = parseFloat(result.finalTotal);
+                    document.getElementById('summaryTotal').innerText = fmt.format(finalTotal) + ' ₫';
 
-                    const newDeposit = Math.round(result.finalTotal * 0.3);
+                    // Tính lại Tiền cọc mới (30% của tổng mới) và cập nhật nút Đặt xe
+                    const newDeposit = Math.round(finalTotal * 0.3);
                     document.getElementById('summaryDeposit').innerText = fmt.format(newDeposit) + ' ₫';
                     document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(newDeposit) + ' ₫';
 
-                    // Lưu lại ID của Voucher để ghim vào Đơn hàng lúc gửi đi
+                    // Lưu ID của Voucher và Tiền cọc mới để gửi đi khi tạo Booking
                     localStorage.setItem('appliedVoucherId', result.voucherId);
                     localStorage.setItem('currentDepositAmount', newDeposit);
+                    localStorage.setItem('mapEstimatedTotal', finalTotal); // Update lại mapEstimated cho lệnh thanh toán
 
                 } else {
-                    // ÁP MÃ THẤT BẠI (Backend báo lỗi hết hạn/ko đủ điều kiện)
+                    // ÁP MÃ THẤT BẠI (Sai mã, hết hạn, không đủ điều kiện)
                     msg.style.display = "block";
                     msg.style.color = "#e53e3e";
                     msg.innerHTML = `<i class="fa-solid fa-circle-xmark me-1"></i> ${result.error || 'Mã không hợp lệ'}`;
 
+                    // Khôi phục UI về trạng thái chưa áp mã (Giá gốc)
                     document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
                     localStorage.removeItem('appliedVoucherId');
+                    
+                    const fmt = new Intl.NumberFormat('vi-VN');
+                    document.getElementById('summaryTotal').innerText = fmt.format(currentEstimatedTotal) + ' ₫';
+                    
+                    const oldDeposit = Math.round(currentEstimatedTotal * 0.3);
+                    document.getElementById('summaryDeposit').innerText = fmt.format(oldDeposit) + ' ₫';
+                    document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(oldDeposit) + ' ₫';
+                    
+                    localStorage.setItem('currentDepositAmount', oldDeposit);
+                    localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal);
                 }
             } catch (error) {
+                console.error("Lỗi gọi API Voucher:", error);
                 msg.style.display = "block";
                 msg.style.color = "#e53e3e";
                 msg.innerHTML = '<i class="fa-solid fa-wifi me-1"></i> Lỗi kết nối máy chủ!';

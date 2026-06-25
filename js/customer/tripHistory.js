@@ -91,6 +91,8 @@ async function loadTripHistory() {
 function renderTripList(trips) {
     const container = document.getElementById('tripListContainer');
     const emptyState = document.getElementById('emptyState');
+
+    if (!container) return;
     container.innerHTML = '';
 
     if (!trips || trips.length === 0) {
@@ -253,11 +255,69 @@ async function viewTripDetail(bookingId) {
             document.getElementById('lblDropoffAddress').innerHTML = dropoffHTML;
         }
 
-        // 7. Đồng bộ hiển thị hóa đơn tài chính (Lấy giá trị thực tế của chuyến đi)
-        const price = summaryTrip ? (summaryTrip.price || summaryTrip.TotalAmount || summaryTrip.estimatedTotal || 0) : 0;
-        const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
-        document.getElementById('lblBasePrice').innerText = fmtPrice;
-        document.getElementById('lblTotalAmount').innerText = fmtPrice;
+// =================================================================
+        // 7. TÍCH HỢP BÓC TÁCH CHI PHÍ (INVOICE & BOOKING PRICING)
+        // =================================================================
+        const token = localStorage.getItem("accessToken");
+        const fVND = (val) => Number(val || 0).toLocaleString('vi-VN') + ' đ';
+
+        // 7.1. Hiệu ứng Loading mượt mà
+        document.getElementById('lblBasePrice').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        document.getElementById('lblSurcharge').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        document.getElementById('lblDiscount').innerHTML  = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        document.getElementById('lblTotalAmount').innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+
+        try {
+            // 7.2. GỌI API HÓA ĐƠN CHÍNH THỨC (Dành cho chuyến đã Hoàn thành)
+            const invRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/invoices/${bookingId}`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+            });
+            const invResult = await invRes.json();
+
+            if (invRes.ok && invResult.success && invResult.data) {
+                // ĐÃ CÓ HÓA ĐƠN THỰC TẾ
+                const inv = invResult.data; 
+                localStorage.setItem('currentInvoiceId', inv.InvoiceID || inv.invoiceId);
+                localStorage.setItem('currentInvoiceAmount', inv.TotalAmount || inv.totalAmount);
+
+                const baseFare = parseFloat(inv.BaseFare || inv.baseFare) || 0;
+                const weekendSur = parseFloat(inv.WeekendSurcharge || inv.weekendSurcharge) || 0;
+                const tollSur = parseFloat(inv.TollSurchargeTotal || inv.tollSurchargeTotal) || 0; // Phí cầu đường (nếu có)
+                const discountAmount = parseFloat(inv.DiscountAmount || inv.discountAmount) || 0;
+                const totalAmount = parseFloat(inv.TotalAmount || inv.totalAmount) || 0;
+
+                document.getElementById('lblBasePrice').innerText = fVND(baseFare);
+                // Cộng gộp Phụ phí cuối tuần + Phí cầu đường (vì UI chỉ có 1 dòng Surcharge)
+                document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
+                document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
+                document.getElementById('lblTotalAmount').innerText = fVND(totalAmount);
+            } else {
+                throw new Error("Chưa có hóa đơn");
+            }
+        } catch (error) {
+            // 7.3. FALLBACK: NẾU CHƯA CÓ HÓA ĐƠN -> LẤY DỮ LIỆU TỪ BẢNG [BookingPricing]
+            // Áp dụng cho các chuyến xe PENDING / ACTIVE
+            localStorage.removeItem('currentInvoiceId');
+            localStorage.removeItem('currentInvoiceAmount');
+
+            // Bóc tách dữ liệu BookingPricing lồng trong API GET /bookings/{id}
+            // (Hỗ trợ bắt tên biến viết hoa/thường tùy Backend Java trả về)
+            const pricing = trip.pricing || trip.BookingPricing || trip.bookingPricing || trip;
+
+            // Khớp 100% với các cột trong DB BookingPricing bạn vừa gửi:
+            const baseFare = parseFloat(pricing.BaseFare || pricing.baseFare) || 0;
+            const weekendSurcharge = parseFloat(pricing.WeekendSurcharge || pricing.weekendSurcharge) || 0;
+            const discountAmount = parseFloat(pricing.DiscountAmount || pricing.discountAmount) || 0;
+            const estimatedTotal = parseFloat(pricing.EstimatedTotal || pricing.estimatedTotal || summaryTrip.price) || 0;
+            
+            // Đổ giá trị bóc tách dự kiến ra UI
+            document.getElementById('lblBasePrice').innerText = fVND(baseFare);
+            document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSurcharge)}`;
+            document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
+            document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
+        }
+        // =================================================================
         
         // 8. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
         window.scrollTo({ top: 0, behavior: 'smooth' });
