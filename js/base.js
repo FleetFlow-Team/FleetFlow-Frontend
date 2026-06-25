@@ -330,3 +330,162 @@ document.addEventListener("DOMContentLoaded", function () {
         if (warningToast) warningToast.style.display = 'block';
     }
 });
+
+// =========================================================================
+// HỆ THỐNG THÔNG BÁO VÀ ĐÁNH DẤU ĐÃ ĐỌC (OPTIMISTIC UI)
+// =========================================================================
+
+// 1. API 4: GỌI API LẤY DANH SÁCH THÔNG BÁO
+async function loadNotifications() {
+    const container = document.getElementById('notificationList');
+    if (!container) return;
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    // Hiển thị Loading mượt mà khi vừa bấm vào chuông
+    container.innerHTML = `<li class="text-center p-4 text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải thông báo...</li>`;
+
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/notifications`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success && result.data) {
+            const notifications = result.data;
+            let unreadCount = 0;
+
+            if (notifications.length === 0) {
+                container.innerHTML = `<li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo nào</li>`;
+                updateUnreadBadge(0);
+                return;
+            }
+
+            let htmlContent = `
+                <li class="p-3 border-bottom bg-light sticky-top" style="z-index: 10;">
+                    <h6 class="m-0 fw-bold text-dark">Thông báo của bạn</h6>
+                </li>`;
+
+            // Render từng dòng thông báo
+            notifications.forEach(n => {
+                const isRead = n.IsRead || n.isRead; // Bắt cả 2 case Json
+                if (!isRead) unreadCount++;
+
+                // LOGIC GIAO DIỆN UX: Chưa đọc -> Nền trắng, chữ Đậm, có chấm đỏ
+                const bgClass = isRead ? "bg-light" : "bg-white";
+                const textClass = isRead ? "text-muted" : "fw-bold text-dark";
+                const dotClass = isRead ? "d-none" : "";
+
+                // Format ngày giờ thân thiện (Ví dụ: 14:30 - 25/06)
+                const d = new Date(n.CreatedAt || n.createdAt);
+                const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} - ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth() + 1).toString().padStart(2,'0')}`;
+                
+                const notifId = n.NotificationID || n.id;
+
+                htmlContent += `
+                    <li class="p-3 border-bottom ${bgClass} notification-item" 
+                        style="cursor: pointer; transition: background 0.2s;" 
+                        onclick="markAsRead('${notifId}', this, ${isRead})">
+                        
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <span class="title-text ${textClass}" style="font-size: 0.95rem;">${n.Title || n.title}</span>
+                            <span class="bg-danger rounded-circle unread-dot mt-2 ms-2 ${dotClass}" style="width: 8px; height: 8px; min-width: 8px; flex-shrink: 0;"></span>
+                        </div>
+                        <div class="content-text small ${isRead ? 'text-muted' : 'text-secondary'} mb-1">${n.Content || n.message}</div>
+                        <div class="small text-muted" style="font-size: 0.75rem;"><i class="fa-regular fa-clock me-1"></i> ${timeStr}</div>
+                    </li>
+                `;
+            });
+
+            container.innerHTML = htmlContent;
+            updateUnreadBadge(unreadCount); // Cập nhật số lượng ra cái chuông tổng
+        } else {
+            container.innerHTML = `<li class="text-center p-3 text-danger">Lỗi tải dữ liệu</li>`;
+        }
+    } catch (error) {
+        console.error("Lỗi tải thông báo:", error);
+        container.innerHTML = `<li class="text-center p-3 text-danger">Lỗi kết nối máy chủ</li>`;
+    }
+}
+
+// 2. API 5: GỌI API ĐÁNH DẤU ĐÃ ĐỌC (OPTIMISTIC UI - Đổi UI trước, gọi Server sau)
+async function markAsRead(notifId, element, isAlreadyRead) {
+    // Nếu đã đọc rồi -> Bỏ qua không tốn công gọi API nữa
+    if (isAlreadyRead) return;
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    // ----------------------------------------------------
+    // BƯỚC 1: XỬ LÝ GIAO DIỆN NGAY LẬP TỨC (KHÔNG ĐỢI API)
+    // ----------------------------------------------------
+    element.classList.remove('bg-white');
+    element.classList.add('bg-light'); // Đổi nền mờ đi
+
+    const titleEl = element.querySelector('.title-text');
+    if (titleEl) {
+        titleEl.classList.remove('fw-bold', 'text-dark');
+        titleEl.classList.add('text-muted'); // Bỏ in đậm
+    }
+
+    const contentEl = element.querySelector('.content-text');
+    if (contentEl) {
+        contentEl.classList.remove('text-secondary');
+        contentEl.classList.add('text-muted');
+    }
+
+    // Xóa chấm đỏ bên cạnh thông báo
+    const dotEl = element.querySelector('.unread-dot');
+    if (dotEl) dotEl.classList.add('d-none');
+
+    // Khóa sự kiện onclick để lần sau nhấn vào không gọi API nữa
+    element.setAttribute("onclick", `markAsRead('${notifId}', this, true)`);
+
+    // Giảm số lượng chuông báo trên Navbar ngoài cùng đi 1
+    decreaseUnreadBadge();
+
+    // ----------------------------------------------------
+    // BƯỚC 2: GỌI NGẦM API LÊN SERVER ĐỂ UPDATE DATABASE
+    // ----------------------------------------------------
+    try {
+        await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/notifications/${notifId}/read`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        // Không cần care kết quả trả về, vì UI đã lo xong rồi!
+    } catch (error) {
+        console.error("Lỗi đồng bộ trạng thái đọc lên Server:", error);
+    }
+}
+
+// =========================================
+// CÁC HÀM TIỆN ÍCH HỖ TRỢ THÔNG BÁO
+// =========================================
+function updateUnreadBadge(count) {
+    const badge = document.getElementById('unreadBadge');
+    if (!badge) return;
+    badge.dataset.count = count; // Lưu data ngầm
+    if (count > 0) {
+        badge.classList.remove('d-none');
+    } else {
+        badge.classList.add('d-none');
+    }
+}
+
+function decreaseUnreadBadge() {
+    const badge = document.getElementById('unreadBadge');
+    if (!badge) return;
+    let currentCount = parseInt(badge.dataset.count || 0);
+    if (currentCount > 0) {
+        currentCount--;
+        updateUnreadBadge(currentCount);
+    }
+}
+
+// Tự động check thông báo ngầm 1 lần khi người dùng vừa load trang xong để hiện dấu chấm đỏ
+document.addEventListener("DOMContentLoaded", () => {
+    // Bỏ comment dòng dưới nếu bạn muốn hệ thống tự check thông báo chưa đọc lúc mở web
+    // loadNotifications(); 
+});

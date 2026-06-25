@@ -207,19 +207,21 @@ window.acceptJob = async function(btnElement, broadcastId) {
         // 4. Xử lý phản hồi từ Backend
         if (response.ok && result.success) {
             // [THÀNH CÔNG]
-const cardId = `job-card-${broadcastId}`;
+// [THÀNH CÔNG]
+            const cardId = `job-card-${broadcastId}`;
             const cardEl = document.getElementById(cardId);
             
             // --- CẬP NHẬT MỚI: Chỉ lưu lại Booking ID thật để chuẩn bị gọi API Lộ trình ---
             if (cardEl) {
                 const bookingIdText = cardEl.querySelector('.fw-bold.fs-5').innerText.replace('#BK-', '').trim();
+                
                 let acceptedIds = JSON.parse(localStorage.getItem('acceptedBookingIds') || '[]');
                 if (!acceptedIds.includes(bookingIdText)) {
                     acceptedIds.push(bookingIdText);
                     localStorage.setItem('acceptedBookingIds', JSON.stringify(acceptedIds));
                 }
             }
-            // ----------------------------------------------------------------------------
+            // ----------------------------------------------------------------------
 
             // Xóa thẻ xe này khỏi danh sách Chờ Nhận
             removeCardSmoothly(cardEl);
@@ -639,55 +641,35 @@ window.switchJobTab = function(tabType) {
 }
 
 /**
- * Hàm lấy danh sách lộ trình chi tiết của các cuốc xe đã nhận từ Backend
+ * Hàm lấy danh sách lộ trình và thông tin khách hàng thật từ Backend
  */
 async function fetchAcceptedJobs() {
     const acceptedListContainer = document.getElementById("acceptedJobList");
     
-    // Giao diện Loading xoay tròn cao cấp
+    // Hiển thị hiệu ứng Loading xoay tròn cao cấp
     acceptedListContainer.innerHTML = `
         <div class="w-100 text-center py-5 text-white">
             <div class="spinner-border text-success mb-3" role="status"></div>
-            <p class="text-white-50 fw-bold">Đang kết nối trạm vệ tinh tải lộ trình chi tiết...</p>
+            <p class="text-white-50 fw-bold">Đang kết nối trạm điều phối tải lịch trình và thông tin hành khách...</p>
         </div>
     `;
 
     const token = localStorage.getItem("accessToken");
     
-    // Đọc danh sách các ID đơn hàng đã nhấn nhận hoặc đang chạy dở
+    // Đọc danh sách ID các cuốc xe đã nhấn nhận từ bộ nhớ máy
     let acceptedIds = JSON.parse(localStorage.getItem('acceptedBookingIds') || '[]');
-    const activeId = localStorage.getItem('activeBookingId');
-    if (activeId && !acceptedIds.includes(activeId)) {
-        acceptedIds.push(activeId);
-    }
 
-    // Cơ chế an toàn (Fallback): Nếu danh sách hoàn toàn trống, tự nạp 1 cuốc mẫu #8842 để bạn luôn test được giao diện UI
+    // Cơ chế dự phòng (Fallback): Nếu danh sách trống, mặc định nạp đơn số 26 để bạn luôn có dữ liệu chạy thử nghiệm giao diện
     if (acceptedIds.length === 0) {
-        acceptedIds = [8842];
+        acceptedIds = [26];
     }
 
     try {
         const jobsData = [];
 
-        // Chạy vòng lặp kích hoạt gọi API chi tiết song song cho từng ID đơn hàng
+        // Kích hoạt gọi API chi tiết đồng thời cho tất cả các ID cuốc xe
         await Promise.all(acceptedIds.map(async (id) => {
             try {
-                // Nếu trùng ID mẫu thử nghiệm thì nạp data mock để không bị lỗi rớt mạng
-                if (id == 8842) {
-                    jobsData.push({
-                        bookingId: 8842,
-                        pickupAddress: "Chợ Bến Thành, Quận 1",
-                        dropoffAddress: "Sân bay Tân Sơn Nhất",
-                        customerName: "Nguyễn Văn A",
-                        customerPhone: "0901234567",
-                        time: "14:30 - Hôm nay",
-                        status: "CONFIRMED",
-                        distanceKm: 12.5
-                    });
-                    return;
-                }
-
-                // Gọi API thật từ Server Java
                 const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${id}`, {
                     method: "GET",
                     headers: {
@@ -699,21 +681,27 @@ async function fetchAcceptedJobs() {
                 if (response.ok) {
                     const result = await response.json();
                     
-                    // Đổ và cấu trúc lại các trường dữ liệu trả về từ API Backend
+                    // Định dạng cấu trúc hiển thị ngày giờ khởi hành
+                    let timeFormatted = "Chưa rõ giờ đi";
+                    if (result.detail && result.detail.departureTime) {
+                        const dateObj = new Date(result.detail.departureTime.replace("T", " "));
+                        timeFormatted = dateObj.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) + " - " + dateObj.toLocaleDateString("vi-VN");
+                    }
+
+                    // Đổ trực tiếp các trường dữ liệu thật (bao gồm cả Tên & SĐT mới cập nhật) từ BE vào mảng render
                     jobsData.push({
                         bookingId: result.bookingId,
                         pickupAddress: result.detail?.pickupAddress || "Đang cập nhật địa chỉ đón",
                         dropoffAddress: result.detail?.dropoffAddress || "Đang cập nhật địa chỉ trả",
-                        // Lấy thông tin khách hàng (Nếu BE chưa kịp trả tên/SĐT thì dùng thông tin dự phòng)
-                        customerName: result.customerName || `Khách hàng FleetFlow (#${result.customerId})`,
-                        customerPhone: result.customerPhone || "090 ••• ••••",
-                        time: result.detail?.departureTime ? new Date(result.detail.departureTime).toLocaleString("vi-VN", {hour12: false}) : "Chưa rõ giờ đi",
-                        status: result.status,
+                        customerName: result.customerName || "Hành khách FleetFlow", // Lấy tên thật từ BE
+                        customerPhone: result.customerPhone || "090 ••• ••••",     // Lấy SĐT thật từ BE
+                        time: timeFormatted,
+                        status: result.status === "CONFIRMED" ? "Đang chuẩn bị đón" : result.status,
                         distanceKm: result.detail?.distanceKm || 0
                     });
                 }
             } catch (err) {
-                console.error(`[API Error] Lỗi khi tải chi tiết cuốc xe #${id}:`, err);
+                console.error(`[API Error] Lỗi tải dữ liệu cuốc xe #${id}:`, err);
             }
         }));
 
@@ -729,8 +717,8 @@ async function fetchAcceptedJobs() {
             `;
         }
     } catch (error) {
-        console.error("Lỗi tổng luồng fetchAcceptedJobs:", error);
-        acceptedListContainer.innerHTML = `<div class="text-center text-danger py-4 fw-bold">Mất tín hiệu kết nối API Lộ trình!</div>`;
+        console.error("Lỗi hệ thống fetchAcceptedJobs:", error);
+        acceptedListContainer.innerHTML = `<div class="text-center text-danger py-4 fw-bold">Mất mạng hoặc lỗi kết nối trạm điều phối!</div>`;
     }
 }
 
@@ -1106,20 +1094,24 @@ function startGpsTracking(bookingId) {
 /**
  * BƯỚC 3: Xử lý khi tài xế bấm "Hoàn thành chuyến"
  */
+/**
+ * Xử lý khi tài xế bấm "Hoàn thành chuyến"
+ * Đổi trạng thái dưới DB, tắt GPS, xóa thẻ xe khỏi UI và dọn dẹp bộ nhớ máy
+ */
 window.completeTrip = async function(btnElement, bookingId) {
     const originalText = btnElement.innerHTML;
     
-    // 1. Chặn UI tránh bấm đúp nhiều lần
+    // 1. Chặn UI tránh việc tài xế bấm đúp nhiều lần gây lỗi trùng gửi lệnh
     btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xử lý...';
     btnElement.disabled = true;
 
-    // 2. Lấy Token từ LocalStorage
+    // Lấy Token xác thực từ LocalStorage
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
     try {
-        // 3. Bắn API Hoàn thành chuyến về máy chủ
-        const response = await fetch(`${API_TRIPS_BASE}/${bookingId}/complete`, {
+        // 2. Gọi API Hoàn thành chuyến xe về Server Backend
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/trips/${bookingId}/complete`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -1130,29 +1122,57 @@ window.completeTrip = async function(btnElement, bookingId) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-// [XỬ LÝ THÀNH CÔNG]
+            // [XỬ LÝ THÀNH CÔNG Ở BACKEND]
+            console.log(`[Success] Cuốc xe #${bookingId} đã hoàn thành thành công.`);
             
-            // a. QUAN TRỌNG: Tắt ngay vòng lặp bắn GPS ngầm
+            // a. Tắt ngay vòng lặp định vị GPS ngầm để tiết kiệm pin/băng thông
             if (currentGpsInterval) {
                 clearInterval(currentGpsInterval);
                 currentGpsInterval = null;
-                console.log("[GPS] Đã tắt định vị ngầm do chuyến đi hoàn thành.");
+                console.log("[GPS] Đã tắt định vị ngầm do chuyến đi hoàn tất.");
             }
 
-            // b. Xóa thẻ xe này khỏi giao diện của tab "Đã Nhận"
-            const tripCard = document.getElementById(`trip-card-${bookingId}`);
-            if (tripCard) {
-                removeCardSmoothly(tripCard.closest('.broadcast-card-item'));
-            }
-
-            // c. CẬP NHẬT MỚI: Xóa ID đơn hàng khỏi danh sách đã nhận trong bộ nhớ máy
+            // b. DỌN SẠCH LOCALSTORAGE: Xóa ID cuốc xe này khỏi bộ nhớ máy để chống lỗi F5 hiện lại
             let acceptedIds = JSON.parse(localStorage.getItem('acceptedBookingIds') || '[]');
             acceptedIds = acceptedIds.filter(id => id != bookingId);
             localStorage.setItem('acceptedBookingIds', JSON.stringify(acceptedIds));
             
+            // Xóa cờ chuyến đi đang chạy dở
             localStorage.removeItem('activeBookingId');
 
-            // d. Hiển thị Modal chúc mừng tài xế
+            // c. BIẾN MẤT KHỎI TAB ĐÃ NHẬN (Hiệu ứng UI mượt mà)
+            const tripCard = document.getElementById(`trip-card-${bookingId}`);
+            if (tripCard) {
+                // Tìm thẻ bao ngoài cùng của thẻ xe (.broadcast-card-item)
+                const cardWrapper = tripCard.closest('.broadcast-card-item');
+                if (cardWrapper) {
+                    // Kích hoạt CSS hiệu ứng mờ dần và thu nhỏ dọn bớt không gian
+                    cardWrapper.style.transition = "all 0.5s ease";
+                    cardWrapper.style.opacity = "0";
+                    cardWrapper.style.transform = "scale(0.8) translateY(-20px)";
+                    
+                    // Chờ hiệu ứng CSS chạy xong (500ms) thì chính thức xóa phần tử khỏi cây DOM
+                    setTimeout(() => {
+                        cardWrapper.remove();
+                        
+                        // Kiểm tra xem sau khi xóa, tab "Đã Nhận" có bị trống không
+                        const acceptedListContainer = document.getElementById("acceptedJobList");
+                        const remainingCards = acceptedListContainer.querySelectorAll('.broadcast-card-item');
+                        
+                        // Nếu không còn cuốc xe nào, tự động trả về giao diện Trống (Empty State) nền nã
+                        if (remainingCards.length === 0) {
+                            acceptedListContainer.innerHTML = `
+                                <div class="empty-state w-100 text-center py-5">
+                                    <i class="fa-solid fa-car-on radar-icon text-white-50 fs-1 mb-3"></i>
+                                    <p class="text-white-50">Bạn chưa có chuyến xe nào đang thực hiện.</p>
+                                </div>
+                            `;
+                        }
+                    }, 500);
+                }
+            }
+
+            // d. Hiển thị Popup Modal thông báo chúc mừng tài xế
             const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
             completeModal.show();
 
@@ -1164,17 +1184,10 @@ window.completeTrip = async function(btnElement, bookingId) {
         }
 
     } catch (error) {
-        // [LỖI MẠNG]
-        console.error("Lỗi API Complete Trip:", error);
-        alert("Lỗi kết nối máy chủ! Vui lòng thử lại.");
+        // [LỖI MẤT KẾT NỐI]
+        console.error("Lỗi kết nối API Complete Trip:", error);
+        alert("Mất tín hiệu đường truyền máy chủ! Vui lòng kiểm tra lại mạng.");
         btnElement.innerHTML = originalText;
         btnElement.disabled = false;
     }
-}
-
-/**
- * Tiện ích bổ sung: Sau khi tắt Popup thành công, tự đẩy tài xế về lại Tab Chờ chuyến
- */
-window.refreshAfterComplete = function() {
-    switchJobTab('PENDING');
 }
