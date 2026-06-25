@@ -110,8 +110,12 @@
 
                             <li class="menu-section-title">Quản lý Tài sản & Nhân sự</li>
                             <li>
-                                <a href="#tab-fleet" class="toc-link"><i class="fa-solid fa-car me-2"></i> Vòng đời
-                                    Xe</a>
+                                <a href="#tab-fleet" class="toc-link"><i
+                                        class="fa-solid fa-screwdriver-wrench me-2"></i> Quản lý Bảo dưỡng</a>
+                            </li>
+                            <li>
+                                <a href="#tab-new-vehicle" class="toc-link"><i class="fa-solid fa-car me-2"></i>
+                                    Đăng ký Phương tiện</a>
                             </li>
                             <li>
                                 <a href="#tab-drivers"
@@ -133,7 +137,8 @@
 
                             <li class="menu-section-title">Hệ thống & Phân quyền</li>
                             <li>
-                                <a href="#tab-customers" class="toc-link"><i class="fa-solid fa-users me-2"></i> Khách hàng & Nợ</a>
+                                <a href="#tab-customers" class="toc-link"><i class="fa-solid fa-users me-2"></i> Khách
+                                    hàng & Nợ</a>
                             </li>
                             <li>
                                 <a href="#tab-users" class="toc-link"><i class="fa-solid fa-users-gear me-2"></i> Tài
@@ -310,15 +315,12 @@
                             <div class="d-flex justify-content-between align-items-end mb-4">
                                 <div>
                                     <h4 class="fw-bold mb-2 text-white"><i
-                                            class="fa-solid fa-car text-primary me-2"></i>Quản lý Vòng đời Xe (Fleet
-                                        Lifecycle)</h4>
+                                            class="fa-solid fa-screwdriver-wrench me-2"></i>Trạng thái & Bảo dưỡng
+                                        phương
+                                        tiện</h4>
                                     <p class="text-white-50 small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám
                                         sát tự động hạn kiểm định pháp lý.</p>
                                 </div>
-                                <button class="btn-glass-action bg-primary text-white border-primary"
-                                    data-bs-toggle="modal" data-bs-target="#addVehicleModal">
-                                    <i class="fa-solid fa-plus me-2"></i> Khởi tạo xe mới
-                                </button>
                             </div>
 
                             <div class="table-glass-wrapper">
@@ -337,6 +339,67 @@
                             </div>
                         </div>
 
+                    </section>
+
+                    <section id="tab-new-vehicle" class="dashboard-section" style="display: none;">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-2 text-white">
+                                        <i class="fa-solid fa-car text-primary me-2"></i>
+                                        Đăng ký Phương tiện mới</h4>
+                                    <p class="text-white-50 small m-0">Thêm hồ sơ phương tiện mới vào hệ thống
+                                        FleetFlow.</p>
+                                </div>
+                            </div>
+
+                            <form id="addVehicleForm">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Biển số xe *</label>
+                                        <input type="text" id="vLicensePlate"
+                                            class="form-control glass-input fw-bold text-white"
+                                            placeholder="VD: 51H-123.45" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Loại xe / Thương hiệu
+                                            *</label>
+                                        <input type="text" id="vBrand" class="form-control glass-input text-white"
+                                            placeholder="VD: Toyota Vios" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Mẫu xe (Model)</label>
+                                        <input type="text" id="vModel" class="form-control glass-input text-white"
+                                            placeholder="VD: E CVT 2023">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Số chỗ ngồi *</label>
+                                        <select id="vSeatCount" class="form-select glass-select text-white" required>
+                                            <option value="4">4 chỗ</option>
+                                            <option value="7">7 chỗ</option>
+                                            <option value="9">9 chỗ</option>
+                                            <option value="16">16 chỗ</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Năm sản xuất</label>
+                                        <input type="number" id="vYear" class="form-control glass-input text-white"
+                                            placeholder="VD: 2022">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Màu sắc</label>
+                                        <input type="text" id="vColor" class="form-control glass-input text-white"
+                                            placeholder="VD: Trắng">
+                                    </div>
+                                </div>
+                                <div class="mt-4 pt-3 border-top border-secondary text-end">
+                                    <button type="button" class="btn btn-outline-light rounded-pill px-4 me-2"
+                                        onclick="document.getElementById('addVehicleForm').reset()">Làm mới</button>
+                                    <button type="submit"
+                                        class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">Đăng ký xe</button>
+                                </div>
+                            </form>
+                        </div>
                     </section>
 
 
@@ -517,19 +580,23 @@
                             <div class="d-flex justify-content-between align-items-end mb-4">
                                 <div>
                                     <h4 class="fw-bold mb-1 text-white"><i
-                                            class="fa-solid fa-users text-info me-2"></i>Quản lý Khách hàng & Công nợ</h4>
-                                    <p class="text-white-50 small m-0">Kiểm soát danh sách khách hàng, công nợ và trạng thái khóa/mở khóa tài khoản.</p>
+                                            class="fa-solid fa-users text-info me-2"></i>Quản lý Khách hàng & Công nợ
+                                    </h4>
+                                    <p class="text-white-50 small m-0">Kiểm soát danh sách khách hàng, công nợ và trạng
+                                        thái khóa/mở khóa tài khoản.</p>
                                 </div>
                                 <div class="d-flex gap-2 align-items-center">
                                     <div class="search-box position-relative">
-                                        <input type="text" class="form-control form-control-sm glass-input ps-5" placeholder="Tìm tên, SĐT...">
+                                        <input type="text" class="form-control form-control-sm glass-input ps-5"
+                                            placeholder="Tìm tên, SĐT...">
                                     </div>
-                                    <button class="btn btn-sm btn-outline-info text-white" onclick="fetchAndRenderCustomers()">
+                                    <button class="btn btn-sm btn-outline-info text-white"
+                                        onclick="fetchAndRenderCustomers()">
                                         <i class="fa-solid fa-rotate-right me-1"></i> Làm mới
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 500px;">
                                 <table class="table-glass w-100 mb-0">
                                     <thead style="position: sticky; top: 0; z-index: 10;">
@@ -546,7 +613,8 @@
                                         <!-- Dữ liệu render từ JS -->
                                         <tr>
                                             <td colspan="6" class="text-center text-white-50 py-4">
-                                                <i class="fa-solid fa-circle-notch fa-spin text-info me-2"></i>Đang đồng bộ dữ liệu...
+                                                <i class="fa-solid fa-circle-notch fa-spin text-info me-2"></i>Đang đồng
+                                                bộ dữ liệu...
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1294,6 +1362,7 @@
             <script src="../../js/admin.js"></script>
             <script src="../../js/admin/voucherManager.js"></script>
             <script src="../../js/admin/customerManager.js"></script>
+            <script src="../../js/admin/vehicleManager.js"></script>
 </body>
 
 </html>
