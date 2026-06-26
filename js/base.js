@@ -359,7 +359,7 @@ async function loadNotifications() {
 
             if (notifications.length === 0) {
                 container.innerHTML = `<li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo nào</li>`;
-                updateUnreadBadge(0);
+                if (typeof updateUnreadBadge === 'function') updateUnreadBadge(0);
                 return;
             }
 
@@ -370,7 +370,14 @@ async function loadNotifications() {
 
             // Render từng dòng thông báo
             notifications.forEach(n => {
-                const isRead = n.IsRead || n.isRead; // Bắt cả 2 case Json
+                // CHUẨN HÓA DATA TỪ BACKEND TRẢ VỀ (Bắt chuẩn Key viết Hoa)
+                const notifId = n.NotificationID;
+                const title = n.Title || "Thông báo hệ thống";
+                const message = n.Message || ""; // Code cũ bị lỗi do dùng n.Content
+                
+                // Đảm bảo isRead luôn là boolean (DB trả về 0/1 hoặc true/false)
+                const isRead = (n.IsRead === 1 || n.IsRead === true); 
+                
                 if (!isRead) unreadCount++;
 
                 // LOGIC GIAO DIỆN UX: Chưa đọc -> Nền trắng, chữ Đậm, có chấm đỏ
@@ -379,28 +386,29 @@ async function loadNotifications() {
                 const dotClass = isRead ? "d-none" : "";
 
                 // Format ngày giờ thân thiện (Ví dụ: 14:30 - 25/06)
-                const d = new Date(n.CreatedAt || n.createdAt);
+                const d = new Date(n.CreatedAt);
                 const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} - ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth() + 1).toString().padStart(2,'0')}`;
                 
-                const notifId = n.NotificationID || n.id;
-
                 htmlContent += `
                     <li class="p-3 border-bottom ${bgClass} notification-item" 
                         style="cursor: pointer; transition: background 0.2s;" 
                         onclick="markAsRead('${notifId}', this, ${isRead})">
                         
                         <div class="d-flex justify-content-between align-items-start mb-1">
-                            <span class="title-text ${textClass}" style="font-size: 0.95rem;">${n.Title || n.title}</span>
+                            <span class="title-text ${textClass}" style="font-size: 0.95rem;">${title}</span>
                             <span class="bg-danger rounded-circle unread-dot mt-2 ms-2 ${dotClass}" style="width: 8px; height: 8px; min-width: 8px; flex-shrink: 0;"></span>
                         </div>
-                        <div class="content-text small ${isRead ? 'text-muted' : 'text-secondary'} mb-1">${n.Content || n.message}</div>
+                        <div class="content-text small ${isRead ? 'text-muted' : 'text-secondary'} mb-1">${message}</div>
                         <div class="small text-muted" style="font-size: 0.75rem;"><i class="fa-regular fa-clock me-1"></i> ${timeStr}</div>
                     </li>
                 `;
             });
 
             container.innerHTML = htmlContent;
-            updateUnreadBadge(unreadCount); // Cập nhật số lượng ra cái chuông tổng
+            
+            // Cập nhật số lượng ra cái chuông tổng
+            if (typeof updateUnreadBadge === 'function') updateUnreadBadge(unreadCount); 
+            
         } else {
             container.innerHTML = `<li class="text-center p-3 text-danger">Lỗi tải dữ liệu</li>`;
         }
@@ -486,6 +494,8 @@ function decreaseUnreadBadge() {
 
 // Tự động check thông báo ngầm 1 lần khi người dùng vừa load trang xong để hiện dấu chấm đỏ
 document.addEventListener("DOMContentLoaded", () => {
-    // Bỏ comment dòng dưới nếu bạn muốn hệ thống tự check thông báo chưa đọc lúc mở web
-    // loadNotifications(); 
+// Chỉ cần kiểm tra nếu hàm tồn tại thì cho chạy ngầm 1 lần để check chấm đỏ
+    if (typeof loadNotifications === 'function') {
+        loadNotifications(); 
+    }
 });

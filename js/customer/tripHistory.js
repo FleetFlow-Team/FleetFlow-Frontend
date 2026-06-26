@@ -359,3 +359,112 @@ function filterTrips(status, btnElement) {
     }
     renderTripList(filtered);
 }
+
+// =====================================================================
+// XỬ LÝ API HỦY CHUYẾN ĐI (TÍCH HỢP PENALTY AMOUNT)
+// =====================================================================
+let currentCancelBookingId = null; // Biến lưu tạm ID chuyến đi đang muốn hủy
+
+// Hàm này được gọi khi bấm nút "Hủy chuyến" ở trang chi tiết
+function openCancelModal(bookingId) {
+    currentCancelBookingId = bookingId;
+    const modal = new bootstrap.Modal(document.getElementById('cancelTripModal'));
+    modal.show();
+}
+
+// Hàm này được gắn vào nút "Xác nhận hủy" trong Modal
+async function executeSubmitAction(actionType) {
+    if (actionType === 'cancel') {
+        if (!currentCancelBookingId) return;
+
+        const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
+        const token = localStorage.getItem('accessToken');
+        const reasonInput = document.querySelector('#cancelTripModal textarea');
+        const reason = reasonInput ? reasonInput.value.trim() : "Khách hàng yêu cầu hủy";
+
+        // Đổi trạng thái UI nút bấm sang Loading
+        const btnConfirm = document.getElementById('btnConfirmCancelTrip');
+        const originalText = btnConfirm.innerText;
+        btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+        btnConfirm.disabled = true;
+
+        try {
+            // GỌI API BACKEND VỪA CẬP NHẬT
+            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/bookings/cancel`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    bookingId: parseInt(currentCancelBookingId),
+                    customerId: parseInt(customerId),
+                    reason: reason
+                })
+            });
+
+            const result = await response.json();
+
+            // Đóng Modal hiện tại
+            const cancelModalEl = document.getElementById('cancelTripModal');
+            const cancelModal = bootstrap.Modal.getInstance(cancelModalEl);
+            if (cancelModal) cancelModal.hide();
+
+            // XỬ LÝ KẾT QUẢ TỪ BACKEND
+            if (response.ok && result.success) {
+                const fVND = (v) => Number(v || 0).toLocaleString('vi-VN') + ' đ';
+                
+                // Trích xuất 2 trường Backend vừa thêm: penaltyPercent và penaltyAmount
+                const pPercent = result.penaltyPercent || 0;
+                const pAmount = parseFloat(result.penaltyAmount) || 0;
+
+                let msgHtml = `Chuyến đi <b>#${result.bookingId}</b> đã được hủy thành công!`;
+
+                // LOGIC HIỂN THỊ DỰA TRÊN PENALTY AMOUNT
+                if (pAmount > 0) {
+                    msgHtml += `
+                        <div class="mt-3 p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 text-start">
+                            <div class="text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phí phạt hủy chuyến (${pPercent}%):</div>
+                            <div class="fs-4 fw-bold text-danger">${fVND(pAmount)}</div>
+                            <div class="small text-muted mt-1">Khoản phí này đã được ghi nhận vào công nợ tài khoản của bạn theo chính sách hệ thống.</div>
+                        </div>
+                    `;
+                } else {
+                    msgHtml += `
+                        <div class="mt-3 p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3">
+                            <span class="text-success fw-bold"><i class="fa-solid fa-shield-check me-1"></i> Bạn không bị tính phí phạt cho lần hủy này.</span>
+                        </div>
+                    `;
+                }
+
+                // Hiển thị thông báo bằng SweetAlert2
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã hủy chuyến',
+                    html: msgHtml,
+                    confirmButtonColor: '#00B14F',
+                    confirmButtonText: 'Đóng'
+                }).then(() => {
+                    // Tải lại danh sách chuyến đi sau khi tắt thông báo
+                    window.location.reload(); 
+                });
+
+            } else {
+                // Backend từ chối hủy (VD: Đang chạy, Đã hoàn thành...)
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Không thể hủy chuyến', 
+                    text: result.error || 'Vui lòng liên hệ tổng đài để được hỗ trợ.' 
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API Hủy chuyến:", error);
+            Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+        } finally {
+            // Trả lại trạng thái UI cho nút bấm
+            btnConfirm.innerHTML = originalText;
+            btnConfirm.disabled = false;
+            if (reasonInput) reasonInput.value = ''; // Xóa text lý do cũ
+        }
+    }
+}
