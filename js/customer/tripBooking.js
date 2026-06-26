@@ -109,6 +109,8 @@ let currentDistanceKm = 0;
 let currentEstimatedTotal = 0;
 let tripCoordinates = {}; // Lưu tọa độ Lat/Lng để tạo Booking
 let currentVoucherId = null; // Lưu ID voucher nếu áp dụng thành công
+let currentBaseFare = 0;
+let currentWeekendSurcharge = 0;
 
 
 
@@ -598,6 +600,8 @@ window.calculateRealPrice = async function () {
 
         if (data.success) {
             currentEstimatedTotal = data.estimatedTotal;
+            currentBaseFare = data.baseFare;
+            currentWeekendSurcharge = data.weekendSurcharge;
 
             // Reset voucher
             currentVoucherId = null;
@@ -671,12 +675,16 @@ window.applyVoucher = async function () {
     const origText = btn.innerText;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
     btn.disabled = true;
-
+    // BỔ SUNG: Bóc tách Vehicle Type ID từ LocalStorage
+    const allVehicles = JSON.parse(localStorage.getItem('allVehicles') || '[]');
+    const selectedCar = allVehicles.find(v => v.vehicleId == currentVehicleId);
+    const vehicleTypeId = selectedCar ? (selectedCar.vehicleTypeId || selectedCar.VehicleTypeID || selectedCar.typeId || 1) : 1;
     const payload = {
         code: code,
         customerId: customerId,
         estimatedTotal: currentEstimatedTotal,
-        vehicleId: currentVehicleId
+        vehicleId: currentVehicleId,
+        vehicleTypeId: parseInt(vehicleTypeId) // <-- Đã sửa thành Type ID
     };
  
     const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
@@ -777,6 +785,9 @@ window.submitBooking = async function () {
 
     localStorage.setItem('mapDepartureTime', timeInput + ':00');
     localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal);
+    // BỔ SUNG 2 DÒNG NÀY ĐỂ BƯNG PHỤ PHÍ QUA CHECKOUT:
+    localStorage.setItem('mapBaseFare', currentBaseFare);
+    localStorage.setItem('mapWeekendSurcharge', currentWeekendSurcharge);
     // if (currentVoucherId) localStorage.setItem('appliedVoucherId', currentVoucherId);
     // NẾU CÓ VOUCHER -> LƯU MANG SANG CHECKOUT
     if (currentVoucherId) {

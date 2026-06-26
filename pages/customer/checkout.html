@@ -977,29 +977,38 @@
             const depositAmountText = localStorage.getItem('currentDepositAmount');
 
             if (bookingType === 'DISTANCE') {
-// 1. Ẩn các ô chọn ngày giờ
-                document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
+document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
                 document.getElementById('durationContainer').style.display = 'none';
 
-                // 2. ẨN LUÔN Ô NHẬP VOUCHER VÌ KHÁCH ĐÃ NHẬP Ở TRANG BẢN ĐỒ RỒI
                 const voucherBox = document.querySelector('.voucher-box');
                 if (voucherBox) voucherBox.style.display = 'none';
 
-                // 3. ĐỌC DỮ LIỆU TỪ TRANG MAP GỬI SANG
-                const mapTotal = parseFloat(localStorage.getItem('mapEstimatedTotal')) || 0; // Giá chưa giảm
-                currentEstimatedTotal = mapTotal; // Lưu gốc để gửi API tạo đơn
+                // ĐỌC DỮ LIỆU ĐÃ ĐƯỢC BÓC TÁCH TỪ TRANG BẢN ĐỒ
+                const mapTotal = parseFloat(localStorage.getItem('mapEstimatedTotal')) || 0;
+                const mapBaseFare = parseFloat(localStorage.getItem('mapBaseFare')) || mapTotal; 
+                const mapWeekendSurcharge = parseFloat(localStorage.getItem('mapWeekendSurcharge')) || 0;
+                
+                currentEstimatedTotal = mapTotal; 
                 const fmt = new Intl.NumberFormat('vi-VN');
 
-                // Hiển thị Cước gốc
-                document.getElementById('summaryBaseFare').innerText = fmt.format(mapTotal) + ' ₫';
+                // 1. HIỂN THỊ CƯỚC GỐC CHUẨN XÁC
+                document.getElementById('summaryBaseFare').innerText = fmt.format(mapBaseFare) + ' ₫';
 
-                // Lấy thông tin Voucher (nếu có)
+                // 2. HIỂN THỊ PHỤ PHÍ CUỐI TUẦN (NẾU CÓ)
+                const weekendRow = document.getElementById('weekendSurchargeRow');
+                if (mapWeekendSurcharge > 0) {
+                    weekendRow.style.setProperty('display', 'flex', 'important');
+                    document.getElementById('summaryWeekend').innerText = '+' + fmt.format(mapWeekendSurcharge) + ' ₫';
+                } else {
+                    weekendRow.style.setProperty('display', 'none', 'important');
+                }
+
+                // 3. HIỂN THỊ VOUCHER (NẾU CÓ)
                 const appliedVoucherId = localStorage.getItem('appliedVoucherId');
                 const appliedVoucherCode = localStorage.getItem('appliedVoucherCode');
                 const appliedDiscountAmount = parseFloat(localStorage.getItem('appliedDiscountAmount')) || 0;
                 const mapFinalTotal = parseFloat(localStorage.getItem('mapFinalTotal')) || mapTotal;
 
-                // 4. LOGIC HIỂN THỊ: CÓ VOUCHER THÌ BẬT DÒNG KHUYẾN MÃI LÊN
                 if (appliedVoucherId && appliedVoucherCode) {
                     document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
                     document.getElementById('discountName').innerText = appliedVoucherCode;
@@ -1011,12 +1020,9 @@
                 }
 
                 document.getElementById('summaryDeposit').innerText = depositAmountText || '0 ₫';
-
                 const btnSubmit = document.getElementById('btnSubmitCheckout');
                 btnSubmit.innerText = `Xác nhận Đặt xe - Cọc ${depositAmountText}`;
                 btnSubmit.disabled = false;
-
-                // Tự động điền điểm đón
                 document.getElementById('address').value = localStorage.getItem('pickupAddress') || '';
 
             } else {
