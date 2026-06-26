@@ -1,21 +1,24 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>FleetFlow - Driver Workspace</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png" />
-    
+
     <link rel="stylesheet" href="../../style/pages/driver.css" />
-    
+
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="luxury-glow-bg">
         <div class="glow-sphere sphere-1"></div>
@@ -25,10 +28,11 @@
     <header>
         <nav class="navbar custom-navbar transition-all">
             <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
-                
+
                 <a class="navbar-brand d-flex align-items-center m-0" href="#">
-                    <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" height="60px" class="logo-img d-none d-xl-block" />
-                    
+                    <img src="../../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" height="60px"
+                        class="logo-img d-none d-xl-block" />
+
                     <div class="d-xl-none d-block">
                         <label class="custom-pill-toggle" title="Thay đổi trạng thái">
                             <input type="checkbox" class="navOnlineToggle" onchange="handleOnlineToggle(this)" />
@@ -45,7 +49,8 @@
                 </a>
 
                 <div class="navbar-slogan text-white fw-medium fs-4 fst-italic d-none d-xl-block">
-                    <span class="text-warning mx-1">•</span> AN TOÀN TRÊN TỪNG CHUYẾN ĐI <span class="text-warning mx-1">•</span>
+                    <span class="text-warning mx-1">•</span> AN TOÀN TRÊN TỪNG CHUYẾN ĐI <span
+                        class="text-warning mx-1">•</span>
                 </div>
 
                 <div class="d-flex align-items-center gap-4 ms-auto">
@@ -67,24 +72,27 @@
                         <i class="fa-regular fa-bell text-white fs-5"></i>
                         <span class="notification-badge" id="notiCount">3</span>
                     </div>
-                    
+
                     <div class="user-profile-dropdown">
-<div class="user-profile-trigger d-flex align-items-center">
+                        <div class="user-profile-trigger d-flex align-items-center">
                             <div class="user-info-block text-end d-none d-sm-block me-3">
                                 <div class="fw-bold fs-6 lh-1 text-white profile-name">Đang tải...</div>
                                 <div class="text-white-50 small mt-1 profile-role" style="font-size: 0.75em;">...</div>
                             </div>
                             <div class="glass-avatar">
-                                <img class="header-avatar-img" src="https://ui-avatars.com/api/?name=Driver&background=1a1c1a&color=fff" alt="Avatar" />
+                                <img class="header-avatar-img"
+                                    src="https://ui-avatars.com/api/?name=Driver&background=1a1c1a&color=fff"
+                                    alt="Avatar" />
                             </div>
                         </div>
-                        
-                        <div class="dropdown-menu-modern shadow-lg">                        
+
+                        <div class="dropdown-menu-modern shadow-lg">
                             <a href="../../pages/profile.html" class="dropdown-item-custom text-white">
                                 <i class="fa-solid fa-user-shield"></i> Hồ sơ định danh
                             </a>
                             <hr class="dropdown-divider-custom">
-                            <a href="#" onclick="localStorage.clear(); window.location.replace('../../index.html'); return false;"
+                            <a href="#"
+                                onclick="localStorage.clear(); window.location.replace('../../index.html'); return false;"
                                 class="dropdown-item-custom text-danger fw-bold logout-item">
                                 <i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất
                             </a>
@@ -100,29 +108,33 @@
         <i class="fa-solid fa-triangle-exclamation me-1 fa-fade"></i> Số dư dưới 50.000đ. Hệ thống tạm khóa nhận chuyến.
     </div>
 
-    <div class="container-fluid" style="padding-top: 40px; padding-bottom: 50px;"> 
+    <div class="container-fluid" style="padding-top: 40px; padding-bottom: 50px;">
         <div class="row px-xl-4">
-            
+
             <div class="col-lg-3 d-none d-lg-block mb-4">
                 <div class="sticky-top" style="top: 100px; width: 20rem;">
                     <div class="toc-header border-bottom border-secondary pb-3 mb-4 text-white">
                         <i class="fa-solid fa-layer-group me-2"></i> Bảng Điều Khiển
                     </div>
-                    
+
                     <div class="toc-container position-relative">
                         <div class="toc-indicator" id="vertical-indicator"></div>
                         <ul class="toc-list" id="driver-nav">
                             <li>
-                                <a onclick="switchTab('tab-job-board', this)" class="toc-link active"><i class="fa-solid fa-satellite-dish me-2"></i> Nhận chuyến</a>
+                                <a onclick="switchTab('tab-job-board', this)" class="toc-link active"><i
+                                        class="fa-solid fa-satellite-dish me-2"></i> Nhận chuyến</a>
                             </li>
                             <li>
-                                <a onclick="switchTab('tab-income', this)" class="toc-link"><i class="fa-solid fa-chart-pie me-2"></i> Lịch sử thu nhập</a>
+                                <a onclick="switchTab('tab-income', this)" class="toc-link"><i
+                                        class="fa-solid fa-chart-pie me-2"></i> Lịch sử thu nhập</a>
                             </li>
                             <li>
-                                <a onclick="switchTab('tab-history', this)" class="toc-link"><i class="fa-solid fa-clock-rotate-left me-2"></i> Chuyến đi cũ</a>
+                                <a onclick="switchTab('tab-history', this)" class="toc-link"><i
+                                        class="fa-solid fa-clock-rotate-left me-2"></i> Chuyến đi cũ</a>
                             </li>
                             <li>
-                                <a onclick="switchTab('tab-account', this)" class="toc-link"><i class="fa-solid fa-circle-user me-2"></i> Tài khoản</a>
+                                <a onclick="switchTab('tab-account', this)" class="toc-link"><i
+                                        class="fa-solid fa-circle-user me-2"></i> Tài khoản</a>
                             </li>
                         </ul>
                     </div>
@@ -131,17 +143,22 @@
 
             <div class="col-lg-9">
                 <main class="main-content p-0">
-                    
+
                     <section id="tab-job-board" class="dashboard-section active">
                         <div class="d-flex justify-content-between align-items-end mb-4">
-                            <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-satellite-dish text-info me-2"></i>Trạm phát sóng đơn hàng</h4>
+                            <h4 class="fw-bold m-0 text-white"><i
+                                    class="fa-solid fa-satellite-dish text-info me-2"></i>Trạm phát sóng đơn hàng</h4>
                         </div>
 
                         <div class="job-tabs-glass mb-4 d-flex border-bottom border-secondary pb-2">
-                            <div id="tab-btn-pending" class="job-tab-item active text-white fw-bold me-4 pb-2 border-bottom border-2 border-white cursor-pointer" onclick="switchJobTab('PENDING')">
-                                Chờ Nhận <span class="badge bg-danger rounded-pill ms-1" id="jobBadge" style="display: none;">0</span>
+                            <div id="tab-btn-pending"
+                                class="job-tab-item active text-white fw-bold me-4 pb-2 border-bottom border-2 border-white cursor-pointer"
+                                onclick="switchJobTab('PENDING')">
+                                Chờ Nhận <span class="badge bg-danger rounded-pill ms-1" id="jobBadge"
+                                    style="display: none;">0</span>
                             </div>
-                            <div id="tab-btn-accepted" class="job-tab-item text-white-50 fw-bold cursor-pointer pb-2" onclick="switchJobTab('ACCEPTED')">
+                            <div id="tab-btn-accepted" class="job-tab-item text-white-50 fw-bold cursor-pointer pb-2"
+                                onclick="switchJobTab('ACCEPTED')">
                                 Đã Nhận
                             </div>
                         </div>
@@ -152,26 +169,42 @@
                                 <p class="text-white-50">Hệ thống đang dò tìm chuyến đi quanh bạn...</p>
                             </div>
 
-                            <div class="col-xl-6 broadcast-card-item" id="job-1">
+                            <!-- <div class="col-xl-6 broadcast-card-item" id="job-1">
                                 <div class="glass-panel h-100 d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
+                                    <div
+                                        class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
                                         <div>
                                             <span class="fw-bold text-white fs-5 d-block">#BK-1029</span>
                                             <span class="text-white-50 small">Khởi hành: 14:30 hôm nay</span>
                                         </div>
-                                        <div class="glass-badge-hover text-success border border-success px-3 py-1 rounded-pill fw-bold bg-success bg-opacity-25 timer-box" data-seconds="720">
-                                            <i class="fa-regular fa-clock me-1"></i> <span class="time-text">12:00</span>
+                                        <div class="glass-badge-hover text-success border border-success px-3 py-1 rounded-pill fw-bold bg-success bg-opacity-25 timer-box"
+                                            data-seconds="720">
+                                            <i class="fa-regular fa-clock me-1"></i> <span
+                                                class="time-text">12:00</span>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 mb-3">
-                                        <div class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
-                                            <div class="mb-3 position-relative"><i class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary" style="left: -21px; font-size: 0.6rem;"></i> Tòa nhà Alpha, ĐH FPT</div>
-                                            <div class="position-relative"><i class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger" style="left: -21px; font-size: 0.8rem;"></i> Sân bay Tân Sơn Nhất</div>
+                                        <div
+                                            class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
+                                            <div class="mb-3 position-relative"><i
+                                                    class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary"
+                                                    style="left: -21px; font-size: 0.6rem;"></i> Tòa nhà Alpha, ĐH FPT
+                                            </div>
+                                            <div class="position-relative"><i
+                                                    class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger"
+                                                    style="left: -21px; font-size: 0.8rem;"></i> Sân bay Tân Sơn Nhất
+                                            </div>
                                         </div>
                                         <div class="d-flex flex-wrap gap-2">
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">22 km</span>
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">Xe 4 chỗ</span>
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-warning p-2">Không đi cao tốc</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">22
+                                                km</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">Xe
+                                                4 chỗ</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-warning p-2">Không
+                                                đi cao tốc</span>
                                         </div>
                                     </div>
                                     <div class="border-top border-secondary pt-3 mt-auto">
@@ -179,7 +212,9 @@
                                             <span class="text-white-50 small fw-bold">Thu nhập thực nhận</span>
                                             <span class="fs-4 fw-bold text-success">240.000đ</span>
                                         </div>
-                                        <button class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6" onclick="acceptJob(this, 'job-1', 'error500')">
+                                        <button
+                                            class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6"
+                                            onclick="acceptJob(this, 'job-1', 'error500')">
                                             Nhận Chuyến (Test Lỗi 500)
                                         </button>
                                     </div>
@@ -188,23 +223,37 @@
 
                             <div class="col-xl-6 broadcast-card-item" id="job-2">
                                 <div class="glass-panel h-100 d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
+                                    <div
+                                        class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
                                         <div>
                                             <span class="fw-bold text-white fs-5 d-block">#BK-8842</span>
                                             <span class="text-white-50 small">Khởi hành: 15:00 hôm nay</span>
                                         </div>
-                                        <div class="glass-badge-hover text-warning border border-warning px-3 py-1 rounded-pill fw-bold bg-warning bg-opacity-25 timer-box" data-seconds="180">
-                                            <i class="fa-regular fa-clock me-1"></i> <span class="time-text">03:00</span>
+                                        <div class="glass-badge-hover text-warning border border-warning px-3 py-1 rounded-pill fw-bold bg-warning bg-opacity-25 timer-box"
+                                            data-seconds="180">
+                                            <i class="fa-regular fa-clock me-1"></i> <span
+                                                class="time-text">03:00</span>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 mb-3">
-                                        <div class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
-                                            <div class="mb-3 position-relative"><i class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary" style="left: -21px; font-size: 0.6rem;"></i> Chợ Bến Thành, Quận 1</div>
-                                            <div class="position-relative"><i class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger" style="left: -21px; font-size: 0.8rem;"></i> KDL Bửu Long, Biên Hòa</div>
+                                        <div
+                                            class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
+                                            <div class="mb-3 position-relative"><i
+                                                    class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary"
+                                                    style="left: -21px; font-size: 0.6rem;"></i> Chợ Bến Thành, Quận 1
+                                            </div>
+                                            <div class="position-relative"><i
+                                                    class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger"
+                                                    style="left: -21px; font-size: 0.8rem;"></i> KDL Bửu Long, Biên Hòa
+                                            </div>
                                         </div>
                                         <div class="d-flex flex-wrap gap-2">
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">35 km</span>
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">Xe 7 chỗ</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">35
+                                                km</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">Xe
+                                                7 chỗ</span>
                                         </div>
                                     </div>
                                     <div class="border-top border-secondary pt-3 mt-auto">
@@ -212,33 +261,50 @@
                                             <span class="text-white-50 small fw-bold">Thu nhập thực nhận</span>
                                             <span class="fs-4 fw-bold text-success">450.000đ</span>
                                         </div>
-                                        <button class="btn-glass-action border-warning text-warning w-100 py-3 fs-6" style="background: rgba(245, 158, 11, 0.1);" onclick="acceptJob(this, 'job-2', 'error409')">
+                                        <button class="btn-glass-action border-warning text-warning w-100 py-3 fs-6"
+                                            style="background: rgba(245, 158, 11, 0.1);"
+                                            onclick="acceptJob(this, 'job-2', 'error409')">
                                             Nhận Chuyến (Test Mất Đơn)
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-xl-6 broadcast-card-item" id="job-3">
                                 <div class="glass-panel h-100 d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
+                                    <div
+                                        class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
                                         <div>
                                             <span class="fw-bold text-white fs-5 d-block">#BK-9911</span>
                                             <span class="text-white-50 small">Khởi hành: 16:30 hôm nay</span>
                                         </div>
-                                        <div class="glass-badge-hover text-danger border border-danger px-3 py-1 rounded-pill fw-bold bg-danger bg-opacity-25 timer-box danger" data-seconds="45">
-                                            <i class="fa-solid fa-stopwatch fa-shake me-1"></i> <span class="time-text">00:45</span>
+                                        <div class="glass-badge-hover text-danger border border-danger px-3 py-1 rounded-pill fw-bold bg-danger bg-opacity-25 timer-box danger"
+                                            data-seconds="45">
+                                            <i class="fa-solid fa-stopwatch fa-shake me-1"></i> <span
+                                                class="time-text">00:45</span>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 mb-3">
-                                        <div class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
-                                            <div class="mb-3 position-relative"><i class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary" style="left: -21px; font-size: 0.6rem;"></i> Landmark 81, Bình Thạnh</div>
-                                            <div class="position-relative"><i class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger" style="left: -21px; font-size: 0.8rem;"></i> Bãi Sau, Vũng Tàu</div>
+                                        <div
+                                            class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
+                                            <div class="mb-3 position-relative"><i
+                                                    class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary"
+                                                    style="left: -21px; font-size: 0.6rem;"></i> Landmark 81, Bình Thạnh
+                                            </div>
+                                            <div class="position-relative"><i
+                                                    class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger"
+                                                    style="left: -21px; font-size: 0.8rem;"></i> Bãi Sau, Vũng Tàu</div>
                                         </div>
                                         <div class="d-flex flex-wrap gap-2">
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">105 km</span>
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">Xe 4 chỗ</span>
-                                            <span class="badge bg-white bg-opacity-10 border border-secondary text-info p-2">Cao tốc LT-DG</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">105
+                                                km</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-white p-2">Xe
+                                                4 chỗ</span>
+                                            <span
+                                                class="badge bg-white bg-opacity-10 border border-secondary text-info p-2">Cao
+                                                tốc LT-DG</span>
                                         </div>
                                     </div>
                                     <div class="border-top border-secondary pt-3 mt-auto">
@@ -246,12 +312,14 @@
                                             <span class="text-white-50 small fw-bold">Thu nhập thực nhận</span>
                                             <span class="fs-4 fw-bold text-success">1.250.000đ</span>
                                         </div>
-                                        <button class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6" onclick="acceptJob(this, 'job-3', 'success')">
+                                        <button
+                                            class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6"
+                                            onclick="acceptJob(this, 'job-3', 'success')">
                                             Nhận Chuyến (Thành Công)
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="row g-4" id="acceptedJobList" style="display: none;">
                             <div class="empty-state w-100 text-center py-5" id="emptyStateAccepted">
@@ -263,7 +331,8 @@
 
                     <section id="tab-income" class="dashboard-section">
                         <div class="d-flex justify-content-between align-items-end mb-4">
-                            <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-pie text-warning me-2"></i>Bảng điều khiển Tài chính</h4>
+                            <h4 class="fw-bold m-0 text-white"><i
+                                    class="fa-solid fa-chart-pie text-warning me-2"></i>Bảng điều khiển Tài chính</h4>
                         </div>
 
                         <div class="row g-4 mb-4">
@@ -271,7 +340,8 @@
                                 <div class="glass-panel kpi-glass-card">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng thu nhập ròng</div>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng thu nhập
+                                                ròng</div>
                                             <h3 class="text-white fw-bold mb-0"><span id="dashNetIncome">0</span> đ</h3>
                                         </div>
                                         <div class="kpi-icon-glass bg-primary bg-opacity-25 text-primary">
@@ -280,13 +350,15 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-xl-4 col-md-6">
                                 <div class="glass-panel kpi-glass-card">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng chuyến hoàn thành</div>
-                                            <h3 class="text-info fw-bold mb-0"><span id="dashTotalTrips">0</span> <span class="fs-6 text-white-50 fw-normal">Chuyến</span></h3>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng chuyến
+                                                hoàn thành</div>
+                                            <h3 class="text-info fw-bold mb-0"><span id="dashTotalTrips">0</span> <span
+                                                    class="fs-6 text-white-50 fw-normal">Chuyến</span></h3>
                                         </div>
                                         <div class="kpi-icon-glass bg-info bg-opacity-25 text-info">
                                             <i class="fa-solid fa-car-side"></i>
@@ -299,7 +371,8 @@
                                 <div class="glass-panel kpi-glass-card">
                                     <div class="d-flex justify-content-between align-items-start mb-3">
                                         <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Thưởng & Đền bù hủy</div>
+                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Thưởng & Đền bù
+                                                hủy</div>
                                             <h3 class="text-warning fw-bold mb-0"><span id="dashBonus">0</span> đ</h3>
                                         </div>
                                         <div class="kpi-icon-glass bg-warning bg-opacity-25 text-warning">
@@ -319,7 +392,7 @@
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h5 class="fw-bold text-white m-0">Chi tiết Biến động Ví giao dịch</h5>
                             </div>
-                            
+
                             <div class="table-glass-wrapper overflow-auto">
                                 <table class="table-glass w-100">
                                     <thead>
@@ -332,7 +405,7 @@
                                         </tr>
                                     </thead>
                                     <tbody id="transactionTableBody">
-                                        </tbody>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -340,8 +413,10 @@
 
                     <section id="tab-history" class="dashboard-section">
                         <div class="d-flex justify-content-between align-items-end mb-4">
-                            <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Lịch sử Chuyến đi</h4>
-                            <select class="form-select form-select-sm fw-bold glass-select w-auto" onchange="triggerApiAction(this)">
+                            <h4 class="fw-bold m-0 text-white"><i
+                                    class="fa-solid fa-clock-rotate-left text-info me-2"></i>Lịch sử Chuyến đi</h4>
+                            <select class="form-select form-select-sm fw-bold glass-select w-auto"
+                                onchange="triggerApiAction(this)">
                                 <option>Tháng này</option>
                                 <option>Tháng trước</option>
                                 <option>Tất cả</option>
@@ -350,19 +425,28 @@
 
                         <div class="row g-4">
                             <div class="col-xl-6">
-                                <div class="glass-panel h-100 position-relative" style="border-left: 4px solid #10b981;">
-                                    <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
+                                <div class="glass-panel h-100 position-relative"
+                                    style="border-left: 4px solid #10b981;">
+                                    <div
+                                        class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
                                         <div>
                                             <span class="fw-bold text-white fs-5">#BK-1028</span><br>
                                             <span class="text-white-50 small">13/06/2026 • 09:30</span>
                                         </div>
-                                        <div class="badge bg-success bg-opacity-25 text-success border border-success p-2 px-3 fw-bold">
+                                        <div
+                                            class="badge bg-success bg-opacity-25 text-success border border-success p-2 px-3 fw-bold">
                                             <i class="fa-solid fa-check me-1"></i> Hoàn thành
                                         </div>
                                     </div>
-                                    <div class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
-                                        <div class="mb-3 position-relative"><i class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary" style="left: -21px; font-size: 0.6rem;"></i> KĐT Vinhomes Central Park</div>
-                                        <div class="position-relative"><i class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger" style="left: -21px; font-size: 0.8rem;"></i> Sân bay Tân Sơn Nhất</div>
+                                    <div
+                                        class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
+                                        <div class="mb-3 position-relative"><i
+                                                class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary"
+                                                style="left: -21px; font-size: 0.6rem;"></i> KĐT Vinhomes Central Park
+                                        </div>
+                                        <div class="position-relative"><i
+                                                class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger"
+                                                style="left: -21px; font-size: 0.8rem;"></i> Sân bay Tân Sơn Nhất</div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-4">
                                         <div>
@@ -371,26 +455,37 @@
                                         </div>
                                         <div class="text-end">
                                             <div class="text-white-50 small fw-bold">Đánh giá</div>
-                                            <div class="text-warning"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
+                                            <div class="text-warning"><i class="fa-solid fa-star"></i><i
+                                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i
+                                                    class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-xl-6">
-                                <div class="glass-panel h-100 position-relative" style="border-left: 4px solid #ef4444;">
-                                    <div class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
+                                <div class="glass-panel h-100 position-relative"
+                                    style="border-left: 4px solid #ef4444;">
+                                    <div
+                                        class="d-flex justify-content-between align-items-center border-bottom border-secondary pb-3 mb-3">
                                         <div>
                                             <span class="fw-bold text-white fs-5">#BK-1025</span><br>
                                             <span class="text-white-50 small">12/06/2026 • 15:45</span>
                                         </div>
-                                        <div class="badge bg-danger bg-opacity-25 text-danger border border-danger p-2 px-3 fw-bold">
+                                        <div
+                                            class="badge bg-danger bg-opacity-25 text-danger border border-danger p-2 px-3 fw-bold">
                                             <i class="fa-solid fa-xmark me-1"></i> Đã hủy
                                         </div>
                                     </div>
-                                    <div class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
-                                        <div class="mb-3 position-relative"><i class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary" style="left: -21px; font-size: 0.6rem;"></i> Bitexco Financial Tower</div>
-                                        <div class="position-relative"><i class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger" style="left: -21px; font-size: 0.8rem;"></i> Phố đi bộ Nguyễn Huệ</div>
+                                    <div
+                                        class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
+                                        <div class="mb-3 position-relative"><i
+                                                class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary"
+                                                style="left: -21px; font-size: 0.6rem;"></i> Bitexco Financial Tower
+                                        </div>
+                                        <div class="position-relative"><i
+                                                class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger"
+                                                style="left: -21px; font-size: 0.8rem;"></i> Phố đi bộ Nguyễn Huệ</div>
                                     </div>
                                     <div class="d-flex justify-content-between align-items-center mt-4">
                                         <div>
@@ -484,14 +579,21 @@
                             </div>
                         </div> -->
                         <div class="glass-panel mb-4 d-flex align-items-center gap-4">
-                            <img id="accDriverAvatar" src="https://ui-avatars.com/api/?name=Driver&background=1a1c1a&color=fff" class="rounded-circle border border-2 border-white" width="90" height="90" alt="Avatar" />
+                            <img id="accDriverAvatar"
+                                src="https://ui-avatars.com/api/?name=Driver&background=1a1c1a&color=fff"
+                                class="rounded-circle border border-2 border-white" width="90" height="90"
+                                alt="Avatar" />
                             <div>
                                 <h3 id="accDriverName" class="fw-bold text-white mb-2">Đang tải...</h3>
                                 <div class="d-flex gap-3 flex-wrap">
-                                    <span class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3" id="accDriverRating">
+                                    <span
+                                        class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3"
+                                        id="accDriverRating">
                                         <i class="fa-solid fa-star me-1"></i> Đang tải...
                                     </span>
-                                    <span class="badge bg-white bg-opacity-10 text-white border border-secondary p-2 px-3" id="accDriverVehicle">
+                                    <span
+                                        class="badge bg-white bg-opacity-10 text-white border border-secondary p-2 px-3"
+                                        id="accDriverVehicle">
                                         <i class="fa-solid fa-car me-1"></i> Đang tải...
                                     </span>
                                 </div>
@@ -504,27 +606,33 @@
     </div>
 
     <nav class="bottom-nav-glass d-lg-none">
-        <a onclick="switchTab('tab-job-board', this)" class="nav-item active"><i class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a>
-        <a onclick="switchTab('tab-income', this)" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Thu nhập</span></a>
-        <a onclick="switchTab('tab-history', this)" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
-        <a onclick="switchTab('tab-account', this)" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài khoản</span></a>
+        <a onclick="switchTab('tab-job-board', this)" class="nav-item active"><i
+                class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a>
+        <a onclick="switchTab('tab-income', this)" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Thu
+                nhập</span></a>
+        <a onclick="switchTab('tab-history', this)" class="nav-item"><i
+                class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
+        <a onclick="switchTab('tab-account', this)" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài
+                khoản</span></a>
     </nav>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
-        <div id="systemErrorToast" class="toast align-items-center toast-premium border border-danger shadow-lg" role="alert">
+        <div id="systemErrorToast" class="toast align-items-center toast-premium border border-danger shadow-lg"
+            role="alert">
             <div class="d-flex p-3">
                 <div class="toast-body p-0 fw-bold fs-6 d-flex align-items-center gap-3 text-white">
-                    <i class="fa-solid fa-circle-xmark fs-3 text-danger"></i> 
+                    <i class="fa-solid fa-circle-xmark fs-3 text-danger"></i>
                     <span>Thao tác thất bại. Vui lòng thử lại!</span>
                 </div>
                 <button type="button" class="btn-close btn-close-white ms-auto mt-1" data-bs-dismiss="toast"></button>
             </div>
         </div>
-        
-        <div id="conflictToast" class="toast align-items-center toast-premium border border-warning shadow-lg mt-2" role="alert">
+
+        <div id="conflictToast" class="toast align-items-center toast-premium border border-warning shadow-lg mt-2"
+            role="alert">
             <div class="d-flex p-3">
                 <div class="toast-body p-0 fw-bold fs-6 d-flex align-items-center gap-3 text-white">
-                    <i class="fa-solid fa-triangle-exclamation fs-3 text-warning"></i> 
+                    <i class="fa-solid fa-triangle-exclamation fs-3 text-warning"></i>
                     <span>Đơn hàng đã được tài xế khác nhận.</span>
                 </div>
                 <button type="button" class="btn-close btn-close-white ms-auto mt-1" data-bs-dismiss="toast"></button>
@@ -532,88 +640,94 @@
         </div>
     </div>
 
-<div class="modal fade glass-modal-blur" id="successModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-        <div class="modal-content glass-modal-content border-0">
-            <div class="modal-body text-center p-5">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4"
-                    style="width: 100px; height: 100px;">
-                    <i class="fa-solid fa-check text-success" style="font-size: 3rem;"></i>
-                </div>
-                <h4 class="fw-bold text-white mb-3">Nhận chuyến thành công!</h4>
-                <p class="text-white-50 mb-4">Lộ trình đã được chuyển sang tab "Đã Nhận". Chúc bạn có một chuyến đi an
-                    toàn.</p>
-
-                <button type="button" class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6"
-                    onclick="goToAcceptedTab()">
-                    Đến Lộ trình ngay
-                </button>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade glass-modal-blur" id="rejectModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-        <div class="modal-content glass-modal-content border-0">
-            <div class="modal-body p-4">
-                <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Từ chối nhận
-                    chuyến</h5>
-                <p class="text-white-50 small mb-4">Vui lòng cho biết lý do bạn không thể nhận chuyến xe này. Việc từ
-                    chối nhiều có thể ảnh hưởng đến thuật toán phân bổ chuyến.</p>
-
-                <form id="rejectReasonForm">
-                    <div class="mb-2">
-                        <input type="radio" class="btn-check" name="rejectReason" id="reason1"
-                            value="Vì lí do sức khỏe. Tôi không thể thực hiện chuyến đi này." checked>
-                        <label class="btn btn-outline-warning w-100 text-start" for="reason1">Vì lí do sức khỏe. Tôi không thể thực hiện chuyến đi này.</label>
+    <div class="modal fade glass-modal-blur" id="successModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content glass-modal-content border-0">
+                <div class="modal-body text-center p-5">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4"
+                        style="width: 100px; height: 100px;">
+                        <i class="fa-solid fa-check text-success" style="font-size: 3rem;"></i>
                     </div>
-                    <div class="mb-2">
-                        <input type="radio" class="btn-check" name="rejectReason" id="reason2"
-                            value="Đang bận việc cá nhân đột xuất">
-                        <label class="btn btn-outline-warning w-100 text-start" for="reason2">Đang bận việc cá nhân đột
-                            xuất</label>
-                    </div>
-                    <div class="mb-3">
-                        <input type="radio" class="btn-check" name="rejectReason" id="reason3" value="other">
-                        <label class="btn btn-outline-warning w-100 text-start" for="reason3">Lý do khác...</label>
-                    </div>
-                    <div class="mb-3" id="otherReasonContainer" style="display: none;">
-                        <input type="text" class="form-control bg-transparent text-white border-warning"
-                            id="otherReasonInput" placeholder="Nhập lý do cụ thể của bạn...">
-                    </div>
-                </form>
+                    <h4 class="fw-bold text-white mb-3">Nhận chuyến thành công!</h4>
+                    <p class="text-white-50 mb-4">Lộ trình đã được chuyển sang tab "Đã Nhận". Chúc bạn có một chuyến đi
+                        an
+                        toàn.</p>
 
-                <div class="d-flex gap-2 mt-4">
-                    <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Đóng</button>
-                    <button type="button" class="btn btn-warning w-50 fw-bold" id="btnSubmitReject"
-                        onclick="confirmRejectJob()">Xác nhận Từ chối</button>
+                    <button type="button" class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6"
+                        onclick="goToAcceptedTab()">
+                        Đến Lộ trình ngay
+                    </button>
+
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="modal fade glass-modal-blur" id="completeTripModal" tabindex="-1" data-bs-backdrop="static">
-    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
-        <div class="modal-content glass-modal-content border-0">
-            <div class="modal-body text-center p-5">
-                <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4"
-                    style="width: 100px; height: 100px;">
-                    <i class="fa-solid fa-flag-checkered text-success" style="font-size: 3rem;"></i>
-                </div>
-                <h4 class="fw-bold text-white mb-3">Chuyến đi hoàn tất!</h4>
-                <p class="text-white-50 mb-4">Chúc mừng bạn đã hoàn thành cuốc xe an toàn. Doanh thu chuyến đi đã được
-                    ghi nhận vào ví.</p>
 
-                <button type="button" class="btn-glass-action bg-success border-success text-white w-100 py-3 fs-6"
-                    data-bs-dismiss="modal" onclick="refreshAfterComplete()">
-                    Tiếp tục chờ chuyến mới
-                </button>
+    <div class="modal fade glass-modal-blur" id="rejectModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content glass-modal-content border-0">
+                <div class="modal-body p-4">
+                    <h5 class="fw-bold text-warning mb-3"><i class="fa-solid fa-triangle-exclamation me-2"></i>Từ chối
+                        nhận
+                        chuyến</h5>
+                    <p class="text-white-50 small mb-4">Vui lòng cho biết lý do bạn không thể nhận chuyến xe này. Việc
+                        từ
+                        chối nhiều có thể ảnh hưởng đến thuật toán phân bổ chuyến.</p>
+
+                    <form id="rejectReasonForm">
+                        <div class="mb-2">
+                            <input type="radio" class="btn-check" name="rejectReason" id="reason1"
+                                value="Vì lí do sức khỏe. Tôi không thể thực hiện chuyến đi này." checked>
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason1">Vì lí do sức khỏe. Tôi
+                                không thể thực hiện chuyến đi này.</label>
+                        </div>
+                        <div class="mb-2">
+                            <input type="radio" class="btn-check" name="rejectReason" id="reason2"
+                                value="Đang bận việc cá nhân đột xuất">
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason2">Đang bận việc cá nhân
+                                đột
+                                xuất</label>
+                        </div>
+                        <div class="mb-3">
+                            <input type="radio" class="btn-check" name="rejectReason" id="reason3" value="other">
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason3">Lý do khác...</label>
+                        </div>
+                        <div class="mb-3" id="otherReasonContainer" style="display: none;">
+                            <input type="text" class="form-control bg-transparent text-white border-warning"
+                                id="otherReasonInput" placeholder="Nhập lý do cụ thể của bạn...">
+                        </div>
+                    </form>
+
+                    <div class="d-flex gap-2 mt-4">
+                        <button type="button" class="btn btn-secondary w-50" data-bs-dismiss="modal">Đóng</button>
+                        <button type="button" class="btn btn-warning w-50 fw-bold" id="btnSubmitReject"
+                            onclick="confirmRejectJob()">Xác nhận Từ chối</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <div class="modal fade glass-modal-blur" id="completeTripModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+            <div class="modal-content glass-modal-content border-0">
+                <div class="modal-body text-center p-5">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-25 border border-success mb-4"
+                        style="width: 100px; height: 100px;">
+                        <i class="fa-solid fa-flag-checkered text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-3">Chuyến đi hoàn tất!</h4>
+                    <p class="text-white-50 mb-4">Chúc mừng bạn đã hoàn thành cuốc xe an toàn. Doanh thu chuyến đi đã
+                        được
+                        ghi nhận vào ví.</p>
+
+                    <button type="button" class="btn-glass-action bg-success border-success text-white w-100 py-3 fs-6"
+                        data-bs-dismiss="modal" onclick="refreshAfterComplete()">
+                        Tiếp tục chờ chuyến mới
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!-- <script type="module">
@@ -989,4 +1103,5 @@
     <script src="../../js/driver/driver-workspace.js"></script>
     <script src="../../js/api.js"></script>
 </body>
+
 </html>
