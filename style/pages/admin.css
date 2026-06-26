@@ -4,16 +4,16 @@
 ========================================= */
 
 body {
-  background-color: #0b0f17;
-  font-family: "Inter", sans-serif;
-  position: relative;
-  overflow-x: hidden;
+    background-color: #0b0f17;
+    font-family: "Inter", sans-serif;
+    position: relative;
+    overflow-x: hidden;
 }
 
 .luxury-glow-bg {
-    position: fixed; 
+    position: fixed;
     inset: 0;
-    z-index: -1; 
+    z-index: -1;
     overflow: hidden;
     pointer-events: none;
 }
@@ -22,7 +22,7 @@ body {
     position: absolute;
     border-radius: 50%;
     filter: blur(140px);
-    opacity: 0.35; 
+    opacity: 0.35;
     mix-blend-mode: screen;
 }
 
@@ -30,7 +30,7 @@ body {
     top: -10%;
     width: 1200px;
     height: 1000px;
-    background: var(--color-1); 
+    background: var(--color-1);
 }
 
 .sphere-2 {
@@ -38,147 +38,171 @@ body {
     right: 0px;
     width: 1200px;
     height: 1000px;
-    background: var(--color-3); 
+    background: var(--color-3);
 }
 
 /* --- HOÁN ĐỔI SECTION (SINGLE-PAGE ENGINE) --- */
 .dashboard-section {
-    display: none !important; 
-    opacity: 0; 
+    display: none !important;
+    opacity: 0;
     transform: scale(0.98) translateY(10px);
-    transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
-                transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+        transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
 
 .dashboard-section.active {
-    display: block !important; 
+    display: block !important;
     animation: transitionSection 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2) forwards;
 }
 
 @keyframes transitionSection {
-    to { 
-        opacity: 1; 
-        transform: scale(1) translateY(0); 
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
     }
 }
 
 /* --- CÁC PANEL KÍNH LỎNG APPLE (GLASS PANELS) --- */
 .glass-panel {
-    background: rgba(255, 255, 255, 0.15); 
-    border-radius: 35px; 
-    border: 1px solid rgba(255, 255, 255, 0.6); 
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 35px;
+    border: 1px solid rgba(255, 255, 255, 0.6);
     backdrop-filter: blur(40px);
     -webkit-backdrop-filter: blur(40px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), 
-                inset 2px 2px 8px rgba(255, 255, 255, 0.8);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15),
+        inset 2px 2px 8px rgba(255, 255, 255, 0.8);
     padding: 30px;
     color: #ffffff;
     transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), box-shadow 0.3s ease;
 }
 
 .glass-panel:hover {
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2), 
-                inset 2px 2px 12px rgba(255, 255, 255, 1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2),
+        inset 2px 2px 12px rgba(255, 255, 255, 1);
 }
 
 /* Tab Pricing: Khối cảnh báo nội suy giá */
 #tab-pricing .glass-panel[style*="background"] {
-    background: rgba(245, 158, 11, 0.08) !important; 
-    border: 1px solid rgba(245, 158, 11, 0.5) !important; 
+    background: rgba(245, 158, 11, 0.08) !important;
+    border: 1px solid rgba(245, 158, 11, 0.5) !important;
     border-radius: 24px !important;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2), 
-                inset 1px 1px 4px rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2),
+        inset 1px 1px 4px rgba(255, 255, 255, 0.2) !important;
 }
 
 /* --- ĐỒNG BỘ MÀU CHỮ & TYPOGRAPHY --- */
 .text-white-50 {
-    color: rgba(255, 255, 255, 0.55) !important; 
+    color: rgba(255, 255, 255, 0.55) !important;
     font-weight: 400 !important;
-    opacity: 1 !important; 
+    opacity: 1 !important;
 }
 
-h3.text-white, h3.text-success, h3.text-danger {
+h3.text-white,
+h3.text-success,
+h3.text-danger {
     font-weight: 700 !important;
-    letter-spacing: -0.5px !important; 
+    letter-spacing: -0.5px !important;
 }
 
-.text-success { color: #10b981 !important; font-weight: 600 !important; }
-.text-danger  { color: #f43f5e !important; font-weight: 600 !important; }
-.text-info    { color: #38bdf8 !important; font-weight: 600 !important; }
-.text-warning { color: #fbbf24 !important; font-weight: 600 !important; }
+.text-success {
+    color: #10b981 !important;
+    font-weight: 600 !important;
+}
+
+.text-danger {
+    color: #f43f5e !important;
+    font-weight: 600 !important;
+}
+
+.text-info {
+    color: #38bdf8 !important;
+    font-weight: 600 !important;
+}
+
+.text-warning {
+    color: #fbbf24 !important;
+    font-weight: 600 !important;
+}
 
 /* 3. TOC SIDEBAR (Mục lục điều hướng trượt dọc) */
 .toc-header {
-  font-size: 1.3rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: var(--color-2);
+    font-size: 1.3rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--color-2);
 }
 
 .toc-list {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-  position: relative;
-  z-index: 2;
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    position: relative;
+    z-index: 2;
 }
 
-.toc-list li { margin-bottom: 8px; }
+.toc-list li {
+    margin-bottom: 8px;
+}
 
 .toc-link {
-  display: block;
-  padding: 12px 20px;
-  color: var(--color-2);
-  font-weight: 600;
-  text-decoration: none;
-  border-radius: 20px;
-  transition: color 0.3s ease;
+    display: block;
+    padding: 12px 20px;
+    color: var(--color-2);
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 20px;
+    transition: color 0.3s ease;
 }
 
 .toc-link.active {
-  color: var(--color-dark);
-  font-size: larger;
+    color: var(--color-dark);
+    font-size: larger;
 }
 
 /* Cục kính trượt dọc (Vertical Indicator) */
 .toc-indicator {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 48px; 
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 1);
-  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), height 0.4s ease;
-  z-index: 1;
-  pointer-events: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 48px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05), inset 2px 2px 5px rgba(255, 255, 255, 1);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), height 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .menu-section-title {
-    font-size: 0.8rem; 
-    font-weight: 800; 
-    text-transform: uppercase; 
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--color-3); 
-    margin-top: 25px; 
+    color: var(--color-3);
+    margin-top: 25px;
     margin-bottom: 15px;
-    padding-left: 20px; 
-    pointer-events: none; 
+    padding-left: 20px;
+    pointer-events: none;
     user-select: none;
 }
-.toc-link .badge { font-size: 0.7rem; padding: 4px 8px; box-shadow: 0 2px 5px rgba(255, 222, 89, 0.3) !important; }
+
+.toc-link .badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    box-shadow: 0 2px 5px rgba(255, 222, 89, 0.3) !important;
+}
 
 /* --- KPI CARDS (DASHBOARD) --- */
 .kpi-glass-card {
     padding: 24px;
     border-radius: 28px;
     border: 1px solid rgba(255, 255, 255, 0.6);
-    background: rgba(255, 255, 255, 0.2); 
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1), 
-                inset 2px 2px 6px rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.9);
     transition: transform 0.3s ease, border-color 0.3s ease;
 }
 
@@ -198,7 +222,7 @@ h3.text-white, h3.text-success, h3.text-danger {
     font-size: 1.2rem;
     border: 1px solid rgba(255, 255, 255, 0.7);
     background: rgba(255, 255, 255, 0.2);
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1); 
+    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1);
 }
 
 /* =========================================
@@ -208,13 +232,14 @@ h3.text-white, h3.text-success, h3.text-danger {
 /* 1. Tách các hàng ra khỏi nhau để góc bo không bị đè lên nhau */
 .table-glass {
     border-collapse: separate;
-    border-spacing: 0 12px; 
-    margin-top: -12px; /* Kéo bảng lên một chút để bù lại khoảng cách thead */
+    border-spacing: 0 12px;
+    margin-top: -12px;
+    /* Kéo bảng lên một chút để bù lại khoảng cách thead */
 }
 
 /* 2. Căn chỉnh lại viền dưới của phần Tiêu đề (Thead) */
 .table-glass thead th {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2); 
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 /* 3. Giữ nguyên viền ngang trên/dưới cho toàn bộ các ô trong hàng */
@@ -227,17 +252,17 @@ h3.text-white, h3.text-success, h3.text-danger {
 }
 
 /* 4. Bo góc trái và thêm viền trái cho ô đầu tiên của mỗi hàng */
-.table-glass td:first-child { 
-    border-left: 1px solid rgba(255, 255, 255, 0.2); 
-    border-top-left-radius: 20px; 
-    border-bottom-left-radius: 20px; 
+.table-glass td:first-child {
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    border-top-left-radius: 20px;
+    border-bottom-left-radius: 20px;
 }
 
 /* 5. Bo góc phải và thêm viền phải cho ô cuối cùng của mỗi hàng */
-.table-glass td:last-child { 
-    border-right: 1px solid rgba(255, 255, 255, 0.2); 
-    border-top-right-radius: 20px; 
-    border-bottom-right-radius: 20px; 
+.table-glass td:last-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.2);
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
 }
 
 /* Hiệu ứng trượt sáng mượt mà khi hover vào từng hàng */
@@ -245,18 +270,18 @@ h3.text-white, h3.text-success, h3.text-danger {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.table-glass tbody tr:hover td { 
-    background: rgba(255, 255, 255, 0.15); 
+.table-glass tbody tr:hover td {
+    background: rgba(255, 255, 255, 0.15);
     border-top-color: rgba(255, 255, 255, 0.4);
     border-bottom-color: rgba(255, 255, 255, 0.4);
 }
 
-.table-glass tbody tr:hover td:first-child { 
-    border-left-color: rgba(255, 255, 255, 0.4); 
+.table-glass tbody tr:hover td:first-child {
+    border-left-color: rgba(255, 255, 255, 0.4);
 }
 
-.table-glass tbody tr:hover td:last-child { 
-    border-right-color: rgba(255, 255, 255, 0.4); 
+.table-glass tbody tr:hover td:last-child {
+    border-right-color: rgba(255, 255, 255, 0.4);
 }
 
 /* Badge thông tin AI Tags */
@@ -272,9 +297,9 @@ h3.text-white, h3.text-success, h3.text-danger {
 
 /* Cải tiến Badge Chờ thẩm định eKYC click được */
 .glass-badge-hover {
-    background: rgba(245, 158, 11, 0.25) !important; 
+    background: rgba(245, 158, 11, 0.25) !important;
     border: 1px solid rgba(245, 158, 11, 0.8) !important;
-    color: #fbbf24 !important; 
+    color: #fbbf24 !important;
     padding: 8px 16px !important;
     border-radius: 50px !important;
     font-weight: 600 !important;
@@ -282,6 +307,7 @@ h3.text-white, h3.text-success, h3.text-danger {
     cursor: pointer;
     transition: all 0.2s ease;
 }
+
 .glass-badge-hover:hover {
     background: rgba(245, 158, 11, 0.4) !important;
     transform: scale(1.05) translateY(-1px);
@@ -295,7 +321,7 @@ h3.text-white, h3.text-success, h3.text-danger {
     background-color: rgba(255, 255, 255, 0.2) !important;
     color: #ffffff !important;
     border: 1px solid rgba(255, 255, 255, 0.6) !important;
-    border-radius: 20px; 
+    border-radius: 20px;
     padding: 6px 35px 6px 16px !important;
     font-size: 0.85rem;
     font-weight: 600;
@@ -305,18 +331,20 @@ h3.text-white, h3.text-success, h3.text-danger {
     transition: all 0.2s ease;
     text-shadow: none;
 }
+
 .glass-select:hover {
     background-color: rgba(255, 255, 255, 0.3) !important;
     border-color: rgba(255, 255, 255, 0.9) !important;
 }
+
 .glass-select option {
-    background-color: #1a1e29; 
+    background-color: #1a1e29;
     color: #ffffff;
 }
 
 /* Thanh tìm kiếm (Search Bar) & Form Inputs */
 .glass-input {
-    background: rgba(0, 0, 0, 0.25) !important; 
+    background: rgba(0, 0, 0, 0.25) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
     border-radius: 50px !important;
@@ -325,19 +353,27 @@ h3.text-white, h3.text-success, h3.text-danger {
     box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
     text-shadow: none !important;
 }
-.glass-input::placeholder { color: rgba(255, 255, 255, 0.5) !important; }
+
+.glass-input::placeholder {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
 .glass-input:focus {
     background: rgba(0, 0, 0, 0.4) !important;
     border-color: var(--color-1) !important;
     box-shadow: 0 0 12px rgba(0, 177, 79, 0.4), inset 0 2px 6px rgba(0, 0, 0, 0.4);
 }
+
 .glass-input-addon {
     background: rgba(0, 0, 0, 0.25) !important;
     border: 1px solid rgba(255, 255, 255, 0.4) !important;
     border-radius: 50px 0 0 50px !important;
     color: #ffffff !important;
 }
-.glass-input-addon + .glass-input { border-radius: 0 50px 50px 0 !important; }
+
+.glass-input-addon+.glass-input {
+    border-radius: 0 50px 50px 0 !important;
+}
 
 /* Number Input (Pricing) */
 .form-label {
@@ -347,11 +383,12 @@ h3.text-white, h3.text-success, h3.text-danger {
     letter-spacing: 0.3px;
     margin-bottom: 8px;
 }
+
 input[type="number"].glass-input {
-    border-radius: 16px !important; 
+    border-radius: 16px !important;
     padding: 12px 20px !important;
     font-weight: 700 !important;
-    font-size: 1.25rem !important; 
+    font-size: 1.25rem !important;
     box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
 }
 
@@ -366,61 +403,104 @@ input[type="number"].glass-input {
     letter-spacing: 0.3px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15), inset 1px 1px 3px rgba(255, 255, 255, 0.6);
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
-    display: inline-flex; align-items: center; justify-content: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 8px 22px;
 }
+
 .btn-glass-action:hover {
-    background: var(--color-1) !important; 
+    background: var(--color-1) !important;
     border-color: rgba(255, 255, 255, 0.8) !important;
     transform: translateY(-2px) scale(1.04);
     box-shadow: 0 8px 20px rgba(0, 177, 79, 0.3), inset 1px 1px 4px rgba(255, 255, 255, 0.8);
 }
+
 .btn-glass-action.bg-primary {
-    background: rgba(0, 177, 79, 0.3) !important; 
+    background: rgba(0, 177, 79, 0.3) !important;
     border-color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .glass-liquid-btn {
-    padding: 12px 24px; border-radius: 50px; background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; transition: all 0.3s ease;
+    padding: 12px 24px;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    transition: all 0.3s ease;
 }
-.glass-liquid-btn:hover { filter: url(#liquid-distortion); background: rgba(0, 177, 79, 0.25); border-color: var(--color-1); }
+
+.glass-liquid-btn:hover {
+    filter: url(#liquid-distortion);
+    background: rgba(0, 177, 79, 0.25);
+    border-color: var(--color-1);
+}
 
 /* Nút lưu cấu hình lớn */
 .btn-glass-action.w-100 {
-    background: var(--color-1) !important; 
+    background: var(--color-1) !important;
     border: 1px solid rgba(255, 255, 255, 0.6) !important;
     box-shadow: 0 10px 25px rgba(0, 177, 79, 0.4), inset 2px 2px 6px rgba(255, 255, 255, 0.5);
     font-size: 1rem;
     border-radius: 16px !important;
 }
+
 .btn-glass-action.w-100:hover {
-    background: #02c75a !important; 
+    background: #02c75a !important;
     transform: translateY(-3px);
     box-shadow: 0 14px 30px rgba(0, 177, 79, 0.5), inset 2px 2px 8px rgba(255, 255, 255, 0.6);
 }
 
 /* --- EKYC VIEWER (TRÌNH SOI ẢNH) --- */
 .ekyc-viewer-frame {
-    position: relative; width: 100%; height: 280px; background: rgba(0, 0, 0, 0.4);
-    border-radius: 30px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1);
-    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    width: 100%;
+    height: 280px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
 .ekyc-img {
-    max-width: 90%; max-height: 85%; object-fit: contain; border-radius: 12px;
+    max-width: 90%;
+    max-height: 85%;
+    object-fit: contain;
+    border-radius: 12px;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
+
 .img-controls {
-    position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-    display: flex; gap: 12px; background: rgba(11, 15, 23, 0.6);
-    padding: 8px 20px; border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2);
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 12px;
+    background: rgba(11, 15, 23, 0.6);
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
 }
+
 .img-controls button {
-    width: 36px; height: 36px; border-radius: 50%; border: none;
-    background: rgba(255, 255, 255, 0.1); color: white; transition: all 0.2s;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    transition: all 0.2s;
 }
-.img-controls button:hover { background: var(--color-1); transform: scale(1.1); }
+
+.img-controls button:hover {
+    background: var(--color-1);
+    transform: scale(1.1);
+}
 
 /* Viền Avatar tài xế */
 img.rounded-circle.border-white {
@@ -429,100 +509,225 @@ img.rounded-circle.border-white {
 }
 
 /* --- KANBAN BOARD GLASS (KÉO THẢ AI TAGS) --- */
-.kanban-board { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 15px; }
+.kanban-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-top: 15px;
+}
+
 .kb-column-glass {
-    background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 30px; padding: 20px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 20px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     box-shadow: inset 1px 1px 5px rgba(255, 255, 255, 0.05);
 }
-.kb-cards-container { min-height: 200px; display: flex; flex-direction: column; gap: 12px; }
+
+.kb-cards-container {
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 .kanban-card-item {
-    background: rgba(255, 255, 255, 0.479); border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 50px; padding: 12px 20px; color: var(--text-color); cursor: grab; font-size: 1rem; font-weight: bold;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2); box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.479);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 50px;
+    padding: 12px 20px;
+    color: var(--text-color);
+    cursor: grab;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
-.kanban-card-item:active { cursor: grabbing; }
-.kanban-card-item:hover { 
-    background: rgba(255, 255, 255, 0.12); transform: translateX(5px); 
-    border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+
+.kanban-card-item:active {
+    cursor: grabbing;
 }
-.kanban-card-item.stable-tag { 
-    border: 1px dashed rgba(0, 177, 79, 0.5); background: rgba(0, 177, 79, 0.05); 
-    cursor: default; color: rgba(255, 255, 255, 0.8);
+
+.kanban-card-item:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(5px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
-.kanban-card-item.stable-tag:hover { transform: none; background: rgba(0, 177, 79, 0.1); border-style: solid; }
+
+.kanban-card-item.stable-tag {
+    border: 1px dashed rgba(0, 177, 79, 0.5);
+    background: rgba(0, 177, 79, 0.05);
+    cursor: default;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.kanban-card-item.stable-tag:hover {
+    transform: none;
+    background: rgba(0, 177, 79, 0.1);
+    border-style: solid;
+}
 
 /* --- RBAC & SWITCH TOGGLE (GLASS STYLE) --- */
-.switch-glass { position: relative; display: inline-block; width: 48px; height: 26px; margin: 0; }
-.switch-glass input { display: none; }
+.switch-glass {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 26px;
+    margin: 0;
+}
+
+.switch-glass input {
+    display: none;
+}
+
 .slider-glass {
-    position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background-color: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 50px;
     transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
     box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.3);
 }
+
 .slider-glass:before {
-    position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-    background-color: rgba(255, 255, 255, 0.8); border-radius: 50%;
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
     transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-.switch-glass input:checked + .slider-glass { background-color: rgba(0, 177, 79, 0.4); border-color: var(--color-1); }
-.switch-glass input:checked + .slider-glass:before {
-    transform: translateX(22px); background-color: #ffffff; box-shadow: 0 0 10px rgba(0, 177, 79, 0.8);
-}
-.switch-glass input:disabled + .slider-glass { opacity: 0.4; cursor: not-allowed; }
 
-.rbac-user-item { transition: background 0.3s ease, transform 0.2s ease; cursor: pointer; }
-.rbac-user-item:hover { background: rgba(255, 255, 255, 0.05); }
-.rbac-user-item.active-user { background: rgba(0, 177, 79, 0.1); border-left: 4px solid var(--color-1); }
+.switch-glass input:checked+.slider-glass {
+    background-color: rgba(0, 177, 79, 0.4);
+    border-color: var(--color-1);
+}
+
+.switch-glass input:checked+.slider-glass:before {
+    transform: translateX(22px);
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 177, 79, 0.8);
+}
+
+.switch-glass input:disabled+.slider-glass {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.rbac-user-item {
+    transition: background 0.3s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.rbac-user-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rbac-user-item.active-user {
+    background: rgba(0, 177, 79, 0.1);
+    border-left: 4px solid var(--color-1);
+}
 
 /* --- BẢNG AUDIT LOG KÍNH LỎNG --- */
 .table-audit thead th {
-    background: rgba(11, 15, 23, 0.85); 
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    background: rgba(11, 15, 23, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
+
 .table-audit td {
-    padding: 10px 15px !important; 
+    padding: 10px 15px !important;
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-.table-audit tbody tr:hover td { background: rgba(180, 9, 9, 0.476); }
-.table-audit .badge { letter-spacing: 0.5px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+
+.table-audit tbody tr:hover td {
+    background: rgba(180, 9, 9, 0.476);
+}
+
+.table-audit .badge {
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
 
 /* --- MODALS & TOASTS (GLASS SYSTEM) --- */
 .glass-modal-blur {
-    backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     background: rgba(0, 0, 0, 0.4);
 }
-.glass-modal-content .text-white, .toast-premium .text-white { color: #ffffff !important; }
-.glass-modal-content .text-white-50, .toast-premium .text-white-50 { color: rgba(255, 255, 255, 0.5) !important; }
+
+.glass-modal-content .text-white,
+.toast-premium .text-white {
+    color: #ffffff !important;
+}
+
+.glass-modal-content .text-white-50,
+.toast-premium .text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
 
 /* Modal Diff View */
-.diff-container-glass { width: 100%; }
+.diff-container-glass {
+    width: 100%;
+}
+
 .diff-box-glass {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 20px; font-size: 0.95rem;
-    box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.2); overflow-x: auto;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    box-shadow: inset 2px 2px 8px rgba(0, 0, 0, 0.2);
+    overflow-x: auto;
 }
-.diff-old { border-left: 3px solid #ef4444; }
-.diff-new { border-left: 3px solid var(--color-1); background: rgba(0, 177, 79, 0.03); }
 
-.btn-close-white { opacity: 0.5; transition: all 0.3s ease; }
-.btn-close-white:hover { opacity: 1; transform: rotate(90deg) scale(1.1); }
+.diff-old {
+    border-left: 3px solid #ef4444;
+}
+
+.diff-new {
+    border-left: 3px solid var(--color-1);
+    background: rgba(0, 177, 79, 0.03);
+}
+
+.btn-close-white {
+    opacity: 0.5;
+    transition: all 0.3s ease;
+}
+
+.btn-close-white:hover {
+    opacity: 1;
+    transform: rotate(90deg) scale(1.1);
+}
 
 /* Toast Premium */
 .toast-premium {
     background: rgba(11, 15, 23, 0.8) !important;
-    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     border-radius: 20px !important;
 }
-.toast-premium.border-success { box-shadow: 0 10px 30px rgba(0, 177, 79, 0.2), inset 1px 1px 3px rgba(0, 177, 79, 0.5) !important; }
-.toast-premium.border-danger { box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2), inset 1px 1px 3px rgba(239, 68, 68, 0.5) !important; }
+
+.toast-premium.border-success {
+    box-shadow: 0 10px 30px rgba(0, 177, 79, 0.2), inset 1px 1px 3px rgba(0, 177, 79, 0.5) !important;
+}
+
+.toast-premium.border-danger {
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.2), inset 1px 1px 3px rgba(239, 68, 68, 0.5) !important;
+}
 
 /* =========================================================
    APPLE LIQUID GLASS MODAL SYSTEM
@@ -539,7 +744,8 @@ img.rounded-circle.border-white {
 .glass-modal-content {
     background: linear-gradient(145deg, rgba(50, 50, 55, 0.65) 0%, rgba(20, 20, 25, 0.85) 100%);
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 28px; /* Bo góc lớn chuẩn Apple */
+    border-radius: 28px;
+    /* Bo góc lớn chuẩn Apple */
     box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
@@ -624,7 +830,8 @@ img.rounded-circle.border-white {
 }
 
 .apple-doc-card:hover .apple-floating-controls {
-    opacity: 1; /* Chỉ hiện thanh control khi di chuột vào ảnh */
+    opacity: 1;
+    /* Chỉ hiện thanh control khi di chuột vào ảnh */
 }
 
 .apple-floating-controls button {
@@ -665,7 +872,7 @@ img.rounded-circle.border-white {
     font-size: 2.5rem;
     margin-bottom: 12px;
     opacity: 0.5;
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2));
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.2));
 }
 
 .doc-empty-state span {
@@ -680,101 +887,120 @@ img.rounded-circle.border-white {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
+.nav-pills .nav-link.active,
+.nav-pills .show>.nav-link {
     color: var(--color-3) !important;
     background-color: var(--color-1) !important;
 }
 
 /* CSS nhúng cục bộ: Hiệu ứng Liquid Glass (Kính lỏng) cao cấp */
-    .modern-modal-content {
-        background: rgba(15, 21, 42, 0.333); /* Nền trong suốt ánh xanh đen */
-        backdrop-filter: blur(24px) saturate(180%); /* Tạo độ mờ và rực rỡ cho kính */
-        -webkit-backdrop-filter: blur(24px) saturate(180%);
-        border-radius: 24px;
-        border: 1px solid rgba(255, 255, 255, 0.08); /* Viền kính mỏng */
-        border-top: 1px solid rgba(255, 255, 255, 0.2); /* Bắt sáng viền trên tạo cảm giác chất lỏng */
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 
-                    inset 0 1px 0 rgba(255, 255, 255, 0.1); /* Bóng đổ và phản quang trong */
-    }
-    
-    .modern-section-title {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #34d399; /* Xanh lá sáng rực rỡ hơn */
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05); /* Đường gạch mờ ẩn */
-        text-shadow: 0 0 12px rgba(16, 185, 129, 0.4); /* Glow effect cho text */
-    }
-    
-    .modern-label {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: rgba(255, 255, 255, 0.8);
-        margin-bottom: 6px;
-        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    }
-    
-    .modern-input, .modern-select {
-        background: rgba(255, 255, 255, 0.03) !important; /* Kính mờ siêu mỏng cho input */
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.1) !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.15) !important; /* Bắt sáng nổi khối */
-        color: #f8fafc !important;
-        border-radius: 14px !important;
-        padding: 14px 16px !important;
-        font-size: 0.95rem !important;
-        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
-        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2) !important; /* Bóng chìm tạo độ sâu */
-    }
-    
-    .modern-input::placeholder {
-        color: rgba(255, 255, 255, 0.3) !important;
-    }
-    
-    .modern-input:focus, .modern-select:focus {
-        background: rgba(255, 255, 255, 0.08) !important; /* Sáng lên khi focus */
-        border-color: rgba(16, 185, 129, 0.6) !important;
-        box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), 
-                    inset 0 2px 5px rgba(0, 0, 0, 0.2) !important; /* Glow neon viền xanh */
-        outline: none !important;
-    }
-    
-    .modern-btn-cancel {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: #cbd5e1;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    
-    .modern-btn-cancel:hover {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
-        color: white;
-        transform: translateY(-1px);
-    }
-    
-    .modern-btn-submit {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.85), rgba(4, 120, 87, 0.85));
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(16, 185, 129, 0.5);
-        border-top: 1px solid rgba(255, 255, 255, 0.4); /* Highlight giọt nước trên nút */
-        color: white;
-        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3), 
-                    inset 0 1px 0 rgba(255, 255, 255, 0.2); /* Glow bóng đổ + viền sáng trong */
-    }
-    
-    .modern-btn-submit:hover {
-        background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(4, 120, 87, 0.95));
-        transform: translateY(-3px) scale(1.02); /* Hiệu ứng nảy nhẹ của khối lỏng */
-        box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45), 
-                    inset 0 1px 0 rgba(255, 255, 255, 0.3);
-    }
+.modern-modal-content {
+    background: rgba(15, 21, 42, 0.333);
+    /* Nền trong suốt ánh xanh đen */
+    backdrop-filter: blur(24px) saturate(180%);
+    /* Tạo độ mờ và rực rỡ cho kính */
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Viền kính mỏng */
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    /* Bắt sáng viền trên tạo cảm giác chất lỏng */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Bóng đổ và phản quang trong */
+}
+
+.modern-section-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #34d399;
+    /* Xanh lá sáng rực rỡ hơn */
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    /* Đường gạch mờ ẩn */
+    text-shadow: 0 0 12px rgba(16, 185, 129, 0.4);
+    /* Glow effect cho text */
+}
+
+.modern-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 6px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.modern-input,
+.modern-select {
+    background: rgba(255, 255, 255, 0.03) !important;
+    /* Kính mờ siêu mỏng cho input */
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
+    /* Bắt sáng nổi khối */
+    color: #f8fafc !important;
+    border-radius: 14px !important;
+    padding: 14px 16px !important;
+    font-size: 0.95rem !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+    /* Bóng chìm tạo độ sâu */
+}
+
+.modern-input::placeholder {
+    color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.modern-input:focus,
+.modern-select:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    /* Sáng lên khi focus */
+    border-color: rgba(16, 185, 129, 0.6) !important;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.2),
+        inset 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+    /* Glow neon viền xanh */
+    outline: none !important;
+}
+
+.modern-btn-cancel {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #cbd5e1;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.modern-btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    transform: translateY(-1px);
+}
+
+.modern-btn-submit {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.85), rgba(4, 120, 87, 0.85));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(16, 185, 129, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
+    /* Highlight giọt nước trên nút */
+    color: white;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    /* Glow bóng đổ + viền sáng trong */
+}
+
+.modern-btn-submit:hover {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.95), rgba(4, 120, 87, 0.95));
+    transform: translateY(-3px) scale(1.02);
+    /* Hiệu ứng nảy nhẹ của khối lỏng */
+    box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}

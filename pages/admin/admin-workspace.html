@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 
 <head>
@@ -131,8 +131,9 @@
                                         class="fa-solid fa-file-invoice-dollar me-2"></i> Giá cước & Voucher</a>
                             </li>
                             <li>
-                                <a href="#tab-ai-marketing" class="toc-link"><i class="fa-solid fa-robot me-2"></i> Trợ
-                                    lý AI & Marketing</a>
+                                <a href="#tab-vehicle-tags" class="toc-link"><i class="fa-solid fa-tags me-2"></i> Quản
+                                    lý
+                                    Tags Phương tiện</a>
                             </li>
 
                             <li class="menu-section-title">Hệ thống & Phân quyền</li>
@@ -347,7 +348,8 @@
                                 <div>
                                     <h4 class="fw-bold mb-2 text-white">
                                         <i class="fa-solid fa-car text-primary me-2"></i>
-                                        Đăng ký Phương tiện mới</h4>
+                                        Đăng ký Phương tiện mới
+                                    </h4>
                                     <p class="text-white-50 small m-0">Thêm hồ sơ phương tiện mới vào hệ thống
                                         FleetFlow.</p>
                                 </div>
@@ -527,50 +529,45 @@
                         </div>
                     </section>
 
-                    <section id="tab-ai-marketing" class="dashboard-section">
+                    <section id="tab-vehicle-tags" class="dashboard-section" style="display: none;">
                         <div class="glass-panel">
-                            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-robot text-info me-2"></i>Trợ lý
-                                AI & Chiến dịch Email</h4>
-                            <div class="row g-4">
-                                <div class="col-12">
-                                    <div class="glass-panel">
-                                        <h5 class="fw-bold mb-4 fs-6 text-white"><i
-                                                class="fa-solid fa-brain me-2 text-warning"></i>Gán Thuộc tính AI (Kéo
-                                            thả Tags)</h5>
-                                        <div class="kanban-board">
-                                            <div class="kb-column-glass">
-                                                <h6 class="text-white-50 fw-bold small mb-3">Tags Khả dụng (Kéo sang
-                                                    phải)</h6>
-                                                <div class="kb-cards-container">
-                                                    <div class="kanban-card-item" draggable="true"><i
-                                                            class="fa-solid fa-wheelchair text-info me-2"></i> Xe có xe
-                                                        lăn</div>
-                                                    <div class="kanban-card-item" draggable="true"><i
-                                                            class="fa-solid fa-volume-xmark text-secondary me-2"></i>
-                                                        Tài xế yên tĩnh</div>
-                                                    <div class="kanban-card-item" draggable="true"><i
-                                                            class="fa-solid fa-paw text-warning me-2"></i> Cho phép Thú
-                                                        cưng</div>
-                                                    <div class="kanban-card-item" draggable="true"><i
-                                                            class="fa-solid fa-suitcase text-success me-2"></i> Cốp siêu
-                                                        rộng</div>
-                                                </div>
-                                            </div>
-                                            <div class="kb-column-glass">
-                                                <h6 class="text-white-50 fw-bold small mb-3">Hồ sơ Phương tiện (Thả vào
-                                                    đây)</h6>
-                                                <div class="kb-cards-container target-dropzone">
-                                                    <div
-                                                        class="kanban-card-item stable-tag text-center fw-bold fs-5 py-3">
-                                                        51H-123.45</div>
-                                                    <div
-                                                        class="kanban-card-item stable-tag text-center fw-bold fs-5 py-3">
-                                                        60A-987.65</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-tags text-warning me-2"></i>Quản lý Tags Phương tiện
+                                    </h4>
+                                    <p class="text-white-50 small m-0">Cấu hình thuộc tính (tags) cho xe để AI và hệ
+                                        thống phân bổ hoạt động tốt hơn.</p>
                                 </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button class="btn btn-sm btn-outline-warning text-white"
+                                        onclick="loadVehicleTagsList()">
+                                        <i class="fa-solid fa-rotate-right me-1"></i> Làm mới
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 500px;">
+                                <table class="table-glass w-100 mb-0">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Phương tiện</th>
+                                            <th>Loại xe</th>
+                                            <th>Số lượng Tags</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="vehicleTagsListBody">
+                                        <!-- Render từ JS -->
+                                        <tr>
+                                            <td colspan="5" class="text-center text-white-50 py-4">
+                                                <i class="fa-solid fa-circle-notch fa-spin text-warning me-2"></i>Đang
+                                                tải dữ liệu...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </section>
@@ -886,6 +883,61 @@
                     </section>
 
                 </main>
+            </div>
+
+            <!-- MODAL QUẢN LÝ TAGS PHƯƠNG TIỆN -->
+            <div class="modal fade" id="vehicleTagsModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-md modal-dialog-centered">
+                    <div class="modal-content modern-modal-content">
+                        <div class="modal-header border-0 px-4 pt-4 pb-0">
+                            <h4 class="fw-bold text-white m-0 d-flex align-items-center">
+                                <div class="bg-white bg-opacity-10 text-white p-2 rounded-3 me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-tags"></i>
+                                </div>
+                                Cấu hình Tags
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <h6 class="text-white-50 mb-3">Xe: <span id="vtModalLicensePlate"
+                                    class="text-white fw-bold"></span></h6>
+                            <div class="glass-panel p-3 mb-3">
+                                <h6 class="fw-bold text-white mb-2">Tags hiện tại:</h6>
+                                <div id="vtModalTagsContainer" class="d-flex flex-wrap gap-2">
+                                    <!-- Render badges -->
+                                </div>
+                            </div>
+                            <div class="glass-panel p-3">
+                                <h6 class="fw-bold text-white mb-2">Thêm Tag mới:</h6>
+                                <div class="row g-2">
+                                    <div class="col-md-5">
+                                        <input type="text" id="vtNewTagName"
+                                            class="form-control form-control-sm glass-input"
+                                            placeholder="Tên Tag (VD: Cốp rộng)">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <div class="d-flex gap-2">
+                                            <input type="text" id="vtNewTagDesc"
+                                                class="form-control form-control-sm glass-input"
+                                                placeholder="Mô tả ngắn">
+                                            <button class="btn btn-sm btn-outline-light text-white fw-bold text-nowrap"
+                                                onclick="vtAddTag()" style="border-radius: 25px;"><i
+                                                    class="fa-solid fa-plus"></i> Thêm</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-end mt-4">
+                                <button type="button" class="btn btn-secondary rounded-pill px-4 me-2"
+                                    data-bs-dismiss="modal">Đóng</button>
+                                <button type="button" class="btn btn-light rounded-pill px-4 fw-bold text-dark"
+                                    onclick="vtSaveTags()">Lưu Cấu Hình</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="modal fade" id="addVehicleModal" tabindex="-1" data-bs-backdrop="static">
