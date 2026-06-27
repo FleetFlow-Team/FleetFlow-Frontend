@@ -91,6 +91,8 @@ async function loadTripHistory() {
 function renderTripList(trips) {
     const container = document.getElementById('tripListContainer');
     const emptyState = document.getElementById('emptyState');
+
+    if (!container) return;
     container.innerHTML = '';
 
     if (!trips || trips.length === 0) {
@@ -253,11 +255,69 @@ async function viewTripDetail(bookingId) {
             document.getElementById('lblDropoffAddress').innerHTML = dropoffHTML;
         }
 
-        // 7. Đồng bộ hiển thị hóa đơn tài chính (Lấy giá trị thực tế của chuyến đi)
-        const price = summaryTrip ? (summaryTrip.price || summaryTrip.TotalAmount || summaryTrip.estimatedTotal || 0) : 0;
-        const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
-        document.getElementById('lblBasePrice').innerText = fmtPrice;
-        document.getElementById('lblTotalAmount').innerText = fmtPrice;
+// =================================================================
+        // 7. TÍCH HỢP BÓC TÁCH CHI PHÍ (INVOICE & BOOKING PRICING)
+        // =================================================================
+        const token = localStorage.getItem("accessToken");
+        const fVND = (val) => Number(val || 0).toLocaleString('vi-VN') + ' đ';
+
+        // 7.1. Hiệu ứng Loading mượt mà
+        document.getElementById('lblBasePrice').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        document.getElementById('lblSurcharge').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        document.getElementById('lblDiscount').innerHTML  = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        document.getElementById('lblTotalAmount').innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+
+        try {
+            // 7.2. GỌI API HÓA ĐƠN CHÍNH THỨC (Dành cho chuyến đã Hoàn thành)
+            const invRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/invoices/${bookingId}`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+            });
+            const invResult = await invRes.json();
+
+            if (invRes.ok && invResult.success && invResult.data) {
+                // ĐÃ CÓ HÓA ĐƠN THỰC TẾ
+                const inv = invResult.data; 
+                localStorage.setItem('currentInvoiceId', inv.InvoiceID || inv.invoiceId);
+                localStorage.setItem('currentInvoiceAmount', inv.TotalAmount || inv.totalAmount);
+
+                const baseFare = parseFloat(inv.BaseFare || inv.baseFare) || 0;
+                const weekendSur = parseFloat(inv.WeekendSurcharge || inv.weekendSurcharge) || 0;
+                const tollSur = parseFloat(inv.TollSurchargeTotal || inv.tollSurchargeTotal) || 0; // Phí cầu đường (nếu có)
+                const discountAmount = parseFloat(inv.DiscountAmount || inv.discountAmount) || 0;
+                const totalAmount = parseFloat(inv.TotalAmount || inv.totalAmount) || 0;
+
+                document.getElementById('lblBasePrice').innerText = fVND(baseFare);
+                // Cộng gộp Phụ phí cuối tuần + Phí cầu đường (vì UI chỉ có 1 dòng Surcharge)
+                document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
+                document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
+                document.getElementById('lblTotalAmount').innerText = fVND(totalAmount);
+            } else {
+                throw new Error("Chưa có hóa đơn");
+            }
+        } catch (error) {
+            // 7.3. FALLBACK: NẾU CHƯA CÓ HÓA ĐƠN -> LẤY DỮ LIỆU TỪ BẢNG [BookingPricing]
+            // Áp dụng cho các chuyến xe PENDING / ACTIVE
+            localStorage.removeItem('currentInvoiceId');
+            localStorage.removeItem('currentInvoiceAmount');
+
+            // Bóc tách dữ liệu BookingPricing lồng trong API GET /bookings/{id}
+            // (Hỗ trợ bắt tên biến viết hoa/thường tùy Backend Java trả về)
+            const pricing = trip.pricing || trip.BookingPricing || trip.bookingPricing || trip;
+
+            // Khớp 100% với các cột trong DB BookingPricing bạn vừa gửi:
+            const baseFare = parseFloat(pricing.BaseFare || pricing.baseFare) || 0;
+            const weekendSurcharge = parseFloat(pricing.WeekendSurcharge || pricing.weekendSurcharge) || 0;
+            const discountAmount = parseFloat(pricing.DiscountAmount || pricing.discountAmount) || 0;
+            const estimatedTotal = parseFloat(pricing.EstimatedTotal || pricing.estimatedTotal || summaryTrip.price) || 0;
+            
+            // Đổ giá trị bóc tách dự kiến ra UI
+            document.getElementById('lblBasePrice').innerText = fVND(baseFare);
+            document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSurcharge)}`;
+            document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
+            document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
+        }
+        // =================================================================
         
         // 8. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -298,4 +358,113 @@ function filterTrips(status, btnElement) {
         });
     }
     renderTripList(filtered);
+}
+
+// =====================================================================
+// XỬ LÝ API HỦY CHUYẾN ĐI (TÍCH HỢP PENALTY AMOUNT)
+// =====================================================================
+let currentCancelBookingId = null; // Biến lưu tạm ID chuyến đi đang muốn hủy
+
+// Hàm này được gọi khi bấm nút "Hủy chuyến" ở trang chi tiết
+function openCancelModal(bookingId) {
+    currentCancelBookingId = bookingId;
+    const modal = new bootstrap.Modal(document.getElementById('cancelTripModal'));
+    modal.show();
+}
+
+// Hàm này được gắn vào nút "Xác nhận hủy" trong Modal
+async function executeSubmitAction(actionType) {
+    if (actionType === 'cancel') {
+        if (!currentCancelBookingId) return;
+
+        const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
+        const token = localStorage.getItem('accessToken');
+        const reasonInput = document.querySelector('#cancelTripModal textarea');
+        const reason = reasonInput ? reasonInput.value.trim() : "Khách hàng yêu cầu hủy";
+
+        // Đổi trạng thái UI nút bấm sang Loading
+        const btnConfirm = document.getElementById('btnConfirmCancelTrip');
+        const originalText = btnConfirm.innerText;
+        btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+        btnConfirm.disabled = true;
+
+        try {
+            // GỌI API BACKEND VỪA CẬP NHẬT
+            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/bookings/cancel`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    bookingId: parseInt(currentCancelBookingId),
+                    customerId: parseInt(customerId),
+                    reason: reason
+                })
+            });
+
+            const result = await response.json();
+
+            // Đóng Modal hiện tại
+            const cancelModalEl = document.getElementById('cancelTripModal');
+            const cancelModal = bootstrap.Modal.getInstance(cancelModalEl);
+            if (cancelModal) cancelModal.hide();
+
+            // XỬ LÝ KẾT QUẢ TỪ BACKEND
+            if (response.ok && result.success) {
+                const fVND = (v) => Number(v || 0).toLocaleString('vi-VN') + ' đ';
+                
+                // Trích xuất 2 trường Backend vừa thêm: penaltyPercent và penaltyAmount
+                const pPercent = result.penaltyPercent || 0;
+                const pAmount = parseFloat(result.penaltyAmount) || 0;
+
+                let msgHtml = `Chuyến đi <b>#${result.bookingId}</b> đã được hủy thành công!`;
+
+                // LOGIC HIỂN THỊ DỰA TRÊN PENALTY AMOUNT
+                if (pAmount > 0) {
+                    msgHtml += `
+                        <div class="mt-3 p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 text-start">
+                            <div class="text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phí phạt hủy chuyến (${pPercent}%):</div>
+                            <div class="fs-4 fw-bold text-danger">${fVND(pAmount)}</div>
+                            <div class="small text-muted mt-1">Khoản phí này đã được ghi nhận vào công nợ tài khoản của bạn theo chính sách hệ thống.</div>
+                        </div>
+                    `;
+                } else {
+                    msgHtml += `
+                        <div class="mt-3 p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3">
+                            <span class="text-success fw-bold"><i class="fa-solid fa-shield-check me-1"></i> Bạn không bị tính phí phạt cho lần hủy này.</span>
+                        </div>
+                    `;
+                }
+
+                // Hiển thị thông báo bằng SweetAlert2
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Đã hủy chuyến',
+                    html: msgHtml,
+                    confirmButtonColor: '#00B14F',
+                    confirmButtonText: 'Đóng'
+                }).then(() => {
+                    // Tải lại danh sách chuyến đi sau khi tắt thông báo
+                    window.location.reload(); 
+                });
+
+            } else {
+                // Backend từ chối hủy (VD: Đang chạy, Đã hoàn thành...)
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Không thể hủy chuyến', 
+                    text: result.error || 'Vui lòng liên hệ tổng đài để được hỗ trợ.' 
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi gọi API Hủy chuyến:", error);
+            Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+        } finally {
+            // Trả lại trạng thái UI cho nút bấm
+            btnConfirm.innerHTML = originalText;
+            btnConfirm.disabled = false;
+            if (reasonInput) reasonInput.value = ''; // Xóa text lý do cũ
+        }
+    }
 }
