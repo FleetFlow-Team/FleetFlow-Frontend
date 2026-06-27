@@ -655,7 +655,7 @@ img.rounded-circle.border-white {
 }
 
 .table-audit tbody tr:hover td {
-    background: rgba(180, 9, 9, 0.476);
+    background: rgba(255, 255, 255, 0.298);
 }
 
 .table-audit .badge {

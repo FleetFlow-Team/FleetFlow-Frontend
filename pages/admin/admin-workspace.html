@@ -136,7 +136,9 @@
                                     Tags Phương tiện</a>
                             </li>
                             <li>
-                                <a href="#tab-marketing-email" class="toc-link"><i class="fa-solid fa-envelope-open-text text-danger me-2"></i> Chiến dịch Marketing</a>
+                                <a href="#tab-marketing-email" class="toc-link"><i
+                                        class="fa-solid fa-envelope-open-text text-danger me-2"></i> Chiến dịch
+                                    Marketing</a>
                             </li>
 
                             <li class="menu-section-title">Hệ thống & Phân quyền</li>
@@ -579,26 +581,37 @@
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-end mb-4">
                                 <div>
-                                    <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-envelope-open-text text-danger me-2"></i>Chiến dịch Marketing (Email)</h4>
-                                    <p class="text-white-50 small m-0">Kích hoạt gửi Voucher giảm giá qua email tự động cho nhóm khách hàng Inactive (không hoạt động > 30 ngày) để thu hút họ quay lại sử dụng dịch vụ.</p>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-envelope-open-text text-danger me-2"></i>Chiến dịch
+                                        Marketing (Email)</h4>
+                                    <p class="text-white-50 small m-0">Kích hoạt gửi Voucher giảm giá qua email tự động
+                                        cho nhóm khách hàng Inactive (không hoạt động > 30 ngày) để thu hút họ quay lại
+                                        sử dụng dịch vụ.</p>
                                 </div>
                             </div>
-                            
-                            <div class="p-4 border border-white border-opacity-10 rounded-4 bg-black bg-opacity-25 text-center">
+
+                            <div
+                                class="p-4 border border-white border-opacity-10 rounded-4 bg-black bg-opacity-25 text-center">
                                 <div class="mb-4">
-                                    <i class="fa-solid fa-bullhorn text-warning opacity-75" style="font-size: 3rem;"></i>
+                                    <i class="fa-solid fa-bullhorn text-warning opacity-75"
+                                        style="font-size: 3rem;"></i>
                                 </div>
                                 <h5 class="text-white fw-bold mb-2">Tái kích hoạt Khách hàng</h5>
                                 <p class="text-white-50 mx-auto mb-4" style="max-width: 600px;">
-                                    Bằng cách bấm nút bên dưới, hệ thống sẽ tự động quét cơ sở dữ liệu để tìm ra các khách hàng 
-                                    chưa từng đặt xe trong vòng 30 ngày qua và tiến hành gửi email chứa mã giảm giá (Voucher) bí mật.
+                                    Bằng cách bấm nút bên dưới, hệ thống sẽ tự động quét cơ sở dữ liệu để tìm ra các
+                                    khách hàng
+                                    chưa từng đặt xe trong vòng 30 ngày qua và tiến hành gửi email chứa mã giảm giá
+                                    (Voucher) bí mật.
                                 </p>
-                                
-                                <button id="btnTriggerMarketing" class="btn btn-lg btn-glass-action bg-primary text-white px-5 rounded-pill shadow-lg hover-scale" onclick="triggerMarketingEmail()">
+
+                                <button id="btnTriggerMarketing"
+                                    class="btn btn-lg btn-glass-action bg-primary text-white px-5 rounded-pill shadow-lg hover-scale"
+                                    onclick="triggerMarketingEmail()">
                                     <i class="fa-solid fa-paper-plane me-2"></i> Kích hoạt Chiến dịch ngay
                                 </button>
-                                
-                                <div id="marketingResultBox" class="mt-4 p-3 rounded-3 d-none" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);">
+
+                                <div id="marketingResultBox" class="mt-4 p-3 rounded-3 d-none"
+                                    style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);">
                                     <p id="marketingResultMessage" class="m-0 text-white-50 small"></p>
                                 </div>
                             </div>
@@ -839,78 +852,51 @@
                             <div class="d-flex justify-content-between align-items-end mb-4">
                                 <div>
                                     <h4 class="fw-bold mb-1 text-white"><i
-                                            class="fa-solid fa-server text-primary me-2"></i>Nhật ký Hệ thống (Audit
-                                        Log)</h4>
+                                            class="fa-solid fa-server text-primary me-2"></i>Nhật ký Hệ thống</h4>
                                     <p class="text-white-50 small m-0">Truy vết mọi tác động vào hệ thống. Bản ghi bất
-                                        biến, Read-only.</p>
+                                        biến, chỉ đọc.</p>
                                 </div>
                                 <div class="input-group w-auto shadow-sm">
                                     <span class="input-group-text glass-input-addon border-end-0"><i
                                             class="fa-solid fa-magnifying-glass text-white-50"></i></span>
                                     <input type="text" class="form-control glass-input border-start-0"
-                                        placeholder="Tìm kiếm Audit ID, User...">
+                                        placeholder="Tìm kiếm mã, người dùng...">
                                 </div>
                             </div>
 
                             <div class="table-glass-wrapper overflow-auto" style="max-height: 600px;">
                                 <table class="table-glass table-audit mb-0 w-100">
-                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <thead style="position: static; top: 0; z-index: 10; ">
                                         <tr>
-                                            <th width="15%">Thời gian</th>
-                                            <th width="20%">Nhân sự (Who)</th>
-                                            <th width="15%">Hành động</th>
-                                            <th width="25%">Đối tượng (Target)</th>
-                                            <th width="15%">Thiết bị / IP</th>
-                                            <th width="10%" class="text-center">Chi tiết</th>
+                                            <th style="background-color: transparent;" width="15%">Thời gian</th>
+                                            <th style="background-color: transparent;" width="20%">Nhân sự</th>
+                                            <th style="background-color: transparent;" width="15%">Hành động</th>
+                                            <th style="background-color: transparent;" width="25%">Đối tượng</th>
+                                            <th style="background-color: transparent;" width="15%">Thiết bị / IP</th>
+                                            <th style="background-color: transparent;" width="10%" class="text-center">
+                                                Chi tiết</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="auditLogListBody">
+                                        <!-- Danh sách được render từ auditManager.js -->
                                         <tr>
-                                            <td>
-                                                <div class="fw-bold text-white">06/06/2026</div>
-                                                <div class="text-white-50 small">09:15:22</div>
-                                            </td>
-                                            <td>
-                                                <div class="fw-bold text-primary">ADM-01</div>
-                                                <div class="text-white-50 small">Trần Giám Đốc</div>
-                                            </td>
-                                            <td><span
-                                                    class="badge bg-warning bg-opacity-25 text-warning border border-warning p-2 px-3 fw-bold shadow-sm">UPDATE</span>
-                                            </td>
-                                            <td class="fw-bold text-white">Cấu hình Hệ số Lễ/Tết</td>
-                                            <td>
-                                                <div class="text-white-50 small">113.160.22.1</div>
-                                                <div class="text-white-50 small">Chrome / Mac OS</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <button class="btn-glass-action" onclick="openDiffModal()">Xem
-                                                    Diff</button>
-                                            </td>
-                                        </tr>
-
-                                        <tr>
-                                            <td>
-                                                <div class="fw-bold text-white">06/06/2026</div>
-                                                <div class="text-white-50 small">08:42:10</div>
-                                            </td>
-                                            <td>
-                                                <div class="fw-bold text-info">DP-889</div>
-                                                <div class="text-white-50 small">Nguyễn Điều Phối</div>
-                                            </td>
-                                            <td><span
-                                                    class="badge bg-info bg-opacity-25 text-info border border-info p-2 px-3 fw-bold shadow-sm">FREEZE</span>
-                                            </td>
-                                            <td class="fw-bold text-white">Hóa đơn chuyến #BK-9015</td>
-                                            <td>
-                                                <div class="text-white-50 small">113.160.22.5</div>
-                                                <div class="text-white-50 small">Safari / Windows</div>
-                                            </td>
-                                            <td class="text-center">
-                                                <button class="btn-glass-action">Xem Log</button>
+                                            <td colspan="6" class="text-center text-white-50 py-4">
+                                                <i class="fa-solid fa-circle-notch fa-spin text-primary me-2"></i> Đang
+                                                tải dữ liệu...
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
+                            </div>
+
+                            <!-- Phân trang -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="text-white-50 small" id="auditLogTotalInfo">Tổng cộng: 0 bản ghi</span>
+                                <nav>
+                                    <ul class="pagination pagination-sm m-0" id="auditLogPagination">
+                                        <!-- Render từ js -->
+                                    </ul>
+                                </nav>
                             </div>
                         </div>
                     </section>
@@ -1425,6 +1411,41 @@
                 </div>
             </div>
 
+            <!-- MODAL XEM CHI TIẾT AUDIT DIFF -->
+            <div class="modal fade" id="auditDiffModal" tabindex="-1" data-bs-backdrop="static">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content modern-modal-content">
+                        <div class="modal-header border-0 px-4 pt-4 pb-0">
+                            <h4 class="fw-bold text-white m-0 d-flex align-items-center">
+                                <div class="bg-white bg-opacity-10 text-white p-2 rounded-3 me-3 d-flex align-items-center justify-content-center"
+                                    style="width: 45px; height: 45px;">
+                                    <i class="fa-solid fa-code-compare"></i>
+                                </div>
+                                Chi tiết Thay đổi
+                            </h4>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-white-50 mb-2">Giá trị Cũ</h6>
+                                    <div class="glass-panel p-3 h-100" style="overflow-x: auto;">
+                                        <pre><code id="auditOldValueCode" class="text-white diff-old m-0" style="font-size: 0.85rem;"></code></pre>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="fw-bold text-white-50 mb-2">Giá trị Mới</h6>
+                                    <div class="glass-panel p-3 h-100" style="overflow-x: auto;">
+                                        <pre><code id="auditNewValueCode" class="text-white diff-new m-0" style="font-size: 0.85rem;"></code></pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
                 <div id="systemErrorToast" class="toast align-items-center toast-premium border border-danger shadow-lg"
                     role="alert">
@@ -1450,6 +1471,7 @@
             <script src="../../js/admin/customerManager.js"></script>
             <script src="../../js/admin/vehicleManager.js"></script>
             <script src="../../js/admin/marketingManager.js"></script>
+            <script src="../../js/admin/auditManager.js"></script>
 </body>
 
 </html>
