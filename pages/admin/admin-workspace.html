@@ -135,6 +135,9 @@
                                     lý
                                     Tags Phương tiện</a>
                             </li>
+                            <li>
+                                <a href="#tab-marketing-email" class="toc-link"><i class="fa-solid fa-envelope-open-text text-danger me-2"></i> Chiến dịch Marketing</a>
+                            </li>
 
                             <li class="menu-section-title">Hệ thống & Phân quyền</li>
                             <li>
@@ -572,6 +575,36 @@
                         </div>
                     </section>
 
+                    <section id="tab-marketing-email" class="dashboard-section" style="display: none;">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-end mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-envelope-open-text text-danger me-2"></i>Chiến dịch Marketing (Email)</h4>
+                                    <p class="text-white-50 small m-0">Kích hoạt gửi Voucher giảm giá qua email tự động cho nhóm khách hàng Inactive (không hoạt động > 30 ngày) để thu hút họ quay lại sử dụng dịch vụ.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="p-4 border border-white border-opacity-10 rounded-4 bg-black bg-opacity-25 text-center">
+                                <div class="mb-4">
+                                    <i class="fa-solid fa-bullhorn text-warning opacity-75" style="font-size: 3rem;"></i>
+                                </div>
+                                <h5 class="text-white fw-bold mb-2">Tái kích hoạt Khách hàng</h5>
+                                <p class="text-white-50 mx-auto mb-4" style="max-width: 600px;">
+                                    Bằng cách bấm nút bên dưới, hệ thống sẽ tự động quét cơ sở dữ liệu để tìm ra các khách hàng 
+                                    chưa từng đặt xe trong vòng 30 ngày qua và tiến hành gửi email chứa mã giảm giá (Voucher) bí mật.
+                                </p>
+                                
+                                <button id="btnTriggerMarketing" class="btn btn-lg btn-glass-action bg-primary text-white px-5 rounded-pill shadow-lg hover-scale" onclick="triggerMarketingEmail()">
+                                    <i class="fa-solid fa-paper-plane me-2"></i> Kích hoạt Chiến dịch ngay
+                                </button>
+                                
+                                <div id="marketingResultBox" class="mt-4 p-3 rounded-3 d-none" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                    <p id="marketingResultMessage" class="m-0 text-white-50 small"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
                     <section id="tab-customers" class="dashboard-section" style="display: none;">
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-end mb-4">
@@ -922,7 +955,8 @@
                                             <input type="text" id="vtNewTagDesc"
                                                 class="form-control form-control-sm glass-input"
                                                 placeholder="Mô tả ngắn">
-                                            <button class="btn btn-sm btn-outline-light text-white fw-bold text-nowrap"
+                                            <button
+                                                class="btn btn-sm btn-outline-light text-white fw-bold text-nowrap btn-add"
                                                 onclick="vtAddTag()" style="border-radius: 25px;"><i
                                                     class="fa-solid fa-plus"></i> Thêm</button>
                                         </div>
@@ -1415,6 +1449,7 @@
             <script src="../../js/admin/voucherManager.js"></script>
             <script src="../../js/admin/customerManager.js"></script>
             <script src="../../js/admin/vehicleManager.js"></script>
+            <script src="../../js/admin/marketingManager.js"></script>
 </body>
 
 </html>
