@@ -313,10 +313,10 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
         let actionButtons = '';
 
         if (b.status === 'PENDING') {
-            badge = `<span class="glass-badge bg-secondary text-white">Chờ duyệt</span>`;
+            badge = `<span class="glass-badge bg-secondary text-white">Chờ xử lý</span>`;
             actionButtons = `
                 <button class="btn-glass-action btn-glass-approve fw-bold w-100 mb-2" onclick="approveBooking(${b.bookingId}, this)">
-                    <i class="fa-solid fa-check me-1"></i> Duyệt
+                    <i class="fa-solid fa-check me-1"></i> Chấp nhận
                 </button>
                 <button class="btn-glass-action btn-glass-reject fw-bold w-100" onclick="rejectBooking(${b.bookingId}, this)">
                     <i class="fa-solid fa-xmark me-1"></i> Từ chối
