@@ -53,10 +53,10 @@ document.addEventListener("DOMContentLoaded", function () {
 // ==========================================
 // HÀM ĐĂNG XUẤT AN TOÀN CHO DISPATCHER
 // ==========================================
-window.handleDispatcherLogout = function() {
+window.handleDispatcherLogout = function () {
     // 1. Xóa sạch mọi Token và dữ liệu cá nhân trong bộ nhớ máy
     localStorage.clear();
-    
+
     // 2. Chuyển hướng an toàn về trang chủ sau khi đã dọn dẹp xong
     window.location.href = '../../index.html';
 };
@@ -98,13 +98,13 @@ async function approveBooking(bookingId, buttonElement) {
                     badge.className = 'glass-badge bg-info text-white';
                     badge.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> Đã duyệt';
                 }
-                
+
                 // Đổi nút bấm thành trạng thái đang xử lý tự động
                 const tdAction = buttonElement.parentElement;
                 tdAction.innerHTML = `
                     <span class="text-success fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Đang tìm TX</span>
                 `;
-                
+
                 // Tùy chọn: Sau 3 giây tự động làm mới bảng PENDING để tải lại danh sách mới
                 setTimeout(() => {
                     loadBookings('PENDING', 'tbody-main');
@@ -194,7 +194,7 @@ async function processRejectBooking() {
                 ...getAuthHeader(),
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ reason: reason }) 
+            body: JSON.stringify({ reason: reason })
         });
 
         const result = await response.json();
@@ -259,7 +259,7 @@ async function loadBookings(status, tbodyId) {
 
         if (response.ok && result.success) {
             renderBookingTable(result.data, tbody, status);
-            
+
             // Tự động cập nhật con số thống kê trên thẻ Tab (Nếu bạn có làm ID đếm số)
             const countBadge = document.getElementById(`count-${status.toLowerCase()}`);
             if (countBadge) countBadge.innerText = result.count;
@@ -282,12 +282,12 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
     tbody.innerHTML = ''; // Xóa rác loading
     bookings.forEach(b => {
         const tr = document.createElement('tr');
-        
+
         // 1. Format Thời gian cực đẹp
         let depTime = "";
         if (b.departureTime) {
             const d = new Date(b.departureTime);
-            depTime = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} - ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()}`;
+            depTime = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()}`;
         }
 
         // 2. Xử lý Lộ trình tùy theo Loại hình (BookingType)
@@ -324,10 +324,10 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             `;
         } else if (b.status === 'UNASSIGNED') {
             badge = `<span class="glass-badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i> Thiếu tài xế</span>`;
-            
+
             // Fallback an toàn cho vehicleId
-            const safeVehicleId = b.vehicleId || 0; 
-            
+            const safeVehicleId = b.vehicleId || 0;
+
             // Thay thế class cũ bằng btn-glass-dispatch
             actionButtons = `
                 <button class="btn-glass-action btn-glass-dispatch fw-bold w-100" 
@@ -375,14 +375,14 @@ let dispatchModalInstance = null;
 let currentDispatchBookingId = null;
 
 // Hàm 1: Mở Modal và đổ dữ liệu mồi
-window.openDispatchModal = function(bookingId, vehicleId) {
+window.openDispatchModal = function (bookingId, vehicleId) {
     currentDispatchBookingId = bookingId;
-    
+
     document.getElementById('dispatchBookingIdDisplay').innerText = `#${bookingId}`;
     document.getElementById('inputDriverId').value = '';
-    
+
     // Nếu vehicleId = 0 (Chưa có xe), để trống cho Dispatcher tự nhập
-    document.getElementById('inputVehicleId').value = (vehicleId && vehicleId !== 0) ? vehicleId : ''; 
+    document.getElementById('inputVehicleId').value = (vehicleId && vehicleId !== 0) ? vehicleId : '';
 
     if (!dispatchModalInstance) {
         dispatchModalInstance = new bootstrap.Modal(document.getElementById('dispatchModal'));
@@ -391,7 +391,7 @@ window.openDispatchModal = function(bookingId, vehicleId) {
 };
 
 // Hàm 2: Thực thi API khi bấm Xác nhận
-window.executeDispatch = async function() {
+window.executeDispatch = async function () {
     const driverInput = document.getElementById('inputDriverId').value.trim();
     const vehicleInput = document.getElementById('inputVehicleId').value.trim();
 
@@ -417,7 +417,7 @@ window.executeDispatch = async function() {
 
     try {
         console.log(`Đang gửi yêu cầu phân tài: Booking=${currentDispatchBookingId}, Driver=${driverIdInt}, Vehicle=${vehicleIdInt}`);
-        
+
         const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings/${currentDispatchBookingId}/dispatch`, {
             method: 'POST',
             headers: postAuthHeader(), // Phải chắc chắn hàm postAuthHeader() tồn tại trên cùng file
@@ -431,12 +431,12 @@ window.executeDispatch = async function() {
 
         if (response.ok && result.success) {
             showSystemToast(`Đã phân Tài xế #${driverIdInt} cho chuyến #${currentDispatchBookingId} thành công!`, "success");
-            
+
             // Đóng Modal an toàn
-            if(dispatchModalInstance) {
+            if (dispatchModalInstance) {
                 dispatchModalInstance.hide();
             }
-            
+
             // Xóa phông nền đen (backdrop) bị kẹt nếu có
             const backdrop = document.querySelector('.modal-backdrop');
             if (backdrop) backdrop.remove();
@@ -462,12 +462,12 @@ window.executeDispatch = async function() {
 // GET /api/v1/dispatcher/map
 // ==========================================
 
-let dispatcherMap = null; 
+let dispatcherMap = null;
 let activeMarkers = {};   // Object lưu trữ các xe đang chạy { bookingId: markerInstance }
 let mapInterval = null;   // Biến giữ vòng lặp gọi API
 
 // Tách hàm tạm dừng API để HTML có thể gọi
-window.pauseMapTracking = function() {
+window.pauseMapTracking = function () {
     if (mapInterval) {
         clearInterval(mapInterval);
         mapInterval = null;
@@ -475,14 +475,14 @@ window.pauseMapTracking = function() {
 };
 
 // HÀM KHỞI TẠO BẢN ĐỒ VÀ VÒNG LẶP GỌI API
-window.initDispatcherMap = function() {
+window.initDispatcherMap = function () {
     // 1. NẾU BẢN ĐỒ CHƯA TỒN TẠI -> KHỞI TẠO
     if (!dispatcherMap) {
         dispatcherMap = new vietmapgl.Map({
             container: 'dispatcherMapContainer',
             // style: 'https://maps.vietmap.vn/mt/tm/style.json?apikey=9c63b68ed14a6f2327e9f9fa0170ce81f6f5e0678471c64d', Link url cũ gây lỗi
             style: 'https://maps.vietmap.vn/maps/styles/tm/style.json?apikey=9c63b68ed14a6f2327e9f9fa0170ce81f6f5e0678471c64d',
-            
+
             center: [106.660172, 10.762622], // Tọa độ trung tâm TP.HCM
             zoom: 12
         });
@@ -493,7 +493,7 @@ window.initDispatcherMap = function() {
         dispatcherMap.on('load', () => {
             console.log("✅ VietMap đã tải nền đường phố thành công!");
             dispatcherMap.resize(); // Ép kích thước ngay khi load xong
-            
+
             // Bắt đầu gọi API lấy xe
             fetchLiveMapData();
             mapInterval = setInterval(fetchLiveMapData, 30000);
@@ -535,21 +535,21 @@ async function fetchLiveMapData() {
             method: 'GET',
             headers: headers
         });
-        
+
         // 2. XỬ LÝ LỖI 401 TỪ BACKEND TRẢ VỀ
         if (response.status === 401 || response.status === 403) {
             console.error("Token hết hạn hoặc không có quyền truy cập. Dừng quét map.");
-            
+
             // Dừng vòng lặp gọi API 30s
             if (typeof window.pauseMapTracking === 'function') {
                 window.pauseMapTracking();
             }
-            
+
             // Báo lỗi cho Dispatcher
             if (typeof showSystemToast === 'function') {
                 showSystemToast("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!", "error");
             }
-            
+
             // Đợi 2 giây rồi đá văng về trang Login an toàn
             setTimeout(() => {
                 if (typeof window.handleDispatcherLogout === 'function') {
@@ -559,7 +559,7 @@ async function fetchLiveMapData() {
                     window.location.href = '../../index.html';
                 }
             }, 2000);
-            
+
             return; // Thoát hàm ngay lập tức
         }
 
@@ -585,7 +585,7 @@ function updateMapMarkers(ongoingTrips) {
         const bId = trip.bookingId;
         const lng = parseFloat(trip.longitude);
         const lat = parseFloat(trip.latitude);
-        
+
         if (isNaN(lng) || isNaN(lat)) return;
 
         currentOngoingIds.push(bId);
@@ -611,7 +611,7 @@ function updateMapMarkers(ongoingTrips) {
         } else {
             // NẾU LÀ XE MỚI -> Tạo Marker mới
             const popup = new vietmapgl.Popup({ offset: 25, closeButton: false }).setHTML(popupHtml);
-            
+
             const el = document.createElement('div');
             el.className = 'live-car-marker';
             // Styling cứng luôn cho chắc chắn (Phòng trường hợp thiếu CSS)
@@ -625,7 +625,7 @@ function updateMapMarkers(ongoingTrips) {
                 .setLngLat([lng, lat])
                 .setPopup(popup)
                 .addTo(dispatcherMap);
-                
+
             activeMarkers[bId] = newMarker;
         }
     });
@@ -633,8 +633,130 @@ function updateMapMarkers(ongoingTrips) {
     // DỌN RÁC (Xóa xe đã hoàn thành khỏi map)
     Object.keys(activeMarkers).forEach(storedBookingId => {
         if (!currentOngoingIds.includes(parseInt(storedBookingId))) {
-            activeMarkers[storedBookingId].remove(); 
-            delete activeMarkers[storedBookingId];   
+            activeMarkers[storedBookingId].remove();
+            delete activeMarkers[storedBookingId];
         }
     });
-}
+}// ==========================================
+// 16. QUẢN LÝ KHIẾU NẠI (COMPLAINTS)
+// ==========================================
+let currentResolveComplaintId = null;
+let resolveModalInstance = null;
+
+// Hàm tải danh sách khiếu nại
+window.loadComplaints = async function () {
+    const tbody = document.getElementById('complaintsListBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-white-50 py-4"><i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải dữ liệu...</td></tr>';
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints`, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            if (!result.data || result.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted py-4"><i class="fa-regular fa-folder-open fs-1 mb-2 opacity-50"></i><br>Không có khiếu nại nào.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = '';
+            result.data.forEach(c => {
+                const isPending = c.status === 'PENDING';
+                let statusBadge = isPending ? '<span class="glass-badge bg-warning text-dark" style="font-size: 12px;">Chờ xử lý</span>' : '<span class="glass-badge bg-success text-white" style="font-size: 12px;">Đã giải quyết</span>';
+
+                let actionHtml = isPending ? `<button class="btn-glass-action bg-success text-white border-success w-100" onclick="openResolveModal(${c.complaintId})"><i class="fa-solid fa-check-to-slot me-1"></i> Xử lý</button>` : `<span class="text-success fw-bold"><i class="fa-solid fa-shield-check"></i> Hoàn tất</span>`;
+
+                let dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>#${c.complaintId}</strong></td>
+                    <td><strong>${c.bookingId}</strong></td>
+                    <td>${c.customerId}</td>
+                    <td>
+                        <div class="fw-bold mb-1" style="max-width: 250px; white-space: normal; color: var(--text-color);">${c.content}</div>
+                        ${c.resolution ? `<div class="small text-success mt-1"><strong>Giải quyết:</strong> ${c.resolution}</div>` : ''}
+                    </td>
+                    <td>${statusBadge}<br><small class=" mt-1 d-block">${dateStr}</small></td>
+                    <td>${actionHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-3">Lỗi: ${result.error || 'Không thể tải dữ liệu'}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Lỗi:", error);
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-3">Mất kết nối đến máy chủ!</td></tr>';
+    }
+};
+
+// Hàm mở Modal giải quyết
+window.openResolveModal = function (complaintId) {
+    currentResolveComplaintId = complaintId;
+    document.getElementById('complaintResolutionInput').value = '';
+    document.getElementById('complaintResolutionError').classList.add('d-none');
+
+    document.getElementById('resolveComplaintModal').classList.add('active');
+};
+
+window.closeResolveModal = function () {
+    document.getElementById('resolveComplaintModal').classList.remove('active');
+};
+
+// Hàm Submit giải quyết
+window.executeResolveComplaint = async function () {
+    const input = document.getElementById('complaintResolutionInput');
+    const errorMsg = document.getElementById('complaintResolutionError');
+    const resolutionText = input.value.trim();
+
+    if (!resolutionText) {
+        errorMsg.classList.remove('d-none');
+        input.focus();
+        return;
+    }
+    errorMsg.classList.add('d-none');
+
+    const btn = document.getElementById('btnSubmitResolution');
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang xử lý...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentResolveComplaintId}/resolve`, {
+            method: 'PUT',
+            headers: postAuthHeader(),
+            body: JSON.stringify({ resolution: resolutionText })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            if (typeof showSystemToast === 'function') showSystemToast("Đã ghi nhận giải quyết khiếu nại!", "success");
+            closeResolveModal();
+            loadComplaints(); // reload
+        } else {
+            if (typeof showSystemToast === 'function') showSystemToast(result.error || "Lỗi xử lý!", "error");
+        }
+    } catch (error) {
+        if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
+    } finally {
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+    }
+};
+
+// Lắng nghe sự kiện chuyển Tab để tự động load dữ liệu
+document.addEventListener('DOMContentLoaded', () => {
+    const complaintsLink = document.querySelector('a[href="#disputes"]');
+    if (complaintsLink) {
+        complaintsLink.addEventListener('click', () => {
+            loadComplaints();
+        });
+    }
+});

@@ -131,6 +131,10 @@
                                         class="fa-solid fa-file-invoice-dollar me-2"></i> Giá cước & Voucher</a>
                             </li>
                             <li>
+                                <a href="#tab-holiday" class="toc-link"><i
+                                        class="fa-solid fa-calendar-day me-2"></i> Quản lý Ngày Lễ</a>
+                            </li>
+                            <li>
                                 <a href="#tab-vehicle-tags" class="toc-link"><i class="fa-solid fa-tags me-2"></i> Quản
                                     lý
                                     Tags Phương tiện</a>
@@ -448,40 +452,47 @@
 
                     <section id="tab-pricing" class="dashboard-section">
                         <div class="glass-panel">
-                            <h4 class="fw-bold mb-4 text-white"><i
-                                    class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá &
-                                Khuyến mãi</h4>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold m-0 text-white"><i
+                                        class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá &
+                                    Khuyến mãi</h4>
+                            </div>
 
                             <div class="glass-panel mb-4 d-flex align-items-start gap-3 fade-in-up"
-                                style="background: rgba(255, 222, 89, 0.05); border-color: rgba(255, 222, 89, 0.2); padding: 20px;">
+                                style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.5); padding: 20px;">
                                 <i class="fa-solid fa-circle-info fs-3 text-warning"></i>
                                 <div>
-                                    <h5 class="fw-bold mb-1 fs-6 text-white">Quy tắc Nội suy Giá (BR-17)</h5>
-                                    <p class="m-0 text-white-50" style="font-size: 0.9rem;">Admin chỉ được thiết lập Đơn
-                                        giá cơ sở. Giá cước từng chuyến sẽ do thuật toán hệ thống tự động nội suy dựa
-                                        trên Map API Directions. Tuyệt đối không can thiệp giá đơn lẻ.</p>
+                                    <h5 class="fw-bold mb-1 fs-6 text-white">Quy tắc Cấu hình Giá</h5>
+                                    <p class="m-0 text-white-50" style="font-size: 0.9rem;">Hệ thống tính giá hoàn toàn tự động dựa theo khoảng cách (Map API) hoặc theo giờ/ngày. Bảng bên dưới cho phép Admin điều chỉnh tham số tính giá cho từng loại hình xe.</p>
+                                </div>
+                            </div>
+
+                            <!-- BẢNG PRICING RULES (MỚI) -->
+                            <div class="glass-panel fade-in-up" style="animation-delay: 0.1s; margin-bottom: 30px;">
+                                <h5 class="fw-bold mb-4 fs-6 text-white">Bảng Giá Dịch Vụ</h5>
+                                <div class="table-glass-wrapper overflow-auto">
+                                    <table class="table-glass w-100 mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Loại Xe</th>
+                                                <th>Loại Dịch Vụ</th>
+                                                <th>Giá Cơ Bản</th>
+                                                <th>Phụ phí / Km</th>
+                                                <th>Phụ phí / Giờ / Ngày</th>
+                                                <th>Hệ số Cuối Tuần</th>
+                                                <th>Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="pricingRulesBody">
+                                            <tr>
+                                                <td colspan="7" class="text-center text-white-50">Đang tải...</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
 
                             <div class="row g-4">
-                                <div class="col-lg-12">
-                                    <div class="glass-panel fade-in-up" style="animation-delay: 0.1s;">
-                                        <h5 class="fw-bold mb-4 fs-6 text-white">Đơn giá Cơ bản (VNĐ / Km)</h5>
-                                        <div class="mb-3">
-                                            <label class="form-label text-white-50 fw-bold small">Dòng xe 4 Chỗ Tiêu
-                                                chuẩn</label>
-                                            <input type="number" class="form-control glass-input fw-bold fs-5"
-                                                value="12000">
-                                        </div>
-                                        <div class="mb-4">
-                                            <label class="form-label text-white-50 fw-bold small">Hệ số Lễ / Tết
-                                                (%)</label>
-                                            <input type="number" class="form-control glass-input fw-bold fs-5"
-                                                value="15">
-                                        </div>
-                                        <button
-                                            class="btn-glass-action bg-primary text-white border-primary w-100 py-3 fw-bold"
-                                            onclick="simulateSaveConfig(this)">
                                             Lưu Cấu Hình Cơ Sở
                                         </button>
                                     </div>
@@ -530,6 +541,39 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- TAB HOLIDAY (MỚI THÊM) -->
+                    <section id="tab-holiday" class="dashboard-section" style="display: none;">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-calendar-day text-success me-2"></i>Quản lý Ngày Lễ (Holidays)</h4>
+                                    <p class="text-white-50 small m-0">Định nghĩa các ngày nghỉ lễ để áp dụng bảng giá phụ thu tự động.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="table-glass-wrapper overflow-auto" style="max-height: 400px;">
+                                <table class="table-glass w-100 mb-0">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên Ngày Lễ</th>
+                                            <th>Ngày (YYYY-MM-DD)</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="holidayListBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-white-50">Đang tải...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </section>

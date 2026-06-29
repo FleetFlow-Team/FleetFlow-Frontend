@@ -9,35 +9,41 @@ body {
 }
 
 .luxury-glow-bg {
-    position: fixed; /* Dùng fixed để ánh sáng luôn ở đó khi scroll */
-    inset: 0;
-    z-index: -1; /* Nằm dưới cùng */
-    overflow: hidden;
-    pointer-events: none;
+  position: fixed;
+  /* Dùng fixed để ánh sáng luôn ở đó khi scroll */
+  inset: 0;
+  z-index: -1;
+  /* Nằm dưới cùng */
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .glow-sphere {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(140px);
-    opacity: 0.35; /* Tăng nhẹ opacity để xuyên qua kính rõ hơn */
-    mix-blend-mode: screen;
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(140px);
+  opacity: 0.35;
+  /* Tăng nhẹ opacity để xuyên qua kính rõ hơn */
+  mix-blend-mode: screen;
 }
 
 .sphere-1 {
-    top: -10%;
-    width: 1200px;
-    height: 1000px;
-    background: var(--color-1); /* Xanh thương hiệu */
+  top: -10%;
+  width: 1200px;
+  height: 1000px;
+  background: var(--color-1);
+  /* Xanh thương hiệu */
 }
 
 .sphere-2 {
-    bottom: -10%;
-    right: 0px;
-    width: 1200px;
-    height: 1000px;
-    background: var(--color-3); /* Vàng Gold */
+  bottom: -10%;
+  right: 0px;
+  width: 1200px;
+  height: 1000px;
+  background: var(--color-3);
+  /* Vàng Gold */
 }
+
 /* 1. Kính Lỏng (Glass Panel) - Áp dụng từ Policy */
 .glass-panel {
   background: rgba(255, 255, 255, 0.4);
@@ -115,7 +121,8 @@ body {
   left: 0;
   top: 0;
   width: 100%;
-  height: 48px; /* Khớp với padding của toc-link */
+  height: 48px;
+  /* Khớp với padding của toc-link */
   background: rgba(255, 255, 255, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.8);
   border-radius: 20px;
@@ -204,7 +211,7 @@ body {
   padding: 15px 20px;
   color: var(--text-color);
   border: none;
-  font-size: 1.1rem;
+  font-size: 1rem;
   text-transform: uppercase;
 }
 
@@ -287,9 +294,11 @@ body {
   height: 30px;
   margin: 0;
 }
+
 .switch-glass input {
   display: none;
 }
+
 .slider-glass {
   position: absolute;
   cursor: pointer;
@@ -303,6 +312,7 @@ body {
   transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
   box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.1);
 }
+
 .slider-glass:before {
   position: absolute;
   content: "";
@@ -315,11 +325,13 @@ body {
   transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
-.switch-glass input:checked + .slider-glass {
+
+.switch-glass input:checked+.slider-glass {
   background-color: var(--color-1);
   border-color: var(--color-1);
 }
-.switch-glass input:checked + .slider-glass:before {
+
+.switch-glass input:checked+.slider-glass:before {
   transform: translateX(24px);
 }
 
@@ -327,51 +339,55 @@ body {
    QUẢN LÝ HIỂN THỊ SECTION DẠNG TAB 
 ========================================= */
 .dashboard-section {
-    display: none;
-    opacity: 0;
-    transform: scale(0.98) translateY(10px);
-    transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1), 
-                transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  display: none;
+  opacity: 0;
+  transform: scale(0.98) translateY(10px);
+  transition: opacity 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1),
+    transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
 }
 
 /* Kích hoạt section được chọn */
 .dashboard-section.active {
-    display: block;
-    animation: transitionSection 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
+  display: block;
+  animation: transitionSection 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1) forwards;
 }
 
 /* =========================================
    LIQUID GLASS TAB (CÁC NÚT LỌC TRẠNG THÁI CHUYẾN ĐI)
 ========================================= */
 .btn-glass-tab {
-    position: relative;
-    padding: 10px 24px;
-    border-radius: 50px;
-    background: rgba(255, 255, 255, 0.1); /* Kính mờ trong suốt */
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    color: rgba(255, 255, 255, 0.85); /* Chữ hơi mờ khi chưa chọn */
-    font-weight: 600;
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 0.1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2); /* Liquid bouncing */
-    overflow: hidden;
+  position: relative;
+  padding: 10px 24px;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  /* Kính mờ trong suốt */
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.85);
+  /* Chữ hơi mờ khi chưa chọn */
+  font-weight: 600;
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 0.1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  /* Liquid bouncing */
+  overflow: hidden;
 }
 
 .btn-glass-tab:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: rgba(255, 255, 255, 0.6);
-    color: #ffffff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), inset 2px 2px 5px rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2), inset 2px 2px 5px rgba(255, 255, 255, 0.4);
 }
 
 .btn-glass-tab.active {
-    background: #ffffff;
-    color: var(--color-1); /* Chữ xanh lá */
-    border-color: #ffffff;
-    box-shadow: 0 8px 25px rgba(0, 177, 79, 0.35), inset -2px -2px 6px rgba(0,0,0,0.05); 
-    transform: translateY(-3px) scale(1.02);
+  background: #ffffff;
+  color: var(--color-1);
+  /* Chữ xanh lá */
+  border-color: #ffffff;
+  box-shadow: 0 8px 25px rgba(0, 177, 79, 0.35), inset -2px -2px 6px rgba(0, 0, 0, 0.05);
+  transform: translateY(-3px) scale(1.02);
 }
 
 /* =========================================
@@ -380,131 +396,184 @@ body {
 
 /* Nút Duyệt */
 .btn-glass-approve {
-    background: rgba(255, 255, 255, 0.85) !important; /* Trắng đục mờ */
-    color: var(--color-1) !important; /* Chữ xanh */
-    border: 1px solid var(--color-1) !important; /* Viền xanh */
-    border-radius: 50px;
-    padding: 8px 20px;
-    box-shadow: 0 4px 10px rgba(0, 177, 79, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  background: rgba(255, 255, 255, 0.85) !important;
+  /* Trắng đục mờ */
+  color: var(--color-1) !important;
+  /* Chữ xanh */
+  border: 1px solid var(--color-1) !important;
+  /* Viền xanh */
+  border-radius: 50px;
+  padding: 8px 20px;
+  box-shadow: 0 4px 10px rgba(0, 177, 79, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
 
 .btn-glass-approve:hover {
-    background: var(--color-1) !important; /* Đổ nền xanh */
-    color: #ffffff !important; /* Chữ trắng */
-    border-color: var(--color-1) !important;
-    transform: scale(1.08) translateY(-2px); /* Nảy to lên */
-    box-shadow: 0 10px 25px rgba(0, 177, 79, 0.4), inset 1px 1px 5px rgba(255, 255, 255, 0.5);
+  background: var(--color-1) !important;
+  /* Đổ nền xanh */
+  color: #ffffff !important;
+  /* Chữ trắng */
+  border-color: var(--color-1) !important;
+  transform: scale(1.08) translateY(-2px);
+  /* Nảy to lên */
+  box-shadow: 0 10px 25px rgba(0, 177, 79, 0.4), inset 1px 1px 5px rgba(255, 255, 255, 0.5);
 }
 
 /* Nút Từ chối */
 .btn-glass-reject {
-    background: rgba(255, 255, 255, 0.85) !important; 
-    color: #ef4444 !important; /* Chữ đỏ */
-    border: 1px solid #ef4444 !important; /* Viền đỏ */
-    border-radius: 50px;
-    padding: 8px 20px;
-    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #ef4444 !important;
+  /* Chữ đỏ */
+  border: 1px solid #ef4444 !important;
+  /* Viền đỏ */
+  border-radius: 50px;
+  padding: 8px 20px;
+  box-shadow: 0 4px 10px rgba(239, 68, 68, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
 }
 
 .btn-glass-reject:hover {
-    background: #ef4444 !important; /* Đổ nền đỏ */
-    color: #ffffff !important; /* Chữ trắng */
-    border-color: #ef4444 !important;
-    transform: scale(1.08) translateY(-2px); /* Nảy to lên */
-    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4), inset 1px 1px 5px rgba(255, 255, 255, 0.5);
+  background: #ef4444 !important;
+  /* Đổ nền đỏ */
+  color: #ffffff !important;
+  /* Chữ trắng */
+  border-color: #ef4444 !important;
+  transform: scale(1.08) translateY(-2px);
+  /* Nảy to lên */
+  box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4), inset 1px 1px 5px rgba(255, 255, 255, 0.5);
 }
 
 /* =========================================
    NÚT PHÂN TÀI (GLASS DISPATCH BUTTON)
 ========================================= */
 .btn-glass-dispatch {
-    background: rgba(255, 255, 255, 0.85) !important; /* Nền kính trắng đục mờ */
-    color: #3182ce !important; /* Chữ màu xanh dương công nghệ */
-    border: 1px solid #3182ce !important; /* Viền xanh dương */
-    border-radius: 50px;
-    padding: 8px 20px;
-    box-shadow: 0 4px 10px rgba(49, 130, 206, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 1);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2); /* Hiệu ứng nảy lỏng */
+  background: rgba(255, 255, 255, 0.85) !important;
+  /* Nền kính trắng đục mờ */
+  color: #3182ce !important;
+  /* Chữ màu xanh dương công nghệ */
+  border: 1px solid #3182ce !important;
+  /* Viền xanh dương */
+  border-radius: 50px;
+  padding: 8px 20px;
+  box-shadow: 0 4px 10px rgba(49, 130, 206, 0.1), inset 1px 1px 3px rgba(255, 255, 255, 1);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+  /* Hiệu ứng nảy lỏng */
 }
 
 .btn-glass-dispatch:hover {
-    background: #3182ce !important; /* Đổ nền xanh dương rực rỡ */
-    color: #ffffff !important; /* Chữ chuyển sang trắng */
-    border-color: #3182ce !important;
-    transform: scale(1.08) translateY(-2px); /* Phóng to và nảy nhẹ lên */
-    box-shadow: 0 10px 25px rgba(49, 130, 206, 0.4), inset 1px 1px 5px rgba(255, 255, 255, 0.5); /* Đổ bóng phát sáng */
+  background: #3182ce !important;
+  /* Đổ nền xanh dương rực rỡ */
+  color: #ffffff !important;
+  /* Chữ chuyển sang trắng */
+  border-color: #3182ce !important;
+  transform: scale(1.08) translateY(-2px);
+  /* Phóng to và nảy nhẹ lên */
+  box-shadow: 0 10px 25px rgba(49, 130, 206, 0.4), inset 1px 1px 5px rgba(255, 255, 255, 0.5);
+  /* Đổ bóng phát sáng */
 }
 
 @keyframes transitionSection {
-    to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-    }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
 }
 
 /* ==========================================================================
    RESPONSIVE MOBILE (< 1200px) - BOTTOM NAV CHO DISPATCHER
 ========================================================================== */
 @media (max-width: 1199.98px) {
-    /* Đẩy khung nội dung lên để tránh bị Bottom Nav che mất */
-    body { padding-bottom: 110px !important; } 
 
-    /* Ẩn slogan để Navbar gọn gàng, chừa chỗ cho Logo và Avatar */
-    .navbar-slogan { display: none !important; }
+  /* Đẩy khung nội dung lên để tránh bị Bottom Nav che mất */
+  body {
+    padding-bottom: 110px !important;
+  }
 
-    /* THIẾT KẾ BOTTOM NAV LƠ LỬNG */
-    .bottom-nav-glass {
-        position: fixed;
-        bottom: 25px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 92%;
-        max-width: 500px;
-        display: flex; /* Bootstrap d-xl-none đã lo việc ẩn/hiện */
-        flex-direction: row;
-        justify-content: space-around;
-        padding: 10px 10px;
-        border-radius: 50px;
-        z-index: 9999;
-        isolation: isolate;
-        
-        background: rgba(255, 255, 255, 0.65);
-                backdrop-filter: blur(25px);
-                -webkit-backdrop-filter: blur(25px);
-                border: 1px solid rgba(255, 255, 255, 0.8);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
-                            inset 1px 1px 3px rgba(255, 255, 255, 1);
-    }
+  /* Ẩn slogan để Navbar gọn gàng, chừa chỗ cho Logo và Avatar */
+  .navbar-slogan {
+    display: none !important;
+  }
 
-    /* Viền hiệu ứng khúc xạ kính lỏng phía sau */
-    .bottom-nav-glass::after {
-        content: ''; position: absolute; inset: -8px; z-index: -1;
-        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-        filter: url(#liquid-distortion); clip-path: inset(8px round 50px);
-        background: transparent; border-radius: 60px;
-    }
+  /* THIẾT KẾ BOTTOM NAV LƠ LỬNG */
+  .bottom-nav-glass {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 92%;
+    max-width: 500px;
+    display: flex;
+    /* Bootstrap d-xl-none đã lo việc ẩn/hiện */
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 10px 10px;
+    border-radius: 50px;
+    z-index: 9999;
+    isolation: isolate;
 
-    /* Định dạng nút bấm */
-    .bottom-nav-glass .nav-item {
-        display: flex; flex-direction: column; justify-content: center; align-items: center;
-        padding: 8px 10px; width: auto; gap: 5px;
-        background: transparent; color: #64748b; border-radius: 20px;
-        transition: all 0.3s ease; text-decoration: none;
-    }
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2),
+      inset 1px 1px 3px rgba(255, 255, 255, 1);
+  }
 
-    .bottom-nav-glass .nav-item i { font-size: 1.25rem; }
-    .bottom-nav-glass .nav-item span { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+  /* Viền hiệu ứng khúc xạ kính lỏng phía sau */
+  .bottom-nav-glass::after {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    z-index: -1;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    filter: url(#liquid-distortion);
+    clip-path: inset(8px round 50px);
+    background: transparent;
+    border-radius: 60px;
+  }
 
-    /* Trạng thái Active & Hover */
-    .bottom-nav-glass .nav-item.active {
-        background: rgba(255, 255, 255, 0.95); color: var(--color-1);
-                box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
-                transform: translateY(-4px);
-    }
-    .bottom-nav-glass .nav-item:hover { transform: translateY(-4px); }
+  /* Định dạng nút bấm */
+  .bottom-nav-glass .nav-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 10px;
+    width: auto;
+    gap: 5px;
+    background: transparent;
+    color: #64748b;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
 
-    /* Thu nhỏ khoảng cách các block trên mobile */
-    .glass-panel { padding: 20px; border-radius: 24px; }
+  .bottom-nav-glass .nav-item i {
+    font-size: 1.25rem;
+  }
+
+  .bottom-nav-glass .nav-item span {
+    font-size: 0.65rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Trạng thái Active & Hover */
+  .bottom-nav-glass .nav-item.active {
+    background: rgba(255, 255, 255, 0.95);
+    color: var(--color-1);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
+    transform: translateY(-4px);
+  }
+
+  .bottom-nav-glass .nav-item:hover {
+    transform: translateY(-4px);
+  }
+
+  /* Thu nhỏ khoảng cách các block trên mobile */
+  .glass-panel {
+    padding: 20px;
+    border-radius: 24px;
+  }
 }
