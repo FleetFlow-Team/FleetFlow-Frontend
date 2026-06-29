@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 
 <head>
@@ -1603,6 +1603,41 @@
                             <i class="fa-solid fa-plus me-2"></i> Thêm Ngày Lễ
                         </button>
                     </form>
+                </div>
+            </div>
+
+            <!-- MODAL CHI TIẾT PHƯƠNG TIỆN -->
+            <div class="login-modal-overlay" id="vehicleDetailModal">
+                <div class="glass-login-container text-white" style="max-width: 600px;">
+                    <button type="button" class="close-modal-btn" onclick="closeVehicleDetailModal()">&times;</button>
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-car text-info mb-3" style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(13,202,240,0.5));"></i>
+                        <h3 class="glass-login-title" style="font-size: 1.5rem;" id="vdTitle">Hồ Sơ Phương Tiện</h3>
+                        <span class="badge bg-success" id="vdStatus">Trạng thái</span>
+                    </div>
+
+                    <div class="row g-3 mb-2 text-center">
+                        <div class="col-6">
+                            <label class="form-label text-white-50 small mb-1">Biển số kiểm soát</label>
+                            <div class="form-control glass-input-field text-white fw-bold d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdLicense"></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-white-50 small mb-1">Dòng xe</label>
+                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdModel"></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-white-50 small mb-1">Số máy</label>
+                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdEngine"></div>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-white-50 small mb-1">Số khung</label>
+                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdChassis"></div>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small mb-1">Số KM đã đi (ODO)</label>
+                            <div class="form-control glass-input-field text-warning fw-bold fs-5 text-center d-flex align-items-center justify-content-center" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);" id="vdOdo"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

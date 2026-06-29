@@ -850,16 +850,26 @@ window.viewAdminVehicleDetail = async function (id) {
 
         if (result.success && result.data) {
             const v = result.data;
-            alert(`🔍 HỒ SƠ LƯU TRỮ PHƯƠNG TIỆN #${v.vehicleId}\n` +
-                `-----------------------------------------\n` +
-                `Biển số kiểm soát: ${v.licensePlate}\n` +
-                `Hãng & Dòng xe: ${v.brand} ${v.model} (${v.seatCount} Chỗ)\n\n` +
-                `Số khung: ${v.chassisNumber}\n` +
-                `Số máy: ${v.engineNumber}\n` +
-                `ODO: ${v.accumulatedKm} km\n\n` +
-                `Trạng thái: ${v.status === 'Available' ? 'Đang hoạt động' : 'Tạm khóa'}`);
-        } else showSystemToast(result.message || "Không tìm thấy dữ liệu phương tiện!", "error");
-    } catch (error) { showSystemToast("Lỗi đường truyền! Vui lòng thử lại.", "error"); }
+            document.getElementById('vdTitle').innerText = `Hồ Sơ Phương Tiện #${v.vehicleId}`;
+            document.getElementById('vdStatus').innerText = v.status === 'Available' ? 'Đang hoạt động' : (v.status || 'Không xác định');
+            document.getElementById('vdStatus').className = v.status === 'Available' ? 'badge bg-success' : 'badge bg-danger';
+            document.getElementById('vdLicense').innerText = v.licensePlate;
+            document.getElementById('vdModel').innerText = `${v.brand} ${v.model} (${v.seatCount} Chỗ)`;
+            document.getElementById('vdEngine').innerText = v.engineNumber;
+            document.getElementById('vdChassis').innerText = v.chassisNumber;
+            document.getElementById('vdOdo').innerText = `${new Intl.NumberFormat('vi-VN').format(v.accumulatedKm)} km`;
+            
+            document.getElementById('vehicleDetailModal').classList.add('active');
+        } else {
+            showSystemToast(result.message || "Không tìm thấy dữ liệu phương tiện!", "error");
+        }
+    } catch (error) {
+        showSystemToast("Lỗi đường truyền! Vui lòng thử lại.", "error");
+    }
+};
+
+window.closeVehicleDetailModal = function() {
+    document.getElementById('vehicleDetailModal').classList.remove('active');
 };
 
 window.changeVehicleStatus = async function (id, newStatus) {
