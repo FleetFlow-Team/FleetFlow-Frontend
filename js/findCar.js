@@ -820,3 +820,151 @@ function initTiltEffect() {
         });
     });
 }
+
+// ==========================================================================
+// 7. AI CHATBOT LOGIC
+// ==========================================================================
+function sendSuggestion(text) {
+    const input = document.getElementById('chat-input');
+    if (input) {
+        input.value = text;
+        sendMessage();
+    }
+}
+
+async function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const msgList = document.getElementById('chat-messages');
+    
+    if (!input || !msgList) return;
+    
+    const message = input.value.trim();
+    if (!message) return;
+    
+    // Xoá nội dung input
+    input.value = '';
+    
+    // Render tin nhắn của User
+    msgList.innerHTML += `
+        <div class="d-flex gap-3 mb-4 w-100 flex-row-reverse">
+            <div class="chat-glass-bubble user-bubble" style="background: rgba(0, 177, 79, 0.85); backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 20px 20px 0 20px;">
+                <p class="mb-0 text-white">${message}</p>
+            </div>
+        </div>
+    `;
+    
+    msgList.scrollTop = msgList.scrollHeight;
+    
+    // Render tin nhắn chờ của Bot
+    const loadingId = 'ai-loading-' + Date.now();
+    msgList.innerHTML += `
+        <div class="d-flex gap-3 mb-4 w-100" id="${loadingId}">
+            <div class="avatar-glass flex-shrink-0">
+                <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
+            </div>
+            <div class="chat-glass-bubble ai-bubble w-100">
+                <p class="mb-0 text-dark"><i class="fa-solid fa-circle-notch fa-spin me-2 text-primary"></i>Đang suy nghĩ...</p>
+            </div>
+        </div>
+    `;
+    msgList.scrollTop = msgList.scrollHeight;
+    
+    try {
+        const response = await fetch('http://localhost:8080/FleetFlow/api/v1/ai/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+        });
+        
+        const result = await response.json();
+        
+        // Remove loading
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        
+        if (response.ok && result.success) {
+            let botText = "Tôi đã tìm thấy phương tiện phù hợp với nhu cầu của bạn. Danh sách bên dưới đã được cập nhật!";
+            if (!result.data || result.data.length === 0) {
+                botText = "Xin lỗi, tôi không tìm thấy phương tiện nào hoàn toàn phù hợp với yêu cầu này. Bạn thử điều chỉnh lại nhé!";
+            } else if (result.source === 'FALLBACK') {
+                botText = "Hệ thống AI tạm thời gián đoạn. Dưới đây là gợi ý từ hệ thống cơ bản:";
+            }
+            
+            // Render text
+            msgList.innerHTML += `
+                <div class="d-flex gap-3 mb-4 w-100">
+                    <div class="avatar-glass flex-shrink-0">
+                        <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
+                    </div>
+                    <div class="chat-glass-bubble ai-bubble w-100">
+                        <p class="mb-0 text-dark">${botText}</p>
+                    </div>
+                </div>
+            `;
+            
+            // Render list xe mới
+            if (result.data && result.data.length > 0) {
+                // Đóng bottom sheet/ẩn chat nếu trên Mobile
+                if (window.innerWidth < 1200) {
+                    const sheet = document.getElementById('filterSheet');
+                    if (sheet) sheet.classList.remove('expanded');
+                    document.body.classList.remove('filter-open');
+                }
+                
+                // Override mảng data và render
+                window.filteredVehicles = result.data;
+                window.currentPage = 1;
+                renderVehiclesByPage(1);
+                if (typeof renderPaginationInfo === 'function') {
+                    renderPaginationInfo(window.filteredVehicles.length, 1);
+                }
+                
+                // Cuộn xuống
+                const listContainer = document.getElementById('vehicleListContainer');
+                if (listContainer) {
+                    listContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        } else {
+            msgList.innerHTML += `
+                <div class="d-flex gap-3 mb-4 w-100">
+                    <div class="avatar-glass flex-shrink-0">
+                        <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
+                    </div>
+                    <div class="chat-glass-bubble ai-bubble w-100">
+                        <p class="mb-0 text-danger">Đã có lỗi từ máy chủ: ${result.error || 'Lỗi không xác định'}</p>
+                    </div>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.error("Lỗi gọi API AI Chat:", e);
+        const loadingEl = document.getElementById(loadingId);
+        if (loadingEl) loadingEl.remove();
+        msgList.innerHTML += `
+            <div class="d-flex gap-3 mb-4 w-100">
+                <div class="avatar-glass flex-shrink-0">
+                    <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
+                </div>
+                <div class="chat-glass-bubble ai-bubble w-100">
+                    <p class="mb-0 text-danger">Lỗi kết nối mạng đến AI Trợ lý.</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    msgList.scrollTop = msgList.scrollHeight;
+}
+
+// Bắt sự kiện phím Enter cho Chat Input
+document.addEventListener("DOMContentLoaded", () => {
+    const chatInput = document.getElementById('chat-input');
+    if (chatInput) {
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+});

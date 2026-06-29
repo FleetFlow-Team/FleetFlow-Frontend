@@ -99,16 +99,16 @@ async function approveBooking(bookingId, buttonElement) {
                     badge.innerHTML = '<i class="fa-solid fa-check-double me-1"></i> Đã duyệt';
                 }
                 
-                // Thay vì gọi dispatchDriver, ta gọi đúng hàm openDispatchModal.
-                // Truyền tham số 0 vào vị trí vehicleId để Modal hiểu là cho phép Dispatcher tự nhập ID Xe.
-                // Đổi nút bấm thành nút Phân tài chuẩn Liquid Glass
+                // Đổi nút bấm thành trạng thái đang xử lý tự động
                 const tdAction = buttonElement.parentElement;
                 tdAction.innerHTML = `
-                    <button class="btn-glass-action btn-glass-dispatch fw-bold w-100" 
-                            onclick="openDispatchModal(${bookingId}, 0)">
-                        Phân tài
-                    </button>
+                    <span class="text-success fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Đang tìm TX</span>
                 `;
+                
+                // Tùy chọn: Sau 3 giây tự động làm mới bảng PENDING để tải lại danh sách mới
+                setTimeout(() => {
+                    loadBookings('PENDING', 'tbody-main');
+                }, 3000);
             }
         } else {
             // Nếu Backend báo lỗi (Ví dụ: Đơn đã bị người khác duyệt)
@@ -322,8 +322,8 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
                     <i class="fa-solid fa-xmark me-1"></i> Từ chối
                 </button>
             `;
-        } else if (b.status === 'APPROVED') {
-            badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
+        } else if (b.status === 'UNASSIGNED') {
+            badge = `<span class="glass-badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i> Thiếu tài xế</span>`;
             
             // Fallback an toàn cho vehicleId
             const safeVehicleId = b.vehicleId || 0; 
@@ -332,7 +332,7 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             actionButtons = `
                 <button class="btn-glass-action btn-glass-dispatch fw-bold w-100" 
                         onclick="openDispatchModal(${b.bookingId}, ${safeVehicleId})">
-                    Phân tài
+                    <i class="fa-solid fa-user-plus me-1"></i> Phân tài thủ công
                 </button>
             `;
         } else if (b.status === 'REJECTED') {
@@ -341,6 +341,9 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
         } else if (b.status === 'DISPATCHED') {
             badge = `<span class="glass-badge bg-primary text-white"><i class="fa-solid fa-car-side me-1"></i> Đã phân tài</span>`;
             actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+        } else if (b.status === 'APPROVED') {
+            badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
+            actionButtons = `<span class="text-primary fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Tự động tìm TX</span>`;
         }
 
         tr.innerHTML = `
@@ -362,7 +365,7 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
 
 // 5. TỰ ĐỘNG TẢI DỮ LIỆU KHI VỪA MỞ TRANG (Mặc định tải PENDING)
 document.addEventListener("DOMContentLoaded", () => {
-    loadBookings('PENDING', 'tbody-pending');
+    loadBookings('PENDING', 'tbody-main');
 });
 
 // ==========================================
@@ -442,7 +445,7 @@ window.executeDispatch = async function() {
             document.body.style.paddingRight = '';
 
             // Làm mới bảng danh sách
-            loadBookings('APPROVED', 'tbody-main');
+            loadBookings('UNASSIGNED', 'tbody-main');
         } else {
             showSystemToast(result.error || result.message || "Hệ thống từ chối phân tài!", "error");
         }

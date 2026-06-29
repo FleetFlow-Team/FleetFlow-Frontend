@@ -64,6 +64,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (targetSection) {
                     targetSection.classList.add("active");
                     window.scrollTo({ top: 0, behavior: "smooth" });
+                    
+                    // Nạp dữ liệu tự động nếu vào tab cấu hình Tags
+                    if (targetId === 'tab-vehicle-tags' && typeof loadVehicleTagsList === 'function') {
+                        loadVehicleTagsList();
+                    }
                 }
             }
         });
