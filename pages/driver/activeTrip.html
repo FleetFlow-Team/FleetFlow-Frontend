@@ -1,5 +1,6 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,20 +8,24 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
-    
+
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="stylesheet" href="../../style/pages/active-trip.css" />
 </head>
+
 <body>
-    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg"
+        version="1.1">
         <defs>
             <filter id="liquid-distortion">
                 <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R"
+                    yChannelSelector="G" />
             </filter>
         </defs>
     </svg>
@@ -34,22 +39,23 @@
     <header>
         <nav class="navbar custom-navbar fixed-top transition-all">
             <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
-                
+
                 <div class="trip-status-header d-flex align-items-center gap-3">
                     <div class="pulse-live" id="liveIndicator"></div>
-                    <span id="tripStatusText" class="fw-bold fs-5 text-primary text-uppercase" style="letter-spacing: 0.5px;">Đang Đợi Đón Khách</span>
+                    <span id="tripStatusText" class="fw-bold fs-5 text-primary text-uppercase"
+                        style="letter-spacing: 0.5px;">Đang Đợi Đón Khách</span>
                 </div>
 
                 <div class="fw-bold text-white fs-5 d-none d-sm-block position-absolute start-50 translate-middle-x">
                     #BK-1029
                 </div>
 
-                    <div class="nav-right-actions">
-                        <a href="javascript:history.back()" class="btn-back">
-                            <i class="fa-solid fa-arrow-left"></i> <span>Trở về</span>
-                        </a>
-                    </div>
-                
+                <div class="nav-right-actions">
+                    <a href="javascript:history.back()" class="btn-back">
+                        <i class="fa-solid fa-arrow-left"></i> <span>Trở về</span>
+                    </a>
+                </div>
+
             </div>
         </nav>
     </header>
@@ -60,7 +66,7 @@
 
     <div class="fullscreen-map-container">
         <div class="map-overlay"></div>
-        
+
         <button class="btn-glass-action btn-recenter" title="Định tâm xe">
             <i class="fa-solid fa-location-crosshairs"></i>
         </button>
@@ -69,30 +75,36 @@
             <div class="text-center p-4 glass-panel" style="max-width: 400px;">
                 <i class="fa-solid fa-satellite-dish fa-fade text-danger fs-1 mb-3"></i>
                 <h4 class="fw-bold text-dark mb-2">Chưa bật GPS</h4>
-                <p class="text-muted small fw-medium mb-4">Vui lòng cấp quyền truy cập Vị trí để hệ thống theo dõi và đo lường khoảng cách chuyến đi.</p>
-                <button class="btn-glass-action bg-primary text-white border-primary w-100 py-2 fw-bold" onclick="mockAllowGPS()">Kích hoạt Ngay</button>
+                <p class="text-muted small fw-medium mb-4">Vui lòng cấp quyền truy cập Vị trí để hệ thống theo dõi và đo
+                    lường khoảng cách chuyến đi.</p>
+                <button class="btn-glass-action bg-primary text-white border-primary w-100 py-2 fw-bold"
+                    onclick="mockAllowGPS()">Kích hoạt Ngay</button>
             </div>
         </div>
-        
+
         <div class="position-absolute top-50 start-50 translate-middle text-center" style="z-index: 2;">
             <img src="https://cdn-icons-png.flaticon.com/512/3203/3203061.png" class="map-vehicle-marker" alt="Car">
         </div>
     </div>
 
     <aside class="floating-trip-panel hide-scrollbar">
-        
+
         <div class="mobile-drag-handle d-lg-none mx-auto mt-2 mb-3"></div>
 
         <div class="glass-panel compact-glass-card p-3" id="customerInfoCard">
             <div class="d-flex align-items-center gap-3 mb-3">
-                <img src="https://ui-avatars.com/api/?name=Van+Khach&background=00b14f&color=fff" alt="Customer" class="customer-avatar rounded-circle border border-2 border-white shadow-sm" width="50" height="50">
+                <img src="https://ui-avatars.com/api/?name=Van+Khach&background=00b14f&color=fff" alt="Customer"
+                    class="customer-avatar rounded-circle border border-2 border-white shadow-sm" width="50"
+                    height="50">
                 <div>
                     <div class="fw-bold fs-6 text-dark lh-1 mb-1">Lê Văn Khách</div>
-                    <div class="fw-semibold text-primary small"><i class="fa-solid fa-phone me-1"></i> 0909 888 999</div>
+                    <div class="fw-semibold text-primary small"><i class="fa-solid fa-phone me-1"></i> 0909 888 999
+                    </div>
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn-glass-action flex-grow-1 bg-success text-white border-success py-2 rounded-pill small fw-bold shadow-sm">
+                <button
+                    class="btn-glass-action flex-grow-1 bg-success text-white border-success py-2 rounded-pill small fw-bold shadow-sm">
                     <i class="fa-solid fa-phone-volume me-2"></i> Gọi điện
                 </button>
                 <button class="btn-glass-action flex-grow-1 text-dark border-secondary py-2 rounded-pill small fw-bold">
@@ -101,7 +113,8 @@
             </div>
         </div>
 
-        <div class="glass-panel compact-glass-card p-4 text-center privacy-mask" id="privacyMask" style="display: none;">
+        <div class="glass-panel compact-glass-card p-4 text-center privacy-mask" id="privacyMask"
+            style="display: none;">
             <i class="fa-solid fa-shield-check fs-2 text-success mb-2"></i>
             <h6 class="fw-bold text-dark m-0">Dữ liệu đã được bảo mật.</h6>
         </div>
@@ -110,35 +123,42 @@
             <div class="row g-2">
                 <div class="col-6">
                     <div class="metric-glass-box text-center p-2 rounded-4">
-                        <div class="text-muted small fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Dự kiến đến</div>
+                        <div class="text-muted small fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Dự kiến đến
+                        </div>
                         <div class="fs-4 fw-bold text-primary" id="etaTime">1h 45m</div>
                     </div>
                 </div>
                 <div class="col-6">
                     <div class="metric-glass-box text-center p-2 rounded-4">
-                        <div class="text-muted small fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Khoảng cách</div>
+                        <div class="text-muted small fw-bold text-uppercase mb-1" style="font-size: 0.7rem;">Khoảng cách
+                        </div>
                         <div class="fs-4 fw-bold text-dark">85 <span class="fs-6 text-muted">km</span></div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="route-stepper position-relative ms-2 ps-3 mt-1">
                 <div class="step-point step-pickup mb-3 position-relative">
                     <div class="fw-bold text-dark fs-6 lh-1 mb-1">Đại học FPT, Khu Công Nghệ Cao</div>
-                    <div class="text-muted small fw-medium" style="font-size: 0.75rem;">Đường D1, P.Long Thạnh Mỹ, TP.Thủ Đức</div>
+                    <div class="text-muted small fw-medium" style="font-size: 0.75rem;">Đường D1, P.Long Thạnh Mỹ,
+                        TP.Thủ Đức</div>
                 </div>
                 <div class="step-point step-dropoff position-relative">
                     <div class="fw-bold text-dark fs-6 lh-1 mb-1">Sân bay Tân Sơn Nhất (Quốc Nội)</div>
-                    <div class="text-muted small fw-medium" style="font-size: 0.75rem;">Đường Trường Sơn, P.2, Q.Tân Bình</div>
+                    <div class="text-muted small fw-medium" style="font-size: 0.75rem;">Đường Trường Sơn, P.2, Q.Tân
+                        Bình</div>
                 </div>
             </div>
         </div>
 
         <div class="mt-2 d-flex flex-column gap-2">
-            <button class="btn-glass-action text-dark border-secondary w-100 py-3 fs-6 fw-bold shadow-sm" style="border-radius: 20px;" id="btnMainAction" onclick="openConfirmModal()">
-                BẮT ĐẦU CHUYẾN ĐI <i class="fa-solid fa-arrow-right ms-2 opacity-75"></i>
+            <button class="btn-glass-action text-white w-100 py-3 fs-6 fw-bold shadow-sm"
+                style="border-radius: 20px; background: #10b981; border-color: #10b981;" id="btnMainAction"
+                onclick="openConfirmModal()">
+                HOÀN THÀNH CHUYẾN ĐI <i class="fa-solid fa-flag-checkered ms-2"></i>
             </button>
-            <button class="btn-glass-action text-dark border-secondary w-100 py-3 fw-bold" style="border-radius: 20px;" onclick="openSurchargeModal()" id="btnSurcharge">
+            <button class="btn-glass-action text-dark border-secondary w-100 py-3 fw-bold" style="border-radius: 20px;"
+                onclick="openSurchargeModal()" id="btnSurcharge">
                 <i class="fa-solid fa-receipt me-2 text-warning"></i> Khai báo Phụ phí (BOT/Phà)
             </button>
         </div>
@@ -151,10 +171,13 @@
                 <div class="modal-body text-center p-5">
                     <i class="fa-solid fa-circle-question text-warning mb-4" style="font-size: 5rem;"></i>
                     <h4 class="fw-bold text-dark mb-2" id="confirmTitle">Bắt đầu chuyến đi?</h4>
-                    <p class="text-muted mb-4 fw-medium" id="confirmDesc">Bạn xác nhận khách hàng đã lên xe và đã sẵn sàng khởi hành lộ trình?</p>
+                    <p class="text-muted mb-4 fw-medium" id="confirmDesc">Bạn xác nhận khách hàng đã lên xe và đã sẵn
+                        sàng khởi hành lộ trình?</p>
                     <div class="d-flex gap-3">
-                        <button class="btn-glass-action text-dark border-secondary w-50 py-3" data-bs-dismiss="modal">Hủy bỏ</button>
-                        <button class="btn-glass-action bg-primary border-primary text-white w-50 py-3" id="btnExecuteAction" onclick="executeMainAction()">Xác nhận</button>
+                        <button class="btn-glass-action text-dark border-secondary w-50 py-3"
+                            data-bs-dismiss="modal">Hủy bỏ</button>
+                        <button class="btn-glass-action bg-primary border-primary text-white w-50 py-3"
+                            id="btnExecuteAction" onclick="executeMainAction()">Xác nhận</button>
                     </div>
                 </div>
             </div>
@@ -165,13 +188,15 @@
         <div class="modal-dialog modal-dialog-centered" style="max-width: 450px;">
             <div class="modal-content glass-modal-content-light border-0">
                 <div class="modal-header border-0 pb-0 pt-4 px-4">
-                    <h5 class="fw-bold text-dark fs-4"><i class="fa-solid fa-file-invoice-dollar text-primary me-2"></i> Khai báo Phụ phí</h5>
+                    <h5 class="fw-bold text-dark fs-4"><i class="fa-solid fa-file-invoice-dollar text-primary me-2"></i>
+                        Khai báo Phụ phí</h5>
                     <button type="button" class="btn-close fs-5" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <div class="mb-4">
                         <label class="form-label fw-bold text-muted">Số tiền phát sinh (VNĐ)</label>
-                        <input type="number" class="form-control glass-input fw-bold text-primary" placeholder="Ví dụ: 35000" style="font-size: 1.5rem; height: 60px;">
+                        <input type="number" class="form-control glass-input fw-bold text-primary"
+                            placeholder="Ví dụ: 35000" style="font-size: 1.5rem; height: 60px;">
                     </div>
                     <div class="mb-4">
                         <label class="form-label fw-bold text-muted">Hình ảnh Biên lai chứng minh</label>
@@ -180,7 +205,8 @@
                             <div class="fw-bold text-muted">Bấm để tải ảnh lên</div>
                         </div>
                     </div>
-                    <button class="btn-glass-action bg-primary text-white border-primary w-100 py-3 fw-bold fs-6" id="btnSubmitSurcharge" onclick="submitSurcharge()">
+                    <button class="btn-glass-action bg-primary text-white border-primary w-100 py-3 fw-bold fs-6"
+                        id="btnSubmitSurcharge" onclick="submitSurcharge()">
                         Gửi Yêu Cầu
                     </button>
                 </div>
@@ -188,11 +214,13 @@
         </div>
     </div>
 
-    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3" style="width: 100%; max-width: 400px; margin-top: 70px; z-index: 9999;">
-        <div id="systemErrorToast" class="toast align-items-center toast-premium-light border border-danger shadow-lg" role="alert">
+    <div class="toast-container position-fixed top-0 start-50 translate-middle-x p-3"
+        style="width: 100%; max-width: 400px; margin-top: 70px; z-index: 9999;">
+        <div id="systemErrorToast" class="toast align-items-center toast-premium-light border border-danger shadow-lg"
+            role="alert">
             <div class="d-flex p-3">
                 <div class="toast-body p-0 fw-bold fs-6 d-flex align-items-center gap-3 text-dark">
-                    <i class="fa-solid fa-circle-xmark fs-3 text-danger"></i> 
+                    <i class="fa-solid fa-circle-xmark fs-3 text-danger"></i>
                     <span>Update failed. Vui lòng thử lại!</span>
                 </div>
                 <button type="button" class="btn-close ms-auto mt-1" data-bs-dismiss="toast"></button>
@@ -205,10 +233,10 @@
         // ==========================================
         // QUẢN LÝ STATE TRẢI NGHIỆM TÀI XẾ 
         // ==========================================
-        let tripStatus = 'pending'; // pending -> active -> completed
+        let tripStatus = 'active'; // Khởi tạo luôn là active vì đã bắt đầu từ tab Chờ nhận
         let isGpsAllowed = false;
         let gpsPingInterval = null;
-        let offlineQueue = []; 
+        let offlineQueue = [];
 
         const btnMain = document.getElementById('btnMainAction');
         const statusText = document.getElementById('tripStatusText');
@@ -217,15 +245,32 @@
         const surchargeModal = new bootstrap.Modal(document.getElementById('surchargeModal'));
         const toastError = new bootstrap.Toast(document.getElementById('systemErrorToast'), { delay: 3000 });
 
+        const token = localStorage.getItem("accessToken");
+        const activeBookingId = localStorage.getItem("activeBookingId");
+
         document.addEventListener("DOMContentLoaded", () => {
+            // Mặc định giao diện đang chạy
+            statusText.innerText = "Đang Di Chuyển";
+            statusText.classList.replace('text-primary', 'text-info');
+            liveIndicator.style.background = "#2563eb";
+            liveIndicator.style.borderColor = "#2563eb";
+
             checkGPSPermission();
             setupNetworkListeners();
+            startGpsPing(); // Kích hoạt GPS ngay khi mở trang
         });
 
         function checkGPSPermission() {
-            if (!isGpsAllowed) {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => { mockAllowGPS(); },
+                    (error) => {
+                        document.getElementById('gpsDeniedAlert').style.display = 'flex';
+                        btnMain.classList.add('btn-disabled');
+                    }
+                );
+            } else {
                 document.getElementById('gpsDeniedAlert').style.display = 'flex';
-                btnMain.classList.add('btn-disabled'); 
             }
         }
 
@@ -236,67 +281,71 @@
         }
 
         // ==========================================
-        // LOGIC CHUYẾN ĐI (BẮT ĐẦU / HOÀN THÀNH)
+        // LOGIC CHUYẾN ĐI (HOÀN THÀNH)
         // ==========================================
         function openConfirmModal() {
             const title = document.getElementById('confirmTitle');
             const desc = document.getElementById('confirmDesc');
 
-            if (tripStatus === 'pending') {
-                title.innerText = "Bắt đầu chuyến đi?";
-                desc.innerText = "Xác nhận khách hàng đã lên xe và sẵn sàng khởi hành?";
-            } else if (tripStatus === 'active') {
+            if (tripStatus === 'active') {
                 title.innerText = "Hoàn thành chuyến đi?";
                 desc.innerText = "Xác nhận đã trả khách an toàn tại điểm đến?";
             }
             confirmModal.show();
         }
 
-        function executeMainAction() {
+        async function executeMainAction() {
             const btnExec = document.getElementById('btnExecuteAction');
             const originalText = btnExec.innerHTML;
             btnExec.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xử lý...';
             btnExec.disabled = true;
 
-            setTimeout(() => {
+            try {
+                if (tripStatus === 'active' && activeBookingId) {
+                    const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/trips/${activeBookingId}/complete`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    });
+
+                    if (response.ok) {
+                        // -> COMPLETED 
+                        tripStatus = 'completed';
+                        btnMain.style.display = 'none';
+                        document.getElementById('btnSurcharge').style.display = 'none';
+
+                        statusText.innerText = "Đã Hoàn Thành";
+                        statusText.classList.replace('text-info', 'text-success');
+                        liveIndicator.style.display = "none";
+
+                        clearInterval(gpsPingInterval);
+
+                        // Ẩn thông tin khách hàng bảo mật
+                        document.getElementById('customerInfoCard').style.display = 'none';
+                        document.getElementById('privacyMask').style.display = 'block';
+
+                        localStorage.removeItem("activeBookingId");
+
+                        setTimeout(() => {
+                            window.location.href = "tripHistory.html"; // Chuyển sang lịch sử
+                        }, 2000);
+                    } else {
+                        const errorSpan = document.querySelector("#systemErrorToast .toast-body span");
+                        errorSpan.innerText = "Lỗi khi hoàn thành chuyến!";
+                        toastError.show();
+                    }
+                }
+            } catch (err) {
+                const errorSpan = document.querySelector("#systemErrorToast .toast-body span");
+                errorSpan.innerText = "Mất kết nối tới server!";
+                toastError.show();
+            } finally {
                 btnExec.innerHTML = originalText;
                 btnExec.disabled = false;
                 confirmModal.hide();
-
-                if (tripStatus === 'pending') {
-                    // -> ACTIVE
-                    tripStatus = 'active';
-                    btnMain.innerHTML = 'HOÀN THÀNH CHUYẾN ĐI <i class="fa-solid fa-flag-checkered ms-2"></i>';
-                    
-                    // Chuyển màu nút sang màu xanh dương (thể hiện đang chạy)
-                    btnMain.classList.remove('bg-primary', 'border-primary');
-                    btnMain.style.background = '#2563eb';
-                    btnMain.style.borderColor = '#2563eb';
-                    
-                    statusText.innerText = "Đang Di Chuyển";
-                    statusText.classList.replace('text-primary', 'text-info');
-                    liveIndicator.style.background = "#2563eb";
-                    liveIndicator.style.borderColor = "#2563eb";
-                    
-                    startGpsPing();
-
-                } else if (tripStatus === 'active') {
-                    // -> COMPLETED 
-                    tripStatus = 'completed';
-                    btnMain.style.display = 'none';
-                    document.getElementById('btnSurcharge').style.display = 'none';
-                    
-                    statusText.innerText = "Đã Hoàn Thành";
-                    statusText.classList.replace('text-info', 'text-success');
-                    liveIndicator.style.display = "none";
-                    
-                    clearInterval(gpsPingInterval);
-
-                    // Ẩn thông tin khách hàng bảo mật
-                    document.getElementById('customerInfoCard').style.display = 'none';
-                    document.getElementById('privacyMask').style.display = 'block';
-                }
-            }, 1000);
+            }
         }
 
         // ==========================================
@@ -304,20 +353,48 @@
         // ==========================================
         function startGpsPing() {
             console.log("Hệ thống: Đã kích hoạt API gửi tọa độ GPS");
-            gpsPingInterval = setInterval(() => {
-                const payload = { bookingId: "BK-1029", lat: 10.8411, lng: 106.8098, time: Date.now() };
+            if (!activeBookingId) {
+                console.error("Không tìm thấy activeBookingId");
+                return;
+            }
 
-                if (!navigator.onLine) {
-                    offlineQueue.push(payload);
-                    console.log("Rớt mạng -> Queue size: " + offlineQueue.length);
-                } else {
-                    if (offlineQueue.length > 0) {
-                        console.log(`Đã gửi đồng bộ ${offlineQueue.length} tọa độ cũ.`);
-                        offlineQueue = [];
-                    }
-                    console.log("Ping GPS OK: ", payload);
+            // Gửi tọa độ mỗi 30 giây
+            gpsPingInterval = setInterval(() => {
+                if ("geolocation" in navigator) {
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const payload = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+
+                        if (!navigator.onLine) {
+                            offlineQueue.push(payload);
+                            console.log("Rớt mạng -> Queue size: " + offlineQueue.length);
+                        } else {
+                            if (offlineQueue.length > 0) {
+                                console.log(`Bỏ qua đồng bộ ${offlineQueue.length} tọa độ cũ, chỉ gửi mới.`);
+                                offlineQueue = [];
+                            }
+
+                            try {
+                                const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/trips/${activeBookingId}/gps`, {
+                                    method: "POST",
+                                    headers: {
+                                        "Authorization": `Bearer ${token}`,
+                                        "Content-Type": "application/json"
+                                    },
+                                    body: JSON.stringify(payload)
+                                });
+                                if (response.ok) {
+                                    console.log("Ping GPS OK: ", payload);
+                                }
+                            } catch (e) {
+                                console.log("Lỗi gửi GPS: ", e);
+                            }
+                        }
+                    });
                 }
-            }, 5000); 
+            }, 30000); // 30s
         }
 
         function setupNetworkListeners() {
@@ -347,4 +424,5 @@
     </script>
     <script src="../../js/api.js"></script>
 </body>
+
 </html>

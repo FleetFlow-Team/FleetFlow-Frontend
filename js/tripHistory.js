@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 1. Khởi tạo Bootstrap Modals
     cModalInstance = new bootstrap.Modal(document.getElementById('cancelTripModal'));
     rModalInstance = new bootstrap.Modal(document.getElementById('ratingModal'));
-    
+
     // 2. Setup vị trí ban đầu cho khối trượt (Liquid Slider)
     const activeTab = document.querySelector('.tab-pill.active');
     if (activeTab) moveIndicator(activeTab);
@@ -34,7 +34,7 @@ function getAuthHeaders() {
 // ==========================================
 async function fetchTripHistory() {
     const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId');
-    
+
     if (!customerId) {
         return window.location.href = '../index.html'; // Ép văng ra login nếu mất session
     }
@@ -43,11 +43,11 @@ async function fetchTripHistory() {
     container.innerHTML = '<div class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fa-2x text-success"></i><p class="mt-2 text-muted fw-medium">Đang đồng bộ dữ liệu hệ thống...</p></div>';
 
     try {
-        const res = await fetch(`${CUSTOMER_API_BASE}/bookings?customerId=${customerId}`, { 
-            headers: getAuthHeaders() 
+        const res = await fetch(`${CUSTOMER_API_BASE}/bookings?customerId=${customerId}`, {
+            headers: getAuthHeaders()
         });
         const data = await res.json();
-        
+
         if (res.ok && data.success) {
             globalTripData = data.data;
             renderTripList('all'); // Hiển thị tab "Tất cả" mặc định
@@ -77,20 +77,20 @@ function renderTripList(filterMode) {
         return false;
     });
 
-    if (filtered.length === 0) { 
-        emptyState.style.display = 'block'; 
-        return; 
+    if (filtered.length === 0) {
+        emptyState.style.display = 'block';
+        return;
     }
     emptyState.style.display = 'none';
 
     // Đảo ngược mảng để chuyến mới nhất nằm trên cùng
     filtered.reverse().forEach(trip => {
         let statusText = '', badgeClass = '', uiStatus = '';
-        
-        switch(trip.status) {
+
+        switch (trip.status) {
             case 'PENDING': statusText = 'Đang chờ duyệt'; badgeClass = 'badge-pending'; uiStatus = 'pending'; break;
-            case 'CONFIRMED': 
-            case 'DISPATCHED': 
+            case 'CONFIRMED':
+            case 'DISPATCHED':
             case 'IN_PROGRESS': statusText = 'Đang tiến hành'; badgeClass = 'badge-active'; uiStatus = 'active'; break;
             case 'COMPLETED': statusText = 'Hoàn thành'; badgeClass = 'badge-completed'; uiStatus = 'completed'; break;
             case 'CANCELLED': statusText = 'Đã hủy'; badgeClass = 'badge-cancelled'; uiStatus = 'cancelled'; break;
@@ -99,7 +99,7 @@ function renderTripList(filterMode) {
 
         // Fomat ngày tháng
         const d = new Date(trip.departureTime);
-        const formattedDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}`;
+        const formattedDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
 
         // Đổ thẻ HTML chuẩn Glassmorphism
         const cardHtml = `
@@ -121,7 +121,7 @@ function renderTripList(filterMode) {
 }
 
 // Logic Trượt Tab
-window.filterTrips = function(status, buttonElement) {
+window.filterTrips = function (status, buttonElement) {
     document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
     buttonElement.classList.add('active');
     moveIndicator(buttonElement);
@@ -142,7 +142,7 @@ function moveIndicator(buttonElement) {
 // ==========================================
 let tripMapInstance = null; // Biến toàn cục giữ trạng thái Bản đồ
 
-window.viewTripDetails = async function(bookingId) {
+window.viewTripDetails = async function (bookingId) {
     selectedTripId = bookingId;
     const tripSummary = globalTripData.find(t => t.bookingId == bookingId); // Dùng == để tránh lỗi type mismatch
     if (!tripSummary) return;
@@ -172,10 +172,10 @@ window.viewTripDetails = async function(bookingId) {
             // 1. FIX LỖI DATE SAFARI: Chuẩn hóa khoảng trắng thành chữ T
             const rawTime = detail.departureTime || tripSummary.departureTime;
             const isoTime = rawTime ? rawTime.replace(' ', 'T').split('.')[0] : null;
-            
+
             if (isoTime) {
                 const d = new Date(isoTime);
-                document.getElementById('lblDepartureTime').innerText = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}`;
+                document.getElementById('lblDepartureTime').innerText = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
             } else {
                 document.getElementById('lblDepartureTime').innerText = "Chưa cập nhật";
             }
@@ -183,7 +183,7 @@ window.viewTripDetails = async function(bookingId) {
             // 2. FIX LỖI CHUỖI "null": Kiểm tra nghiêm ngặt chuỗi "null" từ BE
             const safePickup = (detail.pickupAddress && detail.pickupAddress !== "null") ? detail.pickupAddress : tripSummary.pickupAddress;
             document.getElementById('lblPickupAddress').innerText = safePickup || '--';
-            
+
             if (bType === 'HOURLY') {
                 // FIX LỖI THIẾU DATA: Fallback fallback về tripSummary
                 const hours = detail.durationHours || tripSummary.durationHours || 1;
@@ -194,10 +194,10 @@ window.viewTripDetails = async function(bookingId) {
             } else {
                 let safeDropoff = (detail.dropoffAddress && detail.dropoffAddress !== "null") ? detail.dropoffAddress : tripSummary.dropoffAddress;
                 let dropoffText = safeDropoff || '--';
-                
+
                 if (tDir === 'ROUND_TRIP' && detail.returnTime) {
                     const rd = new Date(detail.returnTime.replace(' ', 'T').split('.')[0]);
-                    const rTime = `${rd.getHours().toString().padStart(2, '0')}:${rd.getMinutes().toString().padStart(2, '0')} - ${rd.getDate().toString().padStart(2, '0')}/${(rd.getMonth()+1).toString().padStart(2, '0')}`;
+                    const rTime = `${rd.getHours().toString().padStart(2, '0')}:${rd.getMinutes().toString().padStart(2, '0')} - ${rd.getDate().toString().padStart(2, '0')}/${(rd.getMonth() + 1).toString().padStart(2, '0')}`;
                     dropoffText += `<br><span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 mt-2"><i class="fa-solid fa-clock-rotate-left me-1"></i> Chiều về lúc: ${rTime}</span>`;
                 }
                 document.getElementById('lblDropoffAddress').innerHTML = dropoffText;
@@ -213,16 +213,16 @@ window.viewTripDetails = async function(bookingId) {
             if (tripSummary.status === 'PENDING' || tripSummary.status === 'APPROVED' || tripSummary.status === 'REJECTED' || tripSummary.status === 'CANCELLED') {
                 if (imgDriver) imgDriver.classList.add('d-none');
                 if (iconCar) { iconCar.classList.remove('d-none'); iconCar.classList.add('d-flex'); }
-                if (btnCall) btnCall.classList.add('d-none'); 
+                if (btnCall) btnCall.classList.add('d-none');
 
                 lblMain.innerText = tripSummary.vehicleName || "Phương tiện FleetFlow";
                 lblSub.innerHTML = `<i class="fa-solid fa-hashtag me-1"></i> Biển số: <span class="text-uppercase">${tripSummary.licensePlate || "Chờ cập nhật"}</span>`;
             } else {
                 if (imgDriver) imgDriver.classList.remove('d-none');
                 if (iconCar) { iconCar.classList.remove('d-flex'); iconCar.classList.add('d-none'); }
-                if (btnCall) btnCall.classList.remove('d-none'); 
+                if (btnCall) btnCall.classList.remove('d-none');
 
-                lblMain.innerText = tripSummary.driverName || "Tài xế FleetFlow"; 
+                lblMain.innerText = tripSummary.driverName || "Tài xế FleetFlow";
                 lblSub.innerHTML = `<i class="fa-solid fa-car-side me-1"></i> ${tripSummary.vehicleName} • <span class="text-uppercase">${tripSummary.licensePlate || ""}</span>`;
                 if (btnCall) btnCall.href = `tel:${tripSummary.driverPhone || '19005335'}`;
             }
@@ -266,12 +266,12 @@ window.viewTripDetails = async function(bookingId) {
                         const fmt = new Intl.NumberFormat('vi-VN');
                         document.getElementById('lblBasePrice').innerText = fmt.format(priceData.baseFare) + ' ₫';
                         document.getElementById('lblSurcharge').innerText = priceData.weekendSurcharge > 0 ? '+' + fmt.format(priceData.weekendSurcharge) + ' ₫' : '0 ₫';
-                        document.getElementById('lblDiscount').innerText = tripSummary.voucherId ? 'Đã áp dụng mã' : '0 ₫'; 
+                        document.getElementById('lblDiscount').innerText = tripSummary.voucherId ? 'Đã áp dụng mã' : '0 ₫';
                         document.getElementById('lblTotalAmount').innerText = fmt.format(priceData.estimatedTotal) + ' ₫';
                     } else {
                         document.getElementById('lblTotalAmount').innerText = 'Lỗi tính giá';
                     }
-                } catch(e) {
+                } catch (e) {
                     document.getElementById('lblTotalAmount').innerText = 'Không xác định';
                 }
             }
@@ -279,7 +279,7 @@ window.viewTripDetails = async function(bookingId) {
             alert('Không thể tải chi tiết lộ trình: ' + (data.error || 'Lỗi không xác định'));
             navigateBackToHistory();
         }
-    } catch(e) {
+    } catch (e) {
         console.error("Crash trong viewTripDetails:", e);
         alert('Có lỗi xảy ra trong quá trình truy xuất dữ liệu chi tiết!');
         navigateBackToHistory();
@@ -287,16 +287,16 @@ window.viewTripDetails = async function(bookingId) {
 
     // 5. Build Grid Nút Hành động & Trạng thái
     const badgeContainer = document.getElementById('detailBadgeContainer');
-    if(tripSummary.status === 'PENDING') badgeContainer.innerHTML = '<span class="trip-status-badge badge-pending">Đang chờ duyệt</span>';
-    else if(['APPROVED', 'DISPATCHED', 'IN_PROGRESS'].includes(tripSummary.status)) badgeContainer.innerHTML = '<span class="trip-status-badge badge-active">Đang tiến hành</span>';
-    else if(tripSummary.status === 'COMPLETED') badgeContainer.innerHTML = '<span class="trip-status-badge badge-completed">Hoàn thành</span>';
+    if (tripSummary.status === 'PENDING') badgeContainer.innerHTML = '<span class="trip-status-badge badge-pending">Đang chờ duyệt</span>';
+    else if (['APPROVED', 'DISPATCHED', 'IN_PROGRESS'].includes(tripSummary.status)) badgeContainer.innerHTML = '<span class="trip-status-badge badge-active">Đang tiến hành</span>';
+    else if (tripSummary.status === 'COMPLETED') badgeContainer.innerHTML = '<span class="trip-status-badge badge-completed">Hoàn thành</span>';
     else badgeContainer.innerHTML = '<span class="trip-status-badge badge-cancelled">Đã hủy</span>';
 
     const actionGrid = document.getElementById('detailActionGrid');
     if (tripSummary.status === 'PENDING' || tripSummary.status === 'APPROVED') {
         actionGrid.innerHTML = `<button class="btn-control-action btn-cancel-action" onclick="triggerCancellationLogic()">Yêu cầu Hủy chuyến</button>`;
     } else if (tripSummary.status === 'COMPLETED') {
-        actionGrid.innerHTML = `<button class="btn-control-action btn-rate-action" onclick="rModalInstance.show()">Đánh giá dịch vụ</button>`;
+        actionGrid.innerHTML = `<button class="btn-control-action btn-rate-action" onclick="triggerRatingLogic()">Đánh giá dịch vụ</button>`;
     } else {
         actionGrid.innerHTML = `<button class="btn-control-action action-locked w-100" disabled>Giao dịch đã đóng</button>`;
     }
@@ -305,7 +305,7 @@ window.viewTripDetails = async function(bookingId) {
 // Hàm Vẽ Bản đồ Lên Khung Kính
 function drawTripMap(pLat, pLng, dLat, dLng, tDir) {
     const mapContainer = document.getElementById('tripMapContainer');
-    mapContainer.innerHTML = ''; 
+    mapContainer.innerHTML = '';
 
     if (tripMapInstance) { tripMapInstance.remove(); }
 
@@ -318,11 +318,11 @@ function drawTripMap(pLat, pLng, dLat, dLng, tDir) {
 
     // Điểm Đón (Màu Xanh)
     new vietmapgl.Marker({ color: '#00B14F' }).setLngLat([pLng, pLat]).addTo(tripMapInstance);
-    
+
     // Điểm Trả (Màu Đỏ)
     if (dLat && dLng) {
         new vietmapgl.Marker({ color: '#e53e3e' }).setLngLat([dLng, dLat]).addTo(tripMapInstance);
-        
+
         // Tự động zoom bản đồ bao quát cả 2 điểm
         const bounds = [
             [Math.min(pLng, dLng), Math.min(pLat, dLat)],
@@ -332,7 +332,7 @@ function drawTripMap(pLat, pLng, dLat, dLng, tDir) {
     }
 }
 
-window.navigateBackToHistory = function() {
+window.navigateBackToHistory = function () {
     document.getElementById('detailsViewSection').classList.remove('view-active');
     document.getElementById('historyViewSection').classList.add('view-active');
 };
@@ -340,10 +340,10 @@ window.navigateBackToHistory = function() {
 // ==========================================
 // API 2: XỬ LÝ HỦY CHUYẾN (POST /cancel)
 // ==========================================
-window.triggerCancellationLogic = function() {
+window.triggerCancellationLogic = function () {
     const trip = globalTripData.find(t => t.bookingId === selectedTripId);
     const warningBox = document.getElementById('penaltyWarningMessage');
-    
+
     const now = new Date().getTime();
     const departure = new Date(trip.departureTime).getTime();
     const diffHours = (departure - now) / (1000 * 60 * 60);
@@ -356,7 +356,7 @@ window.triggerCancellationLogic = function() {
     } else {
         warningBox.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Chuyến đi này đủ điều kiện <strong>Hủy hoàn toàn miễn phí</strong>.`;
     }
-    
+
     // Gán hàm vào nút
     document.getElementById('btnConfirmCancelTrip').onclick = () => executeCancelTrip();
     cModalInstance.show();
@@ -369,7 +369,7 @@ async function executeCancelTrip() {
 
     const btn = document.getElementById('btnConfirmCancelTrip');
     const originalText = btn.innerHTML;
-    
+
     // Đổi trạng thái UI
     btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang gửi yêu cầu...';
     btn.disabled = true;
@@ -389,7 +389,7 @@ async function executeCancelTrip() {
         if (res.ok && data.success) {
             cModalInstance.hide();
             navigateBackToHistory(); // Đẩy về danh sách
-            
+
             // Xử lý thông báo trừ tiền cọc
             let msg = 'Chuyến đi của bạn đã được hủy thành công.';
             if (data.penaltyAmount > 0) {
@@ -414,3 +414,78 @@ async function executeCancelTrip() {
         btn.disabled = false;
     }
 }
+
+// ==========================================
+// API 5: ĐÁNH GIÁ CHUYẾN ĐI (POST /ratings)
+// ==========================================
+window.triggerRatingLogic = function () {
+    // Reset form
+    document.querySelectorAll('input[name="driverStars"]').forEach(r => r.checked = false);
+    document.querySelectorAll('input[name="carStars"]').forEach(r => r.checked = false);
+    const commentInput = document.getElementById('ratingComment');
+    if (commentInput) commentInput.value = '';
+
+    rModalInstance.show();
+};
+
+window.executeSubmitAction = async function (type) {
+    if (type === 'rate') {
+        const driverStarEl = document.querySelector('input[name="driverStars"]:checked');
+        const carStarEl = document.querySelector('input[name="carStars"]:checked');
+
+        if (!driverStarEl || !carStarEl) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin',
+                text: 'Vui lòng chọn số sao đánh giá cho cả Tài xế và Phương tiện!'
+            });
+            return;
+        }
+
+        const driverRating = parseInt(driverStarEl.value);
+        const carRating = parseInt(carStarEl.value);
+        const commentEl = document.getElementById('ratingComment');
+        const comment = commentEl ? commentEl.value.trim() : '';
+
+        const btnSubmit = document.getElementById('btnSubmitRatingForm');
+        const originalText = btnSubmit.innerHTML;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+        btnSubmit.disabled = true;
+
+        try {
+            const res = await fetch(`${CUSTOMER_API_BASE.replace('/customer', '')}/ratings/customer`, {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    bookingId: selectedTripId,
+                    driverRating: driverRating,
+                    carRating: carRating,
+                    comment: comment
+                })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                rModalInstance.hide();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cảm ơn bạn!',
+                    text: data.message || 'Đánh giá của bạn đã được ghi nhận.',
+                    confirmButtonColor: '#00B14F'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không thể đánh giá',
+                    text: data.message || 'Có lỗi xảy ra khi gửi đánh giá.'
+                });
+            }
+        } catch (e) {
+            console.error("Lỗi gửi đánh giá:", e);
+            Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+        } finally {
+            btnSubmit.innerHTML = originalText;
+            btnSubmit.disabled = false;
+        }
+    }
+};

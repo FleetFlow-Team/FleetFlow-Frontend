@@ -66,13 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof fetchPendingJobs === "function") {
         fetchPendingJobs();
         // 8. TỰ ĐỘNG KHÔI PHỤC CHUYẾN ĐI DANG DỞ (CHỐNG F5)
- 
+
     }
     // Lắng nghe sự kiện bật/tắt ô nhập "Lý do khác" của Modal Từ chối
     const rejectRadios = document.querySelectorAll('input[name="rejectReason"]');
     const otherReasonContainer = document.getElementById('otherReasonContainer');
-    
-    if(rejectRadios.length > 0) {
+
+    if (rejectRadios.length > 0) {
         rejectRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'other') {
@@ -96,14 +96,14 @@ document.addEventListener("DOMContentLoaded", () => {
 function updateDriverVerticalIndicator(activeLink) {
     const verticalIndicator = document.getElementById("vertical-indicator");
     if (!activeLink || !verticalIndicator) return;
-    
+
     const container = activeLink.closest(".toc-list");
-    if (!container) return; 
+    if (!container) return;
 
     const linkRect = activeLink.getBoundingClientRect();
     const containerRect = container.getBoundingClientRect();
     const topPos = linkRect.top - containerRect.top;
-    
+
     verticalIndicator.style.transform = `translateY(${topPos}px)`;
     verticalIndicator.style.height = `${linkRect.height}px`;
 }
@@ -111,26 +111,26 @@ function updateDriverVerticalIndicator(activeLink) {
 /**
  * Chuyển tab giữa các section (Đồng bộ Desktop & Mobile)
  */
-window.switchTab = function(tabId, element) {
+window.switchTab = function (tabId, element) {
     // Xóa class 'active' của tất cả các menu
     document.querySelectorAll("#driver-nav .toc-link, .bottom-nav-glass .nav-item")
-            .forEach(a => a.classList.remove("active"));
-    
-    // Bôi sáng menu được bấm
-    if(element.classList.contains('toc-link')) {
-        element.classList.add("active");
-        updateDriverVerticalIndicator(element); 
+        .forEach(a => a.classList.remove("active"));
 
-        document.querySelectorAll(`.bottom-nav-glass .nav-item`).forEach(a => { 
-            if(a.getAttribute("onclick").includes(tabId)) a.classList.add("active"); 
+    // Bôi sáng menu được bấm
+    if (element.classList.contains('toc-link')) {
+        element.classList.add("active");
+        updateDriverVerticalIndicator(element);
+
+        document.querySelectorAll(`.bottom-nav-glass .nav-item`).forEach(a => {
+            if (a.getAttribute("onclick").includes(tabId)) a.classList.add("active");
         });
     } else {
         element.classList.add("active");
-        
-        document.querySelectorAll(`#driver-nav .toc-link`).forEach(a => { 
-            if(a.getAttribute("onclick").includes(tabId)) {
+
+        document.querySelectorAll(`#driver-nav .toc-link`).forEach(a => {
+            if (a.getAttribute("onclick").includes(tabId)) {
                 a.classList.add("active");
-                updateDriverVerticalIndicator(a); 
+                updateDriverVerticalIndicator(a);
             }
         });
     }
@@ -151,23 +151,23 @@ window.switchTab = function(tabId, element) {
 /**
  * Xóa một thẻ (Card) cuốc xe mềm mại khỏi DOM
  */
-window.removeCardSmoothly = function(card) {
+window.removeCardSmoothly = function (card) {
     if (card) {
         card.style.transition = "transform 0.4s ease, opacity 0.4s ease";
         card.style.transform = "scale(0.9)";
         card.style.opacity = "0";
-        
+
         setTimeout(() => {
             card.remove();
-            
+
             const count = document.querySelectorAll(".broadcast-card-item").length;
             const badge = document.getElementById("jobBadge");
             if (badge) badge.innerText = count;
-            
+
             if (count === 0) {
                 if (badge) badge.style.display = "none";
                 const emptyState = document.getElementById("emptyState");
-                if(emptyState) emptyState.style.display = "block";
+                if (emptyState) emptyState.style.display = "block";
             }
         }, 400);
     }
@@ -178,7 +178,7 @@ window.removeCardSmoothly = function(card) {
  * @param {HTMLElement} btnElement Nút bấm vừa tương tác
  * @param {number} broadcastId Mã lệnh điều động
  */
-window.acceptJob = async function(btnElement, broadcastId) {
+window.acceptJob = async function (btnElement, broadcastId, explicitBookingId) {
     // 1. Lưu lại giao diện nút ban đầu và Block UI (chống spam click)
     const originalText = btnElement.innerHTML;
     btnElement.disabled = true;
@@ -206,30 +206,22 @@ window.acceptJob = async function(btnElement, broadcastId) {
 
         // 4. Xử lý phản hồi từ Backend
         if (response.ok && result.success) {
-            // [THÀNH CÔNG]
-// [THÀNH CÔNG]
-            const cardId = `job-card-${broadcastId}`;
-            const cardEl = document.getElementById(cardId);
-            
-            // --- CẬP NHẬT MỚI: Chỉ lưu lại Booking ID thật để chuẩn bị gọi API Lộ trình ---
-            if (cardEl) {
-                const bookingIdText = cardEl.querySelector('.fw-bold.fs-5').innerText.replace('#BK-', '').trim();
-                
-                let acceptedIds = JSON.parse(localStorage.getItem('acceptedBookingIds') || '[]');
-                if (!acceptedIds.includes(bookingIdText)) {
-                    acceptedIds.push(bookingIdText);
-                    localStorage.setItem('acceptedBookingIds', JSON.stringify(acceptedIds));
-                }
+            let bookingId = explicitBookingId;
+            if (!bookingId) {
+                const cardEl = document.getElementById(`job-card-${broadcastId}`);
+                if (cardEl) bookingId = cardEl.querySelector('.fw-bold.fs-5').innerText.replace('#BK-', '').trim();
             }
-            // ----------------------------------------------------------------------
 
-            // Xóa thẻ xe này khỏi danh sách Chờ Nhận
-            removeCardSmoothly(cardEl);
-            
-            // Hiển thị Modal chúc mừng nhận chuyến thành công
-            const sm = new bootstrap.Modal(document.getElementById("successModal"));
-            sm.show();
+            if (bookingId) {
+                // Thay vì chuyển trang, ta gọi hàm startTrip để bắt đầu chuyến và đổi UI ngay tại đây
+                const actionButtons = document.getElementById(`action-buttons-${bookingId}`);
+                if (actionButtons) {
+                    btnElement = actionButtons; // Trick để startTrip ẩn toàn bộ khung 2 nút Từ chối/Bắt đầu
+                }
 
+                // Gọi luồng startTrip (gọi /start, bật GPS, đổi nút sang Hoàn thành chuyến đi)
+                window.startTrip(btnElement, bookingId);
+            }
         } else {
             // [THẤT BẠI] - Trả lại nút bấm như cũ
             btnElement.disabled = false;
@@ -238,11 +230,9 @@ window.acceptJob = async function(btnElement, broadcastId) {
             // Kiểm tra xem có phải lỗi do người khác nhận mất đơn (Conflict)
             if (result.error && result.error.includes("không tìm thấy lệnh dispatch hợp lệ")) {
                 const cardId = `job-card-${broadcastId}`;
-                removeCardSmoothly(document.getElementById(cardId)); // Xóa thẻ vì đơn không còn
-                
+                removeCardSmoothly(document.getElementById(cardId));
                 if (window.toastConflict) window.toastConflict.show();
             } else {
-                // Lỗi hệ thống khác
                 const errorSpan = document.querySelector("#systemErrorToast .toast-body span");
                 if (errorSpan) errorSpan.innerText = result.error || "Thao tác thất bại!";
                 if (window.toastError) window.toastError.show();
@@ -250,11 +240,10 @@ window.acceptJob = async function(btnElement, broadcastId) {
         }
 
     } catch (error) {
-        // Lỗi sập server hoặc rớt mạng
         console.error("Lỗi khi Accept Job:", error);
         btnElement.disabled = false;
         btnElement.innerHTML = originalText;
-        
+
         const errorSpan = document.querySelector("#systemErrorToast .toast-body span");
         if (errorSpan) errorSpan.innerText = "Lỗi kết nối máy chủ!";
         if (window.toastError) window.toastError.show();
@@ -264,18 +253,18 @@ window.acceptJob = async function(btnElement, broadcastId) {
 /**
  * Xử lý giao diện khi gạt nút "Online / Offline"
  */
-window.handleOnlineToggle = function(currentInput, walletBalance = 100000) {
+window.handleOnlineToggle = function (currentInput, walletBalance = 100000) {
     const toggleInputs = document.querySelectorAll(".navOnlineToggle");
 
     // Kiểm tra ví: Dưới 50k không cho phép Online
     if (walletBalance < 50000 && currentInput.checked) {
         toggleInputs.forEach(input => input.checked = false);
         const alertBanner = document.getElementById("walletAlertBanner");
-        if(alertBanner) alertBanner.style.display = "block";
-        return; 
+        if (alertBanner) alertBanner.style.display = "block";
+        return;
     } else {
         const alertBanner = document.getElementById("walletAlertBanner");
-        if(alertBanner) alertBanner.style.display = "none";
+        if (alertBanner) alertBanner.style.display = "none";
     }
 
     // Đồng bộ nút gạt
@@ -283,8 +272,8 @@ window.handleOnlineToggle = function(currentInput, walletBalance = 100000) {
 
     // Cập nhật thẻ trạng thái UI
     const accVehicle = document.getElementById('accDriverVehicle');
-    if(accVehicle) {
-        if(currentInput.checked) {
+    if (accVehicle) {
+        if (currentInput.checked) {
             accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> Đang trực tuyến`;
             accVehicle.className = "badge bg-success bg-opacity-25 text-success border border-success p-2 px-3";
         } else {
@@ -304,7 +293,7 @@ window.handleOnlineToggle = function(currentInput, walletBalance = 100000) {
 function renderSessionHeader(fullName, userRole) {
     const headerName = document.querySelector('.user-info-block .profile-name');
     const headerRole = document.querySelector('.user-info-block .profile-role');
-    
+
     // Đã sửa lại selector: Tìm đúng thẻ ảnh có class header-avatar-img
     const headerAvatar = document.querySelector('.header-avatar-img');
 
@@ -323,10 +312,10 @@ function renderDriverProfile(data) {
     const accName = document.getElementById('accDriverName');
     const accAvatar = document.getElementById('accDriverAvatar');
     const accRating = document.getElementById('accDriverRating');
-    
-    if(accName) accName.innerText = data.fullName;
-    if(accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName)}&background=1a1c1a&color=fff`;
-    if(accRating) accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${data.averageRating} đánh giá`;
+
+    if (accName) accName.innerText = data.fullName;
+    if (accAvatar) accAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(data.fullName)}&background=1a1c1a&color=fff`;
+    if (accRating) accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${data.averageRating} đánh giá`;
 
     // Đồng bộ nút gạt Online
     const isOnline = (data.availabilityStatus === 'ONLINE');
@@ -382,9 +371,9 @@ function renderTransactionTableFromData(transactions) {
                 </td>
                 <td class="text-white fw-bold py-3 align-middle">${grossAmount.toLocaleString("vi-VN")} đ</td>
                 <td class="text-danger fw-bold py-3 align-middle">
-                    ${trx.companyCommission > 0 
-                        ? '-' + trx.companyCommission.toLocaleString("vi-VN") + ' đ' 
-                        : '<span class="badge bg-secondary bg-opacity-50 text-white border border-secondary px-2">Miễn phí</span>'}
+                    ${trx.companyCommission > 0
+                ? '-' + trx.companyCommission.toLocaleString("vi-VN") + ' đ'
+                : '<span class="badge bg-secondary bg-opacity-50 text-white border border-secondary px-2">Miễn phí</span>'}
                 </td>
                 <td class="text-success fw-bold fs-5 py-3 align-middle">+ ${(trx.netAmount || 0).toLocaleString("vi-VN")} đ</td>
             </tr>
@@ -407,8 +396,8 @@ function renderIncomeChartFromData(monthlyData) {
 
     const sortedData = [...monthlyData].reverse();
     const labels = sortedData.map(item => `Tháng ${item.month}/${item.year}`);
-    const netIncomes = sortedData.map(item => item.monthlyNetIncome || 0); 
-    const transactionsCount = sortedData.map(item => item.totalTransactions || 0); 
+    const netIncomes = sortedData.map(item => item.monthlyNetIncome || 0);
+    const transactionsCount = sortedData.map(item => item.totalTransactions || 0);
 
     let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
     gradientBlue.addColorStop(0, "rgba(56, 189, 248, 0.8)");
@@ -431,8 +420,8 @@ function renderIncomeChartFromData(monthlyData) {
             maintainAspectRatio: false,
             plugins: {
                 legend: { position: "top", align: "end", labels: { color: "#ffffff", usePointStyle: true } },
-                tooltip: { 
-                    backgroundColor: "rgba(0,0,0,0.85)", 
+                tooltip: {
+                    backgroundColor: "rgba(0,0,0,0.85)",
                     cornerRadius: 8,
                     callbacks: {
                         footer: (tooltipItems) => {
@@ -444,13 +433,13 @@ function renderIncomeChartFromData(monthlyData) {
             },
             scales: {
                 x: { grid: { display: false }, ticks: { color: "rgba(255,255,255,0.7)" } },
-                y: { 
-                    border: { display: false }, 
-                    grid: { color: "rgba(255,255,255,0.1)" }, 
-                    ticks: { 
-                        color: "rgba(255,255,255,0.5)", 
-                        callback: function (value) { return value.toLocaleString("vi-VN") + " đ"; } 
-                    } 
+                y: {
+                    border: { display: false },
+                    grid: { color: "rgba(255,255,255,0.1)" },
+                    ticks: {
+                        color: "rgba(255,255,255,0.5)",
+                        callback: function (value) { return value.toLocaleString("vi-VN") + " đ"; }
+                    }
                 },
             },
         },
@@ -469,9 +458,9 @@ async function fetchPendingJobs() {
     const jobListContainer = document.getElementById("jobList");
     const emptyState = document.getElementById("emptyState");
     const jobBadge = document.getElementById("jobBadge");
-    
+
     // 1. Lấy token từ LocalStorage (Bạn nhớ set 'DRIVER_TOKEN' lúc tài xế đăng nhập)
-    const token = localStorage.getItem("accessToken"); 
+    const token = localStorage.getItem("accessToken");
 
     if (!token) {
         console.warn("Chưa có DRIVER_TOKEN. Vui lòng đăng nhập!");
@@ -504,7 +493,7 @@ async function fetchPendingJobs() {
             if (result.data && result.data.length > 0) {
                 // Nếu có cuốc xe -> Render ra thẻ HTML
                 renderPendingJobs(result.data);
-                
+
                 // Hiển thị số lượng lên dấu chấm đỏ (Badge)
                 if (jobBadge) {
                     jobBadge.innerText = result.data.length;
@@ -534,7 +523,7 @@ async function fetchPendingJobs() {
  */
 function renderPendingJobs(jobs) {
     const jobListContainer = document.getElementById("jobList");
-    
+
     // Khởi tạo HTML với trạng thái EmptyState bị ẩn (để tái sử dụng khi xóa hết card)
     let html = `
         <div class="empty-state w-100 text-center py-5" id="emptyState" style="display: none;">
@@ -550,27 +539,70 @@ function renderPendingJobs(jobs) {
         const timeFormatted = dateObj.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
         const dateFormatted = dateObj.toLocaleDateString("vi-VN");
 
+        const distanceText = job.distanceKm ? parseFloat(job.distanceKm).toFixed(1) + ' km' : 'N/A';
+        const customerName = job.customerName || 'Khách vãng lai';
+        const customerPhone = job.customerPhone || 'N/A';
+        const pickupAddr = job.pickupAddress || 'N/A';
+        const dropoffAddr = job.dropoffAddress || 'N/A';
+
         html += `
             <div class="col-xl-6 broadcast-card-item" id="job-card-${job.broadcastId}">
-                <div class="glass-panel h-100 d-flex flex-column">
+                <div class="glass-panel h-100 d-flex flex-column" id="trip-card-${job.bookingId}">
                     <div class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
                         <div>
                             <span class="fw-bold text-white fs-5 d-block">#BK-${job.bookingId}</span>
-                            <span class="text-white-50 small">
+                            <span class="text-white-50 small" id="trip-status-${job.bookingId}">
                                 <i class="fa-regular fa-clock me-1"></i> Nhận lệnh: ${timeFormatted} - ${dateFormatted}
                             </span>
                         </div>
                     </div>
                     
-                    <div class="flex-grow-1 mb-4 text-white-50">
-                        <div class="p-3 bg-white bg-opacity-10 border border-secondary rounded-3 d-flex gap-3 align-items-center">
-                            <i class="fa-solid fa-location-crosshairs fs-1 text-primary"></i>
-                            <p class="mb-0 small text-start">Lộ trình và thông tin liên hệ của khách hàng sẽ được mở khóa ngay sau khi bạn Nhận chuyến.</p>
+                    <div class="flex-grow-1 mb-4 text-white">
+                        <div class="p-3 bg-white bg-opacity-10 border border-secondary rounded-3 d-flex flex-column gap-3 text-start">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary bg-opacity-25 p-2 rounded-circle">
+                                    <i class="fa-solid fa-user text-primary fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-white-50 mb-1">Khách hàng</div>
+                                    <div class="fw-bold fs-6">${customerName} <span class="ms-2 fw-normal opacity-75">(${customerPhone})</span></div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-danger bg-opacity-25 p-2 rounded-circle">
+                                    <i class="fa-solid fa-location-dot text-danger fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-white-50 mb-1">Điểm đón</div>
+                                    <div class="fw-bold">${pickupAddr}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="bg-success bg-opacity-25 p-2 rounded-circle">
+                                    <i class="fa-solid fa-flag-checkered text-success fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-white-50 mb-1">Điểm đến</div>
+                                    <div class="fw-bold">${dropoffAddr}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-info bg-opacity-25 p-2 rounded-circle">
+                                    <i class="fa-solid fa-route text-info fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-white-50 mb-1">Quãng đường</div>
+                                    <div class="fw-bold">${distanceText}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
                     <div class="border-top border-secondary pt-3 mt-auto">
-                        <div class="row g-2">
+                        <div class="row g-2" id="action-buttons-${job.bookingId}">
                             <div class="col-6">
                                 <button class="btn-glass-action border-warning text-warning w-100 py-3 fs-6 fw-bold" 
                                         style="background: rgba(245, 158, 11, 0.1);" 
@@ -580,8 +612,17 @@ function renderPendingJobs(jobs) {
                             </div>
                             <div class="col-6">
                                 <button class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6 fw-bold" 
-                                        onclick="acceptJob(this, ${job.broadcastId})">
-                                    Nhận Chuyến
+                                        onclick="acceptJob(this, ${job.broadcastId}, ${job.bookingId})">
+                                    Bắt đầu chuyến đi
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row g-2" id="btn-complete-${job.bookingId}" style="display:none;">
+                            <div class="col-12">
+                                <button class="btn-glass-action border-success text-white w-100 py-3 fs-6 fw-bold shadow-lg" 
+                                        style="background: #10b981;" 
+                                        onclick="completeTrip(this, ${job.bookingId})">
+                                    Hoàn thành chuyến đi <i class="fa-solid fa-flag-checkered ms-2"></i>
                                 </button>
                             </div>
                         </div>
@@ -606,211 +647,7 @@ function showEmptyState() {
         </div>
     `;
 }
-// ============================================================================
-// 6. XỬ LÝ CHUYỂN TAB VÀ HIỂN THỊ CHUYẾN ĐI "ĐÃ NHẬN"
-// ============================================================================
 
-window.switchJobTab = function(tabType) {
-    const btnPending = document.getElementById('tab-btn-pending');
-    const btnAccepted = document.getElementById('tab-btn-accepted');
-    const listPending = document.getElementById('jobList');
-    const listAccepted = document.getElementById('acceptedJobList');
-
-    // Reset style
-    [btnPending, btnAccepted].forEach(el => {
-        el.classList.remove("active", "text-white", "border-bottom", "border-2", "border-white");
-        el.classList.add("text-white-50");
-    });
-
-    if (tabType === 'PENDING') {
-        btnPending.classList.add("active", "text-white", "border-bottom", "border-2", "border-white");
-        btnPending.classList.remove("text-white-50");
-        listPending.style.display = 'flex';
-        listAccepted.style.display = 'none';
-        
-        fetchPendingJobs(); // Làm mới lại danh sách chờ
-
-    } else if (tabType === 'ACCEPTED') {
-        btnAccepted.classList.add("active", "text-white", "border-bottom", "border-2", "border-white");
-        btnAccepted.classList.remove("text-white-50");
-        listPending.style.display = 'none';
-        listAccepted.style.display = 'flex';
-        
-        fetchAcceptedJobs(); // Gọi API lấy đơn đã nhận
-    }
-}
-
-/**
- * Hàm lấy danh sách lộ trình và thông tin khách hàng thật từ Backend
- */
-async function fetchAcceptedJobs() {
-    const acceptedListContainer = document.getElementById("acceptedJobList");
-    
-    // Hiển thị hiệu ứng Loading xoay tròn cao cấp
-    acceptedListContainer.innerHTML = `
-        <div class="w-100 text-center py-5 text-white">
-            <div class="spinner-border text-success mb-3" role="status"></div>
-            <p class="text-white-50 fw-bold">Đang kết nối trạm điều phối tải lịch trình và thông tin hành khách...</p>
-        </div>
-    `;
-
-    const token = localStorage.getItem("accessToken");
-    
-    // Đọc danh sách ID các cuốc xe đã nhấn nhận từ bộ nhớ máy
-    let acceptedIds = JSON.parse(localStorage.getItem('acceptedBookingIds') || '[]');
-
-    // Cơ chế dự phòng (Fallback): Nếu danh sách trống, mặc định nạp đơn số 26 để bạn luôn có dữ liệu chạy thử nghiệm giao diện
-    if (acceptedIds.length === 0) {
-        acceptedIds = [26];
-    }
-
-    try {
-        const jobsData = [];
-
-        // Kích hoạt gọi API chi tiết đồng thời cho tất cả các ID cuốc xe
-        await Promise.all(acceptedIds.map(async (id) => {
-            try {
-                const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${id}`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    
-                    // Định dạng cấu trúc hiển thị ngày giờ khởi hành
-                    let timeFormatted = "Chưa rõ giờ đi";
-                    if (result.detail && result.detail.departureTime) {
-                        const dateObj = new Date(result.detail.departureTime.replace("T", " "));
-                        timeFormatted = dateObj.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }) + " - " + dateObj.toLocaleDateString("vi-VN");
-                    }
-
-                    // Đổ trực tiếp các trường dữ liệu thật (bao gồm cả Tên & SĐT mới cập nhật) từ BE vào mảng render
-                    jobsData.push({
-                        bookingId: result.bookingId,
-                        pickupAddress: result.detail?.pickupAddress || "Đang cập nhật địa chỉ đón",
-                        dropoffAddress: result.detail?.dropoffAddress || "Đang cập nhật địa chỉ trả",
-                        customerName: result.customerName || "Hành khách FleetFlow", // Lấy tên thật từ BE
-                        customerPhone: result.customerPhone || "090 ••• ••••",     // Lấy SĐT thật từ BE
-                        time: timeFormatted,
-                        status: result.status === "CONFIRMED" ? "Đang chuẩn bị đón" : result.status,
-                        distanceKm: result.detail?.distanceKm || 0
-                    });
-                }
-            } catch (err) {
-                console.error(`[API Error] Lỗi tải dữ liệu cuốc xe #${id}:`, err);
-            }
-        }));
-
-        // Tiến hành render dữ liệu thật ra màn hình
-        if (jobsData.length > 0) {
-            renderAcceptedJobs(jobsData);
-        } else {
-            acceptedListContainer.innerHTML = `
-                <div class="empty-state w-100 text-center py-5">
-                    <i class="fa-solid fa-car-on radar-icon text-white-50 fs-1 mb-3"></i>
-                    <p class="text-white-50">Bạn chưa có chuyến xe nào đang thực hiện.</p>
-                </div>
-            `;
-        }
-    } catch (error) {
-        console.error("Lỗi hệ thống fetchAcceptedJobs:", error);
-        acceptedListContainer.innerHTML = `<div class="text-center text-danger py-4 fw-bold">Mất mạng hoặc lỗi kết nối trạm điều phối!</div>`;
-    }
-}
-
-/**
- * Render giao diện thẻ xe "Đã Nhận" từ nguồn dữ liệu API thật
- */
-function renderAcceptedJobs(jobs) {
-    const acceptedListContainer = document.getElementById("acceptedJobList");
-    let html = '';
-    const activeBookingId = localStorage.getItem('activeBookingId');
-
-    jobs.forEach(job => {
-        // Kiểm tra xem cuốc xe này đang chạy thực tế hay không (Bằng DB status hoặc cờ cắm Local)
-        const isActive = (String(job.bookingId) === activeBookingId || job.status === 'ONGOING');
-
-        const cardBorder = isActive ? '4px solid #10b981' : '4px solid #0dcaf0';
-        const cardShadow = isActive ? '0 0 15px rgba(16, 185, 129, 0.2)' : 'none';
-        const statusTextClass = isActive ? 'text-success small fw-bold' : 'text-info small fw-bold';
-        const statusHtml = isActive 
-            ? '<i class="fa-solid fa-car-side fa-fade me-1"></i> ĐANG DI CHUYỂN' 
-            : '<i class="fa-solid fa-clock me-1"></i> Đang chờ khách lên xe';
-            
-        const startBtnDisplay = isActive ? 'none' : 'block';
-        const completeBtnDisplay = isActive ? 'block' : 'none';
-
-        html += `
-            <div class="col-xl-6 broadcast-card-item">
-                <div class="glass-panel h-100 d-flex flex-column" id="trip-card-${job.bookingId}" style="border-left: ${cardBorder}; box-shadow: ${cardShadow}; transition: all 0.4s ease;">
-                    <div class="d-flex justify-content-between align-items-start border-bottom border-secondary pb-3 mb-3">
-                        <div>
-                            <span class="fw-bold text-white fs-5 d-block">#BK-${job.bookingId}</span>
-                            <span id="trip-status-${job.bookingId}" class="${statusTextClass}">
-                                ${statusHtml}
-                            </span>
-                        </div>
-                        <div class="text-end">
-                            <span class="text-white-50 small d-block">Khởi hành</span>
-                            <span class="fw-bold text-white" style="font-size: 0.9rem;">${job.time}</span>
-                        </div>
-                    </div>
-                    
-                    <div class="flex-grow-1 mb-4">
-                        <div class="route-stepper text-white mb-3 position-relative border-start border-secondary ms-2 ps-3">
-                            <div class="mb-3 position-relative" style="font-size: 0.95rem;"><i class="fa-solid fa-circle position-absolute top-50 translate-middle-y text-primary" style="left: -21px; font-size: 0.6rem;"></i> ${job.pickupAddress}</div>
-                            <div class="position-relative" style="font-size: 0.95rem;"><i class="fa-solid fa-location-dot position-absolute top-50 translate-middle-y text-danger" style="left: -21px; font-size: 0.8rem;"></i> ${job.dropoffAddress}</div>
-                        </div>
-                        
-                        <div class="mb-3 text-white-50 small d-flex align-items-center gap-2 ps-2">
-                            <i class="fa-solid fa-route text-info"></i> Quãng di chuyển: <strong class="text-white">${job.distanceKm} km</strong>
-                        </div>
-                        
-                        <div class="p-3 bg-white bg-opacity-10 border border-secondary rounded-3 d-flex justify-content-between align-items-center">
-                            <div>
-                                <div class="text-white fw-bold"><i class="fa-solid fa-user-astronaut me-2 text-warning"></i>${job.customerName}</div>
-                                <div class="text-white-50 small mt-1"><i class="fa-solid fa-phone me-2"></i>${job.customerPhone}</div>
-                            </div>
-                            <a href="tel:${job.customerPhone}" class="btn btn-success rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 45px; height: 45px;">
-                                <i class="fa-solid fa-phone-volume"></i>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <div class="border-top border-secondary pt-3 mt-auto">
-                        <button id="btn-start-${job.bookingId}" class="btn-glass-action border-info text-info w-100 py-3 fs-6 fw-bold mb-2" style="background: rgba(13, 202, 240, 0.1); display: ${startBtnDisplay};" onclick="startTrip(this, ${job.bookingId})">
-                            <i class="fa-solid fa-play me-2"></i> Bắt đầu chuyến đi
-                        </button>
-
-                        <button id="btn-complete-${job.bookingId}" class="btn-glass-action border-success text-success w-100 py-3 fs-6 fw-bold" style="background: rgba(16, 185, 129, 0.1); display: ${completeBtnDisplay};" onclick="completeTrip(this, ${job.bookingId})">
-                            <i class="fa-solid fa-flag-checkered me-2"></i> Hoàn thành chuyến
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-    });
-
-    acceptedListContainer.innerHTML = html;
-}
-/**
- * Đóng Modal và tự động chuyển qua tab Đã Nhận
- */
-window.goToAcceptedTab = function() {
-    // 1. Ẩn Modal đi
-    const modalEl = document.getElementById("successModal");
-    const modalInstance = bootstrap.Modal.getInstance(modalEl);
-    if (modalInstance) {
-        modalInstance.hide();
-    }
-    
-    // 2. Chuyển sang tab Đã nhận
-    switchJobTab('ACCEPTED');
-}
 // ============================================================================
 // 7. TOÀN BỘ LOGIC XỬ LÝ TỪ CHỐI CHUYỂN (ĐỒNG BỘ HOÀN CHỈNH CHỐNG SẬP)
 // ============================================================================
@@ -821,19 +658,19 @@ window.currentRejectBroadcastId = null;
 /**
  * Mở Modal hỏi lý do khi bấm "Từ chối" trên thẻ chuyến xe
  */
-window.rejectJob = function(btnElement, broadcastId) {
+window.rejectJob = function (btnElement, broadcastId) {
     window.currentRejectBroadcastId = broadcastId;
-    
+
     // Reset lại Modal về trạng thái mặc định cho sạch sẽ
     const reason1 = document.getElementById('reason1');
     if (reason1) reason1.checked = true;
-    
+
     const otherContainer = document.getElementById('otherReasonContainer');
     if (otherContainer) otherContainer.style.display = 'none';
-    
+
     const otherInput = document.getElementById('otherReasonInput');
     if (otherInput) otherInput.value = '';
-    
+
     // Gọi Modal của Bootstrap hiện lên
     const rejectModalEl = document.getElementById("rejectModal");
     if (rejectModalEl) {
@@ -847,7 +684,7 @@ window.rejectJob = function(btnElement, broadcastId) {
 /**
  * Gửi API POST Từ chối khi bấm nút "Xác nhận Từ chối" trong Modal
  */
-window.confirmRejectJob = async function() {
+window.confirmRejectJob = async function () {
     if (!window.currentRejectBroadcastId) return;
 
     // 1. Thu thập dữ liệu Lý do từ các nút Radio chọn lựa
@@ -945,9 +782,9 @@ let currentGpsInterval = null; // Biến giữ đồng hồ đếm giờ bắn G
 /**
  * Xử lý khi tài xế bấm nút "Bắt đầu chuyến đi"
  */
-window.startTrip = async function(btnElement, bookingId) {
+window.startTrip = async function (btnElement, bookingId) {
     const originalText = btnElement.innerHTML;
-    
+
     // 1. Chặn UI chống click đúp
     btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang kết nối...';
     btnElement.disabled = true;
@@ -996,7 +833,7 @@ window.startTrip = async function(btnElement, bookingId) {
 
             // d. KÍCH HOẠT BẮN GPS NGẦM (Sẽ viết code ở Bước 2)
             alert("Đã bắt đầu chuyến đi. Hệ thống định vị đã được bật!");
-            startGpsTracking(bookingId); 
+            startGpsTracking(bookingId);
 
         } else {
             // [THẤT BẠI]
@@ -1039,7 +876,7 @@ function startGpsTracking(bookingId) {
                 // Lấy kinh độ và vĩ độ
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
-                
+
                 // Lấy Token để xác thực
                 const token = localStorage.getItem("accessToken");
                 if (!token) return;
@@ -1098,9 +935,9 @@ function startGpsTracking(bookingId) {
  * Xử lý khi tài xế bấm "Hoàn thành chuyến"
  * Đổi trạng thái dưới DB, tắt GPS, xóa thẻ xe khỏi UI và dọn dẹp bộ nhớ máy
  */
-window.completeTrip = async function(btnElement, bookingId) {
+window.completeTrip = async function (btnElement, bookingId) {
     const originalText = btnElement.innerHTML;
-    
+
     // 1. Chặn UI tránh việc tài xế bấm đúp nhiều lần gây lỗi trùng gửi lệnh
     btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xử lý...';
     btnElement.disabled = true;
@@ -1124,7 +961,7 @@ window.completeTrip = async function(btnElement, bookingId) {
         if (response.ok && result.success) {
             // [XỬ LÝ THÀNH CÔNG Ở BACKEND]
             console.log(`[Success] Cuốc xe #${bookingId} đã hoàn thành thành công.`);
-            
+
             // a. Tắt ngay vòng lặp định vị GPS ngầm để tiết kiệm pin/băng thông
             if (currentGpsInterval) {
                 clearInterval(currentGpsInterval);
@@ -1136,7 +973,7 @@ window.completeTrip = async function(btnElement, bookingId) {
             let acceptedIds = JSON.parse(localStorage.getItem('acceptedBookingIds') || '[]');
             acceptedIds = acceptedIds.filter(id => id != bookingId);
             localStorage.setItem('acceptedBookingIds', JSON.stringify(acceptedIds));
-            
+
             // Xóa cờ chuyến đi đang chạy dở
             localStorage.removeItem('activeBookingId');
 
@@ -1150,15 +987,15 @@ window.completeTrip = async function(btnElement, bookingId) {
                     cardWrapper.style.transition = "all 0.5s ease";
                     cardWrapper.style.opacity = "0";
                     cardWrapper.style.transform = "scale(0.8) translateY(-20px)";
-                    
+
                     // Chờ hiệu ứng CSS chạy xong (500ms) thì chính thức xóa phần tử khỏi cây DOM
                     setTimeout(() => {
                         cardWrapper.remove();
-                        
+
                         // Kiểm tra xem sau khi xóa, tab "Đã Nhận" có bị trống không
                         const acceptedListContainer = document.getElementById("acceptedJobList");
                         const remainingCards = acceptedListContainer.querySelectorAll('.broadcast-card-item');
-                        
+
                         // Nếu không còn cuốc xe nào, tự động trả về giao diện Trống (Empty State) nền nã
                         if (remainingCards.length === 0) {
                             acceptedListContainer.innerHTML = `
