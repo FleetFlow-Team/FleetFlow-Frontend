@@ -117,13 +117,7 @@
                                 <a href="#tab-new-vehicle" class="toc-link"><i class="fa-solid fa-car me-2"></i>
                                     Đăng ký Phương tiện</a>
                             </li>
-                            <li>
-                                <a href="#tab-drivers"
-                                    class="toc-link d-flex justify-content-between align-items-center">
-                                    <span><i class="fa-solid fa-id-card-clip me-2"></i> Duyệt Hồ sơ</span>
-                                    <span class="badge bg-warning text-dark rounded-pill shadow-sm">3</span>
-                                </a>
-                            </li>
+
 
                             <li class="menu-section-title">Tài chính & Tiếp thị</li>
                             <li>
@@ -414,41 +408,7 @@
                     </section>
 
 
-                    <section id="tab-drivers" class="dashboard-section">
-                        <div class="glass-panel">
-                            <div class="d-flex justify-content-between align-items-end mb-4">
-                                <div>
-                                    <h4 class="fw-bold mb-2 text-white"><i
-                                            class="fa-solid fa-id-card-clip text-info me-2"></i>Kiểm duyệt Hồ sơ Tài xế
-                                    </h4>
-                                    <p class="text-white-50 small m-0">Xác thực chứng minh nhân dân/CCCD và bằng lái xe
-                                        (eKYC) trước khi kích hoạt quyền giành đơn chuyến.</p>
-                                </div>
-                                <div class="input-group w-auto">
-                                    <span class="input-group-text glass-input-addon border-end-0"><i
-                                            class="fa-solid fa-magnifying-glass text-white-50"></i></span>
-                                    <input type="text" class="form-control glass-input border-start-0"
-                                        placeholder="Tìm tên, SĐT tài xế...">
-                                </div>
-                            </div>
 
-                            <div class="table-glass-wrapper">
-                                <table class="table-glass w-100">
-                                    <thead>
-                                        <tr>
-                                            <th width="30%">Họ Tên & Liên hệ</th>
-                                            <th width="20%">Thời gian nộp</th>
-                                            <th width="25%">Trạng thái eKYC</th>
-                                            <th width="25%" class="text-end">Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="ekycQueueList">
-
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
 
                     <section id="tab-pricing" class="dashboard-section">
                         <div class="glass-panel">
@@ -1168,161 +1128,7 @@
                 </div>
             </div>
 
-            <div class="modal fade glass-modal-blur" id="ekycModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-centered">
-                    <div class="modal-content glass-modal-content overflow-hidden border-0 position-relative">
 
-                        <button type="button" class="apple-close-btn" data-bs-dismiss="modal" aria-label="Close"
-                            onclick="cancelReject()">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-
-                        <div class="row g-0">
-                            <div class="col-lg-4 p-5 border-end"
-                                style="border-color: rgba(255,255,255,0.1) !important; background: rgba(0,0,0,0.15);">
-                                <div class="mb-5">
-                                    <div class="text-white-50 small fw-bold text-uppercase mb-2">Hồ sơ đối tác</div>
-                                    <div class="fs-3 fw-bold text-white mb-2" id="modalDriverName">Đang tải...</div>
-                                    <div class="text-white-50 mb-2" id="modalDriverPhone"><i
-                                            class="fa-solid fa-phone me-2"></i>--</div>
-                                    <div class="text-info small fw-bold bg-info bg-opacity-10 d-inline-block px-3 py-1 rounded-pill mt-2"
-                                        id="modalDriverDate">
-                                        Thời gian nộp: --
-                                    </div>
-                                </div>
-
-                                <div id="rejectReasonContainer" class="mb-4 d-none">
-                                    <label class="text-warning fw-bold small mb-2 d-block"><i
-                                            class="fa-solid fa-triangle-exclamation me-1"></i> Lý do từ chối:</label>
-                                    <textarea id="rejectReasonInput"
-                                        class="form-control bg-dark border-secondary text-white mb-3" rows="3"
-                                        placeholder="VD: Ảnh mờ, bằng lái không hợp lệ..."></textarea>
-                                    <div class="d-flex gap-2">
-                                        <button class="btn btn-outline-secondary w-50 rounded-pill"
-                                            onclick="cancelReject()">Hủy</button>
-                                        <button class="btn btn-danger w-50 rounded-pill"
-                                            onclick="executeRejectApi()">Gửi</button>
-                                    </div>
-                                </div>
-
-                                <div id="ekycActionButtons" class="d-flex flex-column gap-3 mt-auto">
-                                    <button class="btn btn-success py-3 fw-bold rounded-pill shadow-sm"
-                                        onclick="approveEkyc()">
-                                        <i class="fa-solid fa-check-circle me-2"></i> PHÊ DUYỆT
-                                    </button>
-                                    <button class="btn btn-outline-danger py-3 fw-bold rounded-pill"
-                                        onclick="prepareReject()">
-                                        <i class="fa-solid fa-times-circle me-2"></i> TỪ CHỐI
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-8 p-5">
-                                <ul class="nav nav-pills custom-pills mb-4 gap-2" id="ekycTab" role="tablist">
-                                    <li class="nav-item">
-                                        <button class="nav-link active px-4 rounded-pill fw-bold" data-bs-toggle="tab"
-                                            data-bs-target="#tab-cccd">Căn Cước Công Dân</button>
-                                    </li>
-                                    <li class="nav-item">
-                                        <button class="nav-link px-4 rounded-pill fw-bold" data-bs-toggle="tab"
-                                            data-bs-target="#tab-license">Bằng Lái Xe</button>
-                                    </li>
-                                </ul>
-
-                                <div class="tab-content" id="ekycTabContent">
-                                    <!-- TAB CCCD -->
-                                    <div class="tab-pane fade show active" id="tab-cccd">
-                                        <div class="row g-4">
-                                            <div class="col-md-6">
-                                                <div class="apple-doc-card">
-                                                    <div class="doc-title-badge">Mặt Trước</div>
-                                                    <!-- Khối hiển thị khi KHÔNG có ảnh -->
-                                                    <div class="doc-empty-state" id="cccdFrontEmpty">
-                                                        <i class="fa-regular fa-image"></i>
-                                                        <span>Chưa cập nhật</span>
-                                                    </div>
-                                                    <!-- Khối hiển thị khi CÓ ảnh -->
-                                                    <img src="" class="ekyc-img d-none" id="cccdFrontImg">
-                                                    <div class="apple-floating-controls d-none" id="cccdFrontControls">
-                                                        <button onclick="zoomImg('cccdFrontImg', 1.2)"
-                                                            title="Phóng to"><i class="fa-solid fa-plus"></i></button>
-                                                        <button onclick="zoomImg('cccdFrontImg', 0.8)"
-                                                            title="Thu nhỏ"><i class="fa-solid fa-minus"></i></button>
-                                                        <button onclick="rotateImg('cccdFrontImg')" title="Xoay ảnh"><i
-                                                                class="fa-solid fa-rotate-right"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="apple-doc-card">
-                                                    <div class="doc-title-badge">Mặt Sau</div>
-                                                    <div class="doc-empty-state" id="cccdBackEmpty">
-                                                        <i class="fa-regular fa-image"></i>
-                                                        <span>Chưa cập nhật</span>
-                                                    </div>
-                                                    <img src="" class="ekyc-img d-none" id="cccdBackImg">
-                                                    <div class="apple-floating-controls d-none" id="cccdBackControls">
-                                                        <button onclick="zoomImg('cccdBackImg', 1.2)"><i
-                                                                class="fa-solid fa-plus"></i></button>
-                                                        <button onclick="zoomImg('cccdBackImg', 0.8)"><i
-                                                                class="fa-solid fa-minus"></i></button>
-                                                        <button onclick="rotateImg('cccdBackImg')"><i
-                                                                class="fa-solid fa-rotate-right"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- TAB BẰNG LÁI -->
-                                    <div class="tab-pane fade" id="tab-license">
-                                        <div class="row g-4">
-                                            <div class="col-md-6">
-                                                <div class="apple-doc-card">
-                                                    <div class="doc-title-badge">Mặt Trước</div>
-                                                    <div class="doc-empty-state" id="licenseFrontEmpty">
-                                                        <i class="fa-regular fa-image"></i>
-                                                        <span>Chưa cập nhật</span>
-                                                    </div>
-                                                    <img src="" class="ekyc-img d-none" id="licenseFrontImg">
-                                                    <div class="apple-floating-controls d-none"
-                                                        id="licenseFrontControls">
-                                                        <button onclick="zoomImg('licenseFrontImg', 1.2)"><i
-                                                                class="fa-solid fa-plus"></i></button>
-                                                        <button onclick="zoomImg('licenseFrontImg', 0.8)"><i
-                                                                class="fa-solid fa-minus"></i></button>
-                                                        <button onclick="rotateImg('licenseFrontImg')"><i
-                                                                class="fa-solid fa-rotate-right"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="apple-doc-card">
-                                                    <div class="doc-title-badge">Mặt Sau</div>
-                                                    <div class="doc-empty-state" id="licenseBackEmpty">
-                                                        <i class="fa-regular fa-image"></i>
-                                                        <span>Chưa cập nhật</span>
-                                                    </div>
-                                                    <img src="" class="ekyc-img d-none" id="licenseBackImg">
-                                                    <div class="apple-floating-controls d-none"
-                                                        id="licenseBackControls">
-                                                        <button onclick="zoomImg('licenseBackImg', 1.2)"><i
-                                                                class="fa-solid fa-plus"></i></button>
-                                                        <button onclick="zoomImg('licenseBackImg', 0.8)"><i
-                                                                class="fa-solid fa-minus"></i></button>
-                                                        <button onclick="rotateImg('licenseBackImg')"><i
-                                                                class="fa-solid fa-rotate-right"></i></button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <div class="modal fade glass-modal-blur" id="voucherModal" tabindex="-1" data-bs-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered">
