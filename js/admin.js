@@ -808,9 +808,7 @@ function renderAdminVehicles(vehicles) {
         <tr>
             <td>
                 <div class="d-flex align-items-center gap-3">
-                    <div class="bg-white bg-opacity-10 rounded-3 p-2 text-center" style="width: 55px; border: 1px solid rgba(255,255,255,0.2);">
-                        <i class="fa-solid ${icon} fs-4 text-white-50"></i>
-                    </div>
+                    
                     <div>
                         <div class="fw-bold fs-6 text-white" style="letter-spacing: 0.5px;">${v.licensePlate}</div>
                         <div class="small text-white-50 fw-medium mt-1">${v.brand} ${v.model} | ${v.seatCount} Chỗ</div>
