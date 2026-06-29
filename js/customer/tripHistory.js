@@ -1,15 +1,15 @@
 // =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const fullName = localStorage.getItem('fullName');
     const accessToken = localStorage.getItem('accessToken');
     const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
     if (!accessToken || !fullName) {
         alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!");
-        window.location.href = '../../index.html'; 
-        return; 
+        window.location.href = '../../index.html';
+        return;
     }
 
     const avatarName = encodeURIComponent(fullName);
@@ -35,19 +35,19 @@ document.addEventListener("DOMContentLoaded", function() {
             </div>
         `;
 
-        document.getElementById('btnLogout').addEventListener('click', (e) => { 
-            e.preventDefault(); 
-            if(confirm('Đăng xuất khỏi FleetFlow?')) { 
-                localStorage.clear(); 
-                window.location.href = '../../index.html'; 
-            } 
+        document.getElementById('btnLogout').addEventListener('click', (e) => {
+            e.preventDefault();
+            if (confirm('Đăng xuất khỏi FleetFlow?')) {
+                localStorage.clear();
+                window.location.href = '../../index.html';
+            }
         });
     }
 
     // Xử lý Mobile (Navbar đáy)
     const btnMobile = document.getElementById('btnLoginMobile');
     if (btnMobile) {
-        btnMobile.className = 'nav-link-center user-profile-btn'; 
+        btnMobile.className = 'nav-link-center user-profile-btn';
         btnMobile.innerHTML = `
             <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 24px; height: 24px; border-radius: 50%; margin-bottom: 2px;" />
             <span class="nav-text text-truncate" style="max-width: 60px;">${fullName.split(' ').pop()}</span>
@@ -58,28 +58,40 @@ document.addEventListener("DOMContentLoaded", function() {
 // =====================================================================
 // 3. LOGIC HIỂN THỊ DANH SÁCH CHUYẾN ĐI & HÌNH ẢNH XE
 // =====================================================================
-let globalTrips = []; 
+let globalTrips = [];
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     loadTripHistory();
 });
 
+function getCarImage(vId) {
+    const map = {
+        1: 'ToyotaVios4.jpg', 2: 'HondaCity4.jpg', 3: 'HyundaiAccent4.jpg', 4: 'MazdaMazda34.jpg', 5: 'KiaSoluto4.jpg',
+        6: 'ToyotaVios4.jpg', 7: 'HondaCity4.jpg', 8: 'HyundaiAccent4.jpg', 9: 'MazdaMazda34.jpg', 10: 'KiaSoluto4.jpg',
+        11: 'ToyotaVios4.jpg', 12: 'HondaCity4.jpg', 13: 'HyundaiAccent4.jpg', 14: 'MazdaMazda34.jpg', 15: 'ToyotaInnova7.jpg',
+        16: 'MitsubishiXpander7.jpg', 17: 'HondaCR-V7.jpg', 18: 'HyundaiCustin7.jpg', 19: 'KiaCarens7.jpg', 20: 'ToyotaInnova7.jpg',
+        21: 'MitsubishiXpander7.jpg', 22: 'HondaCR-V7.jpg', 23: 'HyundaiCustin7.jpg', 24: 'KiaCarens7.jpg', 25: 'ToyotaInnova7.jpg',
+        26: 'MitsubishiXpander7.jpg', 27: 'HondaCR-V7.jpg', 28: 'HyundaiCustin7.jpg', 29: 'KiaCarnival9.jpg', 30: 'HyundaiSolatiLimo9.jpg',
+        31: 'FordTourneo9.jpg', 32: 'KiaCarnival9.jpg', 33: 'HyundaiSolatiLimo9.jpg', 34: 'FordTourneo9.jpg', 35: 'KiaCarnival9.jpg',
+        36: 'HyundaiSolatiLimo9.jpg', 37: 'FordTransit16.jpg', 38: 'HyundaiSolati16.jpg', 39: 'MercedesSprinter16.jpg', 40: 'FordTransit16.jpg',
+        41: 'HyundaiSolati16.jpg', 42: 'MercedesSprinter16.jpg', 43: 'ThacoTB7929.jpg', 44: 'HyundaiCounty29.jpg', 45: 'SamcoFelix29.jpg',
+        46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
+    };
+    if (vId && map[vId]) {
+        return `../../assets/img/car-show/ImageUrl/${map[vId]}`;
+    }
+    return 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+}
+
 async function loadTripHistory() {
     const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
-    
+
     try {
-        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/customer/${customerId}`);
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/bookings?customerId=${customerId}`);
         const result = await response.json();
-        if(result.success && result.data) {
+        if (result.success && result.data) {
             globalTrips = result.data;
         }
-        
-        // DỮ LIỆU MẪU (Giả lập cả trường hợp DB SQL chuẩn hóa)
-        globalTrips = [
-            { bookingId: 1001, vehicleId: 1, carName: "Toyota Vios Tiêu chuẩn", status: "COMPLETED", price: 850000, date: "22/06/2026", pickup: "Đại học FPT, TP.HCM", dropoff: "Vũng Tàu" },
-            { BookingID: 1002, VehicleID: 29, Brand: "Kia", Model: "Carnival", Status: "PENDING", TotalAmount: 1500000, DepartureTime: "2026-06-25T14:30:00", PickupAddress: "Quận 7, TP.HCM", DropoffAddress: "Sân bay Tân Sơn Nhất" },
-            { bookingId: 1003, vehicleId: 16, carName: "Mitsubishi Xpander", status: "ACTIVE", price: 1200000, date: "23/06/2026", pickup: "Bình Thạnh, TP.HCM", dropoff: "Đồng Nai" }
-        ];
 
         renderTripList(globalTrips);
 
@@ -107,22 +119,23 @@ function renderTripList(trips) {
         // 1. BÓC TÁCH ID XE AN TOÀN
         const vId = trip.vehicleId || trip.VehicleID || trip.vehicleID || null;
         const bId = trip.bookingId || trip.BookingID || trip.bookingID || "N/A";
-        
+
         // 2. LẤY ĐƯỜNG DẪN ẢNH TỪ BỘ TỪ ĐIỂN
         const carImgUrl = getCarImage(vId);
 
         // 3. BÓC TÁCH DỮ LIỆU HIỂN THỊ AN TOÀN
         let carName = "Phương tiện FleetFlow";
         if (trip.carName) carName = trip.carName;
+        else if (trip.vehicleName) carName = trip.vehicleName;
         else if (trip.Brand && trip.Model) carName = `${trip.Brand} ${trip.Model}`;
         else if (trip.brand && trip.model) carName = `${trip.brand} ${trip.model}`;
 
         const price = trip.price || trip.TotalAmount || trip.estimatedTotal || trip.EstimatedTotal || parseInt(localStorage.getItem('currentDepositAmount')) || 0;
         const pickup = trip.pickup || trip.PickupAddress || trip.pickupAddress || '--';
-        
+
         // --- SỬA LỖI 1 & 2: XỬ LÝ HOA/THƯỜNG VÀ HIỂN THỊ SỐ GIỜ/NGÀY ---
         const bType = (trip.bookingType || trip.BookingType || localStorage.getItem('bookingType') || 'DISTANCE').toUpperCase();
-        
+
         const sHours = trip.durationHours || trip.DurationHours || parseInt(localStorage.getItem('savedDurationHours')) || 1;
         const sDays = trip.durationDays || trip.DurationDays || parseInt(localStorage.getItem('savedDurationDays')) || 1;
 
@@ -136,9 +149,9 @@ function renderTripList(trips) {
         if (rawDate) {
             const d = new Date(rawDate);
             if (!isNaN(d)) {
-                 displayDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}`;
+                displayDate = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
             } else {
-                 displayDate = rawDate; 
+                displayDate = rawDate;
             }
         }
 
@@ -148,15 +161,24 @@ function renderTripList(trips) {
         let badgeClass = "badge-pending";
         let statusText = "Đang chờ";
 
-        if (rawStatus.toUpperCase() === "COMPLETED") { 
-            statusClass = "status-completed-card"; badgeClass = "badge-completed"; statusText = "Hoàn thành"; 
-        } else if (rawStatus.toUpperCase() === "ACTIVE") { 
-            statusClass = "status-active-card"; badgeClass = "badge-active"; statusText = "Đang chạy"; 
-        } else if (rawStatus.toUpperCase() === "CANCELLED") { 
-            statusClass = "status-cancelled-card"; badgeClass = "badge-cancelled"; statusText = "Đã hủy"; 
+        if (rawStatus.toUpperCase() === "COMPLETED") {
+            statusClass = "status-completed-card"; badgeClass = "badge-completed"; statusText = "Hoàn thành";
+        } else if (rawStatus.toUpperCase() === "ACTIVE") {
+            statusClass = "status-active-card"; badgeClass = "badge-active"; statusText = "Đang chạy";
+        } else if (rawStatus.toUpperCase() === "CANCELLED") {
+            statusClass = "status-cancelled-card"; badgeClass = "badge-cancelled"; statusText = "Đã hủy";
         }
 
-        const fmtPrice = new Intl.NumberFormat('vi-VN').format(price) + ' ₫';
+        // --- YÊU CẦU MỚI: BỎ GIÁ TIỀN, THAY BẰNG QUÃNG ĐƯỜNG/THỜI GIAN ---
+        let displayMetric = "";
+        if (bType === 'HOURLY') {
+            displayMetric = `${sHours} giờ`;
+        } else if (bType === 'DAILY') {
+            displayMetric = `${sDays} ngày`;
+        } else {
+            const dist = trip.distanceKm || trip.DistanceKm || 0;
+            displayMetric = `${parseFloat(dist).toFixed(1)} km`;
+        }
 
         // GẮN CHUỖI HTML ĐỘNG (Đã cập nhật biến displayDate)
         html += `
@@ -178,7 +200,7 @@ function renderTripList(trips) {
                 
                 <div class="trip-price-status">
                     <div class="trip-status-badge ${badgeClass}">${statusText}</div>
-                    <h5 class="fw-bold text-success m-0 mt-2">${fmtPrice}</h5>
+                    <h5 class="fw-bold text-success m-0 mt-2">${displayMetric}</h5>
                 </div>
             </div>
         </div>`;
@@ -206,7 +228,7 @@ async function viewTripDetail(bookingId) {
         if (!response.ok) {
             throw new Error("Không thể kết nối đến máy chủ để lấy thông tin chi tiết.");
         }
-        
+
         // Nhận Object Booking trọn vẹn từ Backend
         const trip = await response.json();
 
@@ -217,7 +239,7 @@ async function viewTripDetail(bookingId) {
         // 4. Đồng bộ hình ảnh xe dựa vào vehicleId thực tế của chuyến đi
         const detailImg = document.getElementById('detailCarImage');
         if (detailImg) {
-            detailImg.src = getCarImage(trip.vehicleId); 
+            detailImg.src = getCarImage(trip.vehicleId);
         }
 
         // 5. Đổ dữ liệu định danh lên giao diện
@@ -229,18 +251,18 @@ async function viewTripDetail(bookingId) {
             // Định dạng lại giờ đón khách hiển thị trên Timeline
             if (trip.detail.departureTime) {
                 const depDate = new Date(trip.detail.departureTime);
-                document.getElementById('lblDepartureTime').innerText = !isNaN(depDate) 
+                document.getElementById('lblDepartureTime').innerText = !isNaN(depDate)
                     ? `${depDate.getHours().toString().padStart(2, '0')}:${depDate.getMinutes().toString().padStart(2, '0')}`
                     : trip.detail.departureTime;
             }
 
             // Gắn địa chỉ đón khách thực tế
             document.getElementById('lblPickupAddress').innerText = trip.detail.pickupAddress || '--';
-            
+
             // Phân tích hiển thị điểm trả khách theo phương thức đặt xe (bookingType)
             const bType = (trip.bookingType || 'DISTANCE').toUpperCase();
             let dropoffHTML = trip.detail.dropoffAddress || '--';
-            
+
             if (bType === 'HOURLY') {
                 dropoffHTML = `Di chuyển nội đô <span class="badge bg-primary ms-2">Theo Giờ</span>`;
             } else if (bType === 'DAILY') {
@@ -255,71 +277,50 @@ async function viewTripDetail(bookingId) {
             document.getElementById('lblDropoffAddress').innerHTML = dropoffHTML;
         }
 
-// =================================================================
-        // 7. TÍCH HỢP BÓC TÁCH CHI PHÍ (INVOICE & BOOKING PRICING)
         // =================================================================
-        const token = localStorage.getItem("accessToken");
+        // 7. BÓC TÁCH CHI PHÍ DỰ KIẾN (Cho chuyến Pending/Active)
+        // =================================================================
         const fVND = (val) => Number(val || 0).toLocaleString('vi-VN') + ' đ';
 
-        // 7.1. Hiệu ứng Loading mượt mà
-        document.getElementById('lblBasePrice').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
-        document.getElementById('lblSurcharge').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
-        document.getElementById('lblDiscount').innerHTML  = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
-        document.getElementById('lblTotalAmount').innerHTML='<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+        // Bóc tách dữ liệu BookingPricing lồng trong API GET /bookings/{id}
+        const pricing = trip.pricing || trip.BookingPricing || trip.bookingPricing || trip;
+        const baseFare = parseFloat(pricing.BaseFare || pricing.baseFare) || 0;
+        const weekendSurcharge = parseFloat(pricing.WeekendSurcharge || pricing.weekendSurcharge) || 0;
+        const discountAmount = parseFloat(pricing.DiscountAmount || pricing.discountAmount) || 0;
+        const estimatedTotal = parseFloat(pricing.EstimatedTotal || pricing.estimatedTotal || summaryTrip.price) || 0;
 
-        try {
-            // 7.2. GỌI API HÓA ĐƠN CHÍNH THỨC (Dành cho chuyến đã Hoàn thành)
-            const invRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/invoices/${bookingId}`, {
-                method: "GET",
-                headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
-            });
-            const invResult = await invRes.json();
-
-            if (invRes.ok && invResult.success && invResult.data) {
-                // ĐÃ CÓ HÓA ĐƠN THỰC TẾ
-                const inv = invResult.data; 
-                localStorage.setItem('currentInvoiceId', inv.InvoiceID || inv.invoiceId);
-                localStorage.setItem('currentInvoiceAmount', inv.TotalAmount || inv.totalAmount);
-
-                const baseFare = parseFloat(inv.BaseFare || inv.baseFare) || 0;
-                const weekendSur = parseFloat(inv.WeekendSurcharge || inv.weekendSurcharge) || 0;
-                const tollSur = parseFloat(inv.TollSurchargeTotal || inv.tollSurchargeTotal) || 0; // Phí cầu đường (nếu có)
-                const discountAmount = parseFloat(inv.DiscountAmount || inv.discountAmount) || 0;
-                const totalAmount = parseFloat(inv.TotalAmount || inv.totalAmount) || 0;
-
-                document.getElementById('lblBasePrice').innerText = fVND(baseFare);
-                // Cộng gộp Phụ phí cuối tuần + Phí cầu đường (vì UI chỉ có 1 dòng Surcharge)
-                document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
-                document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
-                document.getElementById('lblTotalAmount').innerText = fVND(totalAmount);
-            } else {
-                throw new Error("Chưa có hóa đơn");
-            }
-        } catch (error) {
-            // 7.3. FALLBACK: NẾU CHƯA CÓ HÓA ĐƠN -> LẤY DỮ LIỆU TỪ BẢNG [BookingPricing]
-            // Áp dụng cho các chuyến xe PENDING / ACTIVE
-            localStorage.removeItem('currentInvoiceId');
-            localStorage.removeItem('currentInvoiceAmount');
-
-            // Bóc tách dữ liệu BookingPricing lồng trong API GET /bookings/{id}
-            // (Hỗ trợ bắt tên biến viết hoa/thường tùy Backend Java trả về)
-            const pricing = trip.pricing || trip.BookingPricing || trip.bookingPricing || trip;
-
-            // Khớp 100% với các cột trong DB BookingPricing bạn vừa gửi:
-            const baseFare = parseFloat(pricing.BaseFare || pricing.baseFare) || 0;
-            const weekendSurcharge = parseFloat(pricing.WeekendSurcharge || pricing.weekendSurcharge) || 0;
-            const discountAmount = parseFloat(pricing.DiscountAmount || pricing.discountAmount) || 0;
-            const estimatedTotal = parseFloat(pricing.EstimatedTotal || pricing.estimatedTotal || summaryTrip.price) || 0;
-            
-            // Đổ giá trị bóc tách dự kiến ra UI
-            document.getElementById('lblBasePrice').innerText = fVND(baseFare);
-            document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSurcharge)}`;
-            document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
-            document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
-        }
+        // Đổ giá trị bóc tách dự kiến ra UI
+        document.getElementById('lblBasePrice').innerText = fVND(baseFare);
+        document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSurcharge)}`;
+        document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
+        document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
         // =================================================================
-        
-        // 8. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
+
+        // 8. TÍCH HỢP ACTION BUTTONS THEO STATUS
+        const actionGrid = document.getElementById('detailActionGrid');
+        const inlineInvoicePanel = document.getElementById('inlineInvoicePanel');
+        const rawStatus = summaryTrip ? (summaryTrip.status || summaryTrip.Status) : (trip.status || trip.Status || "PENDING");
+        const statusCheck = (rawStatus || '').toUpperCase();
+
+        let actionHtml = '';
+        if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
+            actionHtml = `<button type="button" class="btn btn-control-action btn-cancel-action m-0" style="flex:1" onclick="openCancelModal(${bookingId})">Hủy chuyến</button>`;
+            if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
+        } else if (statusCheck === 'COMPLETED') {
+            actionHtml = `
+                <button type="button" class="btn btn-control-action border-primary text-primary m-0" style="flex:1; background: rgba(59, 130, 246, 0.1);" onclick="viewInvoiceModal(${bookingId})">Xem hóa đơn</button>
+                <button type="button" class="btn btn-control-action btn-rate-action m-0" style="flex:1" onclick="openRatingModal(${bookingId})">Đánh giá</button>
+            `;
+            if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'none';
+        } else {
+            if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'none';
+        }
+
+        if (actionGrid) {
+            actionGrid.innerHTML = actionHtml;
+        }
+
+        // 9. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (error) {
@@ -336,6 +337,54 @@ async function viewTripDetail(bookingId) {
 function navigateBackToHistory() {
     document.getElementById('detailsViewSection').classList.remove('view-active');
     document.getElementById('historyViewSection').classList.add('view-active');
+}
+
+// Logic Fetch và hiển thị Modal Hóa Đơn
+async function viewInvoiceModal(bookingId) {
+    const token = localStorage.getItem("accessToken");
+    const fVND = (val) => Number(val || 0).toLocaleString('vi-VN') + ' đ';
+
+    // Đặt hiệu ứng loading
+    document.getElementById('lblInvoiceBasePrice').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+    document.getElementById('lblInvoiceSurcharge').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+    document.getElementById('lblInvoiceDiscount').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+    document.getElementById('lblInvoiceTotalAmount').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+
+    // Mở modal ngay để người dùng thấy feedback
+    const invoiceModal = new bootstrap.Modal(document.getElementById('invoiceModal'));
+    invoiceModal.show();
+
+    try {
+        const invRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/invoices/${bookingId}`, {
+            method: "GET",
+            headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+        });
+        const invResult = await invRes.json();
+
+        if (invRes.ok && invResult.success && invResult.data) {
+            const inv = invResult.data;
+            const baseFare = parseFloat(inv.BaseFare || inv.baseFare) || 0;
+            const weekendSur = parseFloat(inv.WeekendSurcharge || inv.weekendSurcharge) || 0;
+            const tollSur = parseFloat(inv.TollSurchargeTotal || inv.tollSurchargeTotal) || 0;
+            const discountAmount = parseFloat(inv.DiscountAmount || inv.discountAmount) || 0;
+            const totalAmount = parseFloat(inv.TotalAmount || inv.totalAmount) || 0;
+
+            document.getElementById('lblInvoiceBasePrice').innerText = fVND(baseFare);
+            document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
+            document.getElementById('lblInvoiceDiscount').innerText = `- ${fVND(discountAmount)}`;
+            document.getElementById('lblInvoiceTotalAmount').innerText = fVND(totalAmount);
+        } else {
+            throw new Error(invResult.error || "Hệ thống chưa tạo hóa đơn cho chuyến đi này.");
+        }
+    } catch (error) {
+        console.error("Lỗi xem hóa đơn:", error);
+        invoiceModal.hide();
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi hóa đơn',
+            text: error.message || 'Hệ thống không thể tải hóa đơn lúc này.'
+        });
+    }
 }
 
 // Logic chuyển Tab (Tất cả / Đang chờ / Hoàn thành...)
@@ -364,11 +413,34 @@ function filterTrips(status, btnElement) {
 // XỬ LÝ API HỦY CHUYẾN ĐI (TÍCH HỢP PENALTY AMOUNT)
 // =====================================================================
 let currentCancelBookingId = null; // Biến lưu tạm ID chuyến đi đang muốn hủy
+let currentRateBookingId = null; // Biến lưu tạm ID chuyến đi đang muốn đánh giá
 
 // Hàm này được gọi khi bấm nút "Hủy chuyến" ở trang chi tiết
 function openCancelModal(bookingId) {
     currentCancelBookingId = bookingId;
+    const warningMsg = document.getElementById('penaltyWarningMessage');
+    if (warningMsg) {
+        warningMsg.innerHTML = '<i class="fa-solid fa-circle-info me-1"></i> Hủy chuyến trước 12 tiếng sẽ được miễn phí. Nếu hủy sát giờ, bạn sẽ bị <b>mất cọc (30% tổng tiền)</b> theo chính sách.';
+    }
     const modal = new bootstrap.Modal(document.getElementById('cancelTripModal'));
+    modal.show();
+}
+
+// Hàm này được gọi khi bấm nút "Đánh giá chuyến đi" ở trang chi tiết
+function openRatingModal(bookingId) {
+    currentRateBookingId = bookingId;
+
+    // Reset form
+    const driverRadios = document.querySelectorAll('input[name="driverStars"]');
+    driverRadios.forEach(r => r.checked = false);
+
+    const carRadios = document.querySelectorAll('input[name="carStars"]');
+    carRadios.forEach(r => r.checked = false);
+
+    const commentInput = document.getElementById('ratingComment');
+    if (commentInput) commentInput.value = '';
+
+    const modal = new bootstrap.Modal(document.getElementById('ratingModal'));
     modal.show();
 }
 
@@ -392,7 +464,7 @@ async function executeSubmitAction(actionType) {
             // GỌI API BACKEND VỪA CẬP NHẬT
             const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/bookings/cancel`, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
@@ -413,18 +485,18 @@ async function executeSubmitAction(actionType) {
             // XỬ LÝ KẾT QUẢ TỪ BACKEND
             if (response.ok && result.success) {
                 const fVND = (v) => Number(v || 0).toLocaleString('vi-VN') + ' đ';
-                
-                // Trích xuất 2 trường Backend vừa thêm: penaltyPercent và penaltyAmount
-                const pPercent = result.penaltyPercent || 0;
+
+                // Trích xuất 2 trường Backend trả về: forfeitDeposit và penaltyAmount
+                const isForfeit = result.forfeitDeposit;
                 const pAmount = parseFloat(result.penaltyAmount) || 0;
 
                 let msgHtml = `Chuyến đi <b>#${result.bookingId}</b> đã được hủy thành công!`;
 
-                // LOGIC HIỂN THỊ DỰA TRÊN PENALTY AMOUNT
-                if (pAmount > 0) {
+                // LOGIC HIỂN THỊ DỰA TRÊN PENALTY AMOUNT VÀ FORFEIT
+                if (isForfeit && pAmount > 0) {
                     msgHtml += `
                         <div class="mt-3 p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 text-start">
-                            <div class="text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phí phạt hủy chuyến (${pPercent}%):</div>
+                            <div class="text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phí phạt hủy chuyến (Mất cọc):</div>
                             <div class="fs-4 fw-bold text-danger">${fVND(pAmount)}</div>
                             <div class="small text-muted mt-1">Khoản phí này đã được ghi nhận vào công nợ tài khoản của bạn theo chính sách hệ thống.</div>
                         </div>
@@ -446,15 +518,15 @@ async function executeSubmitAction(actionType) {
                     confirmButtonText: 'Đóng'
                 }).then(() => {
                     // Tải lại danh sách chuyến đi sau khi tắt thông báo
-                    window.location.reload(); 
+                    window.location.reload();
                 });
 
             } else {
                 // Backend từ chối hủy (VD: Đang chạy, Đã hoàn thành...)
-                Swal.fire({ 
-                    icon: 'error', 
-                    title: 'Không thể hủy chuyến', 
-                    text: result.error || 'Vui lòng liên hệ tổng đài để được hỗ trợ.' 
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không thể hủy chuyến',
+                    text: result.error || 'Vui lòng liên hệ tổng đài để được hỗ trợ.'
                 });
             }
         } catch (error) {
@@ -465,6 +537,75 @@ async function executeSubmitAction(actionType) {
             btnConfirm.innerHTML = originalText;
             btnConfirm.disabled = false;
             if (reasonInput) reasonInput.value = ''; // Xóa text lý do cũ
+        }
+    } else if (actionType === 'rate') {
+        if (!currentRateBookingId) return;
+
+        const driverStarEl = document.querySelector('input[name="driverStars"]:checked');
+        const carStarEl = document.querySelector('input[name="carStars"]:checked');
+
+        if (!driverStarEl || !carStarEl) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Thiếu thông tin',
+                text: 'Vui lòng chọn số sao đánh giá cho cả Tài xế và Phương tiện!'
+            });
+            return;
+        }
+
+        const driverRating = parseInt(driverStarEl.value);
+        const carRating = parseInt(carStarEl.value);
+        const commentEl = document.getElementById('ratingComment');
+        const comment = commentEl ? commentEl.value.trim() : '';
+
+        const token = localStorage.getItem('accessToken');
+
+        const btnSubmit = document.getElementById('btnSubmitRatingForm');
+        const originalText = btnSubmit.innerText;
+        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+        btnSubmit.disabled = true;
+
+        try {
+            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/ratings/customer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    bookingId: parseInt(currentRateBookingId),
+                    driverRating: driverRating,
+                    carRating: carRating,
+                    comment: comment
+                })
+            });
+
+            const result = await response.json();
+
+            const ratingModalEl = document.getElementById('ratingModal');
+            const ratingModal = bootstrap.Modal.getInstance(ratingModalEl);
+            if (ratingModal) ratingModal.hide();
+
+            if (response.ok && result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cảm ơn bạn!',
+                    text: result.message || 'Đánh giá của bạn đã được ghi nhận.',
+                    confirmButtonColor: '#00B14F'
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Không thể đánh giá',
+                    text: result.message || 'Có lỗi xảy ra khi gửi đánh giá.'
+                });
+            }
+        } catch (error) {
+            console.error("Lỗi gửi đánh giá:", error);
+            Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+        } finally {
+            btnSubmit.innerHTML = originalText;
+            btnSubmit.disabled = false;
         }
     }
 }

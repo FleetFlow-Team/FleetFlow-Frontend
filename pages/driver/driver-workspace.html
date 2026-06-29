@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="../../style/pages/driver.css" />
 
 
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -150,18 +151,6 @@
                                     class="fa-solid fa-satellite-dish text-info me-2"></i>Trạm phát sóng đơn hàng</h4>
                         </div>
 
-                        <div class="job-tabs-glass mb-4 d-flex border-bottom border-secondary pb-2">
-                            <div id="tab-btn-pending"
-                                class="job-tab-item active text-white fw-bold me-4 pb-2 border-bottom border-2 border-white cursor-pointer"
-                                onclick="switchJobTab('PENDING')">
-                                Chờ Nhận <span class="badge bg-danger rounded-pill ms-1" id="jobBadge"
-                                    style="display: none;">0</span>
-                            </div>
-                            <div id="tab-btn-accepted" class="job-tab-item text-white-50 fw-bold cursor-pointer pb-2"
-                                onclick="switchJobTab('ACCEPTED')">
-                                Đã Nhận
-                            </div>
-                        </div>
 
                         <div class="row g-4" id="jobList">
                             <div class="empty-state w-100 text-center py-5" id="emptyState" style="display: none;">
@@ -215,7 +204,7 @@
                                         <button
                                             class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6"
                                             onclick="acceptJob(this, 'job-1', 'error500')">
-                                            Nhận Chuyến (Test Lỗi 500)
+                                            Bắt đầu chuyến đi (Test Lỗi 500)
                                         </button>
                                     </div>
                                 </div>
@@ -264,7 +253,7 @@
                                         <button class="btn-glass-action border-warning text-warning w-100 py-3 fs-6"
                                             style="background: rgba(245, 158, 11, 0.1);"
                                             onclick="acceptJob(this, 'job-2', 'error409')">
-                                            Nhận Chuyến (Test Mất Đơn)
+                                            Bắt đầu chuyến đi (Test Mất Đơn)
                                         </button>
                                     </div>
                                 </div>
@@ -320,12 +309,6 @@
                                     </div>
                                 </div>
                             </div> -->
-                        </div>
-                        <div class="row g-4" id="acceptedJobList" style="display: none;">
-                            <div class="empty-state w-100 text-center py-5" id="emptyStateAccepted">
-                                <i class="fa-solid fa-car-on radar-icon text-white-50 fs-1 mb-3"></i>
-                                <p class="text-white-50">Bạn chưa có chuyến xe nào đang thực hiện.</p>
-                            </div>
                         </div>
                     </section>
 
@@ -677,20 +660,28 @@
                     <form id="rejectReasonForm">
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason1"
-                                value="Vì lí do sức khỏe. Tôi không thể thực hiện chuyến đi này." checked>
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason1">Vì lí do sức khỏe. Tôi
-                                không thể thực hiện chuyến đi này.</label>
+                                value="Khoảng cách đón khách quá xa" checked>
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason1">Khoảng cách đón khách
+                                quá
+                                xa</label>
                         </div>
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason2"
+                                value="Xe đang gặp sự cố / Hỏng hóc">
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason2">Xe đang gặp sự cố /
+                                Hỏng
+                                hóc</label>
+                        </div>
+                        <div class="mb-2">
+                            <input type="radio" class="btn-check" name="rejectReason" id="reason3"
                                 value="Đang bận việc cá nhân đột xuất">
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason2">Đang bận việc cá nhân
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason3">Đang bận việc cá nhân
                                 đột
                                 xuất</label>
                         </div>
                         <div class="mb-3">
-                            <input type="radio" class="btn-check" name="rejectReason" id="reason3" value="other">
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason3">Lý do khác...</label>
+                            <input type="radio" class="btn-check" name="rejectReason" id="reason4" value="other">
+                            <label class="btn btn-outline-warning w-100 text-start" for="reason4">Lý do khác...</label>
                         </div>
                         <div class="mb-3" id="otherReasonContainer" style="display: none;">
                             <input type="text" class="form-control bg-transparent text-white border-warning"
