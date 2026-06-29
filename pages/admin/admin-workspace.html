@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="vi">
 
 <head>
@@ -131,8 +131,8 @@
                                         class="fa-solid fa-file-invoice-dollar me-2"></i> Giá cước & Voucher</a>
                             </li>
                             <li>
-                                <a href="#tab-holiday" class="toc-link"><i
-                                        class="fa-solid fa-calendar-day me-2"></i> Quản lý Ngày Lễ</a>
+                                <a href="#tab-holiday" class="toc-link"><i class="fa-solid fa-calendar-day me-2"></i>
+                                    Quản lý Ngày Lễ</a>
                             </li>
                             <li>
                                 <a href="#tab-vehicle-tags" class="toc-link"><i class="fa-solid fa-tags me-2"></i> Quản
@@ -141,7 +141,7 @@
                             </li>
                             <li>
                                 <a href="#tab-marketing-email" class="toc-link"><i
-                                        class="fa-solid fa-envelope-open-text text-danger me-2"></i> Chiến dịch
+                                        class="fa-solid fa-envelope-open-text me-2"></i> Chiến dịch
                                     Marketing</a>
                             </li>
 
@@ -454,7 +454,8 @@
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h4 class="fw-bold m-0 text-white"><i
-                                        class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá &
+                                        class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá
+                                    &
                                     Khuyến mãi</h4>
                             </div>
 
@@ -463,16 +464,18 @@
                                 <i class="fa-solid fa-circle-info fs-3 text-warning"></i>
                                 <div>
                                     <h5 class="fw-bold mb-1 fs-6 text-white">Quy tắc Cấu hình Giá</h5>
-                                    <p class="m-0 text-white-50" style="font-size: 0.9rem;">Hệ thống tính giá hoàn toàn tự động dựa theo khoảng cách (Map API) hoặc theo giờ/ngày. Bảng bên dưới cho phép Admin điều chỉnh tham số tính giá cho từng loại hình xe.</p>
+                                    <p class="m-0 text-white-50" style="font-size: 0.9rem;">Hệ thống tính giá hoàn toàn
+                                        tự động dựa theo khoảng cách (Map API) hoặc theo giờ/ngày. Bảng bên dưới cho
+                                        phép Admin điều chỉnh tham số tính giá cho từng loại hình xe.</p>
                                 </div>
                             </div>
 
                             <!-- BẢNG PRICING RULES (MỚI) -->
                             <div class="glass-panel fade-in-up" style="animation-delay: 0.1s; margin-bottom: 30px;">
                                 <h5 class="fw-bold mb-4 fs-6 text-white">Bảng Giá Dịch Vụ</h5>
-                                <div class="table-glass-wrapper overflow-auto">
+                                <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 500px;">
                                     <table class="table-glass w-100 mb-0">
-                                        <thead>
+                                        <thead style="position: sticky; top: 0; z-index: 10;">
                                             <tr>
                                                 <th>Loại Xe</th>
                                                 <th>Loại Dịch Vụ</th>
@@ -492,12 +495,7 @@
                                 </div>
                             </div>
 
-                            <div class="row g-4">
-                                            Lưu Cấu Hình Cơ Sở
-                                        </button>
-                                    </div>
-                                </div>
-
+                            <div class="row g-4 mt-3">
                                 <!-- CỘT QUẢN LÝ VOUCHER -->
                                 <div class="col-lg-12">
                                     <div class="glass-panel fade-in-up" style="animation-delay: 0.2s;">
@@ -519,7 +517,7 @@
                                             </select>
                                         </div>
 
-                                        <div class="table-glass-wrapper overflow-auto" style="max-height: 350px;">
+                                        <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 400px;">
                                             <table class="table-glass w-100 mb-0">
                                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                                     <tr>
@@ -542,9 +540,6 @@
                                     </div>
                                 </div>
                             </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </section>
 
@@ -553,18 +548,27 @@
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <div>
-                                    <h4 class="fw-bold mb-1 text-white"><i class="fa-solid fa-calendar-day text-success me-2"></i>Quản lý Ngày Lễ (Holidays)</h4>
-                                    <p class="text-white-50 small m-0">Định nghĩa các ngày nghỉ lễ để áp dụng bảng giá phụ thu tự động.</p>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-calendar-day text-success me-2"></i>Quản lý Ngày Lễ
+                                        (Holidays)</h4>
+                                    <p class="text-white-50 small m-0">Định nghĩa các ngày nghỉ lễ để áp dụng bảng giá
+                                        phụ thu tự động.</p>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button class="btn-glass-action bg-success text-white border-success"
+                                        onclick="openAddHolidayModal()">
+                                        <i class="fa-solid fa-plus me-1"></i> Thêm Ngày Lễ
+                                    </button>
                                 </div>
                             </div>
-                            
+
                             <div class="table-glass-wrapper overflow-auto" style="max-height: 400px;">
                                 <table class="table-glass w-100 mb-0">
                                     <thead style="position: sticky; top: 0; z-index: 10;">
                                         <tr>
                                             <th>ID</th>
                                             <th>Tên Ngày Lễ</th>
-                                            <th>Ngày (YYYY-MM-DD)</th>
+                                            <th>Ngày</th>
                                             <th>Hành động</th>
                                         </tr>
                                     </thead>
@@ -1516,6 +1520,92 @@
             <script src="../../js/admin/vehicleManager.js"></script>
             <script src="../../js/admin/marketingManager.js"></script>
             <script src="../../js/admin/auditManager.js"></script>
+            <!-- MODAL CHỈNH SỬA CẤU HÌNH GIÁ -->
+            <div class="login-modal-overlay" id="editPricingRuleModal">
+                <div class="glass-login-container text-white" style="max-width: 500px;">
+                    <button type="button" class="close-modal-btn" onclick="closeEditPricingModal()">&times;</button>
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-file-invoice-dollar text-success mb-3"
+                            style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
+                        <h3 class="glass-login-title" style="font-size: 1.8rem;">Sửa Cấu Hình Giá</h3>
+                        <p class="mt-2 text-white-50 small" id="pricingRuleModalDesc">Điều chỉnh giá cho Dịch vụ</p>
+                    </div>
+
+                    <form id="formEditPricingRule">
+                        <input type="hidden" id="editRuleId">
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Giá Cơ Bản (VND)</label>
+                            <input type="number" id="editBasePrice" class="form-control glass-input-field text-white"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Giá / Km (VND)</label>
+                            <input type="number" id="editPricePerKm" class="form-control glass-input-field text-white"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Giá / Giờ (VND)</label>
+                            <input type="number" id="editPricePerHour" class="form-control glass-input-field text-white"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Giá / Ngày (VND)</label>
+                            <input type="number" id="editPricePerDay" class="form-control glass-input-field text-white"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-white-50 small">Hệ số Cuối Tuần (1.0 = Không tăng)</label>
+                            <input type="number" step="0.1" id="editWeekendMultiplier"
+                                class="form-control glass-input-field text-white"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;">
+                        </div>
+
+                        <button type="button" id="btnSubmitPricingRule" class="glass-btn-submit w-100"
+                            onclick="submitEditPricingRule()">
+                            <i class="fa-solid fa-floppy-disk me-2"></i> Lưu Cấu Hình
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL THÊM NGÀY LỄ -->
+            <div class="login-modal-overlay" id="addHolidayModal">
+                <div class="glass-login-container text-white" style="max-width: 500px;">
+                    <button type="button" class="close-modal-btn" onclick="closeAddHolidayModal()">&times;</button>
+                    <div class="text-center mb-4">
+                        <i class="fa-solid fa-calendar-plus text-success mb-3"
+                            style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
+                        <h3 class="glass-login-title" style="font-size: 1.8rem;">Thêm Ngày Lễ</h3>
+                        <p class="mt-2 text-white-50 small">Thêm mới lịch nghỉ lễ hệ thống</p>
+                    </div>
+
+                    <form id="formAddHoliday">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Ngày Lễ</label>
+                            <input type="date" id="addHolidayDate" class="form-control glass-input-field text-white"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-white-50 small">Mô tả / Tên Ngày Lễ</label>
+                            <input type="text" id="addHolidayDesc" class="form-control glass-input-field text-white"
+                                placeholder="VD: Tết Nguyên Đán"
+                                style="background: rgba(255,255,255,0.1); border-radius: 12px;" required>
+                        </div>
+
+                        <button type="button" id="btnSubmitHoliday" class="glass-btn-submit w-100"
+                            onclick="submitAddHoliday()">
+                            <i class="fa-solid fa-plus me-2"></i> Thêm Ngày Lễ
+                        </button>
+                    </form>
+                </div>
+            </div>
+
 </body>
 
 </html>

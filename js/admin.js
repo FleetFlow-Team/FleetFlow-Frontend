@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (targetSection) {
                     targetSection.classList.add("active");
                     window.scrollTo({ top: 0, behavior: "smooth" });
-                    
+
                     // Nạp dữ liệu tự động nếu vào tab cấu hình Tags
                     if (targetId === 'tab-vehicle-tags' && typeof loadVehicleTagsList === 'function') {
                         loadVehicleTagsList();
@@ -936,4 +936,275 @@ window.deleteAdminVehicle = async function (id, plate) {
             fetchAndRenderAdminVehicles();
         } else showSystemToast(result.error || result.message, "error");
     } catch (error) { showSystemToast("Lỗi đường truyền", "error"); }
+};
+
+// =========================================================================
+// PHÂN HỆ 9: QUẢN LÝ BẢNG GIÁ (PRICING RULES)
+// =========================================================================
+
+let globalPricingRules = [];
+
+window.loadPricingRules = async function () {
+    const tbody = document.getElementById('pricingRulesBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info"></i><div class="mt-2 text-white-50">Đang đồng bộ dữ liệu Bảng giá...</div></td></tr>';
+
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch('http://localhost:8080/FleetFlow/api/v1/admin/pricing-rules', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
+        });
+
+        const result = await response.json();
+        if (result.success && result.data) {
+            globalPricingRules = result.data;
+            if (globalPricingRules.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center py-4 text-white-50">Hệ thống chưa có bảng giá nào.</td></tr>';
+                return;
+            }
+
+            let html = '';
+            globalPricingRules.forEach(r => {
+                const basePrice = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(r.basePrice || 0);
+                const priceKm = r.pricePerKm > 0 ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(r.pricePerKm) : '--';
+                const priceHD = r.pricePerHour > 0 ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(r.pricePerHour) + ' / giờ' :
+                    (r.pricePerDay > 0 ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(r.pricePerDay) + ' / ngày' : '--');
+
+                html += `
+                    <tr>
+                        <td>
+                            <div class="fw-bold text-white">${r.vehicleTypeId}</div>
+                        </td>
+                        <td>
+                            <div class="small fw-bold text-primary">${r.bookingType}</div>
+                            <div class="small text-white-50">${r.tripDirection}</div>
+                        </td>
+                        <td class="text-success fw-bold">${basePrice}</td>
+                        <td class="text-warning">${priceKm}</td>
+                        <td class="text-warning">${priceHD}</td>
+                        <td>
+                            <span class="badge ${r.weekendMultiplier > 1 ? 'bg-danger' : 'bg-secondary'} bg-opacity-50">
+                                x${r.weekendMultiplier}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn-glass-action bg-warning text-dark fw-bold border-warning" onclick="openEditPricingModal(${r.ruleId})">
+                                <i class="fa-solid fa-pen-to-square"></i> Sửa
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i> Lỗi: ${result.message || 'Không thể lấy dữ liệu'}</td></tr>`;
+        }
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-server me-2"></i> Mất kết nối đến máy chủ NetBeans.</td></tr>`;
+    }
+};
+
+window.openEditPricingModal = function (ruleId) {
+    const rule = globalPricingRules.find(r => r.ruleId === ruleId);
+    if (!rule) return;
+
+    document.getElementById('editRuleId').value = rule.ruleId;
+    document.getElementById('editBasePrice').value = rule.basePrice || 0;
+    document.getElementById('editPricePerKm').value = rule.pricePerKm || 0;
+    document.getElementById('editPricePerHour').value = rule.pricePerHour || 0;
+    document.getElementById('editPricePerDay').value = rule.pricePerDay || 0;
+    document.getElementById('editWeekendMultiplier').value = rule.weekendMultiplier || 1.0;
+
+    const desc = document.getElementById('pricingRuleModalDesc');
+    if (desc) desc.innerText = `Chỉnh sửa cấu hình giá [Loại Xe #${rule.vehicleTypeId} - ${rule.bookingType} - ${rule.tripDirection}]`;
+
+    document.getElementById('editPricingRuleModal').classList.add('active');
+};
+
+window.closeEditPricingModal = function () {
+    document.getElementById('editPricingRuleModal').classList.remove('active');
+};
+
+window.submitEditPricingRule = async function () {
+    const ruleId = document.getElementById('editRuleId').value;
+    const btn = document.getElementById('btnSubmitPricingRule');
+
+    const bodyData = {
+        basePrice: parseFloat(document.getElementById('editBasePrice').value) || 0,
+        pricePerKm: parseFloat(document.getElementById('editPricePerKm').value) || 0,
+        pricePerHour: parseFloat(document.getElementById('editPricePerHour').value) || 0,
+        pricePerDay: parseFloat(document.getElementById('editPricePerDay').value) || 0,
+        weekendMultiplier: parseFloat(document.getElementById('editWeekendMultiplier').value) || 1.0
+    };
+
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang lưu...';
+    btn.disabled = true;
+
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/admin/pricing-rules/${ruleId}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(bodyData)
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            showSystemToast('Đã lưu Cấu Hình Giá thành công!', 'success');
+            closeEditPricingModal();
+            loadPricingRules(); // Tải lại bảng giá
+        } else {
+            alert('Lỗi lưu Cấu hình giá: ' + result.message);
+        }
+    } catch (error) {
+        alert('Mất kết nối máy chủ!');
+    } finally {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    }
+};
+
+// Khởi chạy khi bấm vào Tab Giá Cước
+document.addEventListener('DOMContentLoaded', () => {
+    const pricingTabBtn = document.querySelector('a[href="#tab-pricing"]');
+    if (pricingTabBtn) {
+        pricingTabBtn.addEventListener('click', () => {
+            loadPricingRules();
+        });
+    }
+
+    const holidayTabBtn = document.querySelector('a[href="#tab-holiday"]');
+    if (holidayTabBtn) {
+        holidayTabBtn.addEventListener('click', () => {
+            loadHolidays();
+        });
+    }
+});
+
+// ==========================================
+// ADMIN HOLIDAY MANAGEMENT (QUẢN LÝ NGÀY LỄ)
+// ==========================================
+let globalHolidays = [];
+
+window.loadHolidays = async function () {
+    const tbody = document.getElementById("holidayListBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-white-50"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...</td></tr>`;
+
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch('http://localhost:8080/FleetFlow/api/v1/admin/holidays', {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+        if (result.success && result.data) {
+            globalHolidays = result.data;
+            let html = '';
+            if (globalHolidays.length === 0) {
+                html = `<tr><td colspan="4" class="text-center py-3 text-white-50">Chưa có ngày lễ nào.</td></tr>`;
+            } else {
+                globalHolidays.forEach(h => {
+                    let formattedDate = h.holidayDate;
+                    if (h.holidayDate && h.holidayDate.includes('-')) {
+                        const parts = h.holidayDate.split('-');
+                        if (parts.length >= 3) {
+                            formattedDate = `${parts[2].substring(0, 2)}/${parts[1]}/${parts[0]}`;
+                        }
+                    }
+                    html += `
+                        <tr class="align-middle">
+                            <td class="fw-bold text-white">#${h.holidayId}</td>
+                            <td class="text-warning fw-semibold">${h.description}</td>
+                            <td class="text-white">${formattedDate}</td>
+                            <td>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteHoliday(${h.holidayId})">
+                                    <i class="fa-solid fa-trash-can"></i> Xóa
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+            tbody.innerHTML = html;
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger fw-bold">Lỗi: ${result.message || 'Không thể lấy dữ liệu'}</td></tr>`;
+        }
+    } catch (error) {
+        tbody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger fw-bold">Mất kết nối đến máy chủ.</td></tr>`;
+    }
+};
+
+window.openAddHolidayModal = function () {
+    document.getElementById('addHolidayDate').value = '';
+    document.getElementById('addHolidayDesc').value = '';
+    document.getElementById('addHolidayModal').classList.add('active');
+};
+
+window.closeAddHolidayModal = function () {
+    document.getElementById('addHolidayModal').classList.remove('active');
+};
+
+window.submitAddHoliday = async function () {
+    const dateInput = document.getElementById('addHolidayDate').value;
+    const descInput = document.getElementById('addHolidayDesc').value;
+
+    if (!dateInput || !descInput) {
+        alert("Vui lòng nhập đầy đủ ngày và tên ngày lễ!");
+        return;
+    }
+
+    const btn = document.getElementById('btnSubmitHoliday');
+    const originalHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang lưu...';
+    btn.disabled = true;
+
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/admin/holidays`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ holidayDate: dateInput, description: descInput })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            showSystemToast('Đã thêm Ngày lễ mới thành công!', 'success');
+            closeAddHolidayModal();
+            loadHolidays();
+        } else {
+            alert("Lỗi khi thêm ngày lễ: " + (result.message || "Unknown error"));
+        }
+    } catch (err) {
+        alert("Lỗi kết nối máy chủ!");
+    } finally {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+    }
+};
+
+window.deleteHoliday = async function (id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa ngày lễ này không? Hành động này sẽ ảnh hưởng đến việc tính giá dịch vụ.")) return;
+
+    const token = localStorage.getItem('accessToken');
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/admin/holidays/${id}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            showSystemToast('Đã xóa ngày lễ thành công!', 'success');
+            loadHolidays();
+        } else {
+            alert("Lỗi khi xóa ngày lễ: " + (result.message || "Unknown error"));
+        }
+    } catch (err) {
+        alert("Lỗi kết nối máy chủ!");
+    }
 };
