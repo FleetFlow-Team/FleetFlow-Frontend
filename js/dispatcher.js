@@ -113,7 +113,11 @@ async function approveBooking(bookingId, buttonElement) {
                 // Tùy chọn: Sau 3 giây tự động làm mới bảng PENDING để tải lại danh sách mới
                 setTimeout(() => {
                     loadBookings('PENDING', 'tbody-main');
-                }, 3000);
+                    // GỌI THÊM API NOTIFICATION để bắt thông báo "Hệ thống tự động phân tài"
+                    if (typeof fetchDispatcherNotifications === 'function') {
+                        fetchDispatcherNotifications();
+                    }
+                }, 1000);
             }
         } else {
             // Nếu Backend báo lỗi (Ví dụ: Đơn đã bị người khác duyệt)
@@ -345,13 +349,18 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             actionButtons = `<span class="text-danger fw-bold"><i class="fa-solid fa-xmark"></i> Đã hủy bỏ</span>`;
         } else if (b.status === 'DISPATCHED') {
             badge = `<span class="glass-badge bg-primary text-white"><i class="fa-solid fa-car-side me-1"></i> Đã phân tài</span>`;
-            actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+            if (b.driverName) {
+                actionButtons = `<div class="text-success fw-bold" style="font-size: 0.9rem;"><i class="fa-solid fa-check-circle me-1"></i> TX: ${b.driverName}</div>
+                                 <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> ${b.driverPhone || ''}</div>`;
+            } else {
+                actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+            }
         } else if (b.status === 'APPROVED') {
             badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
             actionButtons = `<span class="text-primary fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Tự động tìm TX</span>`;
         }
 
-        tr.innerHTML = `
+            tr.innerHTML = `
             <td><strong>#${b.bookingId}</strong><br><small class="text-muted fw-medium">${b.vehicleName}<br>${b.licensePlate || ''}</small></td>
             <td>
                 <div class="fw-bold text-dark">${b.customerName}</div>
@@ -364,8 +373,8 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             <td>${badge}</td>
             <td>${actionButtons}</td>
         `;
-        tbody.appendChild(tr);
-    });
+            tbody.appendChild(tr);
+        });
 }
 
 // 5. TỰ ĐỘNG TẢI DỮ LIỆU KHI VỪA MỞ TRANG (Mặc định tải PENDING)
@@ -449,8 +458,11 @@ window.executeDispatch = async function () {
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
 
-            // Làm mới bảng danh sách
+            // Cập nhật lại Bảng & kích hoạt lại Notifications API để bắt thông báo Phân tài xế
             loadBookings('UNASSIGNED', 'tbody-main');
+            if (typeof fetchDispatcherNotifications === 'function') {
+                fetchDispatcherNotifications();
+            }
         } else {
             showSystemToast(result.error || result.message || "Hệ thống từ chối phân tài!", "error");
         }
@@ -765,6 +777,8 @@ document.addEventListener('DOMContentLoaded', () => {
 // ==========================================
 
 const DISPATCHER_NOTIFICATION_API_URL = `${DISPATCHER_API_BASE}/dispatcher/notifications`;
+let knownNotificationIds = new Set();
+let isFirstFetchNoti = true;
 
 // Gọi API lấy danh sách notification
 async function fetchDispatcherNotifications() {
@@ -790,8 +804,8 @@ function renderNotifications(notifications) {
 
     if (!listEl) return;
 
-    // Tính tổng chưa đọc
-    const unreadCount = notifications.filter(n => !n.isRead).length;
+    // Tính tổng chưa đọc (IsRead là boolean trong JS)
+    const unreadCount = notifications.filter(n => n.IsRead === false || n.IsRead === 0).length;
 
     // Update Badge
     if (countEl) {
@@ -803,6 +817,24 @@ function renderNotifications(notifications) {
         }
     }
 
+    // Hiển thị Toast cho thông báo mới
+    if (!isFirstFetchNoti) {
+        notifications.forEach(noti => {
+            const isUnread = (noti.IsRead === false || noti.IsRead === 0);
+            if (isUnread && !knownNotificationIds.has(noti.NotificationID)) {
+                if (typeof showSystemToast === 'function') {
+                    const title = noti.Title || noti.title || noti.TITLE || 'Có thông báo mới';
+                    const message = noti.Message || noti.message || noti.MESSAGE || '';
+                    showSystemToast(`[${title}] - ${message}`, "info");
+                }
+            }
+        });
+    }
+
+    // Cập nhật bộ nhớ
+    notifications.forEach(noti => knownNotificationIds.add(noti.NotificationID));
+    isFirstFetchNoti = false;
+
     // Render list
     if (notifications.length === 0) {
         listEl.innerHTML = '<div class="text-center p-4 text-muted">Không có thông báo nào</div>';
@@ -811,15 +843,13 @@ function renderNotifications(notifications) {
 
     let html = '';
     notifications.forEach(noti => {
-        const isUnread = !noti.isRead;
+        const isUnread = (noti.IsRead === false || noti.IsRead === 0);
+        const title = noti.Title || noti.title || noti.TITLE || 'Thông báo';
+        const message = noti.Message || noti.message || noti.MESSAGE || '';
         // Icon tuỳ loại thông báo
         let iconClass = 'fa-bell';
-        if (noti.type === 'BOOKING_DRIVER_ASSIGNED') iconClass = 'fa-solid fa-truck-fast';
-        else if (noti.type === 'BOOKING_DRIVER_ACCEPTED') iconClass = 'fa-solid fa-check text-success';
-        else if (noti.type === 'BOOKING_DRIVER_REJECTED') iconClass = 'fa-solid fa-xmark text-danger';
-
         // Format Date
-        let timeStr = noti.createdAt;
+        let timeStr = noti.CreatedAt;
         try {
             if (timeStr) {
                 const date = new Date(timeStr);
@@ -829,15 +859,48 @@ function renderNotifications(notifications) {
             }
         } catch (e) { }
 
+        // Diễn giải Type thành Badge
+        let typeText = noti.Type;
+        let typeBadgeClass = 'bg-secondary';
+        let typeIconColor = 'text-secondary';
+        if (noti.Type === 'BOOKING_DRIVER_ASSIGNED') {
+            typeText = 'Đã Phân Tài Xế';
+            typeBadgeClass = 'bg-primary';
+            typeIconColor = 'text-primary';
+        } else if (noti.Type === 'BOOKING_DRIVER_ACCEPTED') {
+            typeText = 'Tài Xế Nhận Đơn';
+            typeBadgeClass = 'bg-success';
+            typeIconColor = 'text-success';
+        } else if (noti.Type === 'BOOKING_DRIVER_REJECTED') {
+            typeText = 'Tài Xế Từ Chối';
+            typeBadgeClass = 'bg-danger';
+            typeIconColor = 'text-danger';
+        } else if (noti.Type === 'BOOKING_CREATED') {
+            typeText = 'Đơn Mới';
+            typeBadgeClass = 'bg-info';
+            typeIconColor = 'text-info';
+        }
+
+        // Tình trạng Chưa đọc / Đã đọc
+        const readStatusHtml = isUnread 
+            ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
+            : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
+
         html += `
             <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="markNotificationAsRead(${noti.NotificationID}, this)">
-                <div class="notification-icon-wrapper">
+                <div class="notification-icon-wrapper ${typeIconColor}">
                     <i class="${iconClass}"></i>
                 </div>
-                <div class="notification-content">
-                    <h6>${noti.title}</h6>
-                    <p>${noti.message}</p>
-                    <div class="notification-time">${timeStr || ''}</div>
+                <div class="notification-content" style="flex-grow: 1;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge ${typeBadgeClass} bg-opacity-25 text-dark border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
+                        ${readStatusHtml}
+                    </div>
+                    <h6 class="fw-bold text-dark mt-2 mb-1" style="font-size: 0.95rem;">${title}</h6>
+                    <p class="text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">${message}</p>
+                    <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                        <i class="fa-regular fa-clock me-1"></i> ${timeStr || ''}
+                    </div>
                 </div>
             </div>
         `;
