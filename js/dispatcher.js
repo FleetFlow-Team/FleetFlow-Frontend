@@ -599,36 +599,30 @@ function updateMapMarkers(ongoingTrips) {
         const recordedTime = new Date(trip.recordedAt);
         const timeString = recordedTime.toLocaleTimeString('vi-VN');
 
-        const popupHtml = `
-            <div style="padding: 5px; text-align: center; font-family: 'Inter', sans-serif;">
+        const tooltipHtml = `
+            <div class="live-marker-tooltip">
                 <h6 class="fw-bold mb-1 text-primary">Chuyến #${bId}</h6>
-                <div class="small fw-medium mb-1"><i class="fa-solid fa-car-side text-secondary"></i> ID Xe: ${trip.vehicleId || 'N/A'}</div>
-                <div class="text-success small fw-bold" style="font-size: 0.75rem;">
-                    <i class="fa-solid fa-satellite-dish live-pulse"></i> ${timeString}
+                <div class="text-success small fw-bold mt-1" style="font-size: 0.75rem;">
+                    <i class="fa-solid fa-satellite-dish"></i> Cập nhật lúc ${timeString}
                 </div>
             </div>
         `;
 
         if (activeMarkers[bId]) {
-            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ mới
+            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới
             activeMarkers[bId].setLngLat([lng, lat]);
-            activeMarkers[bId].getPopup().setHTML(popupHtml);
+            const markerEl = activeMarkers[bId].getElement();
+            if(markerEl) {
+                markerEl.innerHTML = tooltipHtml;
+            }
         } else {
-            // NẾU LÀ XE MỚI -> Tạo Marker mới
-            const popup = new vietmapgl.Popup({ offset: 25, closeButton: false }).setHTML(popupHtml);
-
+            // NẾU LÀ XE MỚI -> Tạo Marker mới (Chấm xanh hiệu ứng)
             const el = document.createElement('div');
-            el.className = 'live-car-marker';
-            // Styling cứng luôn cho chắc chắn (Phòng trường hợp thiếu CSS)
-            el.innerHTML = `
-                <div style="background: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid #00B14F;">
-                    <i class="fa-solid fa-car-side" style="color: #00B14F; font-size: 16px;"></i>
-                </div>
-            `;
+            el.className = 'live-pulse-dot';
+            el.innerHTML = tooltipHtml;
 
             const newMarker = new vietmapgl.Marker(el)
                 .setLngLat([lng, lat])
-                .setPopup(popup)
                 .addTo(dispatcherMap);
 
             activeMarkers[bId] = newMarker;
