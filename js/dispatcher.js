@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cập nhật giao diện nếu đã đăng nhập
     if (fullName) {
+        if (!userRole || userRole.toUpperCase() !== 'DISPATCHER') {
+            window.location.replace('../../error/403.html');
+            return;
+        }
+
         const nameEl = document.querySelector('.profile-name');
         const roleEl = document.querySelector('.profile-role');
         const avatarImg = document.querySelector('.glass-avatar img');

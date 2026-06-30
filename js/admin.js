@@ -266,7 +266,7 @@ function initAdminSession() {
     const email = localStorage.getItem('email') || 'admin@fleetflow.vn';
 
     if (userRole.toUpperCase() !== 'ADMIN') {
-        window.location.replace('../error/403.html');
+        window.location.replace('../../error/403.html');
         return false;
     }
 

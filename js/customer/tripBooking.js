@@ -12,6 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 3. Nếu ĐÃ ĐĂNG NHẬP
     if (accessToken && fullName) {
+        if (userRole.toUpperCase() !== 'CUSTOMER') {
+            window.location.replace('../../error/403.html');
+            return;
+        }
         // Mã hóa tên để làm URL Avatar
         const avatarName = encodeURIComponent(fullName);
 

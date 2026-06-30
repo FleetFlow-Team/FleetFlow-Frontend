@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 
 <head>
@@ -973,6 +973,19 @@
         // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE (ĐỒNG BỘ VỚI TRIPBOOKING.JS)
         // =====================================================================
         document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem('accessToken');
+            const userRole = localStorage.getItem('userRole');
+
+            if (!token) {
+                alert("Bạn cần đăng nhập để đặt xe!");
+                window.location.replace('../../index.html');
+                return;
+            }
+            if (!userRole || userRole.toUpperCase() !== 'CUSTOMER') {
+                window.location.replace('../../error/403.html');
+                return;
+            }
+
             const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
             const depositAmountText = localStorage.getItem('currentDepositAmount');
 

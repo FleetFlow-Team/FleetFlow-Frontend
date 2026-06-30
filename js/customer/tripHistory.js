@@ -11,6 +11,10 @@ document.addEventListener("DOMContentLoaded", function () {
         window.location.href = '../../index.html';
         return;
     }
+    if (userRole.toUpperCase() !== 'CUSTOMER') {
+        window.location.replace('../../error/403.html');
+        return;
+    }
 
     const avatarName = encodeURIComponent(fullName);
 
