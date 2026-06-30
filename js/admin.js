@@ -576,18 +576,19 @@ function renderAdminVehicles(vehicles) {
     let html = '';
     vehicles.forEach(v => {
         const icon = (v.seatCount > 5) ? 'fa-truck-pickup' : 'fa-car-side';
-        const isAvailable = (v.status === 'Available');
+        const isAvailable = (v.status && v.status.toUpperCase() === 'AVAILABLE');
         const statusColor = isAvailable ? 'success' : 'danger';
 
         const selectHtml = `
             <select class="form-select form-select-sm glass-select text-${statusColor} fw-bold border-${statusColor}" onchange="changeVehicleStatus(${v.vehicleId}, this.value)">
-                <option value="Available" ${isAvailable ? 'selected' : ''}>Sẵn sàng hoạt động</option>
-                <option value="Unavailable" ${!isAvailable ? 'selected' : ''}>Khóa / Bảo dưỡng</option>
+                <option value="AVAILABLE" ${isAvailable ? 'selected' : ''}>Sẵn sàng hoạt động</option>
+                <option value="UNAVAILABLE" ${!isAvailable ? 'selected' : ''}>Khóa / Bảo dưỡng</option>
             </select>
         `;
 
         html += `
         <tr>
+            <td class="text-info fw-bold">#${v.vehicleId}</td>
             <td>
                 <div class="d-flex align-items-center gap-3">
                     
@@ -655,7 +656,7 @@ window.closeVehicleDetailModal = function() {
 };
 
 window.changeVehicleStatus = async function (id, newStatus) {
-    if (!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus === 'Available' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
+    if (!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus.toUpperCase() === 'AVAILABLE' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
         fetchAndRenderAdminVehicles();
         return;
     }

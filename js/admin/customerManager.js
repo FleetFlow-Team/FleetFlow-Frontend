@@ -95,17 +95,17 @@ function renderCustomers(customers) {
             ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> ACTIVE</span>'
             : '<span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary"><i class="fa-solid fa-lock me-1"></i> LOCKED</span>';
 
-        // Tên hiển thị (Tạm lấy phần trước @ của email làm tên)
-        let displayName = c.email ? c.email.split('@')[0] : '--';
+        // Tên hiển thị từ Backend (fullName)
+        let displayName = c.fullName || '--';
 
-        // Nút hành động
+        // Nút hành động (dùng fullName để hiển thị trong câu hỏi xác nhận)
         let actionBtn = '';
         if (c.status === 'ACTIVE') {
-            actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="lockCustomerAccount(${c.customerId}, '${c.email}')" title="Khóa tài khoản">
+            actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="lockCustomerAccount(${c.customerId}, '${displayName}')" title="Khóa tài khoản">
                             <i class="fa-solid fa-lock me-1"></i> Khóa
                          </button>`;
         } else {
-            actionBtn = `<button class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="unlockCustomerAccount(${c.customerId}, '${c.email}')" title="Mở khóa tài khoản">
+            actionBtn = `<button class="btn btn-sm btn-outline-success rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="unlockCustomerAccount(${c.customerId}, '${displayName}')" title="Mở khóa tài khoản">
                             <i class="fa-solid fa-unlock me-1"></i> Mở khóa
                          </button>`;
         }
@@ -114,7 +114,10 @@ function renderCustomers(customers) {
             <tr>
                 <td class="text-info fw-bold">#${c.customerId}</td>
                 <td class="text-white fw-bold">${displayName}</td>
-                <td class="text-white-50"><i class="fa-solid fa-envelope me-1"></i>${c.email || '--'}</td>
+                <td class="text-white-50">
+                    <div><i class="fa-solid fa-envelope me-1"></i>${c.email || '--'}</div>
+                    <div class="small mt-1"><i class="fa-solid fa-phone me-1"></i>${c.phoneNumber || '--'}</div>
+                </td>
                 <td>${debtHtml}</td>
                 <td>${statusBadge}</td>
                 <td>${actionBtn}</td>

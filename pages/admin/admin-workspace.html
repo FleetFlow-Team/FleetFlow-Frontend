@@ -325,15 +325,23 @@
                                     <p class="text-white-50 small m-0">Kiểm soát trạng thái sẵn sàng, bảo dưỡng và giám
                                         sát tự động hạn kiểm định pháp lý.</p>
                                 </div>
+                                <div>
+                                    <button class="btn btn-outline-info rounded-pill shadow-sm"
+                                        onclick="fetchAndRenderAdminVehicles()">
+                                        <i class="fa-solid fa-rotate-right me-2"></i>Làm mới
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="table-glass-wrapper">
-                                <table class="table-glass w-100">
-                                    <thead>
+                            <div class="table-glass-wrapper overflow-auto premium-scrollbar"
+                                style="max-height: 750px; width: 100%;">
+                                <table class="table-glass w-100 mb-0">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
                                         <tr>
-                                            <th width="30%">Biển số & Phương tiện</th>
+                                            <th width="10%">ID</th>
+                                            <th width="25%">Biển số & Phương tiện</th>
                                             <th width="30%">Giấy tờ & Định danh</th>
-                                            <th width="20%">Thuộc tính (Tags)</th>
+                                            <th width="15%">Thuộc tính (Tags)</th>
                                             <th width="20%">Trạng thái hiện tại</th>
                                         </tr>
                                     </thead>
@@ -373,9 +381,9 @@
                                             placeholder="VD: Toyota Vios" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50 fw-bold small">Mẫu xe (Model)</label>
+                                        <label class="form-label text-white-50 fw-bold small">Mẫu xe (Model) *</label>
                                         <input type="text" id="vModel" class="form-control glass-input text-white"
-                                            placeholder="VD: E CVT 2023">
+                                            placeholder="VD: E CVT 2023" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label text-white-50 fw-bold small">Số chỗ ngồi *</label>
@@ -387,14 +395,26 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50 fw-bold small">Năm sản xuất</label>
-                                        <input type="number" id="vYear" class="form-control glass-input text-white"
-                                            placeholder="VD: 2022">
+                                        <label class="form-label text-white-50 fw-bold small">Số khung (Chassis)
+                                            *</label>
+                                        <input type="text" id="vChassis" class="form-control glass-input text-white"
+                                            placeholder="VD: RL4..." required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50 fw-bold small">Màu sắc</label>
-                                        <input type="text" id="vColor" class="form-control glass-input text-white"
-                                            placeholder="VD: Trắng">
+                                        <label class="form-label text-white-50 fw-bold small">Số máy (Engine) *</label>
+                                        <input type="text" id="vEngine" class="form-control glass-input text-white"
+                                            placeholder="VD: 2NR..." required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Số KM đã đi (ODO)
+                                            *</label>
+                                        <input type="number" id="vOdo" class="form-control glass-input text-white"
+                                            placeholder="VD: 15000" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Mô tả tình trạng *</label>
+                                        <input type="text" id="vDesc" class="form-control glass-input text-white"
+                                            placeholder="VD: Xe mới" required>
                                     </div>
                                 </div>
                                 <div class="mt-4 pt-3 border-top border-secondary text-end">
@@ -433,7 +453,8 @@
                             <!-- BẢNG PRICING RULES (MỚI) -->
                             <div class="glass-panel fade-in-up" style="animation-delay: 0.1s; margin-bottom: 30px;">
                                 <h5 class="fw-bold mb-4 fs-6 text-white">Bảng Giá Dịch Vụ</h5>
-                                <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 500px;">
+                                <div class="table-glass-wrapper overflow-auto premium-scrollbar"
+                                    style="max-height: 500px;">
                                     <table class="table-glass w-100 mb-0">
                                         <thead style="position: sticky; top: 0; z-index: 10;">
                                             <tr>
@@ -477,7 +498,8 @@
                                             </select>
                                         </div>
 
-                                        <div class="table-glass-wrapper overflow-auto premium-scrollbar" style="max-height: 400px;">
+                                        <div class="table-glass-wrapper overflow-auto premium-scrollbar"
+                                            style="max-height: 400px;">
                                             <table class="table-glass w-100 mb-0">
                                                 <thead style="position: sticky; top: 0; z-index: 10;">
                                                     <tr>
@@ -1417,7 +1439,8 @@
                 <div class="glass-login-container text-white" style="max-width: 600px;">
                     <button type="button" class="close-modal-btn" onclick="closeVehicleDetailModal()">&times;</button>
                     <div class="text-center mb-4">
-                        <i class="fa-solid fa-car text-info mb-3" style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(13,202,240,0.5));"></i>
+                        <i class="fa-solid fa-car text-info mb-3"
+                            style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(13,202,240,0.5));"></i>
                         <h3 class="glass-login-title" style="font-size: 1.5rem;" id="vdTitle">Hồ Sơ Phương Tiện</h3>
                         <span class="badge bg-success" id="vdStatus">Trạng thái</span>
                     </div>
@@ -1425,23 +1448,29 @@
                     <div class="row g-3 mb-2 text-center">
                         <div class="col-6">
                             <label class="form-label text-white-50 small mb-1">Biển số kiểm soát</label>
-                            <div class="form-control glass-input-field text-white fw-bold d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdLicense"></div>
+                            <div class="form-control glass-input-field text-white fw-bold d-flex align-items-center justify-content-center"
+                                style="background: rgba(255,255,255,0.05); border: none;" id="vdLicense"></div>
                         </div>
                         <div class="col-6">
                             <label class="form-label text-white-50 small mb-1">Dòng xe</label>
-                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdModel"></div>
+                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center"
+                                style="background: rgba(255,255,255,0.05); border: none;" id="vdModel"></div>
                         </div>
                         <div class="col-6">
                             <label class="form-label text-white-50 small mb-1">Số máy</label>
-                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdEngine"></div>
+                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center"
+                                style="background: rgba(255,255,255,0.05); border: none;" id="vdEngine"></div>
                         </div>
                         <div class="col-6">
                             <label class="form-label text-white-50 small mb-1">Số khung</label>
-                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center" style="background: rgba(255,255,255,0.05); border: none;" id="vdChassis"></div>
+                            <div class="form-control glass-input-field text-white d-flex align-items-center justify-content-center"
+                                style="background: rgba(255,255,255,0.05); border: none;" id="vdChassis"></div>
                         </div>
                         <div class="col-12">
                             <label class="form-label text-white-50 small mb-1">Số KM đã đi (ODO)</label>
-                            <div class="form-control glass-input-field text-warning fw-bold fs-5 text-center d-flex align-items-center justify-content-center" style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);" id="vdOdo"></div>
+                            <div class="form-control glass-input-field text-warning fw-bold fs-5 text-center d-flex align-items-center justify-content-center"
+                                style="background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.3);"
+                                id="vdOdo"></div>
                         </div>
                     </div>
                 </div>
