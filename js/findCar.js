@@ -461,11 +461,16 @@ function renderVehiclesByPage(page) {
         let fuelType = v.fuelType || 'Xăng';
         let transType = (descLower.includes("số sàn") || descLower.includes("mt")) ? "Số sàn" : "Tự động";
 
-        // Xử lý hình ảnh: Ép cứng theo VehicleID từ bộ từ điển
-        let fileName = vehicleImageMap[v.vehicleId];
-        let carImage = fileName
-            ? `../assets/img/car-show/ImageUrl/${fileName}`
-            : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+        // Xử lý hình ảnh: Ưu tiên imageUrl từ DB, nếu không có thì lấy theo VehicleID từ bộ từ điển
+        let carImage = 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+        if (v.imageUrl && (v.imageUrl.startsWith('http://') || v.imageUrl.startsWith('https://'))) {
+            carImage = v.imageUrl;
+        } else {
+            let fileName = vehicleImageMap[v.vehicleId];
+            if (fileName) {
+                carImage = fileName.startsWith('http') ? fileName : `../assets/img/car-show/ImageUrl/${fileName}`;
+            }
+        }
         // Giá xe
 
         const rawPrice = getMockPrice(v);
@@ -650,11 +655,16 @@ window.viewCarDetail = async function (id) {
         if (result.success && result.data) {
             const v = result.data;
 
-            // Xử lý hình ảnh Modal: Lấy trực tiếp theo ID từ bộ từ điển
-            let fileName = vehicleImageMap[id];
-            let modalImage = fileName
-                ? `../assets/img/car-show/ImageUrl/${fileName}`
-                : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+            // Xử lý hình ảnh Modal: Ưu tiên imageUrl từ DB, nếu không có thì lấy theo ID từ bộ từ điển
+            let modalImage = 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+            if (v.imageUrl && (v.imageUrl.startsWith('http://') || v.imageUrl.startsWith('https://'))) {
+                modalImage = v.imageUrl;
+            } else {
+                let fileName = vehicleImageMap[id];
+                if (fileName) {
+                    modalImage = fileName.startsWith('http') ? fileName : `../assets/img/car-show/ImageUrl/${fileName}`;
+                }
+            }
             // Xử lý giá tiền dịch vụ cho modal
             const rawPrice = getMockPrice(v);
             const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';

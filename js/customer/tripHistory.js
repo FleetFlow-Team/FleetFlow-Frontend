@@ -68,7 +68,10 @@ document.addEventListener("DOMContentLoaded", function () {
     loadTripHistory();
 });
 
-function getCarImage(vId) {
+function getCarImage(vId, imageUrl) {
+    if (imageUrl && (imageUrl.startsWith('http://') || imageUrl.startsWith('https://'))) {
+        return imageUrl;
+    }
     const map = {
         1: 'ToyotaVios4.jpg', 2: 'HondaCity4.jpg', 3: 'HyundaiAccent4.jpg', 4: 'MazdaMazda34.jpg', 5: 'KiaSoluto4.jpg',
         6: 'ToyotaVios4.jpg', 7: 'HondaCity4.jpg', 8: 'HyundaiAccent4.jpg', 9: 'MazdaMazda34.jpg', 10: 'KiaSoluto4.jpg',
@@ -82,7 +85,8 @@ function getCarImage(vId) {
         46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
     };
     if (vId && map[vId]) {
-        return `../../assets/img/car-show/ImageUrl/${map[vId]}`;
+        let fileName = map[vId];
+        return fileName.startsWith('http') ? fileName : `../../assets/img/car-show/ImageUrl/${fileName}`;
     }
     return 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
 }
@@ -124,8 +128,8 @@ function renderTripList(trips) {
         const vId = trip.vehicleId || trip.VehicleID || trip.vehicleID || null;
         const bId = trip.bookingId || trip.BookingID || trip.bookingID || "N/A";
 
-        // 2. LẤY ĐƯỜNG DẪN ẢNH TỪ BỘ TỪ ĐIỂN
-        const carImgUrl = getCarImage(vId);
+        // 2. LẤY ĐƯỜNG DẪN ẢNH TỪ BỘ TỪ ĐIỂN HOẶC URL DB
+        const carImgUrl = getCarImage(vId, trip.imageUrl || trip.ImageUrl);
 
         // 3. BÓC TÁCH DỮ LIỆU HIỂN THỊ AN TOÀN
         let carName = "Phương tiện FleetFlow";

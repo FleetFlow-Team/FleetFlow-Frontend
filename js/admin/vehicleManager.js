@@ -14,8 +14,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const engineNumber = document.getElementById('vEngine').value.trim();
             const accumulatedKm = parseInt(document.getElementById('vOdo').value, 10) || 0;
             const description = document.getElementById('vDesc').value.trim();
+            const fuelType = document.getElementById('vFuelType').value;
+            const imageUrl = document.getElementById('vImageUrl').value.trim();
 
-            if (!licensePlate || !brand || !seatCount || !chassisNumber || !engineNumber) {
+            if (!licensePlate || !brand || !seatCount || !chassisNumber || !engineNumber || !fuelType) {
                 showSystemToast("Vui lòng điền các trường bắt buộc (*).", "error");
                 return;
             }
@@ -29,6 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 engineNumber,
                 accumulatedKm,
                 description,
+                fuelType,
+                imageUrl,
                 status: 'AVAILABLE'
             };
 
