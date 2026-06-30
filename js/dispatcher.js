@@ -612,7 +612,7 @@ function updateMapMarkers(ongoingTrips) {
             // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới
             activeMarkers[bId].setLngLat([lng, lat]);
             const markerEl = activeMarkers[bId].getElement();
-            if(markerEl) {
+            if (markerEl) {
                 markerEl.innerHTML = tooltipHtml;
             }
         } else {
@@ -759,3 +759,122 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// ==========================================
+// 10. NOTIFICATION MODULE
+// ==========================================
+
+const DISPATCHER_NOTIFICATION_API_URL = `${DISPATCHER_API_BASE}/dispatcher/notifications`;
+
+// Gọi API lấy danh sách notification
+async function fetchDispatcherNotifications() {
+    try {
+        const response = await fetch(DISPATCHER_NOTIFICATION_API_URL, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+            renderNotifications(result.data);
+        }
+    } catch (error) {
+        console.error("Lỗi khi fetch notifications:", error);
+    }
+}
+
+// Render notification vào UI
+function renderNotifications(notifications) {
+    const listEl = document.getElementById('notificationList');
+    const countEl = document.getElementById('notiCount');
+
+    if (!listEl) return;
+
+    // Tính tổng chưa đọc
+    const unreadCount = notifications.filter(n => !n.isRead).length;
+
+    // Update Badge
+    if (countEl) {
+        if (unreadCount > 0) {
+            countEl.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            countEl.style.display = 'flex'; // Hiện
+        } else {
+            countEl.style.display = 'none'; // Ẩn
+        }
+    }
+
+    // Render list
+    if (notifications.length === 0) {
+        listEl.innerHTML = '<div class="text-center p-4 text-muted">Không có thông báo nào</div>';
+        return;
+    }
+
+    let html = '';
+    notifications.forEach(noti => {
+        const isUnread = !noti.isRead;
+        // Icon tuỳ loại thông báo
+        let iconClass = 'fa-bell';
+        if (noti.type === 'BOOKING_DRIVER_ASSIGNED') iconClass = 'fa-solid fa-truck-fast';
+        else if (noti.type === 'BOOKING_DRIVER_ACCEPTED') iconClass = 'fa-solid fa-check text-success';
+        else if (noti.type === 'BOOKING_DRIVER_REJECTED') iconClass = 'fa-solid fa-xmark text-danger';
+
+        // Format Date
+        let timeStr = noti.createdAt;
+        try {
+            if (timeStr) {
+                const date = new Date(timeStr);
+                if (!isNaN(date.getTime())) {
+                    timeStr = date.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+                }
+            }
+        } catch (e) { }
+
+        html += `
+            <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="markNotificationAsRead(${noti.NotificationID}, this)">
+                <div class="notification-icon-wrapper">
+                    <i class="${iconClass}"></i>
+                </div>
+                <div class="notification-content">
+                    <h6>${noti.title}</h6>
+                    <p>${noti.message}</p>
+                    <div class="notification-time">${timeStr || ''}</div>
+                </div>
+            </div>
+        `;
+    });
+
+    listEl.innerHTML = html;
+}
+
+// Đánh dấu đã đọc
+async function markNotificationAsRead(id, element) {
+    // Nếu element đã nhạt màu (đã đọc) thì ko gọi API thừa
+    if (element && !element.classList.contains('unread')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${DISPATCHER_NOTIFICATION_API_URL}/${id}/read`, {
+            method: 'POST',
+            headers: postAuthHeader()
+        });
+        const result = await response.json();
+        if (result.success) {
+            if (element) {
+                element.classList.remove('unread'); // Remove unread class
+            }
+            fetchDispatcherNotifications(); // Cập nhật lại số lượng
+        }
+    } catch (error) {
+        console.error("Lỗi đánh dấu notification:", error);
+    }
+}
+
+// Khởi chạy khi tải trang
+document.addEventListener('DOMContentLoaded', () => {
+    // Lần đầu tải
+    fetchDispatcherNotifications();
+    // Lặp mỗi 15 giây
+    setInterval(fetchDispatcherNotifications, 15000);
+});
+

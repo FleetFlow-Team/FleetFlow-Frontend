@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,316 +9,408 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
-    <link rel="stylesheet" href="../style/base.css" />    
+    <link rel="stylesheet" href="../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="../style/findCar.css" />
 
     <style>
-      .nav-link-center-1 {
-        display: flex;
-        color: rgba(255, 255, 255, 0.85) !important;
-        font-weight: 600;
-        font-size: 1.05rem;
-        text-decoration: none;
-        position: relative;
-        padding: 8px 16px;
-        transition: all 0.4s var(--liquid-easing);
-        border-radius: 50px;
-      }
+        .nav-link-center-1 {
+            display: flex;
+            color: rgba(255, 255, 255, 0.85) !important;
+            font-weight: 600;
+            font-size: 1.05rem;
+            text-decoration: none;
+            position: relative;
+            padding: 8px 16px;
+            transition: all 0.4s var(--liquid-easing);
+            border-radius: 50px;
+        }
 
-      .nav-link-center-1:hover {
-        color: white !important;
-        background: rgba(255, 255, 255, 0.15);
-        box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-        transform: translateY(-5px);
-      }
+        .nav-link-center-1:hover {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            transform: translateY(-5px);
+        }
 
-      .nav-link-center-1.active { 
-          color: white !important; 
-          background: rgba(255, 255, 255, 0.15);
-          box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
-      }
+        .nav-link-center-1.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+        }
 
-.highlight-text { color: var(--color-1, #00B14F); }
-.border-bottom-glass-light { border-bottom: 1px solid rgba(0, 0, 0, 0.06); }
-.border-top-glass-light { border-top: 1px solid rgba(0, 0, 0, 0.06); }
+        .highlight-text {
+            color: var(--color-1, #00B14F);
+        }
 
-/* --- CẤU TRÚC GLASS CHUẨN SÁNG --- */
-.glass-panel, .glass-card {
-    position: relative;
-    isolation: isolate;
-    border-radius: 40px;
-    background: transparent;
-    transition: transform 0.4s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2));
-    /* Đổ bóng ngoài thật mềm mịn */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
-}
+        .border-bottom-glass-light {
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
 
-/* Lớp kính mờ trắng (Nằm dưới cùng) */
-.glass-panel::after, .glass-card::after {
-    content: ''; position: absolute; inset: -10px; z-index: -1;
-    background: rgba(255, 255, 255, 0.55); /* Lớp nền trắng bán trong suốt */
-    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-    filter: url(#liquid-distortion);
-    clip-path: inset(10px round 40px);
-}
+        .border-top-glass-light {
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+        }
 
-/* Lớp phản quang viền nổi 3D (Nằm trên cùng) */
-.glass-panel::before, .glass-card::before {
-    content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
-    border-radius: inherit;
-    /* Ánh sáng hắt từ trên xuống (trắng) và bóng râm nhẹ ở dưới (đen mờ) */
-    box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1), 
+        /* --- CẤU TRÚC GLASS CHUẨN SÁNG --- */
+        .glass-panel,
+        .glass-card {
+            position: relative;
+            isolation: isolate;
+            border-radius: 40px;
+            background: transparent;
+            transition: transform 0.4s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2));
+            /* Đổ bóng ngoài thật mềm mịn */
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+        }
+
+        /* Lớp kính mờ trắng (Nằm dưới cùng) */
+        .glass-panel::after,
+        .glass-card::after {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            z-index: -1;
+            background: rgba(255, 255, 255, 0.55);
+            /* Lớp nền trắng bán trong suốt */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            filter: url(#liquid-distortion);
+            clip-path: inset(10px round 40px);
+        }
+
+        /* Lớp phản quang viền nổi 3D (Nằm trên cùng) */
+        .glass-panel::before,
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            pointer-events: none;
+            border-radius: inherit;
+            /* Ánh sáng hắt từ trên xuống (trắng) và bóng râm nhẹ ở dưới (đen mờ) */
+            box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1),
                 inset -2px -2px 5px rgba(0, 0, 0, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.8);
-}
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
 
 
 
 
-/* --- FORM CONTROLS (Sáng sủa, bo tròn) --- */
-.glass-select {
-    background-color: rgba(255, 255, 255, 0.7) !important;
-    border: 1px solid rgba(255, 255, 255, 0.9) !important;
-    color: #334155 !important;
-    border-radius: 20px !important;
-    padding: 12px 15px;
-    backdrop-filter: blur(10px);
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.02), 0 2px 5px rgba(0,0,0,0.02);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-  background-image: none !important;
-}
+        /* --- FORM CONTROLS (Sáng sủa, bo tròn) --- */
+        .glass-select {
+            background-color: rgba(255, 255, 255, 0.7) !important;
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            color: #334155 !important;
+            border-radius: 20px !important;
+            padding: 12px 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.02), 0 2px 5px rgba(0, 0, 0, 0.02);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none !important;
+        }
 
-.glass-select:focus {
-    box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.2);
-    border-color: var(--color-1, #00B14F) !important;
-    outline: none;
-    box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.2), 
-                0 8px 25px rgba(0, 177, 79, 0.25), 
+        .glass-select:focus {
+            box-shadow: 0 0 0 3px rgba(0, 177, 79, 0.2);
+            border-color: var(--color-1, #00B14F) !important;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.2),
+                0 8px 25px rgba(0, 177, 79, 0.25),
                 inset 0 3px 6px rgba(0, 177, 79, 0.15) !important;
-    outline: none;
-    
-}
+            outline: none;
 
-.glass-select:hover {
-    transform: translateY(-3px);
-    border-color: rgba(0, 177, 79, 0.4) !important;
-    background-color: rgba(255, 255, 255, 0.85) !important;
-    /* Đổ bóng râm màu xanh nhạt xung quanh */
-    box-shadow: 0 6px 15px rgba(0, 177, 79, 0.15), inset 0 2px 5px rgba(255, 255, 255, 1);
-}
+        }
 
-.glass-select option { background-color: #ffffff; color: #333; }
+        .glass-select:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 177, 79, 0.4) !important;
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            /* Đổ bóng râm màu xanh nhạt xung quanh */
+            box-shadow: 0 6px 15px rgba(0, 177, 79, 0.15), inset 0 2px 5px rgba(255, 255, 255, 1);
+        }
 
-/* Liquid Checkbox/Radio Trắng */
-.liquid-checkbox-wrapper {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 12px; cursor: pointer; position: relative;
-}
-.liquid-checkbox-wrapper input { display: none; }
-.liquid-checkbox-wrapper .checkmark {
-    width: 22px; height: 22px;
-    background: rgba(255, 255, 255, 0.8);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    border-radius: 8px; 
-    position: relative; transition: all 0.3s ease;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-}
-.liquid-checkbox-wrapper.radio-type .checkmark { border-radius: 50%; } 
+        .glass-select option {
+            background-color: #ffffff;
+            color: #333;
+        }
 
-.liquid-checkbox-wrapper input:checked ~ .checkmark {
-    background: var(--color-1, #00B14F);
-    border-color: var(--color-1, #00B14F);
-    box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
-}
-.liquid-checkbox-wrapper input:checked ~ .checkmark::after {
-    content: '\f00c'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    color: #fff; font-size: 12px;
-}
-.liquid-checkbox-wrapper.radio-type input:checked ~ .checkmark::after {
-    content: ''; width: 10px; height: 10px; background: #fff;
-    border-radius: 50%;
-}
-.label-text { color: #475569; font-size: 0.95rem; transition: color 0.3s; font-weight: 500;}
-.liquid-checkbox-wrapper:hover .label-text { color: var(--color-1, #00B14F); }
+        /* Liquid Checkbox/Radio Trắng */
+        .liquid-checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            position: relative;
+        }
 
-/* --- VEHICLE CARDS --- */
-.vehicle-img-box {
-    position: relative;
-    border-radius: 40px 40px 0px 0px; 
-    overflow: hidden; 
-    height: 180px;
-    margin-bottom: 20px; 
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        .liquid-checkbox-wrapper input {
+            display: none;
+        }
 
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    -webkit-mask-image: -webkit-radial-gradient(white, black);
-}
+        .liquid-checkbox-wrapper .checkmark {
+            width: 22px;
+            height: 22px;
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
 
-.vehicle-badge-discount {
-    position: absolute; 
-    top: 20px; 
-    right: 20px; /* Căn góc phải, cách viền 12px chuẩn chỉ */
-    z-index: 10;
-    padding: 6px 14px; 
-    border-radius: 50px; /* Bo tròn tuyệt đối như viên thuốc */
-    font-weight: 700; 
-    font-size: 0.75rem;
-    white-space: nowrap; /* Ép chữ không được rớt dòng */
-    width: fit-content;  /* Kích thước vừa khít với độ dài chữ */
-    backdrop-filter: blur(5px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-}
+        .liquid-checkbox-wrapper.radio-type .checkmark {
+            border-radius: 50%;
+        }
 
-.badge-yellow { background: rgba(255, 222, 89, 0.95); color: #111; }
-.badge-red { background: rgba(239, 68, 68, 0.95); color: #fff; }
-.badge-blue { background: rgba(59, 130, 246, 0.95); color: #fff; }
+        .liquid-checkbox-wrapper input:checked~.checkmark {
+            background: var(--color-1, #00B14F);
+            border-color: var(--color-1, #00B14F);
+            box-shadow: 0 4px 10px rgba(0, 177, 79, 0.3);
+        }
 
-.v-img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    /* Thay đổi tốc độ và độ nảy để zoom êm ái hơn */
-    transition: transform 0.6s ease-out; 
-    will-change: transform;
-}
-.glass-card:hover .v-img { transform: scale(1.08); }
+        .liquid-checkbox-wrapper input:checked~.checkmark::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 12px;
+        }
 
-/* Nảy 3D và phát sáng viền xanh khi hover */
-.glass-card:hover {
-    box-shadow: 0 20px 40px rgba(0, 177, 79, 0.08);
-}
+        .liquid-checkbox-wrapper.radio-type input:checked~.checkmark::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+        }
 
-.glass-card:hover::before {
-    border: 1px solid rgba(0, 177, 79, 0.3); /* Phát sáng viền xanh tĩnh */
-}
+        .label-text {
+            color: #475569;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .liquid-checkbox-wrapper:hover .label-text {
+            color: var(--color-1, #00B14F);
+        }
+
+        /* --- VEHICLE CARDS --- */
+        .vehicle-img-box {
+            position: relative;
+            border-radius: 40px 40px 0px 0px;
+            overflow: hidden;
+            height: 180px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+            -webkit-mask-image: -webkit-radial-gradient(white, black);
+        }
+
+        .vehicle-badge-discount {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            /* Căn góc phải, cách viền 12px chuẩn chỉ */
+            z-index: 10;
+            padding: 6px 14px;
+            border-radius: 50px;
+            /* Bo tròn tuyệt đối như viên thuốc */
+            font-weight: 700;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            /* Ép chữ không được rớt dòng */
+            width: fit-content;
+            /* Kích thước vừa khít với độ dài chữ */
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .badge-yellow {
+            background: rgba(255, 222, 89, 0.95);
+            color: #111;
+        }
+
+        .badge-red {
+            background: rgba(239, 68, 68, 0.95);
+            color: #fff;
+        }
+
+        .badge-blue {
+            background: rgba(59, 130, 246, 0.95);
+            color: #fff;
+        }
+
+        .v-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Thay đổi tốc độ và độ nảy để zoom êm ái hơn */
+            transition: transform 0.6s ease-out;
+            will-change: transform;
+        }
+
+        .glass-card:hover .v-img {
+            transform: scale(1.08);
+        }
+
+        /* Nảy 3D và phát sáng viền xanh khi hover */
+        .glass-card:hover {
+            box-shadow: 0 20px 40px rgba(0, 177, 79, 0.08);
+        }
+
+        .glass-card:hover::before {
+            border: 1px solid rgba(0, 177, 79, 0.3);
+            /* Phát sáng viền xanh tĩnh */
+        }
 
 
 
-/* --- NÚT ĐẶT XE (LIQUID GLASS ĐÚNG NGHĨA) --- */
-.btn-liquid-book {
-    position: relative;
-    isolation: isolate;
-    background: rgba(89, 255, 114, 0.307);
-    border: 3px solid rgba(255, 255, 255, 0.514);
-    border-radius: 50px; 
-    color: #1e293b; 
-    padding: 10px 24px;
-    font-weight: 600; 
-    transition: all 0.5s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2));
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
-    overflow: hidden; /* Cần thiết để chứa hiệu ứng loang màu bên trong */
-    cursor: pointer;
-}
+        /* --- NÚT ĐẶT XE (LIQUID GLASS ĐÚNG NGHĨA) --- */
+        .btn-liquid-book {
+            position: relative;
+            isolation: isolate;
+            background: rgba(89, 255, 114, 0.307);
+            border: 3px solid rgba(255, 255, 255, 0.514);
+            border-radius: 50px;
+            color: #1e293b;
+            padding: 10px 24px;
+            font-weight: 600;
+            transition: all 0.5s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2));
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+            overflow: hidden;
+            /* Cần thiết để chứa hiệu ứng loang màu bên trong */
+            cursor: pointer;
+        }
 
-/* Lớp màu xanh Glass-Green ẩn bên trong */
-.btn-liquid-book::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    /* Lấy biến --glass-green từ base.css của bạn */
-    background: var(--glass-green, rgba(89, 255, 114, 0.307));
-    border-radius: inherit;
-    transform: scale(0); /* Bắt đầu từ 1 điểm nhỏ */
-    opacity: 0;
-    transition: transform 0.5s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2)), 
+        /* Lớp màu xanh Glass-Green ẩn bên trong */
+        .btn-liquid-book::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            /* Lấy biến --glass-green từ base.css của bạn */
+            background: var(--glass-green, rgba(89, 255, 114, 0.307));
+            border-radius: inherit;
+            transform: scale(0);
+            /* Bắt đầu từ 1 điểm nhỏ */
+            opacity: 0;
+            transition: transform 0.5s var(--liquid-easing, cubic-bezier(0.175, 0.885, 0.32, 1.2)),
                 opacity 0.4s ease;
-}
-/* Hiệu ứng khi Hover: Lớp xanh loang ra, nút nảy lên */
-.glass-card:hover .btn-liquid-book, 
-.btn-liquid-book:hover {
-    border-color: var(--glass-border);
-    background-color: var(--color-1);
-    color: var(--color-2);
-    box-shadow: 0 8px 25px rgba(89, 255, 114, 0.25); 
-    transform: translateY(-5px);
-}
+        }
 
-.glass-card:hover .btn-liquid-book::before, 
-.btn-liquid-book:hover::before {
-    transform: scale(1); /* Phóng to lớp màu xanh lấp đầy nút */
-    opacity: 1;
-}
+        /* Hiệu ứng khi Hover: Lớp xanh loang ra, nút nảy lên */
+        .glass-card:hover .btn-liquid-book,
+        .btn-liquid-book:hover {
+            border-color: var(--glass-border);
+            background-color: var(--color-1);
+            color: var(--color-2);
+            box-shadow: 0 8px 25px rgba(89, 255, 114, 0.25);
+            transform: translateY(-5px);
+        }
 
-/* --- PHÂN TRANG LIQUID SÁNG --- */
-.liquid-pagination .page-link {
-    background: rgba(255, 255, 255, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.8) !important;
-    color: #475569 !important; border-radius: 50% !important;
-    width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s ease; backdrop-filter: blur(10px);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-    font-weight: 600;
-}
-.liquid-pagination .page-item.active .page-link,
-.liquid-pagination .page-item:not(.disabled) .page-link:hover {
-    background: var(--color-1, #00B14F) !important;
-    border-color: var(--color-1, #00B14F) !important;
-    color: #fff !important;
-    box-shadow: 0 5px 15px rgba(0, 177, 79, 0.3) !important;
-    transform: translateY(-3px);
-}
+        .glass-card:hover .btn-liquid-book::before,
+        .btn-liquid-book:hover::before {
+            transform: scale(1);
+            /* Phóng to lớp màu xanh lấp đầy nút */
+            opacity: 1;
+        }
 
-.col-md-6, .col-xl-4 {
-  padding-right: 0px !important;
-}
+        /* --- PHÂN TRANG LIQUID SÁNG --- */
+        .liquid-pagination .page-link {
+            background: rgba(255, 255, 255, 0.6) !important;
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+            color: #475569 !important;
+            border-radius: 50% !important;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+            font-weight: 600;
+        }
 
-/* Giá hiện tại - Text Gradient tạo độ bóng */
-.price-container .price-current {
-    font-size: 1.3rem; /* Phóng to để làm điểm nhấn */
-    font-weight: 800; /* In đậm cực đại */
-    /* Dùng gradient xanh lá sáng để chữ có độ sâu như kính */
-    background: linear-gradient(135deg, var(--color-1, #00B14F) 0%, #00d25e 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    line-height: 1;
-    display: inline-block;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), filter 0.4s ease;
-}
+        .liquid-pagination .page-item.active .page-link,
+        .liquid-pagination .page-item:not(.disabled) .page-link:hover {
+            background: var(--color-1, #00B14F) !important;
+            border-color: var(--color-1, #00B14F) !important;
+            color: #fff !important;
+            box-shadow: 0 5px 15px rgba(0, 177, 79, 0.3) !important;
+            transform: translateY(-3px);
+        }
 
-/* Ký hiệu (đ) - Căn trên đỉnh giống thẻ giá quốc tế */
-.price-container .currency {
-    font-size: 0.9rem;
-    font-weight: 700;
-    vertical-align: text-top; /* Đẩy chữ đ lên cao */
-    margin-left: 2px;
-}
+        .col-md-6,
+        .col-xl-4 {
+            padding-right: 0px !important;
+        }
 
-/* Giá cũ gạch ngang */
-.price-container .price-old {
-    font-size: 0.8rem;
-    color: #94a3b8; /* Xám nhạt hơn */
-    text-decoration: line-through;
-    font-weight: 500;
-}
+        /* Giá hiện tại - Text Gradient tạo độ bóng */
+        .price-container .price-current {
+            font-size: 1.3rem;
+            /* Phóng to để làm điểm nhấn */
+            font-weight: 800;
+            /* In đậm cực đại */
+            /* Dùng gradient xanh lá sáng để chữ có độ sâu như kính */
+            background: linear-gradient(135deg, var(--color-1, #00B14F) 0%, #00d25e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+            display: inline-block;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), filter 0.4s ease;
+        }
 
-/* --- MOTION UX: HIỆU ỨNG KHI HOVER THẺ XE --- */
-.glass-card:hover .price-current {
-    transform: scale(1.08) translateX(2px) translateY(-2px);
-    /* Dùng filter: drop-shadow vì text đang dùng background-clip */
-    filter: drop-shadow(0 6px 10px rgba(0, 177, 79, 0.35));
-}
+        /* Ký hiệu (đ) - Căn trên đỉnh giống thẻ giá quốc tế */
+        .price-container .currency {
+            font-size: 0.9rem;
+            font-weight: 700;
+            vertical-align: text-top;
+            /* Đẩy chữ đ lên cao */
+            margin-left: 2px;
+        }
 
-/* =========================================================
+        /* Giá cũ gạch ngang */
+        .price-container .price-old {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            /* Xám nhạt hơn */
+            text-decoration: line-through;
+            font-weight: 500;
+        }
+
+        /* --- MOTION UX: HIỆU ỨNG KHI HOVER THẺ XE --- */
+        .glass-card:hover .price-current {
+            transform: scale(1.08) translateX(2px) translateY(-2px);
+            /* Dùng filter: drop-shadow vì text đang dùng background-clip */
+            filter: drop-shadow(0 6px 10px rgba(0, 177, 79, 0.35));
+        }
+
+        /* =========================================================
            APPLE GLASS MODAL (ĐỒNG BỘ GIAO DIỆN LOGIN)
            ========================================================= */
-        
+
         /* 1. Backdrop nền đen mờ bao phủ toàn màn hình */
         .modal-backdrop.show {
-            background: rgba(0, 0, 0, 0.4) !important; 
-            backdrop-filter: blur(15px) !important; 
+            background: rgba(0, 0, 0, 0.4) !important;
+            backdrop-filter: blur(15px) !important;
             -webkit-backdrop-filter: blur(15px) !important;
             opacity: 1 !important;
         }
@@ -325,9 +418,11 @@
         /* 2. Khung Box Kính Mờ (Base trên .glass-login-container) */
         .glass-modal-container {
             position: relative;
-            border-radius: 40px !important; /* Bo góc cực tròn */
-            background: rgba(255, 255, 255, 0.15) !important; /* Trắng mờ */
-            backdrop-filter: blur(40px) !important; 
+            border-radius: 40px !important;
+            /* Bo góc cực tròn */
+            background: rgba(255, 255, 255, 0.15) !important;
+            /* Trắng mờ */
+            backdrop-filter: blur(40px) !important;
             -webkit-backdrop-filter: blur(40px) !important;
             border: 1px solid rgba(255, 255, 255, 0.2) !important;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3), inset 1px 1px 2px rgba(255, 255, 255, 0.3) !important;
@@ -350,6 +445,7 @@
             z-index: 10;
             padding: 0;
         }
+
         .glass-modal-close:hover {
             color: #ffffff;
             transform: scale(1.15) rotate(90deg);
@@ -366,8 +462,11 @@
             border: none;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             transition: all 0.3s var(--liquid-easing, ease);
-            display: flex; justify-content: center; align-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .glass-btn-primary:hover {
             background: #ffffff;
             transform: translateY(-3px);
@@ -384,8 +483,11 @@
             font-size: 1.15rem;
             border: 1px solid rgba(255, 255, 255, 0.15);
             transition: all 0.3s ease;
-            display: flex; justify-content: center; align-items: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
         .glass-btn-outline:hover {
             background: rgba(255, 255, 255, 0.1);
             color: #fff;
@@ -393,438 +495,477 @@
 
         /* 6. Các khối thông số xe (Dựa trên glass-input-field) */
         .glass-info-box {
-            background: rgba(0, 0, 0, 0.25); /* Xám đen mờ bên trong */
+            background: rgba(0, 0, 0, 0.25);
+            /* Xám đen mờ bên trong */
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 25px; /* Bo tròn hoàn toàn */
+            border-radius: 25px;
+            /* Bo tròn hoàn toàn */
             padding: 15px 20px;
             box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
             height: 100%;
         }
-        
+
         .glass-radio-wrapper {
-            background: rgba(0, 0, 0, 0.25); 
-            border: 1px solid rgba(255, 255, 255, 0.08); 
-            border-radius: 50px; 
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 50px;
             box-shadow: inset 0 4px 10px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
         }
+
         .glass-radio-wrapper:hover {
             background: rgba(0, 0, 0, 0.4);
             border-color: rgba(255, 255, 255, 0.3);
         }
-
-
     </style>
 </head>
+
 <body>
-    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
-    <defs>
-        <filter id="liquid-distortion">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
-    </defs>
-    </svg>
-    <header>
-      <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
-        <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
-          
-          <a class="navbar-brand brand-overflow" href="../index.html">
-            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
-          </a>
-
-          <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
-            <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
-          </button>
-
-          <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
-            <a href="register.html" class="nav-link-center-1">Trở thành tài xế</a>
-            <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
-            
-            <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
-              <span>Đăng nhập</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </button>
-          </div>
-
-        </div>
-
-        <div class="mobile-glass-dropdown" id="mobileDropdown">
-          <div class="dropdown-inner-content d-flex flex-column gap-3">
-            <a href="register.html" class="mobile-nav-item">
-              <i class="fa-solid fa-id-card"></i> Trở thành tài xế FleetFlow
-            </a>
-            <a href="policy.html" class="mobile-nav-item">
-              <i class="fa-solid fa-shield-halved"></i> Về chính sách
-            </a>
-            
-            <div class="divider-glass my-2"></div>
-            
-            <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLoginMobile">
-              <span class="fw-bold">Đăng nhập ngay</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </button>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <main class="py-5 bg-light-main" style="margin-top: 40px;">
-    <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true" focusable="false">
+    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg"
+        version="1.1">
         <defs>
             <filter id="liquid-distortion">
                 <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R" yChannelSelector="G" />
+                <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R"
+                    yChannelSelector="G" />
             </filter>
         </defs>
     </svg>
-    
+    <header>
+        <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
+            <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
 
-    <div class="container-base position-relative z-2">
-        <div class="row g-4">
-            <aside class="col-lg-3">
-                <div class="glass-panel filter-sidebar" id="filterSheet">
-                    <div class="glass-content">
-                        
-                        <div id="filterHeader" style="cursor: pointer; touch-action: none;">
-                            <div class="drag-handle-filter d-xl-none"></div>
-                            <div class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom-glass-light">
-                                <h5 class="fw-bold m-0 text-dark"><i class="fa-solid fa-sliders me-2 highlight-text"></i>Bộ lọc</h5>
-                                <button type="button" id="btnClearFilters" class="btn btn-sm btn-link highlight-text p-0 text-decoration-none fw-semibold">Xóa lọc</button>
-                            </div>
-                        </div>
-                        <div class="filter-section mb-4">
-                            <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Số chỗ ngồi</h6>
-                            <label class="liquid-checkbox-wrapper">
-                                <input type="checkbox" class="filter-seat" value="4" checked />
-                                <span class="checkmark"></span>
-                                <span class="label-text">4-5 chỗ (Sedan/Hatchback)</span>
-                            </label>
-                            <label class="liquid-checkbox-wrapper">
-                                <input type="checkbox" class="filter-seat" value="7" checked />
-                                <span class="checkmark"></span>
-                                <span class="label-text">7 chỗ (SUV/MPV)</span>
-                            </label>
-                            <label class="liquid-checkbox-wrapper">
-                                <input type="checkbox" class="filter-seat" value="16" />
-                                <span class="checkmark"></span>
-                                <span class="label-text">16 chỗ (Xe du lịch)</span>
-                            </label>
-                        </div>
+                <a class="navbar-brand brand-overflow" href="../index.html">
+                    <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo"
+                        class="logo-img" />
+                </a>
 
-                        <div class="filter-section mb-4">
-                            <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Hãng xe</h6>
-                            <select id="filterBrand" class="form-select glass-select">
-                                <option value="" selected>Tất cả các hãng</option>
-                                <option value="vinfast">VinFast</option>
-                                <option value="honda">Honda</option>
-                                <option value="toyota">Toyota</option>
-                                <option value="mazda">Mazda</option>
-                            </select>
-                        </div>
+                <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
+                    <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
+                </button>
 
-                        <div class="filter-section mb-4">
-                            <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Hộp số</h6>
-                            <label class="liquid-checkbox-wrapper radio-type">
-                                <input type="radio" name="transmission" value="ALL" checked />
-                                <span class="checkmark"></span>
-                                <span class="label-text">Tất cả hộp số</span>
-                            </label>
-                            <label class="liquid-checkbox-wrapper radio-type">
-                                <input type="radio" name="transmission" value="AT" />
-                                <span class="checkmark"></span>
-                                <span class="label-text">Số tự động (AT)</span>
-                            </label>
-                            <label class="liquid-checkbox-wrapper radio-type">
-                                <input type="radio" name="transmission" value="MT" />
-                                <span class="checkmark"></span>
-                                <span class="label-text">Số sàn (MT)</span>
-                            </label>
-                        </div>
+                <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
+                    <a href="register.html" class="nav-link-center-1">Trở thành tài xế</a>
+                    <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
 
-                        <div class="filter-section mb-4">
-                            <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Nhiên liệu</h6>
-                            <label class="liquid-checkbox-wrapper">
-                                <input type="checkbox" id="fuelGas" class="filter-fuel" value="gas" checked />
-                                <span class="checkmark"></span>
-                                <span class="label-text">Xe Xăng/Dầu</span>
-                            </label>
-                            <label class="liquid-checkbox-wrapper">
-                                <input type="checkbox" id="fuelElectric" class="filter-fuel" value="electric" checked />
-                                <span class="checkmark"></span>
-                                <span class="label-text">Xe Điện</span>
-                            </label>
-                        </div>
-
-                        <div class="filter-section mb-2">
-                            <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Mức giá (/ngày)</h6>
-                            <select id="filterPrice" class="form-select glass-select">
-                                <option value="" selected>Mọi mức giá</option>
-                                <option value="range1">Dưới 500.000đ</option>
-                                <option value="range2">500.000đ - 1.000.000đ</option>
-                                <option value="range3">1.000.000đ - 2.000.000đ</option>
-                                <option value="range4">Trên 2.000.000đ (Xe sang)</option>
-                            </select>
-                        </div>
-                    </div>
+                    <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
+                        <span>Đăng nhập</span>
+                        <i class="fa-regular fa-user-circle fs-5"></i>
+                    </button>
                 </div>
-            </aside>
 
-            <section class="col-lg-9">
-                <div class="glass-panel sort-bar mb-4">
-                    <div class="glass-content d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 w-100">
-                        
-                        <div class="text-secondary fw-medium text-nowrap">
-                            Tìm thấy <span class="highlight-text fw-bold fs-5" id="totalVehicleCount">0</span> phương tiện
-                        </div>
-                        
-                        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-end gap-3 ms-xl-auto">
-                            
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-nowrap small fw-bold text-uppercase text-secondary">Sắp xếp:</span>
-                                <select id="sortSelect" class="form-select glass-select border-0 fw-semibold text-dark w-auto">
-                                    <option value="default" selected>Mặc định</option>
-                                    <option value="priceAsc">Giá: Thấp đến Cao</option>
-                                    <option value="priceDesc">Giá: Cao đến Thấp</option>
-                                    <option value="odoAsc">Số km ODO thấp nhất</option>
+            </div>
+
+            <div class="mobile-glass-dropdown" id="mobileDropdown">
+                <div class="dropdown-inner-content d-flex flex-column gap-3">
+                    <a href="register.html" class="mobile-nav-item">
+                        <i class="fa-solid fa-id-card"></i> Trở thành tài xế FleetFlow
+                    </a>
+                    <a href="policy.html" class="mobile-nav-item">
+                        <i class="fa-solid fa-shield-halved"></i> Về chính sách
+                    </a>
+
+                    <div class="divider-glass my-2"></div>
+
+                    <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2"
+                        id="btnLoginMobile">
+                        <span class="fw-bold">Đăng nhập ngay</span>
+                        <i class="fa-regular fa-user-circle fs-5"></i>
+                    </button>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="py-5 bg-light-main" style="margin-top: 40px;">
+        <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true" focusable="false">
+            <defs>
+                <filter id="liquid-distortion">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="6" xChannelSelector="R"
+                        yChannelSelector="G" />
+                </filter>
+            </defs>
+        </svg>
+
+
+        <div class="container-base position-relative z-2">
+            <div class="row g-4">
+                <aside class="col-lg-3">
+                    <div class="glass-panel filter-sidebar" id="filterSheet">
+                        <div class="glass-content">
+
+                            <div id="filterHeader" style="cursor: pointer; touch-action: none;">
+                                <div class="drag-handle-filter d-xl-none"></div>
+                                <div
+                                    class="d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom-glass-light">
+                                    <h5 class="fw-bold m-0 text-dark"><i
+                                            class="fa-solid fa-sliders me-2 highlight-text"></i>Bộ lọc</h5>
+                                    <button type="button" id="btnClearFilters"
+                                        class="btn btn-sm btn-link highlight-text p-0 text-decoration-none fw-semibold">Xóa
+                                        lọc</button>
+                                </div>
+                            </div>
+                            <div class="filter-section mb-4">
+                                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Số chỗ ngồi</h6>
+                                <label class="liquid-checkbox-wrapper">
+                                    <input type="checkbox" class="filter-seat" value="4" checked />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">4-5 chỗ (Sedan/Hatchback)</span>
+                                </label>
+                                <label class="liquid-checkbox-wrapper">
+                                    <input type="checkbox" class="filter-seat" value="7" checked />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">7 chỗ (SUV/MPV)</span>
+                                </label>
+                                <label class="liquid-checkbox-wrapper">
+                                    <input type="checkbox" class="filter-seat" value="16" />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">16 chỗ (Xe du lịch)</span>
+                                </label>
+                            </div>
+
+                            <div class="filter-section mb-4">
+                                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Hãng xe</h6>
+                                <select id="filterBrand" class="form-select glass-select">
+                                    <option value="" selected>Tất cả các hãng</option>
+                                    <option value="vinfast">VinFast</option>
+                                    <option value="honda">Honda</option>
+                                    <option value="toyota">Toyota</option>
+                                    <option value="mazda">Mazda</option>
+                                    <option value="kia">Kia</option>
+                                    <option value="huyndai">Huyndai</option>
+                                    <option value="mitsubishi">Mitsubishi</option>
                                 </select>
                             </div>
 
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="text-nowrap small fw-bold text-uppercase text-secondary">Dịch vụ:</span>
-                                <select id="mainServiceSelect" class="form-select glass-select border-0 fw-semibold text-dark w-auto">
-                                    <option value="DISTANCE" selected>Thuê xe theo chuyến</option>
-                                    <option value="HOURLY">Thuê xe theo giờ</option>
-                                    <option value="DAILY">Thuê xe theo ngày</option>
-                                </select>
+                            <div class="filter-section mb-4">
+                                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Hộp số</h6>
+                                <label class="liquid-checkbox-wrapper radio-type">
+                                    <input type="radio" name="transmission" value="ALL" checked />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Tất cả hộp số</span>
+                                </label>
+                                <label class="liquid-checkbox-wrapper radio-type">
+                                    <input type="radio" name="transmission" value="AT" />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Số tự động (AT)</span>
+                                </label>
+                                <label class="liquid-checkbox-wrapper radio-type">
+                                    <input type="radio" name="transmission" value="MT" />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Số sàn (MT)</span>
+                                </label>
                             </div>
 
+                            <div class="filter-section mb-4">
+                                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Nhiên liệu</h6>
+                                <label class="liquid-checkbox-wrapper">
+                                    <input type="checkbox" id="fuelGas" class="filter-fuel" value="gas" checked />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Xe Xăng/Dầu</span>
+                                </label>
+                                <label class="liquid-checkbox-wrapper">
+                                    <input type="checkbox" id="fuelHybrid" class="filter-fuel" value="hybrid" checked />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Xe Hybrid</span>
+                                </label>
+                                <label class="liquid-checkbox-wrapper">
+                                    <input type="checkbox" id="fuelElectric" class="filter-fuel" value="electric"
+                                        checked />
+                                    <span class="checkmark"></span>
+                                    <span class="label-text">Xe Điện</span>
+                                </label>
+                            </div>
+
+                            <div class="filter-section mb-2">
+                                <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Mức giá (/ngày)</h6>
+                                <select id="filterPrice" class="form-select glass-select">
+                                    <option value="" selected>Mọi mức giá</option>
+                                    <option value="range1">Dưới 500.000đ</option>
+                                    <option value="range2">500.000đ - 1.000.000đ</option>
+                                    <option value="range3">1.000.000đ - 2.000.000đ</option>
+                                    <option value="range4">Trên 2.000.000đ (Xe sang)</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </aside>
 
-                <div class="row" id="vehicleListContainer" style="--bs-gutter-x: 2rem; --bs-gutter-y: 2.5rem;">
-                </div>
+                <section class="col-lg-9">
+                    <div class="glass-panel sort-bar mb-4">
+                        <div
+                            class="glass-content d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3 w-100">
 
-                <nav aria-label="Page navigation" class="mt-5 mb-4">
-                    <ul class="pagination justify-content-center liquid-pagination gap-2" id="paginationContainer">
+                            <div class="text-secondary fw-medium text-nowrap">
+                                Tìm thấy <span class="highlight-text fw-bold fs-5" id="totalVehicleCount">0</span>
+                                phương tiện
+                            </div>
+
+                            <div
+                                class="d-flex flex-column flex-md-row align-items-md-center justify-content-end gap-3 ms-xl-auto">
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-nowrap small fw-bold text-uppercase text-secondary">Sắp
+                                        xếp:</span>
+                                    <select id="sortSelect"
+                                        class="form-select glass-select border-0 fw-semibold text-dark w-auto">
+                                        <option value="default" selected>Mặc định</option>
+                                        <option value="priceAsc">Giá: Thấp đến Cao</option>
+                                        <option value="priceDesc">Giá: Cao đến Thấp</option>
+                                        <option value="odoAsc">Số km ODO thấp nhất</option>
+                                    </select>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="text-nowrap small fw-bold text-uppercase text-secondary">Dịch
+                                        vụ:</span>
+                                    <select id="mainServiceSelect"
+                                        class="form-select glass-select border-0 fw-semibold text-dark w-auto">
+                                        <option value="DISTANCE" selected>Thuê xe theo chuyến</option>
+                                        <option value="HOURLY">Thuê xe theo giờ</option>
+                                        <option value="DAILY">Thuê xe theo ngày</option>
+                                    </select>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="vehicleListContainer" style="--bs-gutter-x: 2rem; --bs-gutter-y: 2.5rem;">
+                    </div>
+
+                    <nav aria-label="Page navigation" class="mt-5 mb-4">
+                        <ul class="pagination justify-content-center liquid-pagination gap-2" id="paginationContainer">
                         </ul>
-                </nav>
+                    </nav>
 
-            </section>
+                </section>
 
-            
+
+            </div>
         </div>
-    </div>
 
         <div class="login-modal-overlay" id="loginModal">
-          <div class="glass-login-container">
-            <button class="close-modal-btn" id="closeLoginModal">&times;</button>
-            
-            <div class="text-center mb-4">
-              <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
-              <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
-              <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+            <div class="glass-login-container">
+                <button class="close-modal-btn" id="closeLoginModal">&times;</button>
+
+                <div class="text-center mb-4">
+                    <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow"
+                        style="height: 100px; object-fit: contain;">
+                    <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
+                    <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+                </div>
+                <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
+                    <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập"
+                        required>
+                    <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+                    <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
+                        <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
+                            style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
+                        </a>
+                    </div>
+                    <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
+                </form>
+                <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+                    <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
+                    <a href="register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
+                </div>
             </div>
-            <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
-              <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
-              <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
-              <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
-                <a href="pages/forgotPassword.html" class="text-danger text-decoration-none" style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
-                  <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
-                </a>
-              </div>
-              <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
-            </form>
-            <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
-              <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
-              <a href="register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
-            </div>
-          </div>
         </div>
 
         <div class="modal fade" id="welcomeServiceModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content glass-modal-container border-0">
                     <button type="button" class="glass-modal-close" data-bs-dismiss="modal">&times;</button>
-                    
+
                     <div class="modal-body p-4 p-md-5 text-center">
-                        <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 80px; object-fit: contain; margin-bottom: 10px;">
+                        <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow"
+                            style="height: 80px; object-fit: contain; margin-bottom: 10px;">
                         <h3 class="glass-login-title mb-2" style="font-size: 2rem;">Loại Hình Dịch Vụ</h3>
-                        <p class="text-white-50 mb-4" style="font-size: 0.95rem;">Chọn nhu cầu thuê xe của bạn để hệ thống FleetFlow cá nhân hóa dữ liệu nhé.</p>
-                        
+                        <p class="text-white-50 mb-4" style="font-size: 0.95rem;">Chọn nhu cầu thuê xe của bạn để hệ
+                            thống FleetFlow cá nhân hóa dữ liệu nhé.</p>
+
                         <div class="d-flex flex-column gap-3 text-start mb-4 mt-2">
                             <label class="liquid-checkbox-wrapper radio-type w-100 px-4 py-3 m-0 glass-radio-wrapper">
                                 <input type="radio" name="initServiceType" value="DISTANCE" checked />
                                 <span class="checkmark"></span>
-                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo chuyến</span>
+                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo
+                                    chuyến</span>
                             </label>
                             <label class="liquid-checkbox-wrapper radio-type w-100 px-4 py-3 m-0 glass-radio-wrapper">
                                 <input type="radio" name="initServiceType" value="HOURLY" />
                                 <span class="checkmark"></span>
-                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo giờ</span>
+                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo
+                                    giờ</span>
                             </label>
                             <label class="liquid-checkbox-wrapper radio-type w-100 px-4 py-3 m-0 glass-radio-wrapper">
                                 <input type="radio" name="initServiceType" value="DAILY" />
                                 <span class="checkmark"></span>
-                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo ngày</span>
+                                <span class="label-text text-white fw-bold ms-2" style="font-size: 1.05rem;">Thuê theo
+                                    ngày</span>
                             </label>
                         </div>
-                        
-                        <button type="button" class="glass-btn-primary w-100" onclick="confirmServiceSelection()">Xác nhận</button>
+
+                        <button type="button" class="glass-btn-primary w-100" onclick="confirmServiceSelection()">Xác
+                            nhận</button>
                     </div>
                 </div>
             </div>
         </div>
 
-<div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content glass-modal-container border-0">
-            <button type="button" class="glass-modal-close" data-bs-dismiss="modal">&times;</button>
-            
-            <div class="modal-body p-4 p-md-5" id="carDetailBody">
-                <div class="text-center py-5">
-                    <i class="fa-solid fa-circle-notch fa-spin fs-1 text-white"></i>
-                    <p class="mt-3 text-white-50 fs-5">Đang truy xuất hồ sơ xe...</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        <div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content glass-modal-container border-0">
+                    <button type="button" class="glass-modal-close" data-bs-dismiss="modal">&times;</button>
 
-
-</main>
-
-<aside class="ai-floating-widget">
-    <div class="ai-liquid-chat-container" id="ai-chat-window">
-        <div class="chat-glass-messages" id="chat-messages">
-            <div class="d-flex gap-3 mb-4 w-100">
-                <div class="avatar-glass flex-shrink-0">
-                    <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
-                </div>
-                <div class="chat-glass-bubble ai-bubble w-100">
-                    <p class="mb-0 text-dark">Xin chào! Tôi là FleetFlow AI. Bạn cần tìm xe với tiêu chí như thế nào?</p>
+                    <div class="modal-body p-4 p-md-5" id="carDetailBody">
+                        <div class="text-center py-5">
+                            <i class="fa-solid fa-circle-notch fa-spin fs-1 text-white"></i>
+                            <p class="mt-3 text-white-50 fs-5">Đang truy xuất hồ sơ xe...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="chat-glass-suggestions mb-2" id="chat-suggestions">
-            <button class="glass-suggestion-chip" onclick="sendSuggestion('Xe 4 chỗ ngồi')">Xe 4 chỗ ngồi</button>
-            <button class="glass-suggestion-chip" onclick="sendSuggestion('Cốp rộng để nhiều vali')">Cốp rộng để nhiều vali</button>
-        </div>
 
-        <div class="chat-glass-input-area">
-            <input type="text" id="chat-input" class="glass-input" placeholder="Nhập yêu cầu...">
-            <button class="glass-send-btn" onclick="sendMessage()">
-                <i class="fa-solid fa-paper-plane"></i>
-            </button>
-        </div>
-    </div>
+    </main>
 
-        <img class="ai-img" src="../assets/img/AI Logo.png" alt="Mở AI Chat" onclick="toggleChat()">
-   
-</aside>
-
-
-<div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
-    <div class="modal-dialog modal-dialog-centered modal-lg position-relative" style="z-index: 1056;">
-        <div class="modal-content car-detail-modal-content overflow-hidden">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-circle-info me-2"></i>Hồ sơ Phương tiện</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            
-            <div class="modal-body p-4" id="carDetailBody">
-                <div class="text-center py-5">
-                    <i class="fa-solid fa-circle-notch fa-spin fs-2 text-success"></i>
-                    <p class="mt-2 text-white-50">Đang truy xuất thông tin...</p>
+    <aside class="ai-floating-widget">
+        <div class="ai-liquid-chat-container" id="ai-chat-window">
+            <div class="chat-glass-messages" id="chat-messages">
+                <div class="d-flex gap-3 mb-4 w-100">
+                    <div class="avatar-glass flex-shrink-0">
+                        <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI Avatar">
+                    </div>
+                    <div class="chat-glass-bubble ai-bubble w-100">
+                        <p class="mb-0 text-dark">Xin chào! Tôi là FleetFlow AI. Bạn cần tìm xe với tiêu chí như thế
+                            nào?</p>
+                    </div>
                 </div>
             </div>
-            
-            <div class="modal-footer border-0 pt-0 border-top border-secondary border-opacity-25 mt-3">
-                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold" data-bs-dismiss="modal">Đóng</button>
-                <button type="button" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm" id="btnBookFromDetail">
-                    Tiến hành Đặt xe <i class="fa-solid fa-arrow-right ms-2"></i>
+
+            <div class="chat-glass-suggestions mb-2" id="chat-suggestions">
+                <button class="glass-suggestion-chip" onclick="sendSuggestion('Xe 4 chỗ ngồi')">Xe 4 chỗ ngồi</button>
+                <button class="glass-suggestion-chip" onclick="sendSuggestion('Cốp rộng để nhiều vali')">Cốp rộng để
+                    nhiều vali</button>
+            </div>
+
+            <div class="chat-glass-input-area">
+                <input type="text" id="chat-input" class="glass-input" placeholder="Nhập yêu cầu...">
+                <button class="glass-send-btn" onclick="sendMessage()">
+                    <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
         </div>
+
+        <img class="ai-img" src="../assets/img/AI Logo.png" alt="Mở AI Chat" onclick="toggleChat()">
+
+    </aside>
+
+
+    <div class="modal fade" id="carDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1055;">
+        <div class="modal-dialog modal-dialog-centered modal-lg position-relative" style="z-index: 1056;">
+            <div class="modal-content car-detail-modal-content overflow-hidden">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-success"><i class="fa-solid fa-circle-info me-2"></i>Hồ sơ
+                        Phương tiện</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-4" id="carDetailBody">
+                    <div class="text-center py-5">
+                        <i class="fa-solid fa-circle-notch fa-spin fs-2 text-success"></i>
+                        <p class="mt-2 text-white-50">Đang truy xuất thông tin...</p>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 pt-0 border-top border-secondary border-opacity-25 mt-3">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4 fw-bold"
+                        data-bs-dismiss="modal">Đóng</button>
+                    <button type="button" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm"
+                        id="btnBookFromDetail">
+                        Tiến hành Đặt xe <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
     <footer>
-      <div class="container reveal-on-scroll">
-        <div class="row g-4">
-          <div class="col-lg-4 pe-lg-5">
-            <img
-              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
-              alt="Logo"
-              style="height: 80px; margin-bottom: 20px; object-fit: contain"
-            />
-            <p>
-              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
-              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
-              liên tỉnh.
-            </p>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Dịch Vụ</h5>
-            <ul>
-              <li><a href="findCar.html">Đặt xe đường dài</a></li>
-              <li><a href="findCar.html">Thuê xe sân bay</a></li>
-              <li><a href="findCar.html">Tư vấn xe AI</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Hỗ Trợ</h5>
-            <ul>
-              <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="../pages/policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="../pages/policy.html">Giải quyết khiếu nại</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-4">
-            <h5>Liên Hệ (Hotline)</h5>
-            <ul class="text-white-50">
-              <li class="mb-2">
-                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
-                (24/7)
-              </li>
-              <li class="mb-2">
-                <i class="fa-solid fa-envelope me-2 text-success"></i>
-                support@fleetflow.vn
-              </li>
-              <li>
-                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
-                University, Ho Chi Minh City
-              </li>
-            </ul>
-          </div>
+        <div class="container reveal-on-scroll">
+            <div class="row g-4">
+                <div class="col-lg-4 pe-lg-5">
+                    <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="Logo"
+                        style="height: 80px; margin-bottom: 20px; object-fit: contain" />
+                    <p>
+                        FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
+                        minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
+                        liên tỉnh.
+                    </p>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h5>Dịch Vụ</h5>
+                    <ul>
+                        <li><a href="findCar.html">Đặt xe đường dài</a></li>
+                        <li><a href="findCar.html">Thuê xe sân bay</a></li>
+                        <li><a href="findCar.html">Tư vấn xe AI</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-6">
+                    <h5>Hỗ Trợ</h5>
+                    <ul>
+                        <li><a href="#">Trung tâm trợ giúp</a></li>
+                        <li><a href="../pages/policy.html">Chính sách & Điều khoản</a></li>
+                        <li><a href="../pages/policy.html">Giải quyết khiếu nại</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5>Liên Hệ (Hotline)</h5>
+                    <ul class="text-white-50">
+                        <li class="mb-2">
+                            <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
+                            (24/7)
+                        </li>
+                        <li class="mb-2">
+                            <i class="fa-solid fa-envelope me-2 text-success"></i>
+                            support@fleetflow.vn
+                        </li>
+                        <li>
+                            <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
+                            University, Ho Chi Minh City
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+            </div>
         </div>
-        <div class="footer-bottom">
-          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
-        </div>
-      </div>
-    </footer>  
+    </footer>
 
     <script>
-function toggleChat() {
-    document.getElementById('ai-chat-window').classList.toggle('show');
-}
+        function toggleChat() {
+            document.getElementById('ai-chat-window').classList.toggle('show');
+        }
 
-// Hàm xử lý khi bấm vào các chip gợi ý
-function sendSuggestion(text) {
-    const input = document.getElementById('chat-input');
-    input.value = text;
-    sendMessage(); // Bấm gợi ý xong thì gửi luôn
-}
+        // Hàm xử lý khi bấm vào các chip gợi ý
+        function sendSuggestion(text) {
+            const input = document.getElementById('chat-input');
+            input.value = text;
+            sendMessage(); // Bấm gợi ý xong thì gửi luôn
+        }
 
-function sendMessage() {
-    const input = document.getElementById('chat-input');
-    const messagesContainer = document.getElementById('chat-messages');
-    const text = input.value.trim();
+        function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const messagesContainer = document.getElementById('chat-messages');
+            const text = input.value.trim();
 
-    if (text === '') return;
+            if (text === '') return;
 
-    const userHtml = `
+            const userHtml = `
         <div class="d-flex gap-3 mb-4 w-100 flex-row-reverse">
             <div class="avatar-glass flex-shrink-0">
                 <i class="fa-solid fa-user"></i>
@@ -834,12 +975,12 @@ function sendMessage() {
             </div>
         </div>
     `;
-    messagesContainer.insertAdjacentHTML('beforeend', userHtml);
-    input.value = '';
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messagesContainer.insertAdjacentHTML('beforeend', userHtml);
+            input.value = '';
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    const typingId = 'typing-' + Date.now();
-    const typingHtml = `
+            const typingId = 'typing-' + Date.now();
+            const typingHtml = `
         <div id="${typingId}" class="d-flex gap-3 mb-4 w-100">
             <div class="avatar-glass flex-shrink-0">
                 <img src="../assets/img/LogoAI - FleetFlow.png" alt="AI">
@@ -849,13 +990,13 @@ function sendMessage() {
             </div>
         </div>
     `;
-    messagesContainer.insertAdjacentHTML('beforeend', typingHtml);
-    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            messagesContainer.insertAdjacentHTML('beforeend', typingHtml);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
-    setTimeout(() => {
-        document.getElementById(typingId).remove();
-        
-        const aiHtml = `
+            setTimeout(() => {
+                document.getElementById(typingId).remove();
+
+                const aiHtml = `
             <div class="d-flex gap-3 mb-4 w-100">
                 <div class="avatar-glass flex-shrink-0">
                     <img src="assets/img/ai-avatar.png" alt="AI Avatar">
@@ -865,18 +1006,18 @@ function sendMessage() {
                 </div>
             </div>
         `;
-        messagesContainer.insertAdjacentHTML('beforeend', aiHtml);
-        messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    }, 1200);
-}
+                messagesContainer.insertAdjacentHTML('beforeend', aiHtml);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 1200);
+        }
 
-document.getElementById('chat-input').addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-        sendMessage();
-    }
-});
+        document.getElementById('chat-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const fab = document.getElementById('aiChatFab');
             const windowEl = document.getElementById('aiChatWindow');
             const closeBtn = document.getElementById('aiCloseBtn');
@@ -885,33 +1026,33 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
             const input = document.getElementById('aiInputText');
             const sendBtn = document.getElementById('aiSendBtn');
             const badge = document.getElementById('aiUnreadBadge');
-            
+
             // 1. Mở/Đóng cửa sổ Chat
             fab.addEventListener('click', () => {
                 windowEl.classList.add('active');
-                badge.style.display = 'none'; 
+                badge.style.display = 'none';
                 // Tự động focus vào ô chat
                 setTimeout(() => input.focus(), 300);
             });
-            
+
             const closeChat = () => { windowEl.classList.remove('active'); };
             closeBtn.addEventListener('click', closeChat);
             minBtn.addEventListener('click', closeChat);
-            
+
             // 2. Xử lý Input
-            input.addEventListener('input', function() {
+            input.addEventListener('input', function () {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
                 sendBtn.disabled = this.value.trim() === '';
             });
-            
+
             input.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); 
+                    e.preventDefault();
                     sendMessage();
                 }
             });
-            
+
             sendBtn.addEventListener('click', () => {
                 // Khôi phục icon máy bay sau khi animation kết thúc
                 setTimeout(() => {
@@ -926,7 +1067,7 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
                 }, 300);
                 sendMessage();
             });
-            
+
             // 3. Quick Replies Click
             document.querySelectorAll('.ai-chip').forEach(chip => {
                 chip.addEventListener('click', () => {
@@ -972,7 +1113,7 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
 
             function removeTyping(id) {
                 const el = document.getElementById(id);
-                if(el) el.remove();
+                if (el) el.remove();
             }
 
             function appendAICarousel(cardsHtml) {
@@ -991,21 +1132,21 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
             function sendMessage() {
                 const text = input.value.trim();
                 if (!text) return;
-                
+
                 input.value = '';
                 input.style.height = 'auto';
                 sendBtn.disabled = true;
-                
+
                 appendUserMsg(text);
                 const typingId = appendAITyping();
-                
+
                 setTimeout(() => {
                     removeTyping(typingId);
                     const query = text.toLowerCase();
-                    
+
                     if (query.includes('8 người') && query.includes('4 chỗ')) {
                         appendAIText("Xin lỗi, hiện không có dòng xe 4 chỗ nào đáp ứng đủ không gian an toàn cho 8 người.");
-                        
+
                         const typing2 = appendAITyping();
                         setTimeout(() => {
                             removeTyping(typing2);
@@ -1037,7 +1178,7 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
                                 </div>
                             `);
                         }, 1200);
-                        
+
                     } else {
                         appendAIText("Chào bạn! Dựa trên yêu cầu của bạn, tôi xin gợi ý dòng xe này. Vừa tiết kiệm lại rất rộng rãi:");
                         appendAICarousel(`
@@ -1055,7 +1196,7 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
                             </div>
                         `);
                     }
-                }, 1500); 
+                }, 1500);
             }
         });
     </script>
@@ -1064,61 +1205,67 @@ document.getElementById('chat-input').addEventListener('keypress', function (e) 
     <script src="../js/base.js">  </script>
     <script src="../js/findCar.js">  </script>
     <script>
-      document.addEventListener("DOMContentLoaded", function() {
-    const cards = document.querySelectorAll('.tilt-effect');
+        document.addEventListener("DOMContentLoaded", function () {
+            const cards = document.querySelectorAll('.tilt-effect');
 
-    cards.forEach(card => {
-        card.addEventListener('mousemove', e => {
-            const rect = card.getBoundingClientRect();
-            const x = e.clientX - rect.left; // Tọa độ X của chuột trong thẻ
-            const y = e.clientY - rect.top;  // Tọa độ Y của chuột trong thẻ
-            
-            const centerX = rect.width / 2;
-            const centerY = rect.height / 2;
-            
-            // Tính toán góc nghiêng (giới hạn max 8 độ để không bị lố)
-            const rotateX = ((y - centerY) / centerY) * -8;
-            const rotateY = ((x - centerX) / centerX) * 8;
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; // Tọa độ X của chuột trong thẻ
+                    const y = e.clientY - rect.top;  // Tọa độ Y của chuột trong thẻ
 
-            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-            
-            // Làm sáng vùng kính nơi chuột trỏ vào (tùy chọn cao cấp)
-            card.style.setProperty('--mouse-x', `${x}px`);
-            card.style.setProperty('--mouse-y', `${y}px`);
-        });
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
 
-        card.addEventListener('mouseleave', () => {
-            // Reset lại vị trí ban đầu khi chuột rời đi
-            card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-            card.style.transition = `transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2)`;
+                    // Tính toán góc nghiêng (giới hạn max 8 độ để không bị lố)
+                    const rotateX = ((y - centerY) / centerY) * -8;
+                    const rotateY = ((x - centerX) / centerX) * 8;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+
+                    // Làm sáng vùng kính nơi chuột trỏ vào (tùy chọn cao cấp)
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    // Reset lại vị trí ban đầu khi chuột rời đi
+                    card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+                    card.style.transition = `transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.2)`;
+                });
+
+                card.addEventListener('mouseenter', () => {
+                    // Tắt transition delay để tilt mượt theo chuột
+                    card.style.transition = `transform 0.1s ease`;
+                });
+            });
         });
-        
-        card.addEventListener('mouseenter', () => {
-            // Tắt transition delay để tilt mượt theo chuột
-            card.style.transition = `transform 0.1s ease`;
-        });
-    });
-});
     </script>
 
-<!-- Modal Báo Lỗi Khóa Tài Khoản -->
-<div class="modal fade" id="lockAccountModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(10px);">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 bg-transparent">
-            <!-- Glassmorphism Card -->
-            <div class="card text-center border-0 p-4" style="background: rgba(255, 255, 255, 0.95); box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 20px;">
-                <div class="mb-3 d-flex justify-content-center">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 80px; height: 80px; background: rgba(220,53,69,0.1);">
-                        <i class="fa-solid fa-lock text-danger" style="font-size: 2.5rem;"></i>
+    <!-- Modal Báo Lỗi Khóa Tài Khoản -->
+    <div class="modal fade" id="lockAccountModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(10px);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 bg-transparent">
+                <!-- Glassmorphism Card -->
+                <div class="card text-center border-0 p-4"
+                    style="background: rgba(255, 255, 255, 0.95); box-shadow: 0 15px 35px rgba(0,0,0,0.2); border-radius: 20px;">
+                    <div class="mb-3 d-flex justify-content-center">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center"
+                            style="width: 80px; height: 80px; background: rgba(220,53,69,0.1);">
+                            <i class="fa-solid fa-lock text-danger" style="font-size: 2.5rem;"></i>
+                        </div>
                     </div>
-                </div>
-                <h4 class="fw-bold text-dark mb-2">Tài Khoản Bị Tạm Khóa</h4>
-                <p class="text-secondary mb-4 px-2">Tài khoản của bạn đang bị tạm khóa do công nợ vượt mức. Không thể đặt xe mới cho tới khi được mở khóa. Vui lòng thanh toán để tiếp tục sử dụng dịch vụ.</p>
-                <div class="d-flex justify-content-center">
-                    <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold shadow-sm" data-bs-dismiss="modal">Đã hiểu</button>
+                    <h4 class="fw-bold text-dark mb-2">Tài Khoản Bị Tạm Khóa</h4>
+                    <p class="text-secondary mb-4 px-2">Tài khoản của bạn đang bị tạm khóa do công nợ vượt mức. Không
+                        thể đặt xe mới cho tới khi được mở khóa. Vui lòng thanh toán để tiếp tục sử dụng dịch vụ.</p>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4 fw-bold shadow-sm"
+                            data-bs-dismiss="modal">Đã hiểu</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div></body>
+</body>
+
 </html>

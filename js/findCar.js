@@ -339,13 +339,24 @@ window.applyFiltersAndSort = function () {
             if (transVal === 'MT' && !isManual) return false;
         }
 
-        // D. Lọc theo nhiên liệu
-        const descLower = (v.description || '').toLowerCase();
-        const isElectric = descLower.includes('điện');
+        // D. Lọc theo nhiên liệu (Dựa trên FuelType thực tế)
+        const fuelTypeStr = (v.fuelType || '').toLowerCase();
+        const descLowerStr = (v.description || '').toLowerCase();
+        
+        // Phân tách các loại nhiên liệu
+        const isElectric = fuelTypeStr.includes('điện') || fuelTypeStr.includes('electric') || descLowerStr.includes('điện');
+        const isHybrid = fuelTypeStr.includes('hybrid') || descLowerStr.includes('hybrid');
+        const isGas = !isElectric && !isHybrid; // Còn lại là Xăng hoặc Dầu
+
         if (checkedFuels.length > 0) {
             let fuelMatch = false;
-            if (checkedFuels.includes('gas') && !isElectric) fuelMatch = true;
+            // 'gas' đại diện cho Xăng/Dầu
+            if (checkedFuels.includes('gas') && isGas) fuelMatch = true;
+            // 'hybrid' đại diện cho Hybrid
+            if (checkedFuels.includes('hybrid') && isHybrid) fuelMatch = true;
+            // 'electric' đại diện cho Điện
             if (checkedFuels.includes('electric') && isElectric) fuelMatch = true;
+            
             if (!fuelMatch) return false;
         } else {
             // Không chọn nhiên liệu nào -> không hiển thị
