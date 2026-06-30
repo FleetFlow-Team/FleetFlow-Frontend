@@ -1,5 +1,5 @@
 /**
- * Quản lý Khách hàng và Công nợ cho Master Admin
+ * Quản lý Khách hàng và Thanh toán cho Master Admin
  */
 
 const CUSTOMER_API_URL = 'http://localhost:8080/FleetFlow/api/v1/admin/customers';
@@ -87,13 +87,13 @@ function renderCustomers(customers) {
         let debtVal = c.debt || 0;
         let isDebtExceeded = debtVal <= -1000000;
         let debtHtml = debtVal < 0
-            ? `<span class="fw-bold ${isDebtExceeded ? 'text-danger' : 'text-warning'}">${fmt.format(Math.abs(debtVal))} đ</span>`
-            : `<span class="fw-bold text-success">Không có nợ</span>`;
+            ? `<span class="fw-bold ${isDebtExceeded ? 'text-danger' : 'text-warning'}">${fmt.format(Math.abs(debtVal))} ₫</span>`
+            : `<span class="fw-bold text-success">0 ₫</span>`;
 
         // Hiển thị trạng thái
         let statusBadge = c.status === 'ACTIVE'
-            ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> ACTIVE</span>'
-            : '<span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary"><i class="fa-solid fa-lock me-1"></i> LOCKED</span>';
+            ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> Đang hoạt động</span>'
+            : '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger"><i class="fa-solid fa-lock me-1"></i> Ngừng hoạt động</span>';
 
         // Tên hiển thị từ Backend (fullName)
         let displayName = c.fullName || '--';
