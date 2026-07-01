@@ -171,17 +171,19 @@ function renderTripList(trips) {
         }
 
         // 4. XỬ LÝ BADGE TRẠNG THÁI
-        const rawStatus = trip.status || trip.Status || "PENDING";
+        const rawStatus = (trip.status || trip.Status || "PENDING").toUpperCase();
         let statusClass = "status-pending-card";
         let badgeClass = "badge-pending";
         let statusText = "Đang chờ";
 
-        if (rawStatus.toUpperCase() === "COMPLETED") {
+        if (rawStatus === "COMPLETED" || rawStatus === "UNPAID") {
             statusClass = "status-completed-card"; badgeClass = "badge-completed"; statusText = "Hoàn thành";
-        } else if (rawStatus.toUpperCase() === "ACTIVE") {
+        } else if (rawStatus === "ACTIVE" || rawStatus === "IN_PROGRESS" || rawStatus === "ONGOING") {
             statusClass = "status-active-card"; badgeClass = "badge-active"; statusText = "Đang chạy";
-        } else if (rawStatus.toUpperCase() === "CANCELLED") {
+        } else if (rawStatus === "CANCELLED" || rawStatus === "REJECTED") {
             statusClass = "status-cancelled-card"; badgeClass = "badge-cancelled"; statusText = "Đã hủy";
+        } else if (rawStatus === "ACCEPTED" || rawStatus === "CONFIRMED") {
+            statusClass = "status-pending-card"; badgeClass = "badge-pending"; statusText = "Đã nhận";
         }
 
         // --- YÊU CẦU MỚI: BỎ GIÁ TIỀN, THAY BẰNG QUÃNG ĐƯỜNG/THỜI GIAN ---
@@ -389,16 +391,45 @@ async function viewInvoiceModal(bookingId) {
             document.getElementById('lblInvoiceBasePrice').innerText = fVND(baseFare);
             document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
             document.getElementById('lblInvoiceDiscount').innerText = `- ${fVND(discountAmount)}`;
-            document.getElementById('lblInvoiceTotalAmount').innerText = fVND(totalAmount);
+
+            // Gọi API kiểm tra số tiền CÒN LẠI cần thanh toán
+            let finalAmount = totalAmount;
+            try {
+                const finalRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/payments/final`, {
+                    method: 'POST',
+                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+                    body: JSON.stringify({ bookingId: bookingId, paymentMethod: 'MOMO' }) // Truyền tạm để tính tiền
+                });
+                const finalData = await finalRes.json();
+                if (finalData.finalAmount !== undefined) {
+                    finalAmount = parseFloat(finalData.finalAmount) || 0;
+                }
+            } catch(e) {}
+            
+            const depositPaid = totalAmount - finalAmount;
+            
+            // Xóa dòng Cọc cũ nếu có để tránh trùng
+            const oldDepositRow = document.getElementById('rowInvoiceDeposit');
+            if(oldDepositRow) oldDepositRow.remove();
+
+            if (depositPaid > 0) {
+                const discountRow = document.getElementById('lblInvoiceDiscount').parentElement;
+                const depositHtml = `<div class="billing-row text-primary fw-semibold" id="rowInvoiceDeposit"><span>Đã thanh toán (Cọc/Trước)</span><span>- ${fVND(depositPaid)}</span></div>`;
+                discountRow.insertAdjacentHTML('afterend', depositHtml);
+            }
+
+            document.getElementById('lblInvoiceTotalAmount').innerText = fVND(finalAmount);
 
             // Kiểm tra trạng thái chuyến đi để hiển thị nút thanh toán
             const status = invResult.status || 'COMPLETED';
-            if (status === 'UNPAID' || status === 'COMPLETED') {
+            if ((status === 'UNPAID' || status === 'COMPLETED') && finalAmount > 0) {
                 document.getElementById('invoiceModalFooter').innerHTML = `
                     <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #a50064;" onclick="payFinal(${bookingId}, 'MOMO')">Thanh toán MoMo (Còn lại)</button>
                     <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #10b981;" onclick="payFinal(${bookingId}, 'CASH')">Thanh toán Tiền mặt</button>
                     <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>
                 `;
+            } else {
+                 document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
             }
         } else {
             throw new Error(invResult.error || "Hệ thống chưa tạo dữ liệu giá cho chuyến đi này.");
@@ -414,7 +445,7 @@ async function viewInvoiceModal(bookingId) {
     }
 }
 
-// Logic chuyển Tab (Tất cả / Đang chờ / Hoàn thành...)
+// Logic chuyển Tab (Tất cả / Đang chờ / Đang chạy / Hoàn thành...)
 function filterTrips(status, btnElement) {
     const tabs = document.querySelectorAll('.tab-pill');
     tabs.forEach(tab => tab.classList.remove('active'));
@@ -429,8 +460,16 @@ function filterTrips(status, btnElement) {
     let filtered = globalTrips;
     if (status !== 'all') {
         filtered = globalTrips.filter(t => {
-            const rawStatus = t.status || t.Status || "PENDING";
-            return rawStatus.toLowerCase() === status.toLowerCase();
+            const rawStatus = (t.status || t.Status || "PENDING").toUpperCase();
+            
+            if (status === 'pending') {
+                return ['PENDING', 'ACCEPTED', 'APPROVED', 'DISPATCHED', 'CONFIRMED'].includes(rawStatus);
+            } else if (status === 'active') {
+                return ['ACTIVE', 'IN_PROGRESS', 'ONGOING'].includes(rawStatus);
+            } else if (status === 'completed') {
+                return ['COMPLETED', 'CANCELLED', 'UNPAID', 'REJECTED'].includes(rawStatus);
+            }
+            return rawStatus === status.toUpperCase();
         });
     }
     renderTripList(filtered);
@@ -699,7 +738,7 @@ async function payFinal(bookingId, method) {
                 headers: headers,
                 body: JSON.stringify({
                     bookingId: bookingId,
-                    amount: finalAmt.toString()
+                    amount: Math.round(finalAmt).toString()
                 })
             });
             const data = await res.json();
