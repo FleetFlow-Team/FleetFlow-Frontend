@@ -117,7 +117,7 @@ async function approveBooking(bookingId, buttonElement) {
                     if (typeof fetchDispatcherNotifications === 'function') {
                         fetchDispatcherNotifications();
                     }
-                }, 1000);
+                }, 3000);
             }
         } else {
             // Nếu Backend báo lỗi (Ví dụ: Đơn đã bị người khác duyệt)
@@ -360,7 +360,7 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             actionButtons = `<span class="text-primary fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Tự động tìm TX</span>`;
         }
 
-            tr.innerHTML = `
+        tr.innerHTML = `
             <td><strong>#${b.bookingId}</strong><br><small class="text-muted fw-medium">${b.vehicleName}<br>${b.licensePlate || ''}</small></td>
             <td>
                 <div class="fw-bold text-dark">${b.customerName}</div>
@@ -373,8 +373,8 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             <td>${badge}</td>
             <td>${actionButtons}</td>
         `;
-            tbody.appendChild(tr);
-        });
+        tbody.appendChild(tr);
+    });
 }
 
 // 5. TỰ ĐỘNG TẢI DỮ LIỆU KHI VỪA MỞ TRANG (Mặc định tải PENDING)
@@ -773,7 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 10. NOTIFICATION MODULE
+// 10. NOTIFICATION MODULE (Tích hợp API thực tế)
 // ==========================================
 
 const DISPATCHER_NOTIFICATION_API_URL = `${DISPATCHER_API_BASE}/dispatcher/notifications`;
@@ -789,7 +789,7 @@ async function fetchDispatcherNotifications() {
         });
         const result = await response.json();
 
-        if (result.success && result.data) {
+        if (response.ok && result.success && result.data) {
             renderNotifications(result.data);
         }
     } catch (error) {
@@ -797,17 +797,17 @@ async function fetchDispatcherNotifications() {
     }
 }
 
-// Render notification vào UI
+// Render notification vào UI (Dropdown & Toast)
 function renderNotifications(notifications) {
     const listEl = document.getElementById('notificationList');
     const countEl = document.getElementById('notiCount');
 
     if (!listEl) return;
 
-    // Tính tổng chưa đọc (IsRead là boolean trong JS)
-    const unreadCount = notifications.filter(n => n.IsRead === false || n.IsRead === 0).length;
+    // 1. Tính tổng chưa đọc (API trả về boolean IsRead)
+    const unreadCount = notifications.filter(n => n.IsRead === false).length;
 
-    // Update Badge
+    // 2. Cập nhật con số trên quả chuông (Badge)
     if (countEl) {
         if (unreadCount > 0) {
             countEl.textContent = unreadCount > 99 ? '99+' : unreadCount;
@@ -817,89 +817,90 @@ function renderNotifications(notifications) {
         }
     }
 
-    // Hiển thị Toast cho thông báo mới
+    // 3. Hiển thị Toast Popup cho thông báo MỚI (bỏ qua lần fetch mồi đầu tiên)
     if (!isFirstFetchNoti) {
         notifications.forEach(noti => {
-            const isUnread = (noti.IsRead === false || noti.IsRead === 0);
-            if (isUnread && !knownNotificationIds.has(noti.NotificationID)) {
+            if (noti.IsRead === false && noti.NotificationID && !knownNotificationIds.has(noti.NotificationID)) {
                 if (typeof showSystemToast === 'function') {
-                    const title = noti.Title || noti.title || noti.TITLE || 'Có thông báo mới';
-                    const message = noti.Message || noti.message || noti.MESSAGE || '';
-                    showSystemToast(`[${title}] - ${message}`, "info");
+                    // Nổ popup nhỏ xíu ở góc màn hình
+                    showSystemToast(`[${noti.Title}] ${noti.Message}`, "info");
                 }
             }
         });
     }
 
-    // Cập nhật bộ nhớ
-    notifications.forEach(noti => knownNotificationIds.add(noti.NotificationID));
+    // 4. Cập nhật bộ nhớ đệm chống spam Toast
+    notifications.forEach(noti => {
+        if (noti.NotificationID) knownNotificationIds.add(noti.NotificationID);
+    });
     isFirstFetchNoti = false;
 
-    // Render list
+    // 5. Render danh sách vào Dropdown
     if (notifications.length === 0) {
-        listEl.innerHTML = '<div class="text-center p-4 text-muted">Không có thông báo nào</div>';
+        listEl.innerHTML = '<div class="text-center p-4 text-muted">Chưa có thông báo nào.</div>';
         return;
     }
 
     let html = '';
     notifications.forEach(noti => {
-        const isUnread = (noti.IsRead === false || noti.IsRead === 0);
-        const title = noti.Title || noti.title || noti.TITLE || 'Thông báo';
-        const message = noti.Message || noti.message || noti.MESSAGE || '';
-        // Icon tuỳ loại thông báo
-        let iconClass = 'fa-bell';
-        // Format Date
-        let timeStr = noti.CreatedAt;
+        const isUnread = noti.IsRead === false;
+
+        // Xử lý Ngày Giờ ("Jun 30, 2026 10:49:51 AM")
+        let formattedTime = noti.CreatedAt;
         try {
-            if (timeStr) {
-                const date = new Date(timeStr);
-                if (!isNaN(date.getTime())) {
-                    timeStr = date.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
-                }
+            const date = new Date(noti.CreatedAt);
+            if (!isNaN(date.getTime())) {
+                formattedTime = date.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
             }
         } catch (e) { }
 
-        // Diễn giải Type thành Badge
-        let typeText = noti.Type;
+        // Diễn giải trường "Type" thành Icon và Màu sắc Badge
+        let typeText = 'Hệ Thống';
         let typeBadgeClass = 'bg-secondary';
         let typeIconColor = 'text-secondary';
+        let iconClass = 'fa-bell';
+
         if (noti.Type === 'BOOKING_DRIVER_ASSIGNED') {
-            typeText = 'Đã Phân Tài Xế';
+            typeText = 'Phân Tài';
             typeBadgeClass = 'bg-primary';
             typeIconColor = 'text-primary';
+            iconClass = 'fa-car-side';
+        } else if (noti.Type === 'NEW_BOOKING') {
+            typeText = 'Đơn Mới';
+            typeBadgeClass = 'bg-warning';
+            typeIconColor = 'text-warning';
+            iconClass = 'fa-file-invoice-dollar';
         } else if (noti.Type === 'BOOKING_DRIVER_ACCEPTED') {
-            typeText = 'Tài Xế Nhận Đơn';
+            typeText = 'Tài xế Nhận';
             typeBadgeClass = 'bg-success';
             typeIconColor = 'text-success';
+            iconClass = 'fa-circle-check';
         } else if (noti.Type === 'BOOKING_DRIVER_REJECTED') {
-            typeText = 'Tài Xế Từ Chối';
+            typeText = 'Tài xế Hủy';
             typeBadgeClass = 'bg-danger';
             typeIconColor = 'text-danger';
-        } else if (noti.Type === 'BOOKING_CREATED') {
-            typeText = 'Đơn Mới';
-            typeBadgeClass = 'bg-info';
-            typeIconColor = 'text-info';
+            iconClass = 'fa-circle-xmark';
         }
 
         // Tình trạng Chưa đọc / Đã đọc
-        const readStatusHtml = isUnread 
+        const readStatusHtml = isUnread
             ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
             : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
 
         html += `
             <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="markNotificationAsRead(${noti.NotificationID}, this)">
                 <div class="notification-icon-wrapper ${typeIconColor}">
-                    <i class="${iconClass}"></i>
+                    <i class="fa-solid ${iconClass}"></i>
                 </div>
                 <div class="notification-content" style="flex-grow: 1;">
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="badge ${typeBadgeClass} bg-opacity-25 text-dark border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
                         ${readStatusHtml}
                     </div>
-                    <h6 class="fw-bold text-dark mt-2 mb-1" style="font-size: 0.95rem;">${title}</h6>
-                    <p class="text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">${message}</p>
+                    <h6 class="fw-bold text-dark mt-2 mb-1" style="font-size: 0.95rem;">${noti.Title}</h6>
+                    <p class="text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">${noti.Message}</p>
                     <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
-                        <i class="fa-regular fa-clock me-1"></i> ${timeStr || ''}
+                        <i class="fa-regular fa-clock me-1"></i> ${formattedTime}
                     </div>
                 </div>
             </div>
@@ -909,9 +910,9 @@ function renderNotifications(notifications) {
     listEl.innerHTML = html;
 }
 
-// Đánh dấu đã đọc
+// 6. Gửi API Đánh dấu đã đọc khi Dispatcher click vào thông báo
 async function markNotificationAsRead(id, element) {
-    // Nếu element đã nhạt màu (đã đọc) thì ko gọi API thừa
+    // Nếu element đã nhạt màu (đã đọc rồi) thì ko gọi API thừa nữa
     if (element && !element.classList.contains('unread')) {
         return;
     }
@@ -922,11 +923,19 @@ async function markNotificationAsRead(id, element) {
             headers: postAuthHeader()
         });
         const result = await response.json();
-        if (result.success) {
+
+        if (response.ok && result.success) {
+            // Thay đổi giao diện tức thì (Client-side prediction) để mượt mà
             if (element) {
-                element.classList.remove('unread'); // Remove unread class
+                element.classList.remove('unread');
+                const readBadge = element.querySelector('.badge.bg-danger.bg-opacity-10');
+                if (readBadge) {
+                    readBadge.className = 'badge bg-success bg-opacity-10 text-success border border-success border-opacity-25';
+                    readBadge.textContent = 'Đã đọc';
+                }
             }
-            fetchDispatcherNotifications(); // Cập nhật lại số lượng
+            // Background fetch lại để đồng bộ tổng số đếm trên quả chuông
+            fetchDispatcherNotifications();
         }
     } catch (error) {
         console.error("Lỗi đánh dấu notification:", error);
@@ -935,9 +944,8 @@ async function markNotificationAsRead(id, element) {
 
 // Khởi chạy khi tải trang
 document.addEventListener('DOMContentLoaded', () => {
-    // Lần đầu tải
+    // Lần đầu tải mồi
     fetchDispatcherNotifications();
-    // Lặp mỗi 15 giây
-    setInterval(fetchDispatcherNotifications, 15000);
+    // Vòng lặp lấy thông báo (Polling) mỗi 5 giây
+    setInterval(fetchDispatcherNotifications, 5000);
 });
-

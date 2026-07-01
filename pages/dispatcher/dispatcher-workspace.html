@@ -176,6 +176,44 @@
             font-size: 0.75rem;
             color: #999;
         }
+
+        /* --- HIỆU ỨNG HOVER MỞ BẢNG THÔNG BÁO (ĐÃ FIX LỖI LẬT NGƯỢC) --- */
+        .notification-glass.dropdown {
+            position: relative; /* Gốc tọa độ */
+        }
+
+        /* Cầu nối trong suốt để khi rê chuột từ chuông xuống menu không bị mất hover */
+        .notification-glass.dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            z-index: 1060;
+        }
+
+        /* Ép vị trí tuyệt đối, chống lại cơ chế lật tự động của Bootstrap Popper */
+        .notification-glass.dropdown .dropdown-menu {
+            display: none !important; /* Ẩn mặc định */
+            position: absolute !important; 
+            top: calc(100% + 15px) !important; /* Luôn nằm dưới quả chuông 15px */
+            right: 0 !important;
+            left: auto !important;
+            transform: none !important; /* Tắt Popper.js transform */
+            transition: opacity 0.3s ease-in-out;
+            margin: 0 !important;
+        }
+
+        .notification-glass.dropdown:hover .dropdown-menu {
+            display: block !important;
+            animation: fadeInDrop 0.3s ease forwards;
+        }
+
+        @keyframes fadeInDrop {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 
 </head>
