@@ -793,6 +793,7 @@ async function submitComplaint() {
     if (!currentComplaintBookingId) return;
 
     const content = document.getElementById('complaintContent').value.trim();
+    const type = document.getElementById('complaintType').value;
     if (!content) {
         Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập nội dung khiếu nại.' });
         return;
@@ -815,7 +816,12 @@ async function submitComplaint() {
             body: JSON.stringify({
                 bookingId: parseInt(currentComplaintBookingId),
                 customerId: parseInt(customerId),
-                content: content
+                type: type,
+                content: content,
+                fullName: localStorage.getItem('fullName') || 'Khách hàng',
+                phone: localStorage.getItem('phone') || '0900000000',
+                email: localStorage.getItem('email') || '',
+                issueType: type === 'SERVICE_FEEDBACK' ? 'Thái độ tài xế / Chất lượng dịch vụ' : null
             })
         });
 
