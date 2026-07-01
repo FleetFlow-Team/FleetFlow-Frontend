@@ -111,7 +111,8 @@
             width: 420px;
             border-radius: 20px;
             padding: 0;
-            background: rgb(255, 255, 255); /* Trắng đục hơn */
+            background: rgb(255, 255, 255);
+            /* Trắng đục hơn */
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.9);
@@ -152,7 +153,7 @@
             height: 45px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.8);
-            box-shadow: inset 2px 2px 5px rgba(255,255,255,1), 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1), 0 2px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -179,7 +180,8 @@
 
         /* --- HIỆU ỨNG HOVER MỞ BẢNG THÔNG BÁO (ĐÃ FIX LỖI LẬT NGƯỢC) --- */
         .notification-glass.dropdown {
-            position: relative; /* Gốc tọa độ */
+            position: relative;
+            /* Gốc tọa độ */
         }
 
         /* Cầu nối trong suốt để khi rê chuột từ chuông xuống menu không bị mất hover */
@@ -195,12 +197,15 @@
 
         /* Ép vị trí tuyệt đối, chống lại cơ chế lật tự động của Bootstrap Popper */
         .notification-glass.dropdown .dropdown-menu {
-            display: none !important; /* Ẩn mặc định */
-            position: absolute !important; 
-            top: calc(100% + 15px) !important; /* Luôn nằm dưới quả chuông 15px */
+            display: none !important;
+            /* Ẩn mặc định */
+            position: absolute !important;
+            top: calc(100% + 15px) !important;
+            /* Luôn nằm dưới quả chuông 15px */
             right: 0 !important;
             left: auto !important;
-            transform: none !important; /* Tắt Popper.js transform */
+            transform: none !important;
+            /* Tắt Popper.js transform */
             transition: opacity 0.3s ease-in-out;
             margin: 0 !important;
         }
@@ -211,8 +216,15 @@
         }
 
         @keyframes fadeInDrop {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 
@@ -552,8 +564,8 @@
         </nav>
 
         <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
-            <div id="systemErrorToast" class="toast align-items-center border-0"
-                role="alert" aria-live="assertive" aria-atomic="true"
+            <div id="systemErrorToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+                aria-atomic="true"
                 style="border-radius: 20px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15), inset 2px 2px 8px rgba(255, 255, 255, 0.8); color: #222;">
                 <div class="d-flex p-2">
                     <div class="toast-body d-flex align-items-center fw-medium" style="font-size: 0.95rem;">
@@ -578,9 +590,10 @@
                         khiếu nại này.</p>
                 </div>
 
-                <textarea id="complaintResolutionInput" class="form-control glass-input-field mb-2 text-white" rows="3"
+                <textarea id="complaintResolutionInput"
+                    class="form-control glass-input-field mb-2 text-white text-center" rows="3"
                     placeholder="Cách giải quyết..."
-                    style="background: rgba(255,255,255,0.1); border-radius: 15px !important;"></textarea>
+                    style="background: rgba(255,255,255,0.1); border-radius: 15px !important; text-align: center; padding-top: 20px;"></textarea>
                 <div id="complaintResolutionError" class="text-danger small text-start d-none mb-3"><i
                         class="fa-solid fa-triangle-exclamation me-1"></i> Vui lòng nhập hướng xử lý</div>
 

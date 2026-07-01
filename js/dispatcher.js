@@ -949,3 +949,153 @@ document.addEventListener('DOMContentLoaded', () => {
     // Vòng lặp lấy thông báo (Polling) mỗi 5 giây
     setInterval(fetchDispatcherNotifications, 5000);
 });
+
+// ==========================================
+// 12. TÍCH HỢP HỆ THỐNG KHIẾU NẠI & TRANH CHẤP
+// ==========================================
+
+// --- TẢI DANH SÁCH KHIẾU NẠI (GET) ---
+async function loadComplaints() {
+    const tbody = document.getElementById('complaintsListBody');
+    if (!tbody) return;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints`, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            tbody.innerHTML = '';
+            
+            if (!result.data || result.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-white-50 py-4"><i class="fa-regular fa-face-smile me-2"></i>Hiện không có khiếu nại nào cần xử lý</td></tr>`;
+                return;
+            }
+
+            result.data.forEach(c => {
+                let displayContent = c.Content || '';
+                let typeBadge = '';
+                
+                if (c.ComplaintType === 'LOST_LUGGAGE') {
+                    typeBadge = `<span class="badge bg-warning text-dark mb-1">Thất lạc hành lý</span><br>`;
+                    displayContent = `<strong>Tuyến:</strong> ${c.FromLocation || '?'} <i class="fa-solid fa-arrow-right mx-1"></i> ${c.ToLocation || '?'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
+                } else if (c.ComplaintType === 'SERVICE_FEEDBACK') {
+                    typeBadge = `<span class="badge bg-primary mb-1">Thái độ phục vụ</span><br>`;
+                    displayContent = `<strong>Vấn đề:</strong> ${c.IssueType || 'Khác'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
+                } else {
+                    typeBadge = `<span class="badge bg-secondary mb-1">Vấn đề khác</span><br>`;
+                }
+
+                let statusHtml = '';
+                let actionBtn = '';
+                if (c.Status === 'PENDING') {
+                    statusHtml = `<span class="glass-badge bg-warning text-dark"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
+                    actionBtn = `<button class="btn btn-sm btn-outline-light rounded-pill" onclick="openResolveModal(${c.ComplaintID})"><i class="fa-solid fa-gavel me-1"></i> Giải quyết</button>`;
+                } else {
+                    statusHtml = `<span class="glass-badge bg-success text-white"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
+                    actionBtn = `<span class="text-success small fw-bold"><i class="fa-solid fa-check"></i> Hoàn tất</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="fw-bold">#${c.ComplaintID}</td>
+                    <td><span class="text-info fw-bold">${c.BookingID ? '#' + c.BookingID : 'N/A'}</span></td>
+                    <td>
+                        <div class="fw-bold text-white">${c.FullName}</div>
+                        <div class="text-white-50 small"><i class="fa-solid fa-phone me-1"></i>${c.Phone}</div>
+                    </td>
+                    <td style="font-size: 0.85rem;">
+                        ${typeBadge}
+                        <div class="text-white-50">${displayContent}</div>
+                    </td>
+                    <td>${statusHtml}</td>
+                    <td>${actionBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi tải dữ liệu: ${result.message}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Lỗi tải khiếu nại:", error);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi kết nối máy chủ!</td></tr>`;
+    }
+}
+
+// --- XỬ LÝ MỞ / ĐÓNG MODAL RESOLVE ---
+let currentResolvingComplaintId = null;
+
+function openResolveModal(complaintId) {
+    currentResolvingComplaintId = complaintId;
+    document.getElementById('complaintResolutionInput').value = '';
+    
+    const errorMsg = document.getElementById('complaintResolutionError');
+    if(errorMsg) errorMsg.classList.add('d-none');
+    
+    document.getElementById('resolveComplaintModal').style.display = 'flex';
+}
+
+function closeResolveModal() {
+    currentResolvingComplaintId = null;
+    document.getElementById('resolveComplaintModal').style.display = 'none';
+}
+
+// --- THỰC THI RESOLVE (PUT API) ---
+async function executeResolveComplaint() {
+    if (!currentResolvingComplaintId) return;
+
+    const resolutionInput = document.getElementById('complaintResolutionInput').value.trim();
+    const errorMsg = document.getElementById('complaintResolutionError');
+
+    if (!resolutionInput) {
+        if(errorMsg) errorMsg.classList.remove('d-none');
+        return;
+    }
+    if(errorMsg) errorMsg.classList.add('d-none');
+
+    const btnSubmit = document.getElementById('btnSubmitResolution');
+    const originalText = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+    btnSubmit.disabled = true;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentResolvingComplaintId}/resolve`, {
+            method: 'PUT',
+            headers: postAuthHeader(),
+            body: JSON.stringify({ resolution: resolutionInput })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            closeResolveModal();
+            if (typeof showSystemToast === 'function') {
+                showSystemToast("Đã đóng khiếu nại thành công!", "success");
+            }
+            loadComplaints(); // Tải lại bảng sau khi thành công
+        } else {
+            alert("Lỗi: " + (result.message || "Không thể giải quyết khiếu nại"));
+        }
+    } catch (error) {
+        console.error("Lỗi resolve khiếu nại:", error);
+        alert("Lỗi kết nối máy chủ!");
+    } finally {
+        btnSubmit.innerHTML = originalText;
+        btnSubmit.disabled = false;
+    }
+}
+
+// Tự động tải danh sách khiếu nại khi Dispatcher chuyển sang tab Khiếu nại
+document.addEventListener("DOMContentLoaded", function () {
+    const disputeTabLink = document.querySelector('a[href="#disputes"]');
+    if (disputeTabLink) {
+        disputeTabLink.addEventListener('click', function() {
+            loadComplaints();
+        });
+    }
+    // Nạp sẵn một lần lúc mới load trang
+    loadComplaints();
+});
