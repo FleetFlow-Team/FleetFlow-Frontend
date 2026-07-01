@@ -1,0 +1,432 @@
+        border-color 0.3s ease,
+        box-shadow 0.3s ease;
+}
+
+/* Hiệu ứng bóp bóng kính nhẹ khi hover cụm profile */
+.user-profile-dropdown:hover .glass-avatar {
+    transform: scale(1.08);
+    border-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3),
+        inset 2px 2px 6px rgba(255, 255, 255, 0.6);
+}
+
+.glass-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50px;
+}
+
+/* Xoay mũi tên mượt mà */
+.transition-icon {
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2), color 0.3s ease;
+}
+
+.user-profile-dropdown:hover .transition-icon {
+    transform: rotate(180deg);
+    color: #ffffff !important;
+}
+
+/* -------------------------------------
+   DROPDOWN MENU DI CHUYỂN THEO LAYOUT MỚI
+------------------------------------- */
+.dropdown-menu-modern {
+    position: absolute;
+    top: 115%;
+    right: 0;
+    min-width: 260px;
+
+    /* Hạ màu nền xuống mức cực thấp để đạt độ trong suốt tinh khiết */
+    background: rgba(255, 255, 255, 0.387);
+
+    /* Giữ độ blur ở mức 30px-40px để khuếch tán vệt sáng ngầm hoàn hảo */
+    backdrop-filter: blur(35px);
+    -webkit-backdrop-filter: blur(35px);
+
+    /* Tăng độ sáng viền một chút để định hình rõ khối kính trên nền tối */
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 30px;
+    padding: 15px 8px;
+
+    /* Đổ bóng sâu để tách biệt khối kính trong suốt ra khỏi các panel phía sau */
+    box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5),
+        inset 1px 1px 4px rgba(255, 255, 255, 0.2);
+
+    /* Hiệu ứng đóng/mở mượt mà */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px) scale(0.96);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2);
+    z-index: 1100;
+}
+
+/* Kích hoạt mượt mà khi hover */
+.user-profile-dropdown:hover .dropdown-menu-modern {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Các thành phần chi tiết trong thực đơn điều hướng dropdown */
+.divider-custom {
+    margin: 8px 12px;
+    border-top: 2px solid black;
+}
+
+.dropdown-item-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 18px;
+    color: var(--text-color);
+    /* Tăng độ sáng chữ mặc định */
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.92rem;
+    transition: all 0.25s ease;
+}
+
+.dropdown-item-custom i {
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
+    opacity: 0.8;
+}
+
+.dropdown-item-custom:hover {
+    background: rgba(59, 59, 59, 0.12);
+    /* Tạo vệt kính sáng rõ khi hover */
+    color: var(--text-color);
+    transform: translateX(4px);
+    box-shadow: inset 3px 0 0 var(--color-1);
+}
+
+.logout-item {
+    color: #ff6b6b !important;
+}
+
+.logout-item:hover {
+    background: rgba(255, 107, 107, 0.12) !important;
+    color: #ff4757 !important;
+    box-shadow: inset 3px 0 0 #ff4757;
+}
+
+/* =========================================
+   7. FEATURE CARDS & PANELS (LIQUID GLASS MESH 3D)
+========================================= */
+.feature-card {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px 30px;
+    border-radius: 50px;
+    height: 100%;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    position: relative;
+    isolation: isolate;
+    transform-style: preserve-3d;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 10px 30px rgba(0, 0, 0, 0.05);
+    transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease;
+    overflow: visible;
+}
+
+.feature-card::after {
+    content: '';
+    position: absolute;
+    inset: -12px;
+    z-index: -1;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion);
+    clip-path: inset(12px round 50px);
+    transform: translateZ(0);
+    will-change: transform, filter;
+}
+
+.feature-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 2px 2px 5px 0 rgba(255, 255, 255, 0.5), inset -2px -2px 5px 0 rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.5s ease;
+}
+
+.feature-card>* {
+    position: relative;
+    z-index: 3;
+    transform: translateZ(20px);
+}
+
+.feature-card:hover {
+    transform: perspective(1000px) translateY(-12px) scale(1.02);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.3), 0 20px 40px rgba(0, 177, 79, 0.1);
+}
+
+.feature-card:hover::before {
+    box-shadow: inset 4px 4px 8px 0 rgba(255, 255, 255, 0.9), inset -2px -2px 6px 0 rgba(0, 0, 0, 0.05);
+}
+
+.feature-card:hover .feature-icon-wrapper {
+    transform: scale(1.15) translateZ(30px);
+}
+
+.feature-icon-wrapper {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: url(#frosted);
+    -webkit-backdrop-filter: url(#frosted);
+    border: 2px solid transparent;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.6), 0 8px 16px rgba(0, 0, 0, 0.05);
+    transition: transform 0.5s var(--liquid-easing);
+}
+
+.icon-blue i {
+    color: #3182ce;
+}
+
+.icon-green i {
+    color: var(--color-1);
+}
+
+.icon-yellow i {
+    color: #d97706;
+}
+
+.icon-dark i {
+    color: var(--color-dark);
+}
+
+.feature-card h4 {
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 15px;
+    color: var(--color-dark);
+}
+
+.feature-card p {
+    color: var(--text-color);
+    opacity: 0.85;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* =========================================
+   1. ROOT VARIABLES (HỆ MÀU CHUẨN)
+========================================= */
+:root {
+    --color-1: #00b14f;
+    --color-2: #f4f7f6;
+    --color-3: #ffde59;
+    --color-dark: #111111;
+    --color-bg: #ffffff;
+    --text-color: #4b5563;
+
+    /* Liquid Glass Variables */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-highlight: rgba(255, 255, 255, 0.6);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+    --liquid-easing: cubic-bezier(0.175, 0.885, 0.32, 1.2);
+
+    /* New Glass Colors */
+    --glass-green: rgba(89, 255, 114, 0.307);
+    --glass-yellow: rgba(255, 222, 89, 0.2);
+    --bg-gradient-dark: linear-gradient(135deg, #0b0f17 0%, #1a2639 100%);
+    --bg-pleasant: #0f172a;
+
+    /* Demo Glass Variables */
+    --glass-demo-bg: rgba(255, 255, 255, 0.08);
+    --glass-demo-stroke: rgba(255, 255, 255, 0.6);
+    --glass-demo-shadow: rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================
+   2. GLOBAL RESET & TYPOGRAPHY
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    background-color: var(--color-2);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+/* =========================================
+   3. REVEAL ON SCROLL (HIỆU ỨNG XUẤT HIỆN)
+========================================= */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.5s var(--liquid-easing);
+    will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-1 {
+    transition-delay: 0.2s;
+}
+
+.delay-2 {
+    transition-delay: 0.4s;
+}
+
+.delay-3 {
+    transition-delay: 0.6s;
+}
+
+.delay-4 {
+    transition-delay: 0.8s;
+}
+
+/* =========================================
+   4. CONTAINERS (KHUNG CHỨA NỘI DUNG)
+========================================= */
+.container-base {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container-fluid-base {
+    width: 100%;
+    padding: 0 15px;
+}
+
+/* =========================================
+   5. NAVBAR & DROPDOWN HEADER
+========================================= */
+.brand-overflow {
+    position: relative;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.brand-overflow .logo-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    padding: 5px 0;
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    opacity: 1;
+    color: var(--color-3) !important;
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(255, 222, 89, 0.6);
+}
+
+/* Navbar Center Links */
+.navbar-center-links {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link-center {
+    display: flex;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 8px 16px;
+    transition: all 0.4s var(--liquid-easing);
+    border-radius: 50px;
+    width: 130px;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-link-center:hover,
+.nav-link-center.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.nav-link-center:hover {
+    transform: translateY(-5px);
+}
+
+/* Trạng thái Navbar dính */
+.custom-navbar.sticky-top {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    background-color: var(--color-1);
+    height: 70px;
+    padding: 0;
+    transition: all 0.6s var(--liquid-easing), background-color 0.4s ease;
+    isolation: isolate;
+    border: 0.5px solid transparent;
+    z-index: 1030;
+}
+
+.custom-navbar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: rgba(140, 140, 140, 0.35);
+    backdrop-filter: url(#frosted);
+    -webkit-backdrop-filter: url(#frosted);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.custom-navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+/* Fix viền Liquid Glass cho Navbar Scrolled */

@@ -1,775 +1,825 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="FleetFlow - Hệ thống đặt xe đường dài tích hợp AI tiện lợi, nhanh chóng, minh bạch."
-    />
-    <title>FleetFlow - Di Chuyển Tiện Lợi, Trải Nghiệm Khác Biệt</title>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="FleetFlow - Hệ thống đặt xe đường dài tích hợp AI tiện lợi, nhanh chóng, minh bạch." />
+  <title>FleetFlow - Di Chuyển Tiện Lợi, Trải Nghiệm Khác Biệt</title>
 
-    <link rel="icon" type="image/jpeg" href="assets/img/FleetFlow - Logo.png" />
-    <link rel="stylesheet" href="style/base.css" />
-    <link rel="stylesheet" href="style/index.css" />
-    
-  </head>
-  <body>
-    <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <link rel="icon" type="image/jpeg" href="assets/img/FleetFlow - Logo.png" />
+  <link rel="stylesheet" href="style/base.css" />
+  <link rel="stylesheet" href="style/index.css" />
+
+</head>
+
+<body>
+  <svg style="visibility: hidden; position: absolute;" width="0" height="0" xmlns="http://www.w3.org/2000/svg"
+    version="1.1">
     <defs>
-        <filter id="liquid-distortion">
-            <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
-        </filter>
+      <filter id="liquid-distortion">
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="10" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
     </defs>
-</svg>
-    <header>
-      <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
-        <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
-          
-          <a class="navbar-brand brand-overflow" href="index.html">
-            <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
-          </a>
+  </svg>
 
-          <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
-            <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
-          </button>
+  <header>
+    <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
+      <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
 
-          <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
+        <a class="navbar-brand brand-overflow" href="index.html">
+          <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+        </a>
+
+        <!-- Menu Desktop: Khách hàng (Ẩn mặc định) -->
+        <div id="customerDesktopMenu" class="navbar-center-links d-none"
+          style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 35px;">
+          <a href="index.html" class="nav-link-center-1 active">Trang chủ</a>
+          <a href="pages/findCar.html" class="nav-link-center-1">Đặt xe</a>
+          <a href="pages/customer/tripHistory.html" class="nav-link-center-1">Chuyến đi</a>
+          <a href="pages/policy.html" class="nav-link-center-1">Chính sách</a>
+        </div>
+
+        <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
+          <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
+        </button>
+
+        <!-- Menu Desktop: Guest (Mặc định) -->
+        <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
+          <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
             <a href="pages/register.html" class="nav-link-center-1">Trở thành tài xế</a>
             <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
-            <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
-              <span>Đăng nhập</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </button>
           </div>
-        </div>
 
-        <div class="mobile-glass-dropdown" id="mobileDropdown">
-          <div class="dropdown-inner-content d-flex flex-column gap-3">
-            <a href="pages/register.html" class="mobile-nav-item">
-              <i class="fa-solid fa-id-card"></i> Trở thành tài xế FleetFlow
-            </a>
-            <a href="pages/policy.html" class="mobile-nav-item">
-              <i class="fa-solid fa-shield-halved"></i> Về chính sách
-            </a>
-            
-            <div class="divider-glass my-2"></div>
-            
-            <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLogin">
-              <span class="fw-bold">Đăng nhập ngay</span>
-              <i class="fa-regular fa-user-circle fs-5"></i>
-            </button>
-          </div>
-        </div>
-      </nav>
-    </header>
+          <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
+            <span>Đăng nhập</span>
+            <i class="fa-regular fa-user-circle fs-5"></i>
+          </button>
 
-    <main>
-      <section class="hero-section position-relative overflow-hidden">
-        <div class="container z-1 reveal-on-scroll">
-          <div class="row align-items-center">
-            <div class="col-lg-7 text-white">
-              <h1 class="header-slogan mb-2">
-                Di Chuyển <span class="highlight">Thông Minh.</span>
-              </h1>
-
-              <h1 class="header-slogan mb-4">Trải Nghiệm An Tâm.</h1>
-
-              <p class="description-text mb-5">
-                FleetFlow là nền tảng đặt xe đường dài chuyên biệt, tích hợp Trợ
-                lý AI tư vấn phương tiện và công nghệ giám sát Web-GPS thời gian
-                thực.
-              </p>
-
-              <div class="d-flex gap-3 flex-wrap">
-                <a href="pages/findCar.html" class="btn-hero shadow">
-                  Đặt xe ngay
-                </a>
-                <a
-                  href="#how-it-works"
-                  class="btn-cta-outline d-inline-flex align-items-center"
-                  style="border-color: white; color: white"
-                >
-                  Tìm hiểu thêm
-                </a>
-              </div>
-            </div>
-            <div class="col-lg-5">
-              <img class="ai-index-page" src="assets/img/AI Logo.png" alt="Logo AI"  >
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section id="how-it-works" class="features-section">
-        <div class="container">
-          <h2 class="section-title reveal-on-scroll">
-            Tại sao chọn FleetFlow?
-          </h2>
-          <p class="section-subtitle reveal-on-scroll delay-1">
-            Giải pháp vận tải đường dài chuyên nghiệp giải quyết mọi điểm nghẽn
-            truyền thống.
-          </p>
-
-          <div class="row g-4">
-            <div class="col-lg-3 col-md-6 reveal-on-scroll delay-1">
-              <div class="feature-card">
-                <div class="feature-icon-wrapper icon-blue">
-                  
-                  <img src="assets/img/AI Logo.png" style="width: auto; height: 45px;">
-                </div>
-                <h4>Trợ Lý AI Tư Vấn</h4>
-                <p>
-                  Không cần đau đầu chọn xe. AI của chúng tôi phân tích ngôn ngữ
-                  tự nhiên và đưa ra 3 gợi ý xe hoàn hảo nhất cho hành trình của
-                  bạn trong vòng 3 giây.
-                </p>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6 reveal-on-scroll delay-2">
-              <div class="feature-card">
-                <div class="feature-icon-wrapper icon-green">
-                  <i class="fa-solid fa-map-location-dot fs-2"></i>
-                </div>
-                <h4>Giám Sát 24/7</h4>
-                <p>
-                  An tâm tuyệt đối với công nghệ Web-GPS truyền tọa độ 30s/lần.
-                  Hệ thống hỗ trợ xử lý sự cố khẩn cấp (Hotline) nhanh chóng
-                  ngay trên ứng dụng.
-                </p>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6 reveal-on-scroll delay-3">
-              <div class="feature-card">
-                <div class="feature-icon-wrapper icon-yellow">
-                  <i class="fa-solid fa-file-invoice-dollar fs-2"></i>
-                </div>
-                <h4>Minh Bạch Chi Phí</h4>
-                <p>
-                  Bóc tách rõ ràng giá cước cơ bản và phụ phí cuối tuần. Các phụ
-                  phí cầu đường (BOT, phà) đều phải khai báo minh bạch bằng hình
-                  ảnh biên lai.
-                </p>
-              </div>
-            </div>
-            <div class="col-lg-3 col-md-6 reveal-on-scroll delay-4">
-              <div class="feature-card">
-                <div class="feature-icon-wrapper icon-dark">
-                  <i class="fa-solid fa-route fs-2"></i>
-                </div>
-                <h4>Tối Ưu Đường Dài</h4>
-                <p>
-                  Thiết kế chuyên biệt cho các chuyến đi liên tỉnh (>20km).
-                  Thuật toán Open Job giúp điều phối xe nhanh nhất, không để bạn
-                  phải chờ đợi.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section id="ai-demo" class="py-5" style="background-color: var(--color-2);">
-        <div class="container">
-          <div class="row align-items-center g-5">
-            <div class="col-lg-5 reveal-on-scroll">
-              <h2 class="section-title text-start mb-3" style="font-size: 2.2rem;">Trải Nghiệm <span style="color: var(--color-1);">AI Thông Minh</span></h2>
-              <p class="description-text text-dark opacity-75 mb-4">
-                Không cần am hiểu về xe. Chỉ cần cho chúng tôi biết nhu cầu của bạn, hệ thống AI sẽ phân tích ngôn ngữ tự nhiên và đề xuất chuyến đi hoàn hảo trong chưa tới 3 giây.
-              </p>
-              <ul class="list-unstyled mb-4">
-                <li class="mb-3 d-flex align-items-start gap-3">
-                  <i class="fa-solid fa-check-circle fs-4" style="color: var(--color-1);"></i>
-                  <span>Nhận diện từ khóa chính xác: <em>"êm ái", "cốp rộng", "an toàn"</em>...</span>
-                </li>
-                <li class="mb-3 d-flex align-items-start gap-3">
-                  <i class="fa-solid fa-bolt fs-4" style="color: var(--color-3);"></i>
-                  <span>Trả kết quả siêu tốc thay vì phải tự lọc xe thủ công.</span>
-                </li>
-              </ul>
-              <a href="pages/findCar.html" class="btn-hero" style=" background-color: rgba(21, 181, 93, 0.792)">Trải nghiệm ngay</a>
-            </div>
-
-            <div class="col-lg-7 reveal-on-scroll delay-1">
-              <div class="feature-card text-start p-4" style="background: rgba(0, 177, 79, 0.05) !important;">
-                
-                <div class="d-flex gap-3 mb-4 w-100">
-                  <div class="rounded-circle bg-white d-flex justify-content-center align-items-center shadow-sm" style="width: 45px; height: 45px; flex-shrink: 0;">
-                    <i class="fa-regular fa-user text-secondary"></i>
+          <!-- Dropdown User -->
+          <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
+              <div class="dropdown me-3" id="notificationDropdownContainer">
+                  <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                      <i class="fa-regular fa-bell fs-5"></i>
+                      <span id="unreadBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none" data-count="0"></span>
                   </div>
-                  <div class="bg-white p-3 shadow-sm" style="border-radius: 0 15px 15px 15px; border: 1px solid var(--glass-border);">
-                    <p class="mb-0 fw-medium">"Gia đình mình có 4 người lớn, đi từ HCM xuống Vũng Tàu. Có người già nên cần xe êm, cốp để được 2 vali to."</p>
-                  </div>
-                </div>
+                  <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0" style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList"><li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo nào</li></ul>
+              </div>
 
-                <div class="d-flex gap-3 mb-2">
-                  <div class="rounded-circle d-flex justify-content-center align-items-center shadow-sm" style="width: 45px; height: 45px; flex-shrink: 0; background: var(--glass-bg);">
-                    <img src="assets/img/LogoAI - FleetFlow.png" style="width: 45px; height: 45px; flex-shrink: 0;">
-                  </div>
-                  <div><small class="text-muted fst-italic">AI đang phân tích yêu cầu (1.2s)...</small></div>
-                </div>
-
-                <div class="d-flex gap-3 mb-3 w-100 ps-5">
-                  <div class="p-3 shadow-sm w-100" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 222, 89, 0.2)); border-radius: 15px 15px 15px 0; border: 1px solid var(--glass-border);">
-                    <p class="mb-2">Dựa trên yêu cầu <strong>"người già (cần êm ái)"</strong> và <strong>"cốp rộng (2 vali to)"</strong>, FleetFlow đề xuất dòng xe phù hợp nhất cho gia đình bạn:</p>
-                    <div class="d-flex align-items-center gap-3 p-2 bg-white rounded-3 shadow-sm">
-                      <i class="fa-solid fa-car-side fs-2" style="color: var(--color-dark);"></i>
-                      <div>
-                        <h6 class="mb-1 fw-bold">Sedan Hạng D (Toyota Camry)</h6>
-                        <span class="badge" style="background-color: var(--color-1);">Phù hợp nhất</span>
-                        <span class="badge text-dark bg-light border">Cốp 524L</span>
+              <div class="user-profile-btn position-relative dropdown" style="cursor: pointer;">
+                  <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                      <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
+                          <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);" id="navDesktopName"></span>
+                          <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;" id="navDesktopRole">Customer</span>
                       </div>
+                      <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
+                  </div>
+                  <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
+                      <a href="pages/customer/customer-profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                      <a href="pages/customer/tripHistory.html" class="dropdown-item-custom"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
+                      <hr style="margin: 5px 0; opacity: 0.1;">
+                      <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="mobile-glass-dropdown" id="mobileDropdown">
+        <div class="dropdown-inner-content d-flex flex-column gap-3">
+          <!-- Mobile: Guest -->
+          <div id="guestMobileMenu" class="d-flex flex-column gap-3">
+            <a href="pages/register.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trở thành tài xế
+              FleetFlow</a>
+            <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về chính
+              sách</a>
+          </div>
+
+          <!-- Mobile: Customer -->
+          <div id="customerMobileMenu" class="d-none flex-column gap-3">
+            <a href="index.html" class="mobile-nav-item active"><i class="fa-solid fa-house"></i> Trang chủ</a>
+            <a href="pages/findCar.html" class="mobile-nav-item"><i class="fa-solid fa-car"></i> Đặt xe</a>
+            <a href="pages/customer/tripHistory.html" class="mobile-nav-item"><i
+                class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
+            <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính sách</a>
+          </div>
+
+          <div class="divider-glass my-2"></div>
+
+          <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLogin">
+            <span class="fw-bold">Đăng nhập ngay</span>
+            <i class="fa-regular fa-user-circle fs-5"></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero-section position-relative overflow-hidden">
+      <div class="container z-1 reveal-on-scroll">
+        <div class="row align-items-center">
+          <div class="col-lg-7 text-white">
+            <h1 class="header-slogan mb-2">
+              Di Chuyển <span class="highlight">Thông Minh.</span>
+            </h1>
+
+            <h1 class="header-slogan mb-4">Trải Nghiệm An Tâm.</h1>
+
+            <p class="description-text mb-5">
+              FleetFlow là nền tảng đặt xe đường dài chuyên biệt, tích hợp Trợ
+              lý AI tư vấn phương tiện và công nghệ giám sát Web-GPS thời gian
+              thực.
+            </p>
+
+            <div class="d-flex gap-3 flex-wrap">
+              <a href="pages/findCar.html" class="btn-hero shadow">
+                Đặt xe ngay
+              </a>
+              <a href="#how-it-works" class="btn-cta-outline d-inline-flex align-items-center"
+                style="border-color: white; color: white">
+                Tìm hiểu thêm
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-5">
+            <img class="ai-index-page" src="assets/img/AI Logo.png" alt="Logo AI">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="features-section">
+      <div class="container">
+        <h2 class="section-title reveal-on-scroll">
+          Tại sao chọn FleetFlow?
+        </h2>
+        <p class="section-subtitle reveal-on-scroll delay-1">
+          Giải pháp vận tải đường dài chuyên nghiệp giải quyết mọi điểm nghẽn
+          truyền thống.
+        </p>
+
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-6 reveal-on-scroll delay-1">
+            <div class="feature-card">
+              <div class="feature-icon-wrapper icon-blue">
+
+                <img src="assets/img/AI Logo.png" style="width: auto; height: 45px;">
+              </div>
+              <h4>Trợ Lý AI Tư Vấn</h4>
+              <p>
+                Không cần đau đầu chọn xe. AI của chúng tôi phân tích ngôn ngữ
+                tự nhiên và đưa ra 3 gợi ý xe hoàn hảo nhất cho hành trình của
+                bạn trong vòng 3 giây.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 reveal-on-scroll delay-2">
+            <div class="feature-card">
+              <div class="feature-icon-wrapper icon-green">
+                <i class="fa-solid fa-map-location-dot fs-2"></i>
+              </div>
+              <h4>Giám Sát 24/7</h4>
+              <p>
+                An tâm tuyệt đối với công nghệ Web-GPS truyền tọa độ 30s/lần.
+                Hệ thống hỗ trợ xử lý sự cố khẩn cấp (Hotline) nhanh chóng
+                ngay trên ứng dụng.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 reveal-on-scroll delay-3">
+            <div class="feature-card">
+              <div class="feature-icon-wrapper icon-yellow">
+                <i class="fa-solid fa-file-invoice-dollar fs-2"></i>
+              </div>
+              <h4>Minh Bạch Chi Phí</h4>
+              <p>
+                Bóc tách rõ ràng giá cước cơ bản và phụ phí cuối tuần. Các phụ
+                phí cầu đường (BOT, phà) đều phải khai báo minh bạch bằng hình
+                ảnh biên lai.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 reveal-on-scroll delay-4">
+            <div class="feature-card">
+              <div class="feature-icon-wrapper icon-dark">
+                <i class="fa-solid fa-route fs-2"></i>
+              </div>
+              <h4>Tối Ưu Đường Dài</h4>
+              <p>
+                Thiết kế chuyên biệt cho các chuyến đi liên tỉnh (>20km).
+                Thuật toán Open Job giúp điều phối xe nhanh nhất, không để bạn
+                phải chờ đợi.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="ai-demo" class="py-5" style="background-color: var(--color-2);">
+      <div class="container">
+        <div class="row align-items-center g-5">
+          <div class="col-lg-5 reveal-on-scroll">
+            <h2 class="section-title text-start mb-3" style="font-size: 2.2rem;">Trải Nghiệm <span
+                style="color: var(--color-1);">AI Thông Minh</span></h2>
+            <p class="description-text text-dark opacity-75 mb-4">
+              Không cần am hiểu về xe. Chỉ cần cho chúng tôi biết nhu cầu của bạn, hệ thống AI sẽ phân tích ngôn ngữ tự
+              nhiên và đề xuất chuyến đi hoàn hảo trong chưa tới 3 giây.
+            </p>
+            <ul class="list-unstyled mb-4">
+              <li class="mb-3 d-flex align-items-start gap-3">
+                <i class="fa-solid fa-check-circle fs-4" style="color: var(--color-1);"></i>
+                <span>Nhận diện từ khóa chính xác: <em>"êm ái", "cốp rộng", "an toàn"</em>...</span>
+              </li>
+              <li class="mb-3 d-flex align-items-start gap-3">
+                <i class="fa-solid fa-bolt fs-4" style="color: var(--color-3);"></i>
+                <span>Trả kết quả siêu tốc thay vì phải tự lọc xe thủ công.</span>
+              </li>
+            </ul>
+            <a href="pages/findCar.html" class="btn-hero" style=" background-color: rgba(21, 181, 93, 0.792)">Trải
+              nghiệm ngay</a>
+          </div>
+
+          <div class="col-lg-7 reveal-on-scroll delay-1">
+            <div class="feature-card text-start p-4" style="background: rgba(0, 177, 79, 0.05) !important;">
+
+              <div class="d-flex gap-3 mb-4 w-100">
+                <div class="rounded-circle bg-white d-flex justify-content-center align-items-center shadow-sm"
+                  style="width: 45px; height: 45px; flex-shrink: 0;">
+                  <i class="fa-regular fa-user text-secondary"></i>
+                </div>
+                <div class="bg-white p-3 shadow-sm"
+                  style="border-radius: 0 15px 15px 15px; border: 1px solid var(--glass-border);">
+                  <p class="mb-0 fw-medium">"Gia đình mình có 4 người lớn, đi từ HCM xuống Vũng Tàu. Có người già nên
+                    cần xe êm, cốp để được 2 vali to."</p>
+                </div>
+              </div>
+
+              <div class="d-flex gap-3 mb-2">
+                <div class="rounded-circle d-flex justify-content-center align-items-center shadow-sm"
+                  style="width: 45px; height: 45px; flex-shrink: 0; background: var(--glass-bg);">
+                  <img src="assets/img/LogoAI - FleetFlow.png" style="width: 45px; height: 45px; flex-shrink: 0;">
+                </div>
+                <div><small class="text-muted fst-italic">AI đang phân tích yêu cầu (1.2s)...</small></div>
+              </div>
+
+              <div class="d-flex gap-3 mb-3 w-100 ps-5">
+                <div class="p-3 shadow-sm w-100"
+                  style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 222, 89, 0.2)); border-radius: 15px 15px 15px 0; border: 1px solid var(--glass-border);">
+                  <p class="mb-2">Dựa trên yêu cầu <strong>"người già (cần êm ái)"</strong> và <strong>"cốp rộng (2 vali
+                      to)"</strong>, FleetFlow đề xuất dòng xe phù hợp nhất cho gia đình bạn:</p>
+                  <div class="d-flex align-items-center gap-3 p-2 bg-white rounded-3 shadow-sm">
+                    <i class="fa-solid fa-car-side fs-2" style="color: var(--color-dark);"></i>
+                    <div>
+                      <h6 class="mb-1 fw-bold">Sedan Hạng D (Toyota Camry)</h6>
+                      <span class="badge" style="background-color: var(--color-1);">Phù hợp nhất</span>
+                      <span class="badge text-dark bg-light border">Cốp 524L</span>
                     </div>
                   </div>
                 </div>
-
               </div>
+
             </div>
           </div>
         </div>
-      </section>
-      <section id="fleet-showcase" class="car-showcase-section py-6">
-        <div class="container position-relative z-1 mb-4 text-center">
-          <h2 class="section-title text-white reveal-on-scroll">Bộ sưu tập SUV đồng hành suốt chuyến đi</h2>
-          <p class="section-subtitle text-white-50 reveal-on-scroll delay-1">Khám phá dải phương tiện 100% tự vận hành (Owned Fleet) của FleetFlow.</p>
+      </div>
+    </section>
+    <section id="fleet-showcase" class="car-showcase-section py-6">
+      <div class="container position-relative z-1 mb-4 text-center">
+        <h2 class="section-title text-white reveal-on-scroll">Bộ sưu tập SUV đồng hành suốt chuyến đi</h2>
+        <p class="section-subtitle text-white-50 reveal-on-scroll delay-1">Khám phá dải phương tiện 100% tự vận hành
+          (Owned Fleet) của FleetFlow.</p>
+      </div>
+
+      <div class="carousel-container reveal-on-scroll delay-2" id="fleet-carousel">
+
+        <div class="car-flow-card" onclick="handleCarClick(0)">
+          <div class="car-img-box">
+            <img src="assets/img/car-demo/Honda HR-V.webp" alt="Honda HR-V">
+          </div>
+          <div class="car-info-box">
+            <h3>Honda HR-V</h3>
+            <div class="d-flex justify-content-center gap-2 mb-2">
+              <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 5 Chỗ</span>
+              <span class="badge" style="background-color: var(--color-1);"><i class="fa-solid fa-car me-1"></i> Gầm cao
+                linh hoạt</span>
+            </div>
+            <p class="text-white-50 fs-6 mb-3">Mẫu SUV đô thị cỡ B với thiết kế thể thao, không gian linh hoạt và tiết
+              kiệm nhiên liệu. Lựa chọn hoàn hảo cho việc di chuyển hàng ngày.</p>
+            <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
+          </div>
         </div>
 
-        <div class="carousel-container reveal-on-scroll delay-2" id="fleet-carousel">
-          
-          <div class="car-flow-card" onclick="handleCarClick(0)">
-            <div class="car-img-box">
-              <img src="assets/img/car-demo/Honda HR-V.webp" alt="Honda HR-V">
-            </div>
-            <div class="car-info-box">
-              <h3>Honda HR-V</h3>
-              <div class="d-flex justify-content-center gap-2 mb-2">
-                <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 5 Chỗ</span>
-                <span class="badge" style="background-color: var(--color-1);"><i class="fa-solid fa-car me-1"></i> Gầm cao linh hoạt</span>
-              </div>
-              <p class="text-white-50 fs-6 mb-3">Mẫu SUV đô thị cỡ B với thiết kế thể thao, không gian linh hoạt và tiết kiệm nhiên liệu. Lựa chọn hoàn hảo cho việc di chuyển hàng ngày.</p>
-              <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
-            </div>
+        <div class="car-flow-card" onclick="handleCarClick(1)">
+          <div class="car-img-box">
+            <img src="assets/img/car-demo/Mitsubishi Outlander.jpg" alt="Mitsubishi Outlander">
           </div>
-
-          <div class="car-flow-card" onclick="handleCarClick(1)">
-            <div class="car-img-box">
-              <img src="assets/img/car-demo/Mitsubishi Outlander.jpg" alt="Mitsubishi Outlander">
+          <div class="car-info-box">
+            <h3>Mitsubishi Outlander</h3>
+            <div class="d-flex justify-content-center gap-2 mb-2">
+              <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 7 Chỗ</span>
+              <span class="badge bg-danger text-white"><i class="fa-solid fa-shield-halved me-1"></i> Gia đình / An
+                toàn</span>
             </div>
-            <div class="car-info-box">
-              <h3>Mitsubishi Outlander</h3>
-              <div class="d-flex justify-content-center gap-2 mb-2">
-                <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 7 Chỗ</span>
-                <span class="badge bg-danger text-white"><i class="fa-solid fa-shield-halved me-1"></i> Gia đình / An toàn</span>
-              </div>
-              <p class="text-white-50 fs-6 mb-3">Rộng rãi, cách âm cực tốt và vận hành êm ái. Mẫu xe lý tưởng cho những chuyến đi xa cùng gia đình với chi phí cực kỳ hợp lý.</p>
-              <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
-            </div>
+            <p class="text-white-50 fs-6 mb-3">Rộng rãi, cách âm cực tốt và vận hành êm ái. Mẫu xe lý tưởng cho những
+              chuyến đi xa cùng gia đình với chi phí cực kỳ hợp lý.</p>
+            <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
           </div>
-
-          <div class="car-flow-card" onclick="handleCarClick(2)">
-            <div class="car-img-box">
-              <img src="assets/img/car-demo/Vinfast LimoGreen.jpg" alt="Vinfast LimoGreen">
-            </div>
-            <div class="car-info-box">
-              <h3>Vinfast LimoGreen</h3>
-              <div class="d-flex justify-content-center gap-2 mb-2">
-                <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 5 Chỗ</span>
-                <span class="badge" style="background-color: var(--color-3); color: black;"><i class="fa-solid fa-leaf me-1"></i> Xe điện / Thân thiện</span>
-              </div>
-              <p class="text-white-50 fs-6 mb-3">Dịch vụ di chuyển xanh thông minh. Trải nghiệm không gian nội thất tĩnh lặng, không mùi xăng xe và hoàn toàn thân thiện với môi trường.</p>
-              <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
-            </div>
-          </div>
-
-          <div class="car-flow-card" onclick="handleCarClick(3)">
-            <div class="car-img-box">
-              <img src="assets/img/car-demo/Kia Sonet.webp" alt="Kia Sonet">
-            </div>
-            <div class="car-info-box">
-              <h3>Kia Sonet</h3>
-              <div class="d-flex justify-content-center gap-2 mb-2">
-                <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 5 Chỗ</span>
-                <span class="badge bg-info text-dark"><i class="fa-solid fa-city me-1"></i> Gọn gàng đô thị</span>
-              </div>
-              <p class="text-white-50 fs-6 mb-3">SUV cỡ nhỏ năng động, dễ dàng luồn lách trong các con phố đông đúc. Trang bị tiện nghi hiện đại đáp ứng tốt mọi nhu cầu cơ bản.</p>
-              <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
-            </div>
-          </div>
-          <div class="car-flow-card" onclick="handleCarClick(4)">
-            <div class="car-img-box">
-              <img src="assets/img/car-demo/Mitsubishi Outlander.jpg" alt="Mitsubishi Xpander">
-            </div>
-            <div class="car-info-box">
-              <h3>Mitsubishi Xpander</h3>
-              <div class="d-flex justify-content-center gap-2 mb-2">
-                <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 7 Chỗ</span>
-                <span class="badge bg-warning text-dark"><i class="fa-solid fa-wallet me-1"></i> Thực dụng / Tiết kiệm</span>
-              </div>
-              <p class="text-white-50 fs-6 mb-3">"Ông vua doanh số" phân khúc MPV. Không gian 7 chỗ vô cùng thực dụng, siêu tiết kiệm nhiên liệu, tối ưu chi phí cho mọi hành trình.</p>
-              <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
-            </div>
-          </div>
-
         </div>
-      </section>
 
-      <section class="process-section py-5">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2 class="section-title reveal-on-scroll">
-        Quy Trình 3 Bước Đơn Giản
-      </h2>
-      <p class="section-subtitle reveal-on-scroll delay-1">
-        Chỉ vài thao tác, sẵn sàng cho một hành trình xuyên Việt.
-      </p>
-    </div>
+        <div class="car-flow-card" onclick="handleCarClick(2)">
+          <div class="car-img-box">
+            <img src="assets/img/car-demo/Vinfast LimoGreen.jpg" alt="Vinfast LimoGreen">
+          </div>
+          <div class="car-info-box">
+            <h3>Vinfast LimoGreen</h3>
+            <div class="d-flex justify-content-center gap-2 mb-2">
+              <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 5 Chỗ</span>
+              <span class="badge" style="background-color: var(--color-3); color: black;"><i
+                  class="fa-solid fa-leaf me-1"></i> Xe điện / Thân thiện</span>
+            </div>
+            <p class="text-white-50 fs-6 mb-3">Dịch vụ di chuyển xanh thông minh. Trải nghiệm không gian nội thất tĩnh
+              lặng, không mùi xăng xe và hoàn toàn thân thiện với môi trường.</p>
+            <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
+          </div>
+        </div>
 
-    <div class="row g-4 position-relative z-1">
-      
-      <div class="col-lg-4 reveal-on-scroll delay-1">
-        <div class="feature-card step-box h-100 p-4 text-center">
-          <div class="step-number mb-3 mx-auto">1</div>
-          <h5 class="mb-3 text-dark fw-bold">Tìm Xe Cùng AI</h5>
-          <p class="mb-0 text-muted">
-            Nhập điểm đến và mô tả nhu cầu (vd: xe êm cho người già). Trợ lý AI sẽ gợi ý dòng xe tối ưu nhất.
+        <div class="car-flow-card" onclick="handleCarClick(3)">
+          <div class="car-img-box">
+            <img src="assets/img/car-demo/Kia Sonet.webp" alt="Kia Sonet">
+          </div>
+          <div class="car-info-box">
+            <h3>Kia Sonet</h3>
+            <div class="d-flex justify-content-center gap-2 mb-2">
+              <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 5 Chỗ</span>
+              <span class="badge bg-info text-dark"><i class="fa-solid fa-city me-1"></i> Gọn gàng đô thị</span>
+            </div>
+            <p class="text-white-50 fs-6 mb-3">SUV cỡ nhỏ năng động, dễ dàng luồn lách trong các con phố đông đúc. Trang
+              bị tiện nghi hiện đại đáp ứng tốt mọi nhu cầu cơ bản.</p>
+            <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
+          </div>
+        </div>
+        <div class="car-flow-card" onclick="handleCarClick(4)">
+          <div class="car-img-box">
+            <img src="assets/img/car-demo/Mitsubishi Outlander.jpg" alt="Mitsubishi Xpander">
+          </div>
+          <div class="car-info-box">
+            <h3>Mitsubishi Xpander</h3>
+            <div class="d-flex justify-content-center gap-2 mb-2">
+              <span class="badge bg-secondary"><i class="fa-solid fa-users me-1"></i> 7 Chỗ</span>
+              <span class="badge bg-warning text-dark"><i class="fa-solid fa-wallet me-1"></i> Thực dụng / Tiết
+                kiệm</span>
+            </div>
+            <p class="text-white-50 fs-6 mb-3">"Ông vua doanh số" phân khúc MPV. Không gian 7 chỗ vô cùng thực dụng,
+              siêu tiết kiệm nhiên liệu, tối ưu chi phí cho mọi hành trình.</p>
+            <a href="pages/findCar.html" class="btn-hero w-100">Đặt xe ngay</a>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <section class="process-section py-5">
+      <div class="container">
+        <div class="text-center mb-5">
+          <h2 class="section-title reveal-on-scroll">
+            Quy Trình 3 Bước Đơn Giản
+          </h2>
+          <p class="section-subtitle reveal-on-scroll delay-1">
+            Chỉ vài thao tác, sẵn sàng cho một hành trình xuyên Việt.
           </p>
         </div>
-      </div>
 
-      <div class="col-lg-4 reveal-on-scroll delay-2">
-        <div class="feature-card step-box h-100 p-4 text-center">
-          <div class="step-number mb-3 mx-auto">2</div>
-          <h5 class="mb-3 text-dark fw-bold">Đặt Cọc 30%</h5>
-          <p class="mb-0 text-muted">
-            Thanh toán bảo đảm qua cổng điện tử MoMo. Đơn của bạn sẽ được phát sóng trực tiếp tới tài xế gần nhất.
-          </p>
-        </div>
-      </div>
+        <div class="row g-4 position-relative z-1">
 
-      <div class="col-lg-4 reveal-on-scroll delay-3">
-        <div class="feature-card step-box h-100 p-4 text-center">
-          <div class="step-number mb-3 mx-auto">3</div>
-          <h5 class="mb-3 text-dark fw-bold">An Tâm Khởi Hành</h5>
-          <p class="mb-0 text-muted">
-            Theo dõi xe đến đón qua bản đồ GPS trực tiếp. Hóa đơn điện tử chốt chính xác sau chuyến đi.
-          </p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-      <section id="testimonials" class="py-5 position-relative overflow-hidden" style="background: var(--color-bg);">
-        <div class="position-absolute top-0 start-0 w-100 h-100" style="pointer-events: none; z-index: 0; opacity: 0.4;">
-            <div style="position: absolute; top: 10%; left: -5%; width: 300px; height: 300px; background: var(--color-3); filter: blur(100px); border-radius: 50%;"></div>
-            <div style="position: absolute; bottom: -10%; right: -5%; width: 300px; height: 300px; background: var(--color-1); filter: blur(100px); border-radius: 50%;"></div>
-        </div>
-
-        <div class="container position-relative z-1">
-          <div class="text-center mb-5">
-            <h2 class="section-title reveal-on-scroll">Khách Hàng Nói Gì Về Chúng Tôi?</h2>
-            <p class="section-subtitle reveal-on-scroll delay-1 mb-2">
-              Hàng ngàn chuyến đi an toàn đã được thực hiện. 
-            </p>
-            <span class="badge bg-light text-dark border reveal-on-scroll delay-1">
-              <i class="fa-solid fa-shield-halved text-success me-1"></i> 100% Đánh giá được xác thực sau 1000 chuyến đi
-            </span>
-          </div>
-
-          <div class="row g-4 align-items-center">
-            <div class="col-md-4 reveal-on-scroll delay-1">
-              <div class="feature-card text-start p-4 h-auto mb-4">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                  <div class="rounded-circle bg-secondary d-flex justify-content-center align-items-center text-white fw-bold" style="width: 50px; height: 50px;">H</div>
-                  <div>
-                    <h6 class="mb-0 fw-bold">Hoàng Đức</h6>
-                    <small class="text-muted">Chuyến: HCM - Đà Lạt</small>
-                  </div>
-                </div>
-                <div class="text-warning mb-2 js-stars" data-rating="5">
-                  <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                <p class="fst-italic">"Tính năng AI gợi ý xe quá đỉnh. Mình đi gia đình có em bé, AI chọn ngay chiếc Carnival rộng rãi. Tài xế chạy điềm đạm, không phanh gấp."</p>
-              </div>
-            </div>
-
-            <div class="col-md-4 reveal-on-scroll delay-2 stagger-up">
-              <div class="feature-card text-start p-4 h-auto mb-4" style="background: rgba(0, 177, 79, 0.08) !important;">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                  <div class="rounded-circle bg-dark d-flex justify-content-center align-items-center text-white fw-bold" style="width: 50px; height: 50px;">M</div>
-                  <div>
-                    <h6 class="mb-0 fw-bold">Mai Phương</h6>
-                    <small class="text-muted">Chuyến: Sân bay Nội Bài</small>
-                  </div>
-                </div>
-                <div class="text-warning mb-2 js-stars" data-rating="5">
-                  <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                <p class="fst-italic">"Thích nhất là sự minh bạch. Hóa đơn cuối cùng báo rõ ràng tiền BOT và phà kèm biên lai tài xế chụp. Không bị vòi vĩnh hay mập mờ như xe ngoài."</p>
-              </div>
-            </div>
-
-            <div class="col-md-4 reveal-on-scroll delay-3">
-              <div class="feature-card text-start p-4 h-auto mb-4">
-                <div class="d-flex align-items-center gap-3 mb-3">
-                  <div class="rounded-circle d-flex justify-content-center align-items-center text-dark fw-bold" style="width: 50px; height: 50px; background: var(--color-3);">T</div>
-                  <div>
-                    <h6 class="mb-0 fw-bold">Trần Hùng</h6>
-                    <small class="text-muted">Chuyến: Cần Thơ - Vũng Tàu</small>
-                  </div>
-                </div>
-                <div class="text-warning mb-2 js-stars" data-rating="5">
-                  <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
-                </div>
-                <p class="fst-italic">"Hệ thống định vị GPS trên xe rất xịn. Người nhà mình ở nhà mở link web lên là thấy xe đang chạy tới đâu, rất an tâm khi đi đêm."</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- GỘP CTA & PREMIUM REGISTER SỬ DỤNG LIQUID SWITCHER (BỐ CỤC 1 CỘT DỌC - ĐÃ FIX CANH GIỮA) -->
-<section id="join-us-section" class="py-6 position-relative overflow-hidden" style="background-color: #0b0f17; padding: 100px 0;">
-  <!-- Nền ánh sáng ngầm -->
-  <div class="luxury-glow-bg">
-    <div class="glow-sphere sphere-1"></div>
-    <div class="glow-sphere sphere-2"></div>
-  </div>
-
-  <!-- FIX: Dùng .container thay cho .container-base để hủy flex space-between -->
-  <div class="container position-relative z-3">
-    
-    <!-- Ép thẻ cha căn giữa tuyệt đối theo trục dọc và ngang -->
-    <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 mx-auto">
-      
-      <!-- 1. TIÊU ĐỀ TRÊN CÙNG -->
-      <div class="reveal-on-scroll w-100">
-        <h2 class="luxury-title mb-3" style="font-size: 3rem;">
-          Đồng Hành Cùng <span class="text-gradient-gold">FleetFlow</span>
-        </h2>
-        <p class="luxury-description mb-4 mx-auto" style="max-width: 600px;">
-          Lựa chọn vai trò của bạn để khám phá những đặc quyền dành riêng.
-        </p>
-      </div>
-
-      <!-- 2. SWITCHER NẰM Ở GIỮA -->
-      <div class="sliding-tabs-container mb-5 reveal-on-scroll delay-1">
-        <div id="tabIndicator" class="tab-indicator"></div>
-        <button class="tab-pill active" onclick="switchRoleTab('customer', this)">Khách hàng</button>
-        <button class="tab-pill" onclick="switchRoleTab('driver', this)">Tài xế</button>
-      </div>
-
-      <!-- 3. THẺ FORM NẰM DƯỚI CÙNG -->
-      <div class="w-100 reveal-on-scroll delay-2" style="max-width: 900px; margin: 0 auto;">
-        
-        <!-- NỘI DUNG 1: KHÁCH HÀNG -->
-        <div id="customer-content" class="tab-content-pane active">
-          <div class="luxury-register-card p-4 p-md-5 mx-auto">
-            <div class="row align-items-center g-5 text-center text-md-start">
-              
-              <!-- Chữ bên trong thẻ kính -->
-              <div class="col-md-6">
-                <span class="premium-tag mb-3 d-inline-block">FLEETFLOW MEMBERSHIP</span>
-                <h2 class="luxury-title mb-3" style="font-size: 2rem;">
-                  Khởi Hành Khát Vọng,<br>Làm Chủ Tương Lai
-                </h2>
-                <p class="luxury-description mx-auto mx-md-0 mb-0" style="font-size: 0.95rem; line-height: 1.7;">
-                  Gia nhập hệ sinh thái di chuyển thông minh FleetFlow hôm nay. Một đặc quyền voucher cá nhân hóa sẽ được hệ thống AI tự động gửi tới email của bạn sau 30 ngày.
-                </p>
-              </div>
-
-              <!-- Form đăng ký -->
-              <div class="col-md-6">
-                <div class="luxury-form-wrapper p-4 text-center h-100 d-flex flex-column justify-content-center">
-                  <h5 class="form-title mb-4">NHẬN VOUCHER ĐẶC QUYỀN</h5>
-                  <div class="form-floating mb-4 w-100">
-                    <input type="email" class="form-control luxury-input" id="premiumEmail" placeholder="name@example.com" >
-                    <label for="premiumEmail" class="luxury-label">Địa chỉ Email của bạn</label>
-                  </div>
-                  <button class="btn-premium-gold w-100">
-                    <span class="fw-bold">ĐĂNG KÝ NGAY</span>
-                    <i class="fa-solid fa-arrow-right-long ms-2"></i>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-
-        <!-- NỘI DUNG 2: TÀI XẾ -->
-        <div id="driver-content" class="tab-content-pane">
-          <div class="luxury-register-card p-4 p-md-5 mx-auto">
-            <div class="text-center">
-              <span class="premium-tag mb-3 d-inline-block" style="color: var(--color-1); border-color: var(--color-1); background: rgba(0, 177, 79, 0.1);">
-                ĐỐI TÁC VẬN HÀNH
-              </span>
-              <h2 class="luxury-title mb-3" style="font-size: 2.2rem;">Gia Nhập Đội Ngũ<br>Tài Xế Phẩm Chất</h2>
-              <p class="luxury-description mx-auto mb-5" style="max-width: 600px;">
-                Thu nhập minh bạch, phân phối chuyến đi công bằng qua thuật toán Open Job. Hoàn tất hồ sơ eKYC để khởi hành cùng chúng tôi ngay hôm nay.
+          <div class="col-lg-4 reveal-on-scroll delay-1">
+            <div class="feature-card step-box h-100 p-4 text-center">
+              <div class="step-number mb-3 mx-auto">1</div>
+              <h5 class="mb-3 text-dark fw-bold">Tìm Xe Cùng AI</h5>
+              <p class="mb-0 text-muted">
+                Nhập điểm đến và mô tả nhu cầu (vd: xe êm cho người già). Trợ lý AI sẽ gợi ý dòng xe tối ưu nhất.
               </p>
-              <div class="d-flex gap-3 justify-content-center flex-wrap">
-                <a href="pages/register.html" class="btn-hero" style="background-color: var(--color-1); color: white; border: none !important;">Đăng ký eKYC ngay</a>
-                <a href="pages/policy.html" class="btn-cta-outline" style="border-color: rgba(255,255,255,0.3) !important;">Xem chính sách</a>
+            </div>
+          </div>
+
+          <div class="col-lg-4 reveal-on-scroll delay-2">
+            <div class="feature-card step-box h-100 p-4 text-center">
+              <div class="step-number mb-3 mx-auto">2</div>
+              <h5 class="mb-3 text-dark fw-bold">Đặt Cọc 30%</h5>
+              <p class="mb-0 text-muted">
+                Thanh toán bảo đảm qua cổng điện tử MoMo. Đơn của bạn sẽ được phát sóng trực tiếp tới tài xế gần nhất.
+              </p>
+            </div>
+          </div>
+
+          <div class="col-lg-4 reveal-on-scroll delay-3">
+            <div class="feature-card step-box h-100 p-4 text-center">
+              <div class="step-number mb-3 mx-auto">3</div>
+              <h5 class="mb-3 text-dark fw-bold">An Tâm Khởi Hành</h5>
+              <p class="mb-0 text-muted">
+                Theo dõi xe đến đón qua bản đồ GPS trực tiếp. Hóa đơn điện tử chốt chính xác sau chuyến đi.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <section id="testimonials" class="py-5 position-relative overflow-hidden" style="background: var(--color-bg);">
+      <div class="position-absolute top-0 start-0 w-100 h-100" style="pointer-events: none; z-index: 0; opacity: 0.4;">
+        <div
+          style="position: absolute; top: 10%; left: -5%; width: 300px; height: 300px; background: var(--color-3); filter: blur(100px); border-radius: 50%;">
+        </div>
+        <div
+          style="position: absolute; bottom: -10%; right: -5%; width: 300px; height: 300px; background: var(--color-1); filter: blur(100px); border-radius: 50%;">
+        </div>
+      </div>
+
+      <div class="container position-relative z-1">
+        <div class="text-center mb-5">
+          <h2 class="section-title reveal-on-scroll">Khách Hàng Nói Gì Về Chúng Tôi?</h2>
+          <p class="section-subtitle reveal-on-scroll delay-1 mb-2">
+            Hàng ngàn chuyến đi an toàn đã được thực hiện.
+          </p>
+          <span class="badge bg-light text-dark border reveal-on-scroll delay-1">
+            <i class="fa-solid fa-shield-halved text-success me-1"></i> 100% Đánh giá được xác thực sau 1000 chuyến đi
+          </span>
+        </div>
+
+        <div class="row g-4 align-items-center">
+          <div class="col-md-4 reveal-on-scroll delay-1">
+            <div class="feature-card text-start p-4 h-auto mb-4">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div
+                  class="rounded-circle bg-secondary d-flex justify-content-center align-items-center text-white fw-bold"
+                  style="width: 50px; height: 50px;">H</div>
+                <div>
+                  <h6 class="mb-0 fw-bold">Hoàng Đức</h6>
+                  <small class="text-muted">Chuyến: HCM - Đà Lạt</small>
+                </div>
               </div>
+              <div class="text-warning mb-2 js-stars" data-rating="5">
+                <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i
+                  class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+              </div>
+              <p class="fst-italic">"Tính năng AI gợi ý xe quá đỉnh. Mình đi gia đình có em bé, AI chọn ngay chiếc
+                Carnival rộng rãi. Tài xế chạy điềm đạm, không phanh gấp."</p>
+            </div>
+          </div>
+
+          <div class="col-md-4 reveal-on-scroll delay-2 stagger-up">
+            <div class="feature-card text-start p-4 h-auto mb-4" style="background: rgba(0, 177, 79, 0.08) !important;">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="rounded-circle bg-dark d-flex justify-content-center align-items-center text-white fw-bold"
+                  style="width: 50px; height: 50px;">M</div>
+                <div>
+                  <h6 class="mb-0 fw-bold">Mai Phương</h6>
+                  <small class="text-muted">Chuyến: Sân bay Nội Bài</small>
+                </div>
+              </div>
+              <div class="text-warning mb-2 js-stars" data-rating="5">
+                <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i
+                  class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+              </div>
+              <p class="fst-italic">"Thích nhất là sự minh bạch. Hóa đơn cuối cùng báo rõ ràng tiền BOT và phà kèm biên
+                lai tài xế chụp. Không bị vòi vĩnh hay mập mờ như xe ngoài."</p>
+            </div>
+          </div>
+
+          <div class="col-md-4 reveal-on-scroll delay-3">
+            <div class="feature-card text-start p-4 h-auto mb-4">
+              <div class="d-flex align-items-center gap-3 mb-3">
+                <div class="rounded-circle d-flex justify-content-center align-items-center text-dark fw-bold"
+                  style="width: 50px; height: 50px; background: var(--color-3);">T</div>
+                <div>
+                  <h6 class="mb-0 fw-bold">Trần Hùng</h6>
+                  <small class="text-muted">Chuyến: Cần Thơ - Vũng Tàu</small>
+                </div>
+              </div>
+              <div class="text-warning mb-2 js-stars" data-rating="5">
+                <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i
+                  class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
+              </div>
+              <p class="fst-italic">"Hệ thống định vị GPS trên xe rất xịn. Người nhà mình ở nhà mở link web lên là thấy
+                xe đang chạy tới đâu, rất an tâm khi đi đêm."</p>
             </div>
           </div>
         </div>
+      </div>
+    </section>
 
+    <!-- GỘP CTA & PREMIUM REGISTER SỬ DỤNG LIQUID SWITCHER (BỐ CỤC 1 CỘT DỌC - ĐÃ FIX CANH GIỮA) -->
+    <section id="join-us-section" class="py-6 position-relative overflow-hidden"
+      style="background-color: #0b0f17; padding: 100px 0;">
+      <!-- Nền ánh sáng ngầm -->
+      <div class="luxury-glow-bg">
+        <div class="glow-sphere sphere-1"></div>
+        <div class="glow-sphere sphere-2"></div>
       </div>
 
-    </div>
-  </div>
-</section>
+      <!-- FIX: Dùng .container thay cho .container-base để hủy flex space-between -->
+      <div class="container position-relative z-3">
 
+        <!-- Ép thẻ cha căn giữa tuyệt đối theo trục dọc và ngang -->
+        <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 mx-auto">
 
-
-    </main>
-
-    <footer>
-      <div class="container reveal-on-scroll">
-        <div class="row g-4">
-          <div class="col-lg-4 pe-lg-5">
-            <img
-              src="assets/img/FleetFlow_-_Logo-removebg-preview.png"
-              alt="Logo"
-              style="height: 80px; margin-bottom: 20px; object-fit: contain"
-            />
-            <p>
-              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
-              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
-              liên tỉnh.
+          <!-- 1. TIÊU ĐỀ TRÊN CÙNG -->
+          <div class="reveal-on-scroll w-100">
+            <h2 class="luxury-title mb-3" style="font-size: 3rem;">
+              Đồng Hành Cùng <span class="text-gradient-gold">FleetFlow</span>
+            </h2>
+            <p class="luxury-description mb-4 mx-auto" style="max-width: 600px;">
+              Lựa chọn vai trò của bạn để khám phá những đặc quyền dành riêng.
             </p>
           </div>
-          <div class="col-lg-2 col-6">
-            <h5>Dịch Vụ</h5>
-            <ul>
-              <li><a href="pages/findCar.html">Đặt xe đường dài</a></li>
-              <li><a href="pages/findCar.html">Thuê xe sân bay</a></li>
-              <li><a href="pages/findCar.html">Tư vấn xe AI</a></li>
-            </ul>
+
+          <!-- 2. SWITCHER NẰM Ở GIỮA -->
+          <div class="sliding-tabs-container mb-5 reveal-on-scroll delay-1">
+            <div id="tabIndicator" class="tab-indicator"></div>
+            <button class="tab-pill active" onclick="switchRoleTab('customer', this)">Khách hàng</button>
+            <button class="tab-pill" onclick="switchRoleTab('driver', this)">Tài xế</button>
           </div>
-          <div class="col-lg-2 col-6">
-            <h5>Hỗ Trợ</h5>
-            <ul>
-              <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="pages/policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="pages/policy.html">Giải quyết khiếu nại</a></li>
-            </ul>
+
+          <!-- 3. THẺ FORM NẰM DƯỚI CÙNG -->
+          <div class="w-100 reveal-on-scroll delay-2" style="max-width: 900px; margin: 0 auto;">
+
+            <!-- NỘI DUNG 1: KHÁCH HÀNG -->
+            <div id="customer-content" class="tab-content-pane active">
+              <div class="luxury-register-card p-4 p-md-5 mx-auto">
+                <div class="row align-items-center g-5 text-center text-md-start">
+
+                  <!-- Chữ bên trong thẻ kính -->
+                  <div class="col-md-6">
+                    <span class="premium-tag mb-3 d-inline-block">FLEETFLOW MEMBERSHIP</span>
+                    <h2 class="luxury-title mb-3" style="font-size: 2rem;">
+                      Khởi Hành Khát Vọng,<br>Làm Chủ Tương Lai
+                    </h2>
+                    <p class="luxury-description mx-auto mx-md-0 mb-0" style="font-size: 0.95rem; line-height: 1.7;">
+                      Gia nhập hệ sinh thái di chuyển thông minh FleetFlow hôm nay. Một đặc quyền voucher cá nhân hóa sẽ
+                      được hệ thống AI tự động gửi tới email của bạn sau 30 ngày.
+                    </p>
+                  </div>
+
+                  <!-- Form đăng ký -->
+                  <div class="col-md-6">
+                    <div class="luxury-form-wrapper p-4 text-center h-100 d-flex flex-column justify-content-center">
+                      <h5 class="form-title mb-4">NHẬN VOUCHER ĐẶC QUYỀN</h5>
+                      <div class="form-floating mb-4 w-100">
+                        <input type="email" class="form-control luxury-input" id="premiumEmail"
+                          placeholder="name@example.com">
+                        <label for="premiumEmail" class="luxury-label">Địa chỉ Email của bạn</label>
+                      </div>
+                      <button class="btn-premium-gold w-100">
+                        <span class="fw-bold">ĐĂNG KÝ NGAY</span>
+                        <i class="fa-solid fa-arrow-right-long ms-2"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- NỘI DUNG 2: TÀI XẾ -->
+            <div id="driver-content" class="tab-content-pane">
+              <div class="luxury-register-card p-4 p-md-5 mx-auto">
+                <div class="text-center">
+                  <span class="premium-tag mb-3 d-inline-block"
+                    style="color: var(--color-1); border-color: var(--color-1); background: rgba(0, 177, 79, 0.1);">
+                    ĐỐI TÁC VẬN HÀNH
+                  </span>
+                  <h2 class="luxury-title mb-3" style="font-size: 2.2rem;">Gia Nhập Đội Ngũ<br>Tài Xế Phẩm Chất</h2>
+                  <p class="luxury-description mx-auto mb-5" style="max-width: 600px;">
+                    Thu nhập minh bạch, phân phối chuyến đi công bằng qua thuật toán Open Job. Hoàn tất hồ sơ eKYC để
+                    khởi hành cùng chúng tôi ngay hôm nay.
+                  </p>
+                  <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="pages/register.html" class="btn-hero"
+                      style="background-color: var(--color-1); color: white; border: none !important;">Đăng ký eKYC
+                      ngay</a>
+                    <a href="pages/policy.html" class="btn-cta-outline"
+                      style="border-color: rgba(255,255,255,0.3) !important;">Xem chính sách</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
-          <div class="col-lg-4">
-            <h5>Liên Hệ (Hotline)</h5>
-            <ul class="text-white-50">
-              <li class="mb-2">
-                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
-                (24/7)
-              </li>
-              <li class="mb-2">
-                <i class="fa-solid fa-envelope me-2 text-success"></i>
-                support@fleetflow.vn
-              </li>
-              <li>
-                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
-                University, Ho Chi Minh City
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+
         </div>
       </div>
-    </footer>
+    </section>
 
-    <aside class="floating-contact-buttons d-flex flex-column gap-3">
-      <a
-        href="#"
-        target="_blank"
-        class="social-icon-btn"
-        style="border: 2px solid #0068ff"
-        title="Chat Zalo"
-      >
-        <img
-          src="assets/img/zalo.png"
-          alt="Zalo"
-          style="width: 35px; height: 35px"
-        />
-      </a>
-      <a
-        href="#"
-        target="_blank"
-        class="social-icon-btn"
-        style="border: 2px solid #9d32fa"
-        title="Chat Messenger"
-      >
-        <img
-          src="assets/img/messenger.png"
-          alt="Messenger"
-          style="width: 35px; height: 35px"
-        />
-      </a>
-      <a
-        href="tel:1900xxxx"
-        class="social-icon-btn"
-        style="border: 2px solid var(--color-1)"
-        title="Gọi hotline"
-      >
-        <img
-          src="assets/img/calling.png"
-          alt="Phone"
-          style="width: 35px; height: 35px"
-        />
-      </a>
-    </aside>
 
-        <div class="login-modal-overlay" id="loginModal">
-          <div class="glass-login-container">
-            <button class="close-modal-btn" id="closeLoginModal">&times;</button>
-            
-            <div class="text-center mb-4">
-              <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
-              <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
-              <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
-            </div>
-            <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
-              <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
-              <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
-              <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
-                <a href="pages/forgotPassword.html" class="text-danger text-decoration-none" style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
-                  <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
-                </a>
-              </div>
-              <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
-            </form>
-            <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
-              <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
-              <a href="pages/register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
-            </div>
-          </div>
+
+  </main>
+
+  <footer>
+    <div class="container reveal-on-scroll">
+      <div class="row g-4">
+        <div class="col-lg-4 pe-lg-5">
+          <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="Logo"
+            style="height: 80px; margin-bottom: 20px; object-fit: contain" />
+          <p>
+            FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
+            minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
+            liên tỉnh.
+          </p>
         </div>
-    <script src="js/api.js"></script>
-    <script src="js/base.js"></script>
-    <script src="js/index.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    
+        <div class="col-lg-2 col-6">
+          <h5>Dịch Vụ</h5>
+          <ul>
+            <li><a href="pages/findCar.html">Đặt xe đường dài</a></li>
+            <li><a href="pages/findCar.html">Thuê xe sân bay</a></li>
+            <li><a href="pages/findCar.html">Tư vấn xe AI</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-6">
+          <h5>Hỗ Trợ</h5>
+          <ul>
+            <li><a href="#">Trung tâm trợ giúp</a></li>
+            <li><a href="pages/policy.html">Chính sách & Điều khoản</a></li>
+            <li><a href="pages/policy.html">Giải quyết khiếu nại</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h5>Liên Hệ (Hotline)</h5>
+          <ul class="text-white-50">
+            <li class="mb-2">
+              <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
+              (24/7)
+            </li>
+            <li class="mb-2">
+              <i class="fa-solid fa-envelope me-2 text-success"></i>
+              support@fleetflow.vn
+            </li>
+            <li>
+              <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
+              University, Ho Chi Minh City
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <aside class="floating-contact-buttons d-flex flex-column gap-3">
+    <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff" title="Chat Zalo">
+      <img src="assets/img/zalo.png" alt="Zalo" style="width: 35px; height: 35px" />
+    </a>
+    <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #9d32fa" title="Chat Messenger">
+      <img src="assets/img/messenger.png" alt="Messenger" style="width: 35px; height: 35px" />
+    </a>
+    <a href="tel:1900xxxx" class="social-icon-btn" style="border: 2px solid var(--color-1)" title="Gọi hotline">
+      <img src="assets/img/calling.png" alt="Phone" style="width: 35px; height: 35px" />
+    </a>
+  </aside>
+
+  <div class="login-modal-overlay" id="loginModal">
+    <div class="glass-login-container">
+      <button class="close-modal-btn" id="closeLoginModal">&times;</button>
+
+      <div class="text-center mb-4">
+        <img src="assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow"
+          style="height: 100px; object-fit: contain;">
+        <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
+        <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+      </div>
+      <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
+        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
+        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+        <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
+          <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
+            style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
+            <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
+          </a>
+        </div>
+        <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
+      </form>
+      <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+        <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
+        <a href="pages/register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
+      </div>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/base.js"></script>
+  <script src="js/index.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+
     // 5. Logic cho Liquid Switcher (Tài xế / Khách hàng)
     function switchRoleTab(role, buttonElement) {
-    // 1. Trượt cục kính đến đúng vị trí nút được bấm [cite: 18, 19, 21]
-    const indicator = document.getElementById('tabIndicator');
-    const leftPosition = buttonElement.offsetLeft;
-    const buttonWidth = buttonElement.offsetWidth; // Đo chiều dài chữ để co giãn [cite: 20]
-    
-    indicator.style.transform = `translateX(${leftPosition}px)`;
-    indicator.style.width = `${buttonWidth}px`; /* [cite: 22] */
+      // 1. Trượt cục kính đến đúng vị trí nút được bấm [cite: 18, 19, 21]
+      const indicator = document.getElementById('tabIndicator');
+      const leftPosition = buttonElement.offsetLeft;
+      const buttonWidth = buttonElement.offsetWidth; // Đo chiều dài chữ để co giãn [cite: 20]
 
-    // 2. Cập nhật trạng thái màu chữ của nút [cite: 17]
-    document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
-    buttonElement.classList.add('active');
+      indicator.style.transform = `translateX(${leftPosition}px)`;
+      indicator.style.width = `${buttonWidth}px`; /* [cite: 22] */
 
-    // 3. Hiển thị Content tương ứng [cite: 23]
-    document.querySelectorAll('.tab-content-pane').forEach(pane => {
+      // 2. Cập nhật trạng thái màu chữ của nút [cite: 17]
+      document.querySelectorAll('.tab-pill').forEach(btn => btn.classList.remove('active'));
+      buttonElement.classList.add('active');
+
+      // 3. Hiển thị Content tương ứng [cite: 23]
+      document.querySelectorAll('.tab-content-pane').forEach(pane => {
         pane.classList.remove('active');
-    });
-    document.getElementById(role + '-content').classList.add('active');
-}
+      });
+      document.getElementById(role + '-content').classList.add('active');
+    }
 
-// Chạy khởi tạo vị trí cục kính ngay khi load web (Định vị vào nút Khách hàng)
-document.addEventListener("DOMContentLoaded", function() {
-    const activeTab = document.querySelector('.tab-pill.active');
-    if (activeTab) {
+    // Chạy khởi tạo vị trí cục kính ngay khi load web (Định vị vào nút Khách hàng)
+    document.addEventListener("DOMContentLoaded", function () {
+      const activeTab = document.querySelector('.tab-pill.active');
+      if (activeTab) {
         const indicator = document.getElementById('tabIndicator');
         // Khởi tạo không cần hiệu ứng chạy (mượt mà từ đầu)
         indicator.style.transition = 'none';
         indicator.style.transform = `translateX(${activeTab.offsetLeft}px)`;
         indicator.style.width = `${activeTab.offsetWidth}px`;
-        
+
         // Trả lại hiệu ứng transition sau khi setup xong
         setTimeout(() => {
-            indicator.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2), width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+          indicator.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2), width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
         }, 50);
-    }
-});
-      // 3. Logic cho Testimonials (Animation Ngôi Sao)
+      }
+    });
+    // 3. Logic cho Testimonials (Animation Ngôi Sao)
     const starContainers = document.querySelectorAll('.js-stars');
-    
-    if (starContainers.length > 0) {
-        const starObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const container = entry.target;
-                    const stars = container.querySelectorAll('i');
-                    const rating = parseInt(container.getAttribute('data-rating')) || 5;
-                    
-                    // Lặp qua từng ngôi sao và đổi class kèm delay
-                    stars.forEach((star, index) => {
-                        if (index < rating) {
-                            setTimeout(() => {
-                                star.classList.remove('fa-regular');
-                                star.classList.add('fa-solid', 'star-fill-anim');
-                            }, index * 150); // Delay 150ms cho mỗi sao
-                        }
-                    });
-                    
-                    observer.unobserve(container);
-                }
-            });
-        }, { threshold: 0.5 });
 
-        starContainers.forEach(container => {
-            starObserver.observe(container);
+    if (starContainers.length > 0) {
+      const starObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const container = entry.target;
+            const stars = container.querySelectorAll('i');
+            const rating = parseInt(container.getAttribute('data-rating')) || 5;
+
+            // Lặp qua từng ngôi sao và đổi class kèm delay
+            stars.forEach((star, index) => {
+              if (index < rating) {
+                setTimeout(() => {
+                  star.classList.remove('fa-regular');
+                  star.classList.add('fa-solid', 'star-fill-anim');
+                }, index * 150); // Delay 150ms cho mỗi sao
+              }
+            });
+
+            observer.unobserve(container);
+          }
         });
+      }, { threshold: 0.5 });
+
+      starContainers.forEach(container => {
+        starObserver.observe(container);
+      });
     }
-    
-      document.addEventListener("DOMContentLoaded", function() {
-    
-    // 1. Logic cho hiệu ứng Reveal On Scroll (Kính lỏng hiện dần)
-    const observerOptions = {
+
+    document.addEventListener("DOMContentLoaded", function () {
+
+      // 1. Logic cho hiệu ứng Reveal On Scroll (Kính lỏng hiện dần)
+      const observerOptions = {
         root: null,
         rootMargin: '0px',
         threshold: 0.15
-    };
+      };
 
-    const observer = new IntersectionObserver((entries, observer) => {
+      const observer = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target); // Chỉ chạy 1 lần
-            }
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target); // Chỉ chạy 1 lần
+          }
         });
-    }, observerOptions);
+      }, observerOptions);
 
-    document.querySelectorAll('.reveal-on-scroll').forEach(element => {
+      document.querySelectorAll('.reveal-on-scroll').forEach(element => {
         observer.observe(element);
-    });
+      });
 
-    // 2. Logic cho AI Demo (Giả lập kịch bản chat)
-    // Sửa lại đoạn HTML AI Typing Indicator trong index.html để dùng class js-ai-typing
-    const userMessage = document.querySelector('.js-user-msg');
-    const aiTyping = document.querySelector('.js-ai-typing');
-    const aiResult = document.querySelector('.js-ai-result');
+      // 2. Logic cho AI Demo (Giả lập kịch bản chat)
+      // Sửa lại đoạn HTML AI Typing Indicator trong index.html để dùng class js-ai-typing
+      const userMessage = document.querySelector('.js-user-msg');
+      const aiTyping = document.querySelector('.js-ai-typing');
+      const aiResult = document.querySelector('.js-ai-result');
 
-    // Khởi tạo trạng thái ban đầu: Ẩn tin nhắn
-    if(userMessage && aiTyping && aiResult) {
+      // Khởi tạo trạng thái ban đầu: Ẩn tin nhắn
+      if (userMessage && aiTyping && aiResult) {
         userMessage.style.opacity = '0';
         userMessage.style.transform = 'translateY(20px)';
         userMessage.style.transition = 'all 0.6s ease';
 
         aiTyping.style.display = 'none';
-        
+
         aiResult.style.opacity = '0';
         aiResult.style.transform = 'translateY(20px)';
         aiResult.style.transition = 'all 0.6s ease';
@@ -777,39 +827,39 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Kích hoạt khi cuộn tới khu vực AI Demo
         const aiSectionObserver = new IntersectionObserver((entries) => {
-            if(entries[0].isIntersecting) {
-                
-                // Bước 1: Hiện câu hỏi của user
-                setTimeout(() => {
-                    userMessage.style.opacity = '1';
-                    userMessage.style.transform = 'translateY(0)';
-                }, 500);
+          if (entries[0].isIntersecting) {
 
-                // Bước 2: Hiện AI đang gõ (sau 1.5s)
-                setTimeout(() => {
-                    aiTyping.style.display = 'flex';
-                }, 1500);
+            // Bước 1: Hiện câu hỏi của user
+            setTimeout(() => {
+              userMessage.style.opacity = '1';
+              userMessage.style.transform = 'translateY(0)';
+            }, 500);
 
-                // Bước 3: Ẩn AI đang gõ và hiện kết quả (sau 4s)
-                setTimeout(() => {
-                    aiTyping.style.display = 'none';
-                    aiResult.style.display = 'flex';
-                    // Delay nhỏ để animation mượt hơn
-                    setTimeout(() => {
-                        aiResult.style.opacity = '1';
-                        aiResult.style.transform = 'translateY(0)';
-                    }, 50);
-                }, 4000);
+            // Bước 2: Hiện AI đang gõ (sau 1.5s)
+            setTimeout(() => {
+              aiTyping.style.display = 'flex';
+            }, 1500);
 
-                aiSectionObserver.disconnect();
-            }
+            // Bước 3: Ẩn AI đang gõ và hiện kết quả (sau 4s)
+            setTimeout(() => {
+              aiTyping.style.display = 'none';
+              aiResult.style.display = 'flex';
+              // Delay nhỏ để animation mượt hơn
+              setTimeout(() => {
+                aiResult.style.opacity = '1';
+                aiResult.style.transform = 'translateY(0)';
+              }, 50);
+            }, 4000);
+
+            aiSectionObserver.disconnect();
+          }
         }, { threshold: 0.5 });
 
         aiSectionObserver.observe(document.getElementById('ai-demo'));
-    }
-});
+      }
+    });
 
-// 4. Logic cho Liquid Glass Carousel (Cover Flow)
+    // 4. Logic cho Liquid Glass Carousel (Cover Flow)
     const flowCards = document.querySelectorAll('.car-flow-card');
     let currentFlowIndex = 1; // Mặc định để xe số 2 (Sedan Hạng D) ở giữa cho đẹp
 
@@ -827,9 +877,9 @@ document.addEventListener("DOMContentLoaded", function() {
           card.classList.add('prev');
         } else {
           if (index > currentFlowIndex) {
-             card.classList.add('hidden-right');
+            card.classList.add('hidden-right');
           } else {
-             card.classList.add('hidden-left');
+            card.classList.add('hidden-left');
           }
         }
       });
@@ -845,18 +895,73 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Khởi chạy khi load web
-    document.addEventListener("DOMContentLoaded", function() {
-        if(flowCards.length > 0) {
-            updateCarCarousel();
-        }
+    document.addEventListener("DOMContentLoaded", function () {
+      if (flowCards.length > 0) {
+        updateCarCarousel();
+      }
     });
 
-    
-    </script> 
 
-    <script src="js/service/app.js"></script>
+  </script>
+
+  <script src="js/service/app.js"></script>
 
 
 
-  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fullName = localStorage.getItem('fullName');
+      const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+      if (fullName) {
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+
+        const avatarImg = document.getElementById('navDesktopAvatar');
+        const nameSpan = document.getElementById('navDesktopName');
+        const roleSpan = document.getElementById('navDesktopRole');
+        if (avatarImg) avatarImg.src = avatarUrl;
+        if (nameSpan) nameSpan.innerText = fullName;
+        if (roleSpan) roleSpan.innerText = userRole;
+
+        // Chuyển đổi Navbar Menu
+        const guestDesktopMenu = document.getElementById('guestDesktopMenu');
+        const customerDesktopMenu = document.getElementById('customerDesktopMenu');
+        if (guestDesktopMenu) { guestDesktopMenu.classList.remove('d-flex'); guestDesktopMenu.classList.add('d-none'); }
+        if (customerDesktopMenu) { customerDesktopMenu.classList.remove('d-none'); customerDesktopMenu.classList.add('d-none', 'd-lg-flex'); } // Fix cho responsive lg
+
+        const guestMobileMenu = document.getElementById('guestMobileMenu');
+        const customerMobileMenu = document.getElementById('customerMobileMenu');
+        if (guestMobileMenu) { guestMobileMenu.classList.remove('d-flex'); guestMobileMenu.classList.add('d-none'); }
+        if (customerMobileMenu) { customerMobileMenu.classList.remove('d-none'); customerMobileMenu.classList.add('d-flex'); }
+
+        // Ẩn Nút Login
+        const loginBtns = document.querySelectorAll('#btnLogin');
+        loginBtns.forEach(btn => btn.classList.add('d-none'));
+
+        // Xóa class d-lg-flex d-flex cũ nếu cần
+        loginBtns.forEach(btn => {
+          btn.classList.remove('d-lg-flex');
+          btn.classList.remove('d-flex');
+        });
+
+        // Hiển thị User Dropdown
+        const userDropdown = document.getElementById('userProfileDropdown');
+        if (userDropdown) {
+          userDropdown.classList.remove('d-none');
+          userDropdown.classList.add('d-flex');
+        }
+      }
+    });
+
+    function handleLogout(e) {
+      e.preventDefault();
+      localStorage.removeItem('fullName');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('accountId');
+      localStorage.removeItem('token');
+      window.location.href = 'index.html';
+    }
+  </script>
+</body>
+
 </html>
