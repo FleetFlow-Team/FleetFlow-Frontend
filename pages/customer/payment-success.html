@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đang chuyển hướng...</title>
+</head>
+<body>
+    <h2>Đang xử lý kết quả thanh toán, vui lòng chờ...</h2>
+    <script>
+        // Phân tích query string trên URL để lấy resultCode
+        const urlParams = new URLSearchParams(window.location.search);
+        const resultCode = urlParams.get('resultCode');
+        
+        // Sử dụng đường dẫn tương đối vì file này đã nằm sẵn trên Frontend
+        const frontendUrl = "./checkout.html";
+        const frontendHistoryUrl = "./tripHistory.html";
+
+        if (resultCode && resultCode !== "0") {
+            // Thanh toán thất bại hoặc khách hàng hủy (resultCode != 0)
+            window.location.replace(`${frontendUrl}?paymentStatus=failed`);
+        } else {
+            // Thanh toán thành công (resultCode == 0)
+            window.location.replace(`${frontendHistoryUrl}?paymentStatus=success`);
+        }
+    </script>
+</body>
+</html>
