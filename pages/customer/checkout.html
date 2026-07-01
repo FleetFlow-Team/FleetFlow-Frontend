@@ -1622,6 +1622,24 @@
                             window.location.replace("tripHistory.html");
                         }
                     } else {
+                        // Gọi API để ghi nhận hóa đơn Cọc Tiền mặt vào Database
+                        const depositStr = localStorage.getItem('currentDepositAmount') || "0";
+                        const depositAmount = parseInt(depositStr.replace(/[^\d]/g, ''), 10);
+                        try {
+                            await fetch('http://localhost:8080/FleetFlow/api/v1/payments/momo/create', {
+                                method: 'POST',
+                                headers: headers,
+                                body: JSON.stringify({
+                                    bookingId: bookingId,
+                                    paymentType: 'DEPOSIT',
+                                    amount: depositAmount.toString(),
+                                    paymentMethod: 'CASH'
+                                })
+                            });
+                        } catch (e) {
+                            console.error("Lỗi lưu cọc tiền mặt:", e);
+                        }
+
                         // Thanh toán Tiền mặt (Chỉ đặt xe, không cần sinh link)
                         alert(`Đặt xe thành công!\nMã chuyến đi của bạn: #${bookingId}`);
                         clearCheckoutStorage();
