@@ -161,7 +161,87 @@ map.on('load', () => {
             'line-opacity': 0.8
         }
     });
+
+    // 🚀 TỰ ĐỘNG ĐỊNH VỊ GPS HIỆN TẠI LÀM ĐIỂM ĐÓN MẶC ĐỊNH
+    initUserLocationDefault();
 });
+
+// Hàm định vị GPS và tự động điền Điểm đón
+function initUserLocationDefault() {
+    const inputPickup = document.getElementById('inputPickup');
+    if (!inputPickup) return;
+
+    // Chỉ thực hiện định vị nếu ô điểm đón đang trống (chưa có dữ liệu cũ)
+    if (!inputPickup.value.trim() && navigator.geolocation) {
+        inputPickup.placeholder = "Đang định vị GPS điểm đón...";
+
+        navigator.geolocation.getCurrentPosition(
+            async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                try {
+                    // 1. Thử gọi API Reverse Geocoding của Vietmap
+                    let res = await fetch(`https://maps.vietmap.vn/api/reverse/v3?apikey=${VIETMAP_API_KEY}&lng=${lng}&lat=${lat}`);
+                    if (!res.ok) {
+                        // Fallback V2 nếu V3 không khả dụng
+                        res = await fetch(`https://maps.vietmap.vn/api/reverse/v2?apikey=${VIETMAP_API_KEY}&lng=${lng}&lat=${lat}`);
+                    }
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.length > 0 && data[0].display_name) {
+                            inputPickup.value = data[0].display_name;
+                        } else if (data && data[0] && data[0].name) {
+                            inputPickup.value = `${data[0].name}, ${data[0].address || ''}`.replace(/,\s*$/, '');
+                        } else {
+                            inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        }
+                    } else {
+                        // 2. Fallback sang OpenStreetMap Nominatim miễn phí nếu Vietmap Reverse từ chối
+                        const osmRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+                            headers: { 'Accept-Language': 'vi-VN,vi;q=0.9' }
+                        });
+                        if (osmRes.ok) {
+                            const osmData = await osmRes.json();
+                            inputPickup.value = osmData.display_name || `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        } else {
+                            inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                        }
+                    }
+                } catch (err) {
+                    console.warn("Lỗi khi chuyển đổi tọa độ GPS sang tên đường:", err);
+                    inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                } finally {
+                    inputPickup.placeholder = "Nhập điểm đón (Khách sạn, sân bay...)";
+                    // Di chuyển tâm bản đồ về vị trí khách hàng
+                    map.flyTo({
+                        center: [lng, lat],
+                        zoom: 15,
+                        speed: 1.2
+                    });
+                    // Cắm Marker điểm đón ban đầu
+                    if (currentPickupMarker) currentPickupMarker.remove();
+                    const elPickup = document.createElement('div');
+                    elPickup.className = 'map-marker-pickup';
+                    currentPickupMarker = new vietmapgl.Marker({ element: elPickup })
+                        .setLngLat([lng, lat])
+                        .addTo(map);
+
+                    // Nếu khách đã nhập sẵn điểm trả (từ trước), tự động tính lộ trình luôn
+                    const inputDropoff = document.getElementById('inputDropoff');
+                    if (inputDropoff && inputDropoff.value.trim() && typeof window.triggerMapCalculation === 'function') {
+                        window.triggerMapCalculation();
+                    }
+                }
+            },
+            (error) => {
+                console.warn("Khách hàng từ chối cấp quyền GPS hoặc lỗi định vị:", error.message);
+                inputPickup.placeholder = "Nhập điểm đón (Khách sạn, sân bay...)";
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        );
+    }
+}
 
 // ==========================================
 // 2. HÀM HỖ TRỢ (UTILITIES)
