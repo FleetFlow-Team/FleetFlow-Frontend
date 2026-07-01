@@ -65,8 +65,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // 7. Gọi API quét tín hiệu đơn hàng ngay khi mở Web lên (Hàm bạn đã viết ở bước trước)
     if (typeof fetchPendingJobs === "function") {
         fetchPendingJobs();
-        // 8. TỰ ĐỘNG KHÔI PHỤC CHUYẾN ĐI DANG DỞ (CHỐNG F5)
-
+    }
+    
+    // Tải thông báo khi mở trang
+    if (typeof loadDriverNotifications === "function") {
+        loadDriverNotifications();
     }
     // Lắng nghe sự kiện bật/tắt ô nhập "Lý do khác" của Modal Từ chối
     const rejectRadios = document.querySelectorAll('input[name="rejectReason"]');
@@ -141,6 +144,12 @@ window.switchTab = function (tabId, element) {
     if (targetSection) {
         targetSection.classList.add("active");
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    if (tabId === 'tab-history') {
+        if (typeof fetchDriverHistory === 'function') {
+            fetchDriverHistory();
+        }
     }
 };
 
@@ -898,6 +907,12 @@ function startGpsTracking(bookingId) {
                     if (response.ok) {
                         // Log ra console để bạn dễ debug, không hiển thị cho tài xế thấy
                         console.log(`[GPS - BK#${bookingId}] Đã gửi tọa độ thành công: ${lat}, ${lng}`);
+                    } else if (response.status === 400) {
+                        console.log("[GPS] Server từ chối cập nhật tọa độ (có thể chuyến đi đã kết thúc).");
+                        if (currentGpsInterval) {
+                            clearInterval(currentGpsInterval);
+                            currentGpsInterval = null;
+                        }
                     } else {
                         console.error("[GPS] Lỗi từ Server khi lưu tọa độ.");
                     }
@@ -993,7 +1008,7 @@ window.completeTrip = async function (btnElement, bookingId) {
                         cardWrapper.remove();
 
                         // Kiểm tra xem sau khi xóa, tab "Đã Nhận" có bị trống không
-                        const acceptedListContainer = document.getElementById("acceptedJobList");
+                        const acceptedListContainer = document.getElementById("jobList");
                         const remainingCards = acceptedListContainer.querySelectorAll('.broadcast-card-item');
 
                         // Nếu không còn cuốc xe nào, tự động trả về giao diện Trống (Empty State) nền nã
@@ -1010,8 +1025,7 @@ window.completeTrip = async function (btnElement, bookingId) {
             }
 
             // d. Hiển thị Popup Modal thông báo chúc mừng tài xế
-            const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
-            completeModal.show();
+            showDriverRatingModal(bookingId);
 
         } else {
             // [THẤT BẠI TỪ SERVER]
@@ -1028,3 +1042,226 @@ window.completeTrip = async function (btnElement, bookingId) {
         btnElement.disabled = false;
     }
 }
+
+// 13. LOAD THÔNG BÁO TÀI XẾ
+// ============================================================================
+async function loadDriverNotifications() {
+    const listEl = document.getElementById("notificationList");
+    if (!listEl) return;
+
+    listEl.innerHTML = '<li class="text-center py-3"><i class="fa-solid fa-spinner fa-spin text-white"></i></li>';
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_DISPATCH_BASE}/notifications`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+            const notis = result.notifications || [];
+            
+            // Tính số lượng thông báo chưa đọc
+            const unreadCount = notis.filter(n => n.isRead === false).length;
+            const badge = document.getElementById("notiCount");
+            if (badge) {
+                if (unreadCount > 0) {
+                    badge.innerText = unreadCount;
+                    badge.classList.remove('d-none');
+                } else {
+                    badge.classList.add('d-none');
+                }
+            }
+
+            if (notis.length === 0) {
+                listEl.innerHTML = `
+                    <li>
+                        <div class="dropdown-item-custom text-center text-white-50 py-4">
+                            Không có thông báo nào.
+                        </div>
+                    </li>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = '';
+            notis.forEach(n => {
+                const li = document.createElement("li");
+                
+                // Định dạng thời gian
+                let timeStr = n.createdAt;
+                try {
+                    const d = new Date(n.createdAt);
+                    timeStr = isNaN(d) ? n.createdAt : d.toLocaleString('vi-VN');
+                } catch(e) {}
+
+                // Hiệu ứng chưa đọc
+                const bgClass = n.isRead ? '' : 'bg-success bg-opacity-25';
+
+                li.innerHTML = `
+                    <div class="dropdown-item-custom border-bottom border-secondary p-3 ${bgClass}">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <strong class="text-white">${n.title || 'Thông báo'}</strong>
+                            <small class="text-info" style="font-size: 0.75rem">${timeStr}</small>
+                        </div>
+                        <div class="text-white-50 small" style="white-space: normal;">
+                            ${n.message || ''}
+                        </div>
+                    </div>
+                `;
+                listEl.appendChild(li);
+            });
+        } else {
+            listEl.innerHTML = `
+                <li>
+                    <div class="dropdown-item-custom text-center text-danger py-4">
+                        Lỗi tải thông báo: ${result.error || 'Unknown Error'}
+                    </div>
+                </li>
+            `;
+        }
+    } catch (error) {
+        listEl.innerHTML = `
+            <li>
+                <div class="dropdown-item-custom text-center text-danger py-4">
+                    Mất kết nối server
+                </div>
+            </li>
+        `;
+    }
+}
+// ============================================================================
+// 14. LỊCH SỬ CHUYẾN ĐI VÀ ĐÁNH GIÁ KHÁCH HÀNG
+// ============================================================================
+async function fetchDriverHistory(statusFilter = '') {
+    const historyListContainer = document.getElementById("driverHistoryList");
+    if (!historyListContainer) return;
+
+    historyListContainer.innerHTML = '<div class="w-100 text-center py-5"><div class="spinner-border text-primary"></div></div>';
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    try {
+        let url = `${API_DISPATCH_BASE}/history`;
+        if (statusFilter) url += `?status=${statusFilter}`;
+
+        const response = await fetch(url, { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            const trips = result.data || [];
+            if (trips.length === 0) {
+                historyListContainer.innerHTML = '<div class="text-center py-5 text-white-50">Chưa có chuyến đi nào.</div>';
+                return;
+            }
+
+            let html = '';
+            trips.forEach(trip => {
+                const badge = trip.bookingStatus === 'COMPLETED' ? '<span class="badge bg-success">Hoàn thành</span>' : '<span class="badge bg-danger">Đã hủy</span>';
+                const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
+                html += `
+                    <div class="col-md-6 mb-3">
+                        <div class="glass-panel p-3 border border-secondary rounded-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="fw-bold text-white fs-6">#BK-${trip.bookingId}</span>
+                                ${badge}
+                            </div>
+                            <div class="text-white-50 small mb-2"><i class="fa-regular fa-clock me-1"></i> ${trip.departureTime || trip.acceptedAt || 'N/A'}</div>
+                            <div class="text-white mb-2">
+                                <i class="fa-solid fa-location-dot text-primary me-2"></i> ${trip.pickupAddress || 'N/A'}
+                            </div>
+                            <div class="text-white mb-3">
+                                <i class="fa-solid fa-location-dot text-danger me-2"></i> ${trip.dropoffAddress || 'N/A'}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2">
+                                <span class="text-white-50 small">Cước phí</span>
+                                <span class="fw-bold text-success">${moneyStr}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            historyListContainer.innerHTML = html;
+        } else {
+            historyListContainer.innerHTML = `<div class="text-center py-4 text-danger">${result.error || 'Lỗi tải lịch sử.'}</div>`;
+        }
+    } catch (e) {
+        historyListContainer.innerHTML = '<div class="text-center py-4 text-danger">Lỗi kết nối.</div>';
+    }
+}
+
+let currentRatingBookingId = null;
+let currentRatingValue = 0;
+
+window.showDriverRatingModal = function(bookingId) {
+    currentRatingBookingId = bookingId;
+    currentRatingValue = 0;
+    document.getElementById("driverRatingComment").value = '';
+    document.querySelectorAll('#driverRatingModal .rating-star').forEach(s => s.classList.replace('fa-solid', 'fa-regular'));
+    
+    const ratingModal = new bootstrap.Modal(document.getElementById("driverRatingModal"));
+    ratingModal.show();
+}
+
+window.rateCustomer = function(star) {
+    currentRatingValue = star;
+    document.querySelectorAll('#driverRatingModal .rating-star').forEach((s, idx) => {
+        if (5 - idx <= star) {
+            s.classList.replace('fa-regular', 'fa-solid');
+            s.classList.add('text-warning');
+        } else {
+            s.classList.replace('fa-solid', 'fa-regular');
+            s.classList.remove('text-warning');
+        }
+    });
+}
+
+window.skipDriverRating = function() {
+    const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
+    if (modal) modal.hide();
+    
+    const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
+    completeModal.show();
+}
+
+window.submitDriverRating = async function() {
+    const selectedStar = document.querySelector('input[name="driverRateStars"]:checked');
+    const starValue = selectedStar ? parseInt(selectedStar.value) : 0;
+
+    if (!currentRatingBookingId || starValue === 0) {
+        alert("Vui lòng chọn số sao!");
+        return;
+    }
+
+    const token = localStorage.getItem("accessToken");
+    const comment = document.getElementById("driverRatingComment").value;
+    
+    document.getElementById("btnSubmitDriverRating").disabled = true;
+    document.getElementById("btnSubmitDriverRating").innerHTML = 'Đang gửi...';
+
+    try {
+        const res = await fetch('http://localhost:8080/FleetFlow/api/v1/ratings/driver', {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ bookingId: currentRatingBookingId, customerRating: starValue, comment: comment })
+        });
+        
+        const data = await res.json();
+        const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
+        if (modal) modal.hide();
+        
+        const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
+        completeModal.show();
+    } catch(e) {
+        alert("Lỗi kết nối!");
+    } finally {
+        document.getElementById("btnSubmitDriverRating").disabled = false;
+        document.getElementById("btnSubmitDriverRating").innerHTML = 'Gửi đánh giá';
+    }
+}
+

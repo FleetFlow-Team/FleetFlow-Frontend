@@ -25,6 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Cập nhật giao diện nếu đã đăng nhập
     if (fullName) {
+        if (!userRole || userRole.toUpperCase() !== 'DISPATCHER') {
+            window.location.replace('../../error/403.html');
+            return;
+        }
+
         const nameEl = document.querySelector('.profile-name');
         const roleEl = document.querySelector('.profile-role');
         const avatarImg = document.querySelector('.glass-avatar img');
@@ -108,6 +113,10 @@ async function approveBooking(bookingId, buttonElement) {
                 // Tùy chọn: Sau 3 giây tự động làm mới bảng PENDING để tải lại danh sách mới
                 setTimeout(() => {
                     loadBookings('PENDING', 'tbody-main');
+                    // GỌI THÊM API NOTIFICATION để bắt thông báo "Hệ thống tự động phân tài"
+                    if (typeof fetchDispatcherNotifications === 'function') {
+                        fetchDispatcherNotifications();
+                    }
                 }, 3000);
             }
         } else {
@@ -313,10 +322,10 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
         let actionButtons = '';
 
         if (b.status === 'PENDING') {
-            badge = `<span class="glass-badge bg-secondary text-white">Chờ duyệt</span>`;
+            badge = `<span class="glass-badge bg-secondary text-white">Chờ xử lý</span>`;
             actionButtons = `
                 <button class="btn-glass-action btn-glass-approve fw-bold w-100 mb-2" onclick="approveBooking(${b.bookingId}, this)">
-                    <i class="fa-solid fa-check me-1"></i> Duyệt
+                    <i class="fa-solid fa-check me-1"></i> Chấp nhận
                 </button>
                 <button class="btn-glass-action btn-glass-reject fw-bold w-100" onclick="rejectBooking(${b.bookingId}, this)">
                     <i class="fa-solid fa-xmark me-1"></i> Từ chối
@@ -340,7 +349,12 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             actionButtons = `<span class="text-danger fw-bold"><i class="fa-solid fa-xmark"></i> Đã hủy bỏ</span>`;
         } else if (b.status === 'DISPATCHED') {
             badge = `<span class="glass-badge bg-primary text-white"><i class="fa-solid fa-car-side me-1"></i> Đã phân tài</span>`;
-            actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+            if (b.driverName) {
+                actionButtons = `<div class="text-success fw-bold" style="font-size: 0.9rem;"><i class="fa-solid fa-check-circle me-1"></i> TX: ${b.driverName}</div>
+                                 <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> ${b.driverPhone || ''}</div>`;
+            } else {
+                actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+            }
         } else if (b.status === 'APPROVED') {
             badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
             actionButtons = `<span class="text-primary fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Tự động tìm TX</span>`;
@@ -444,8 +458,11 @@ window.executeDispatch = async function () {
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
 
-            // Làm mới bảng danh sách
+            // Cập nhật lại Bảng & kích hoạt lại Notifications API để bắt thông báo Phân tài xế
             loadBookings('UNASSIGNED', 'tbody-main');
+            if (typeof fetchDispatcherNotifications === 'function') {
+                fetchDispatcherNotifications();
+            }
         } else {
             showSystemToast(result.error || result.message || "Hệ thống từ chối phân tài!", "error");
         }
@@ -594,36 +611,30 @@ function updateMapMarkers(ongoingTrips) {
         const recordedTime = new Date(trip.recordedAt);
         const timeString = recordedTime.toLocaleTimeString('vi-VN');
 
-        const popupHtml = `
-            <div style="padding: 5px; text-align: center; font-family: 'Inter', sans-serif;">
+        const tooltipHtml = `
+            <div class="live-marker-tooltip">
                 <h6 class="fw-bold mb-1 text-primary">Chuyến #${bId}</h6>
-                <div class="small fw-medium mb-1"><i class="fa-solid fa-car-side text-secondary"></i> ID Xe: ${trip.vehicleId || 'N/A'}</div>
-                <div class="text-success small fw-bold" style="font-size: 0.75rem;">
-                    <i class="fa-solid fa-satellite-dish live-pulse"></i> ${timeString}
+                <div class="text-success small fw-bold mt-1" style="font-size: 0.75rem;">
+                    <i class="fa-solid fa-satellite-dish"></i> Cập nhật lúc ${timeString}
                 </div>
             </div>
         `;
 
         if (activeMarkers[bId]) {
-            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ mới
+            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới
             activeMarkers[bId].setLngLat([lng, lat]);
-            activeMarkers[bId].getPopup().setHTML(popupHtml);
+            const markerEl = activeMarkers[bId].getElement();
+            if (markerEl) {
+                markerEl.innerHTML = tooltipHtml;
+            }
         } else {
-            // NẾU LÀ XE MỚI -> Tạo Marker mới
-            const popup = new vietmapgl.Popup({ offset: 25, closeButton: false }).setHTML(popupHtml);
-
+            // NẾU LÀ XE MỚI -> Tạo Marker mới (Chấm xanh hiệu ứng)
             const el = document.createElement('div');
-            el.className = 'live-car-marker';
-            // Styling cứng luôn cho chắc chắn (Phòng trường hợp thiếu CSS)
-            el.innerHTML = `
-                <div style="background: white; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 2px solid #00B14F;">
-                    <i class="fa-solid fa-car-side" style="color: #00B14F; font-size: 16px;"></i>
-                </div>
-            `;
+            el.className = 'live-pulse-dot';
+            el.innerHTML = tooltipHtml;
 
             const newMarker = new vietmapgl.Marker(el)
                 .setLngLat([lng, lat])
-                .setPopup(popup)
                 .addTo(dispatcherMap);
 
             activeMarkers[bId] = newMarker;
@@ -759,4 +770,332 @@ document.addEventListener('DOMContentLoaded', () => {
             loadComplaints();
         });
     }
+});
+
+// ==========================================
+// 10. NOTIFICATION MODULE (Tích hợp API thực tế)
+// ==========================================
+
+const DISPATCHER_NOTIFICATION_API_URL = `${DISPATCHER_API_BASE}/dispatcher/notifications`;
+let knownNotificationIds = new Set();
+let isFirstFetchNoti = true;
+
+// Gọi API lấy danh sách notification
+async function fetchDispatcherNotifications() {
+    try {
+        const response = await fetch(DISPATCHER_NOTIFICATION_API_URL, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success && result.data) {
+            renderNotifications(result.data);
+        }
+    } catch (error) {
+        console.error("Lỗi khi fetch notifications:", error);
+    }
+}
+
+// Render notification vào UI (Dropdown & Toast)
+function renderNotifications(notifications) {
+    const listEl = document.getElementById('notificationList');
+    const countEl = document.getElementById('notiCount');
+
+    if (!listEl) return;
+
+    // 1. Tính tổng chưa đọc (API trả về boolean IsRead)
+    const unreadCount = notifications.filter(n => n.IsRead === false).length;
+
+    // 2. Cập nhật con số trên quả chuông (Badge)
+    if (countEl) {
+        if (unreadCount > 0) {
+            countEl.textContent = unreadCount > 99 ? '99+' : unreadCount;
+            countEl.style.display = 'flex'; // Hiện
+        } else {
+            countEl.style.display = 'none'; // Ẩn
+        }
+    }
+
+    // 3. Hiển thị Toast Popup cho thông báo MỚI (bỏ qua lần fetch mồi đầu tiên)
+    if (!isFirstFetchNoti) {
+        notifications.forEach(noti => {
+            if (noti.IsRead === false && noti.NotificationID && !knownNotificationIds.has(noti.NotificationID)) {
+                if (typeof showSystemToast === 'function') {
+                    // Nổ popup nhỏ xíu ở góc màn hình
+                    showSystemToast(`[${noti.Title}] ${noti.Message}`, "info");
+                }
+            }
+        });
+    }
+
+    // 4. Cập nhật bộ nhớ đệm chống spam Toast
+    notifications.forEach(noti => {
+        if (noti.NotificationID) knownNotificationIds.add(noti.NotificationID);
+    });
+    isFirstFetchNoti = false;
+
+    // 5. Render danh sách vào Dropdown
+    if (notifications.length === 0) {
+        listEl.innerHTML = '<div class="text-center p-4 text-muted">Chưa có thông báo nào.</div>';
+        return;
+    }
+
+    let html = '';
+    notifications.forEach(noti => {
+        const isUnread = noti.IsRead === false;
+
+        // Xử lý Ngày Giờ ("Jun 30, 2026 10:49:51 AM")
+        let formattedTime = noti.CreatedAt;
+        try {
+            const date = new Date(noti.CreatedAt);
+            if (!isNaN(date.getTime())) {
+                formattedTime = date.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
+            }
+        } catch (e) { }
+
+        // Diễn giải trường "Type" thành Icon và Màu sắc Badge
+        let typeText = 'Hệ Thống';
+        let typeBadgeClass = 'bg-secondary';
+        let typeIconColor = 'text-secondary';
+        let iconClass = 'fa-bell';
+
+        if (noti.Type === 'BOOKING_DRIVER_ASSIGNED') {
+            typeText = 'Phân Tài';
+            typeBadgeClass = 'bg-primary';
+            typeIconColor = 'text-primary';
+            iconClass = 'fa-car-side';
+        } else if (noti.Type === 'NEW_BOOKING') {
+            typeText = 'Đơn Mới';
+            typeBadgeClass = 'bg-warning';
+            typeIconColor = 'text-warning';
+            iconClass = 'fa-file-invoice-dollar';
+        } else if (noti.Type === 'BOOKING_DRIVER_ACCEPTED') {
+            typeText = 'Tài xế Nhận';
+            typeBadgeClass = 'bg-success';
+            typeIconColor = 'text-success';
+            iconClass = 'fa-circle-check';
+        } else if (noti.Type === 'BOOKING_DRIVER_REJECTED') {
+            typeText = 'Tài xế Hủy';
+            typeBadgeClass = 'bg-danger';
+            typeIconColor = 'text-danger';
+            iconClass = 'fa-circle-xmark';
+        }
+
+        // Tình trạng Chưa đọc / Đã đọc
+        const readStatusHtml = isUnread
+            ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
+            : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
+
+        html += `
+            <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="markNotificationAsRead(${noti.NotificationID}, this)">
+                <div class="notification-icon-wrapper ${typeIconColor}">
+                    <i class="fa-solid ${iconClass}"></i>
+                </div>
+                <div class="notification-content" style="flex-grow: 1;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge ${typeBadgeClass} bg-opacity-25 text-dark border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
+                        ${readStatusHtml}
+                    </div>
+                    <h6 class="fw-bold text-dark mt-2 mb-1" style="font-size: 0.95rem;">${noti.Title}</h6>
+                    <p class="text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">${noti.Message}</p>
+                    <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                        <i class="fa-regular fa-clock me-1"></i> ${formattedTime}
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+
+    listEl.innerHTML = html;
+}
+
+// 6. Gửi API Đánh dấu đã đọc khi Dispatcher click vào thông báo
+async function markNotificationAsRead(id, element) {
+    // Nếu element đã nhạt màu (đã đọc rồi) thì ko gọi API thừa nữa
+    if (element && !element.classList.contains('unread')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${DISPATCHER_NOTIFICATION_API_URL}/${id}/read`, {
+            method: 'POST',
+            headers: postAuthHeader()
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            // Thay đổi giao diện tức thì (Client-side prediction) để mượt mà
+            if (element) {
+                element.classList.remove('unread');
+                const readBadge = element.querySelector('.badge.bg-danger.bg-opacity-10');
+                if (readBadge) {
+                    readBadge.className = 'badge bg-success bg-opacity-10 text-success border border-success border-opacity-25';
+                    readBadge.textContent = 'Đã đọc';
+                }
+            }
+            // Background fetch lại để đồng bộ tổng số đếm trên quả chuông
+            fetchDispatcherNotifications();
+        }
+    } catch (error) {
+        console.error("Lỗi đánh dấu notification:", error);
+    }
+}
+
+// Khởi chạy khi tải trang
+document.addEventListener('DOMContentLoaded', () => {
+    // Lần đầu tải mồi
+    fetchDispatcherNotifications();
+    // Vòng lặp lấy thông báo (Polling) mỗi 5 giây
+    setInterval(fetchDispatcherNotifications, 5000);
+});
+
+// ==========================================
+// 12. TÍCH HỢP HỆ THỐNG KHIẾU NẠI & TRANH CHẤP
+// ==========================================
+
+// --- TẢI DANH SÁCH KHIẾU NẠI (GET) ---
+async function loadComplaints() {
+    const tbody = document.getElementById('complaintsListBody');
+    if (!tbody) return;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints`, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            tbody.innerHTML = '';
+
+            if (!result.data || result.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-white-50 py-4"><i class="fa-regular fa-face-smile me-2"></i>Hiện không có khiếu nại nào cần xử lý</td></tr>`;
+                return;
+            }
+
+            result.data.forEach(c => {
+                let displayContent = c.Content || '';
+                let typeBadge = '';
+
+                if (c.ComplaintType === 'LOST_LUGGAGE') {
+                    typeBadge = `<span class="badge bg-warning text-dark mb-1">Thất lạc hành lý</span><br>`;
+                    displayContent = `<strong>Tuyến:</strong> ${c.FromLocation || '?'} <i class="fa-solid fa-arrow-right mx-1"></i> ${c.ToLocation || '?'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
+                } else if (c.ComplaintType === 'SERVICE_FEEDBACK') {
+                    typeBadge = `<span class="badge bg-primary mb-1">Thái độ phục vụ</span><br>`;
+                    displayContent = `<strong>Vấn đề:</strong> ${c.IssueType || 'Khác'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
+                } else {
+                    typeBadge = `<span class="badge bg-secondary mb-1">Vấn đề khác</span><br>`;
+                }
+
+                let statusHtml = '';
+                let actionBtn = '';
+                if (c.Status === 'PENDING') {
+                    statusHtml = `<span class="glass-badge bg-warning text-dark"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
+                    actionBtn = `<button class="btn btn-sm btn-outline-light rounded-pill" onclick="openResolveModal(${c.ComplaintID})"><i class="fa-solid fa-gavel me-1"></i> Giải quyết</button>`;
+                } else {
+                    statusHtml = `<span class="glass-badge bg-success text-white"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
+                    actionBtn = `<span class="text-success small fw-bold"><i class="fa-solid fa-check"></i> Hoàn tất</span>`;
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="fw-bold">#${c.ComplaintID}</td>
+                    <td><span class="text-info fw-bold">${c.BookingID ? '#' + c.BookingID : 'N/A'}</span></td>
+                    <td>
+                        <div class="fw-bold text-white">${c.FullName}</div>
+                        <div class="text-white-50 small"><i class="fa-solid fa-phone me-1"></i>${c.Phone}</div>
+                    </td>
+                    <td style="font-size: 0.85rem;">
+                        ${typeBadge}
+                        <div class="text-white-50">${displayContent}</div>
+                    </td>
+                    <td>${statusHtml}</td>
+                    <td>${actionBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi tải dữ liệu: ${result.message}</td></tr>`;
+        }
+    } catch (error) {
+        console.error("Lỗi tải khiếu nại:", error);
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi kết nối máy chủ!</td></tr>`;
+    }
+}
+
+// --- XỬ LÝ MỞ / ĐÓNG MODAL RESOLVE ---
+let currentResolvingComplaintId = null;
+
+function openResolveModal(complaintId) {
+    currentResolvingComplaintId = complaintId;
+    document.getElementById('complaintResolutionInput').value = '';
+
+    const errorMsg = document.getElementById('complaintResolutionError');
+    if (errorMsg) errorMsg.classList.add('d-none');
+
+    document.getElementById('resolveComplaintModal').style.display = 'flex';
+}
+
+function closeResolveModal() {
+    currentResolvingComplaintId = null;
+    document.getElementById('resolveComplaintModal').style.display = 'none';
+}
+
+// --- THỰC THI RESOLVE (PUT API) ---
+async function executeResolveComplaint() {
+    if (!currentResolvingComplaintId) return;
+
+    const resolutionInput = document.getElementById('complaintResolutionInput').value.trim();
+    const errorMsg = document.getElementById('complaintResolutionError');
+
+    if (!resolutionInput) {
+        if (errorMsg) errorMsg.classList.remove('d-none');
+        return;
+    }
+    if (errorMsg) errorMsg.classList.add('d-none');
+
+    const btnSubmit = document.getElementById('btnSubmitResolution');
+    const originalText = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
+    btnSubmit.disabled = true;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentResolvingComplaintId}/resolve`, {
+            method: 'PUT',
+            headers: postAuthHeader(),
+            body: JSON.stringify({ resolution: resolutionInput })
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            closeResolveModal();
+            if (typeof showSystemToast === 'function') {
+                showSystemToast("Đã đóng khiếu nại thành công!", "success");
+            }
+            loadComplaints(); // Tải lại bảng sau khi thành công
+        } else {
+            alert("Lỗi: " + (result.message || "Không thể giải quyết khiếu nại"));
+        }
+    } catch (error) {
+        console.error("Lỗi resolve khiếu nại:", error);
+        alert("Lỗi kết nối máy chủ!");
+    } finally {
+        btnSubmit.innerHTML = originalText;
+        btnSubmit.disabled = false;
+    }
+}
+
+// Tự động tải danh sách khiếu nại khi Dispatcher chuyển sang tab Khiếu nại
+document.addEventListener("DOMContentLoaded", function () {
+    const disputeTabLink = document.querySelector('a[href="#disputes"]');
+    if (disputeTabLink) {
+        disputeTabLink.addEventListener('click', function () {
+            loadComplaints();
+        });
+    }
+    // Nạp sẵn một lần lúc mới load trang
+    loadComplaints();
 });

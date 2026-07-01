@@ -37,6 +37,195 @@
                 transform: scale(1);
             }
         }
+
+        .live-pulse-dot {
+            width: 20px;
+            height: 20px;
+            background-color: #00B14F;
+            border-radius: 50%;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 177, 79, 0.5);
+        }
+
+        .live-pulse-dot::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background-color: #00B14F;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes ping {
+
+            75%,
+            100% {
+                transform: scale(2.5);
+                opacity: 0;
+            }
+        }
+
+        .live-marker-tooltip {
+            visibility: hidden;
+            opacity: 0;
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            text-align: center;
+            border-radius: 8px;
+            padding: 10px 15px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 150%;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.2s, visibility 0.2s;
+            min-width: 140px;
+            font-family: 'Inter', sans-serif;
+            pointer-events: none;
+        }
+
+        .live-marker-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
+        }
+
+        .live-pulse-dot:hover .live-marker-tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* --- NOTIFICATION DROPDOWN STYLES --- */
+        .notification-dropdown {
+            width: 420px;
+            border-radius: 20px;
+            padding: 0;
+            background: rgb(255, 255, 255);
+            /* Trắng đục hơn */
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15), inset 2px 2px 8px rgba(255, 255, 255, 0.8);
+            z-index: 1050 !important;
+            overflow: hidden;
+        }
+
+        .notification-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .notification-item {
+            padding: 15px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 15px;
+        }
+
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.6);
+            transform: translateX(5px);
+        }
+
+        .notification-item.unread {
+            background: rgba(0, 177, 79, 0.1);
+        }
+
+        .notification-item.unread:hover {
+            background: rgba(0, 177, 79, 0.2);
+        }
+
+        .notification-icon-wrapper {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 2px 2px 5px rgba(255, 255, 255, 1), 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+
+        .notification-content h6 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+            color: #333;
+        }
+
+        .notification-content p {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: #999;
+        }
+
+        /* --- HIỆU ỨNG HOVER MỞ BẢNG THÔNG BÁO (ĐÃ FIX LỖI LẬT NGƯỢC) --- */
+        .notification-glass.dropdown {
+            position: relative;
+            /* Gốc tọa độ */
+        }
+
+        /* Cầu nối trong suốt để khi rê chuột từ chuông xuống menu không bị mất hover */
+        .notification-glass.dropdown::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            z-index: 1060;
+        }
+
+        /* Ép vị trí tuyệt đối, chống lại cơ chế lật tự động của Bootstrap Popper */
+        .notification-glass.dropdown .dropdown-menu {
+            display: none !important;
+            /* Ẩn mặc định */
+            position: absolute !important;
+            top: calc(100% + 15px) !important;
+            /* Luôn nằm dưới quả chuông 15px */
+            right: 0 !important;
+            left: auto !important;
+            transform: none !important;
+            /* Tắt Popper.js transform */
+            transition: opacity 0.3s ease-in-out;
+            margin: 0 !important;
+        }
+
+        .notification-glass.dropdown:hover .dropdown-menu {
+            display: block !important;
+            animation: fadeInDrop 0.3s ease forwards;
+        }
+
+        @keyframes fadeInDrop {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 
 </head>
@@ -68,7 +257,7 @@
             <feDisplacementMap in="SourceGraphic" in2="blur" scale="30" xChannelSelector="R" yChannelSelector="G" />
         </filter>
     </svg>
-    <header>
+    <header style="position: relative; z-index: 1050;">
         <nav class="navbar dispatcher-navbar transition-all">
             <div class="container-fluid px-4 h-100 position-relative d-flex justify-content-between align-items-center">
 
@@ -83,9 +272,21 @@
                     <span class="text-warning mx-1">•</span>
                 </div>
                 <div class="d-flex align-items-center gap-4 ms-auto">
-                    <div class="notification-glass position-relative" title="Thông báo">
-                        <i class="fa-regular fa-bell text-white fs-5"></i>
-                        <span class="notification-badge" id="notiCount">3</span>
+                    <div class="notification-glass position-relative dropdown" title="Thông báo">
+                        <a href="#" class="text-decoration-none d-flex align-items-center" data-bs-toggle="dropdown"
+                            aria-expanded="false" id="notificationDropdown">
+                            <i class="fa-regular fa-bell text-white fs-5"></i>
+                            <span class="notification-badge" id="notiCount" style="display: none;">0</span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg notification-dropdown"
+                            aria-labelledby="notificationDropdown">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="m-0 fw-bold text-dark">Thông báo</h6>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="text-center p-4 text-muted">Đang tải...</div>
+                            </div>
+                        </div>
                     </div>
 
 
@@ -192,7 +393,8 @@
                                     <ul class="list-unstyled mb-0">
                                         <li class="text-white-50 small mb-2"><i
                                                 class="fa-solid fa-circle-exclamation text-danger me-2"></i> Chuyến đi
-                                            <strong>#TR-8080</strong> bị đóng băng do tài xế đi muộn.</li>
+                                            <strong>#TR-8080</strong> bị đóng băng do tài xế đi muộn.
+                                        </li>
                                         <li class="text-white-50 small"><i
                                                 class="fa-solid fa-circle-exclamation text-warning me-2"></i> Yêu cầu
                                             Phân tài cho chuyến <strong>#TR-8091</strong> đang quá hạn phản hồi.</li>
@@ -240,7 +442,7 @@
                             <div class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2">
                                 <button class="btn btn-glass-tab active"
                                     onclick="loadBookings('PENDING', 'tbody-main')">
-                                    Chờ duyệt <span class="badge bg-success rounded-pill ms-1"
+                                    Chờ Xử Lý<span class="badge bg-success rounded-pill ms-1"
                                         id="count-pending">0</span>
                                 </button>
                                 <button class="btn btn-glass-tab" onclick="loadBookings('UNASSIGNED', 'tbody-main')">
@@ -362,9 +564,9 @@
         </nav>
 
         <div class="toast-container position-fixed bottom-0 end-0 p-4" style="z-index: 9999;">
-            <div id="systemErrorToast" class="toast align-items-center text-white bg-dark border-0 glass-panel"
-                role="alert" aria-live="assertive" aria-atomic="true"
-                style="border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+            <div id="systemErrorToast" class="toast align-items-center border-0" role="alert" aria-live="assertive"
+                aria-atomic="true"
+                style="border-radius: 20px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.9); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15), inset 2px 2px 8px rgba(255, 255, 255, 0.8); color: #222;">
                 <div class="d-flex p-2">
                     <div class="toast-body d-flex align-items-center fw-medium" style="font-size: 0.95rem;">
                         <i class="fa-solid fa-circle-check me-2 fs-5 text-success"></i>
@@ -388,9 +590,10 @@
                         khiếu nại này.</p>
                 </div>
 
-                <textarea id="complaintResolutionInput" class="form-control glass-input-field mb-2 text-white" rows="3"
+                <textarea id="complaintResolutionInput"
+                    class="form-control glass-input-field mb-2 text-white text-center" rows="3"
                     placeholder="Cách giải quyết..."
-                    style="background: rgba(255,255,255,0.1); border-radius: 15px !important;"></textarea>
+                    style="background: rgba(255,255,255,0.1); border-radius: 15px !important; text-align: center; padding-top: 20px;"></textarea>
                 <div id="complaintResolutionError" class="text-danger small text-start d-none mb-3"><i
                         class="fa-solid fa-triangle-exclamation me-1"></i> Vui lòng nhập hướng xử lý</div>
 

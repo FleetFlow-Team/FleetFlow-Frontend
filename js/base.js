@@ -1,11 +1,11 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // =========================================
     // 1. HIỆU ỨNG REVEAL ON SCROLL
     // =========================================
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.15 
+        threshold: 0.15
     };
 
     const observer = new IntersectionObserver((entries, observer) => {
@@ -36,20 +36,20 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Logic cho Mobile Dropdown Glass Menu
     const mobileBtn = document.getElementById('mobileToggleBtn');
     const mobileDropdown = document.getElementById('mobileDropdown');
 
     if (mobileBtn && mobileDropdown) {
-        mobileBtn.addEventListener('click', function(e) {
+        mobileBtn.addEventListener('click', function (e) {
             e.stopPropagation(); // Ngăn sự kiện click lan ra ngoài
             this.classList.toggle('active');
             mobileDropdown.classList.toggle('show');
         });
 
         // Click ra ngoài màn hình sẽ tự động đóng menu
-        document.addEventListener('click', function(event) {
+        document.addEventListener('click', function (event) {
             if (!mobileDropdown.contains(event.target) && !mobileBtn.contains(event.target)) {
                 mobileDropdown.classList.remove('show');
                 mobileBtn.classList.remove('active');
@@ -66,18 +66,18 @@ const loginModal = document.getElementById('loginModal');
 const closeLoginModal = document.getElementById('closeLoginModal');
 
 if (btnLogins.length > 0 && loginModal && closeLoginModal) {
-    
+
     // Gắn sự kiện click cho từng nút đăng nhập (cả Desktop lẫn Mobile)
     btnLogins.forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault(); 
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
             loginModal.classList.add('active');
-            document.body.style.overflow = 'hidden'; 
-            
+            document.body.style.overflow = 'hidden';
+
             // UX Tinh tế: Tự động đóng dropdown mobile nếu nó đang mở
             const mobileDropdown = document.getElementById('mobileDropdown');
             const mobileBtn = document.getElementById('mobileToggleBtn');
-            if(mobileDropdown && mobileDropdown.classList.contains('show')) {
+            if (mobileDropdown && mobileDropdown.classList.contains('show')) {
                 mobileDropdown.classList.remove('show');
                 mobileBtn.classList.remove('active');
             }
@@ -85,13 +85,13 @@ if (btnLogins.length > 0 && loginModal && closeLoginModal) {
     });
 
     // Đóng Modal khi bấm nút X
-    closeLoginModal.addEventListener('click', function() {
+    closeLoginModal.addEventListener('click', function () {
         loginModal.classList.remove('active');
-        document.body.style.overflow = ''; 
+        document.body.style.overflow = '';
     });
 
     // Đóng Modal khi bấm ra vùng tối bên ngoài
-    loginModal.addEventListener('click', function(e) {
+    loginModal.addEventListener('click', function (e) {
         if (e.target === loginModal) {
             loginModal.classList.remove('active');
             document.body.style.overflow = '';
@@ -99,7 +99,7 @@ if (btnLogins.length > 0 && loginModal && closeLoginModal) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // Luôn gọi hàm khởi tạo trạng thái tài khoản khi tải trang
     initUserProfile();
 });
@@ -113,16 +113,16 @@ function initUserProfile() {
     if (!accessToken || !fullName) return;
 
     const avatarName = encodeURIComponent(fullName);
-    
+
     // TỰ ĐỘNG GIẢI QUYẾT ĐƯỜNG DẪN DỰA TRÊN VỊ TRÍ FILE HIỆN TẠI
     const currentPath = window.location.pathname.toLowerCase();
     let profileUrl = 'pages/profile.html';
     let indexUrl = 'index.html';
     let driverWorkspaceUrl = 'pages/driver/driver-workspace.html'; // Thêm biến đường dẫn cho Driver
 
-    if (currentPath.includes('/pages/customer/') || 
-        currentPath.includes('/pages/driver/') || 
-        currentPath.includes('/pages/admin/') || 
+    if (currentPath.includes('/pages/customer/') ||
+        currentPath.includes('/pages/driver/') ||
+        currentPath.includes('/pages/admin/') ||
         currentPath.includes('/pages/dispatcher/')) {
         profileUrl = '../profile.html';
         indexUrl = '../../index.html';
@@ -140,7 +140,7 @@ function initUserProfile() {
     let workspaceLinkHtml = ''; // Biến chứa HTML của nút Chế độ Tài xế
 
     if (upperRole === 'DRIVER' || upperRole === 'TÀI XẾ') {
-        
+
         // Tạo nút bấm vào Workspace (Chỉ khi là tài xế)
         workspaceLinkHtml = `
             <a href="${driverWorkspaceUrl}" class="dropdown-item-custom text-success">
@@ -199,7 +199,7 @@ function initUserProfile() {
         if (oldBtn) {
             const btnProfile = oldBtn.cloneNode(false);
             oldBtn.parentNode.replaceChild(btnProfile, oldBtn);
-            
+
             btnProfile.id = target.id;
             btnProfile.className = oldBtn.className;
             btnProfile.classList.remove('btn-login');
@@ -219,8 +219,8 @@ function initUserProfile() {
                 logoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    localStorage.clear(); 
-                    window.location.href = indexUrl; 
+                    localStorage.clear();
+                    window.location.href = indexUrl;
                 });
             }
         }
@@ -256,26 +256,26 @@ async function handleLogin(event) {
         const data = await response.json();
 
         // Xử lý phản hồi
-        if (data.success) {    
+        if (data.success) {
             // 1. Lưu Token & Phân quyền
-            if (data.accessToken || data.token) { 
+            if (data.accessToken || data.token) {
                 localStorage.setItem('accessToken', data.accessToken || data.token);
                 if (data.refreshToken) localStorage.setItem('refreshToken', data.refreshToken);
             }
-            
+
             // 2. LƯU THÔNG TIN ACCOUNT (TÀI KHOẢN)
             if (data.user) {
                 localStorage.setItem('fullName', data.user.fullName);
                 localStorage.setItem('userRole', data.user.roleName);
                 localStorage.setItem('email', data.user.email || email);
-                
-                const accId = data.user.id || data.user.accountId; 
+
+                const accId = data.user.id || data.user.accountId;
                 if (accId) localStorage.setItem('accountId', accId);
             }
 
             // 3. LƯU THÔNG TIN CUSTOMER (Cải tiến check điều kiện)
             let custId = data.customerId || (data.customer && data.customer.id) || (data.user && data.user.customerId);
-            
+
             // FIX 2: Check tường minh, tránh bị bỏ qua nếu ID = 0
             if (custId !== undefined && custId !== null) {
                 localStorage.setItem('customerId', custId);
@@ -293,9 +293,9 @@ async function handleLogin(event) {
             switch (userRole) {
                 case 'ADMIN': window.location.href = '../pages/admin/admin-workspace.html'; break;
                 case 'DRIVER': window.location.href = '../pages/driver/driver-workspace.html'; break;
-                case 'CUSTOMER': 
-                case 'KHÁCH HÀNG': 
-                    window.location.href = '../pages/findCar.html'; 
+                case 'CUSTOMER':
+                case 'KHÁCH HÀNG':
+                    window.location.href = '../pages/findCar.html';
                     break;
                 case 'DISPATCHER': window.location.href = '../pages/dispatcher/dispatcher-workspace.html'; break;
                 default:
@@ -324,7 +324,7 @@ async function handleLogin(event) {
 document.addEventListener("DOMContentLoaded", function () {
     // Kiểm tra biến cờ eKYC trong LocalStorage
     const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
-    
+
     if (!isEkycComplete) {
         const warningToast = document.getElementById('ekycWarningToast');
         if (warningToast) warningToast.style.display = 'block';
@@ -374,10 +374,10 @@ async function loadNotifications() {
                 const notifId = n.NotificationID;
                 const title = n.Title || "Thông báo hệ thống";
                 const message = n.Message || ""; // Code cũ bị lỗi do dùng n.Content
-                
+
                 // Đảm bảo isRead luôn là boolean (DB trả về 0/1 hoặc true/false)
-                const isRead = (n.IsRead === 1 || n.IsRead === true); 
-                
+                const isRead = (n.IsRead === 1 || n.IsRead === true);
+
                 if (!isRead) unreadCount++;
 
                 // LOGIC GIAO DIỆN UX: Chưa đọc -> Nền trắng, chữ Đậm, có chấm đỏ
@@ -387,8 +387,8 @@ async function loadNotifications() {
 
                 // Format ngày giờ thân thiện (Ví dụ: 14:30 - 25/06)
                 const d = new Date(n.CreatedAt);
-                const timeStr = `${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')} - ${d.getDate().toString().padStart(2,'0')}/${(d.getMonth() + 1).toString().padStart(2,'0')}`;
-                
+                const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+
                 htmlContent += `
                     <li class="p-3 border-bottom ${bgClass} notification-item" 
                         style="cursor: pointer; transition: background 0.2s;" 
@@ -405,10 +405,10 @@ async function loadNotifications() {
             });
 
             container.innerHTML = htmlContent;
-            
+
             // Cập nhật số lượng ra cái chuông tổng
-            if (typeof updateUnreadBadge === 'function') updateUnreadBadge(unreadCount); 
-            
+            if (typeof updateUnreadBadge === 'function') updateUnreadBadge(unreadCount);
+
         } else {
             container.innerHTML = `<li class="text-center p-3 text-danger">Lỗi tải dữ liệu</li>`;
         }
@@ -494,8 +494,8 @@ function decreaseUnreadBadge() {
 
 // Tự động check thông báo ngầm 1 lần khi người dùng vừa load trang xong để hiện dấu chấm đỏ
 document.addEventListener("DOMContentLoaded", () => {
-// Chỉ cần kiểm tra nếu hàm tồn tại thì cho chạy ngầm 1 lần để check chấm đỏ
+    // Chỉ cần kiểm tra nếu hàm tồn tại thì cho chạy ngầm 1 lần để check chấm đỏ
     if (typeof loadNotifications === 'function') {
-        loadNotifications(); 
+        loadNotifications();
     }
 });
