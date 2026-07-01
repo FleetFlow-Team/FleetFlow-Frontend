@@ -12,6 +12,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 3. Nếu ĐÃ ĐĂNG NHẬP
     if (accessToken && fullName) {
+        if (userRole.toUpperCase() !== 'CUSTOMER') {
+            window.location.replace('../../error/403.html');
+            return;
+        }
         // Mã hóa tên để làm URL Avatar
         const avatarName = encodeURIComponent(fullName);
 
@@ -111,6 +115,7 @@ let tripCoordinates = {}; // Lưu tọa độ Lat/Lng để tạo Booking
 let currentVoucherId = null; // Lưu ID voucher nếu áp dụng thành công
 let currentBaseFare = 0;
 let currentWeekendSurcharge = 0;
+let currentGpsPickupCoords = null; // Lưu tọa độ GPS chính xác gốc
 
 
 
@@ -157,7 +162,65 @@ map.on('load', () => {
             'line-opacity': 0.8
         }
     });
+
+    // 🚀 TỰ ĐỘNG ĐỊNH VỊ GPS HIỆN TẠI LÀM ĐIỂM ĐÓN MẶC ĐỊNH
+    initUserLocationDefault();
+
+    // Lắng nghe sự kiện gõ tay để tắt cờ GPS nếu khách tự nhập địa chỉ khác
+    const inputPickupEl = document.getElementById('inputPickup');
+    const inputDropoffEl = document.getElementById('inputDropoff');
+    if (inputPickupEl) inputPickupEl.addEventListener('input', function () { this.dataset.isGps = "false"; });
+    if (inputDropoffEl) inputDropoffEl.addEventListener('input', function () { this.dataset.isGps = "false"; });
 });
+
+// Hàm định vị GPS và tự động điền Điểm đón
+function initUserLocationDefault() {
+    const inputPickup = document.getElementById('inputPickup');
+    if (!inputPickup) return;
+
+    // Chỉ thực hiện định vị nếu ô điểm đón đang trống (chưa có dữ liệu cũ)
+    if (!inputPickup.value.trim() && navigator.geolocation) {
+        inputPickup.placeholder = "Đang định vị GPS điểm đón...";
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+
+                // Lưu tọa độ gốc vào biến toàn cục và đánh dấu cờ GPS
+                currentGpsPickupCoords = { lat: lat, lng: lng };
+                inputPickup.dataset.isGps = "true";
+                inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                inputPickup.placeholder = "Nhập điểm đón (Khách sạn, sân bay...)";
+
+                // Di chuyển tâm bản đồ về vị trí khách hàng
+                map.flyTo({
+                    center: [lng, lat],
+                    zoom: 15,
+                    speed: 1.2
+                });
+                // Cắm Marker điểm đón ban đầu
+                if (currentPickupMarker) currentPickupMarker.remove();
+                const elPickup = document.createElement('div');
+                elPickup.className = 'map-marker-pickup';
+                currentPickupMarker = new vietmapgl.Marker({ element: elPickup })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+
+                // Nếu khách đã nhập sẵn điểm trả (từ trước), tự động tính lộ trình luôn
+                const inputDropoff = document.getElementById('inputDropoff');
+                if (inputDropoff && inputDropoff.value.trim() && typeof window.triggerMapCalculation === 'function') {
+                    window.triggerMapCalculation();
+                }
+            },
+            (error) => {
+                console.warn("Khách hàng từ chối cấp quyền GPS hoặc lỗi định vị:", error.message);
+                inputPickup.placeholder = "Nhập điểm đón (Khách sạn, sân bay...)";
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+        );
+    }
+}
 
 // ==========================================
 // 2. HÀM HỖ TRỢ (UTILITIES)
@@ -235,9 +298,23 @@ window.triggerMapCalculation = async function () {
         distBadge.classList.remove('active-route');
         btnSubmitBooking.disabled = true;
 
-        // B1: Geocode
-        const pickupData = await fetchGeocode(pickupAddress);
-        const dropoffData = await fetchGeocode(dropoffAddress);
+        // B1: Geocode (Sử dụng tọa độ GPS trực tiếp nếu ô input đang giữ vị trí GPS, tránh bị Backend đẩy về Cà Mau)
+        const inputPickupEl = document.getElementById('inputPickup');
+        const inputDropoffEl = document.getElementById('inputDropoff');
+
+        let pickupData;
+        if (currentGpsPickupCoords && (inputPickupEl.dataset.isGps === "true" || pickupAddress === `${currentGpsPickupCoords.lat.toFixed(6)}, ${currentGpsPickupCoords.lng.toFixed(6)}`)) {
+            pickupData = { lat: currentGpsPickupCoords.lat, lng: currentGpsPickupCoords.lng };
+        } else {
+            pickupData = await fetchGeocode(pickupAddress);
+        }
+
+        let dropoffData;
+        if (currentGpsPickupCoords && (inputDropoffEl.dataset.isGps === "true" || dropoffAddress === `${currentGpsPickupCoords.lat.toFixed(6)}, ${currentGpsPickupCoords.lng.toFixed(6)}`)) {
+            dropoffData = { lat: currentGpsPickupCoords.lat, lng: currentGpsPickupCoords.lng };
+        } else {
+            dropoffData = await fetchGeocode(dropoffAddress);
+        }
 
         // B2: Validate Khoảng cách
         const distanceData = await fetchDistanceValidation(
@@ -362,6 +439,11 @@ window.swapLocations = function () {
     pickupInput.value = dropoffInput.value;
     dropoffInput.value = temp;
 
+    // Đảo cờ nhận diện GPS
+    let tempGps = pickupInput.dataset.isGps;
+    pickupInput.dataset.isGps = dropoffInput.dataset.isGps || "";
+    dropoffInput.dataset.isGps = tempGps || "";
+
     triggerMapCalculation();
 };
 
@@ -376,7 +458,9 @@ window.showMockAutocomplete = function (dropdownId) {
 
 // Chọn địa điểm từ dropdown
 window.selectLocation = function (inputId, text, dropdownId) {
-    document.getElementById(inputId).value = text;
+    const inputEl = document.getElementById(inputId);
+    inputEl.value = text;
+    inputEl.dataset.isGps = "false"; // Chọn từ dropdown thì tắt cờ GPS
     document.getElementById(dropdownId).style.display = 'none';
     triggerMapCalculation();
 };
@@ -686,7 +770,7 @@ window.applyVoucher = async function () {
         vehicleId: currentVehicleId,
         vehicleTypeId: parseInt(vehicleTypeId) // <-- Đã sửa thành Type ID
     };
- 
+
     const fVND = (v) => Math.round(v).toLocaleString('vi-VN') + ' đ';
 
     try {

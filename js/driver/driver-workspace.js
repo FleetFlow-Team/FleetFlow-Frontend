@@ -18,8 +18,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ================== BỔ SUNG ĐOẠN NÀY ==================
     // 2. Lấy thông tin thật của tài xế từ LocalStorage (Lưu lúc đăng nhập)
-    const fullName = localStorage.getItem('fullName') || 'Tài xế chưa rõ tên';
-    const userRole = localStorage.getItem('userRole') || 'Đối tác Tài xế';
+    const token = localStorage.getItem('accessToken');
+    const fullName = localStorage.getItem('fullName');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!token || !fullName) {
+        window.location.replace('../../index.html');
+        return;
+    }
+
+    if (userRole.toUpperCase() !== 'DRIVER') {
+        window.location.replace('../../error/403.html');
+        return;
+    }
+
     const avgRating = localStorage.getItem('averageRating') || '5.0';
     const status = localStorage.getItem('availabilityStatus') || 'OFFLINE';
     const wallet = parseFloat(localStorage.getItem('walletBalance') || 0);

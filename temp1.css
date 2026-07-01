@@ -1,0 +1,432 @@
+/* =========================================
+   1. ROOT VARIABLES (HỆ MÀU CHUẨN)
+========================================= */
+:root {
+    --color-1: #00b14f;
+    --color-2: #f4f7f6;
+    --color-3: #ffde59;
+    --color-dark: #111111;
+    --color-bg: #ffffff;
+    --text-color: #4b5563;
+
+    /* Liquid Glass Variables */
+    --glass-bg: rgba(255, 255, 255, 0.15);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --glass-highlight: rgba(255, 255, 255, 0.6);
+    --glass-shadow: rgba(0, 0, 0, 0.1);
+    --liquid-easing: cubic-bezier(0.175, 0.885, 0.32, 1.2);
+
+    /* New Glass Colors */
+    --glass-green: rgba(89, 255, 114, 0.307);
+    --glass-yellow: rgba(255, 222, 89, 0.2);
+    --bg-gradient-dark: linear-gradient(135deg, #0b0f17 0%, #1a2639 100%);
+    --bg-gradient-light: linear-gradient(135deg,
+            #eaea6b40 0%,
+            var(--color-2) 50%,
+            #2efc002e 100%);
+    --bg-pleasant: #0f172a;
+
+
+    /* Demo Glass Variables */
+    --glass-demo-bg: rgba(255, 255, 255, 0.08);
+    --glass-demo-stroke: rgba(255, 255, 255, 0.6);
+    --glass-demo-shadow: rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================
+   2. GLOBAL RESET & TYPOGRAPHY
+========================================= */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 90px;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    background-color: var(--color-2);
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.3s ease;
+}
+
+.bg-light-main {
+    background: var(--bg-gradient-light);
+}
+
+/* =========================================
+   3. REVEAL ON SCROLL (HIỆU ỨNG XUẤT HIỆN)
+========================================= */
+.reveal-on-scroll {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1.5s var(--liquid-easing);
+    will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.delay-1 {
+    transition-delay: 0.2s;
+}
+
+.delay-2 {
+    transition-delay: 0.4s;
+}
+
+.delay-3 {
+    transition-delay: 0.6s;
+}
+
+.delay-4 {
+    transition-delay: 0.8s;
+}
+
+/* =========================================
+   4. CONTAINERS (KHUNG CHỨA NỘI DUNG)
+========================================= */
+.container-base {
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container-fluid-base {
+    width: 100%;
+    padding: 0 15px;
+}
+
+.navbar-slogan {
+
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    white-space: nowrap;
+    /* Đảm bảo chữ không bị rớt dòng */
+    pointer-events: none;
+    /* Tránh việc slogan đè lên cản trở click chuột vào các phần tử khác nếu màn hình nhỏ */
+}
+
+/* Ẩn slogan trên màn hình điện thoại/tablet nhỏ để tránh đè vào logo/avatar */
+@media (max-width: 991px) {
+    .navbar-slogan {
+        display: none !important;
+    }
+}
+
+/* =========================================
+   5. NAVBAR & DROPDOWN HEADER
+========================================= */
+.brand-overflow {
+    position: relative;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    padding: 0;
+}
+
+.brand-overflow .logo-img {
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    padding: 5px 0;
+}
+
+.nav-link {
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    opacity: 1;
+    color: var(--color-3) !important;
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba(255, 222, 89, 0.6);
+}
+
+/* Navbar Center Links */
+.navbar-center-links {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: 20px;
+}
+
+.nav-link-center {
+    display: flex;
+    color: rgba(255, 255, 255, 0.85);
+    font-weight: 600;
+    font-size: 1.05rem;
+    padding: 8px 16px;
+    transition: all 0.4s var(--liquid-easing);
+    border-radius: 50px;
+    width: 130px;
+    justify-content: center;
+    align-items: center;
+}
+
+.nav-link-center:hover,
+.nav-link-center.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.nav-link-center:hover {
+    transform: translateY(-5px);
+}
+
+/* Trạng thái Navbar dính */
+.custom-navbar.sticky-top {
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    background-color: var(--color-1);
+    height: 70px;
+    padding: 0;
+    transition: all 0.6s var(--liquid-easing), background-color 0.4s ease;
+    isolation: isolate;
+    border: 0.5px solid transparent;
+    z-index: 1030;
+}
+
+.custom-navbar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: rgba(140, 140, 140, 0.35);
+    backdrop-filter: url(#frosted);
+    -webkit-backdrop-filter: url(#frosted);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+.custom-navbar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.5), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+}
+
+
+.custom-navbar.is-scrolled::after {
+    inset: -12px;
+    opacity: 1;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    filter: url(#liquid-distortion);
+    clip-path: inset(12px round 50px);
+    transform: translateZ(0);
+    will-change: transform, filter;
+    background: transparent;
+}
+
+.custom-navbar.is-scrolled::before {
+    opacity: 1;
+}
+
+/* =========================================
+   6. BUTTONS & UI COMPONENTS
+========================================= */
+/* Standard Button */
+.btn-base {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--color-1);
+    color: var(--color-2);
+    padding: 10px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-base:hover {
+    background-color: var(--color-3);
+    color: #333333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 177, 79, 0.2);
+}
+
+.btn-base:active {
+    transform: translateY(0);
+}
+
+/* Liquid Glass Buttons */
+.btn-login,
+.btn-hero,
+.btn-cta-outline,
+.social-icon-btn,
+.step-number {
+    position: relative;
+    isolation: isolate;
+    transform-style: preserve-3d;
+    background: transparent;
+    border: 1px solid var(--glass-border);
+}
+
+.btn-login::after,
+.btn-hero::after,
+.btn-cta-outline::after,
+.social-icon-btn::after,
+.step-number::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: all 0.5s ease;
+}
+
+.btn-login::before,
+.btn-hero::before,
+.btn-cta-outline::before,
+.social-icon-btn::before,
+.step-number::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    pointer-events: none;
+    box-shadow: inset 2px 2px 4px 0 var(--glass-highlight), inset -2px -2px 4px 0 rgba(255, 255, 255, 0.1);
+    transition: box-shadow 0.5s var(--liquid-easing);
+}
+
+.btn-login>*,
+.btn-hero>*,
+.btn-cta-outline>*,
+.social-icon-btn>*,
+.step-number>* {
+    position: relative;
+    z-index: 3;
+}
+
+.btn-login,
+.btn-hero,
+.btn-cta-outline {
+    border-radius: 50px;
+    padding: 10px 28px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 8px 20px var(--glass-shadow);
+    transition: transform 0.5s var(--liquid-easing), box-shadow 0.5s ease;
+}
+
+.btn-login {
+    --glass-bg: rgba(255, 255, 255, 0.8);
+    color: var(--color-dark);
+}
+
+.btn-hero,
+.btn-cta-outline {
+    --glass-bg: rgba(255, 255, 255, 0.12);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.btn-hero:hover,
+.btn-cta-outline:hover {
+    transform: translateY(-5px);
+}
+
+/* Clean Glass Buttons (Profile & Notification) */
+.notification-btn,
+.user-profile-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    color: var(--color-dark);
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    height: 46px;
+    z-index: 1;
+}
+
+.notification-btn {
+    width: 46px;
+    border-radius: 50%;
+    font-size: 1.15rem;
+}
+
+/* =========================================
+   NEW USER PROFILE STYLE (SEPARATED GLASS AVATAR)
+========================================= */
+
+.user-profile-dropdown {
+    position: relative;
+    padding: 5px 0;
+}
+
+/* Vùng trigger bọc ngoài không nền để làm nổi bật khối avatar riêng lẻ */
+.user-profile-trigger {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover gián tiếp lên text khi trỏ chuột vào vùng trigger */
+.user-profile-dropdown:hover .profile-name {
+    color: var(--color-3) !important;
+    /* Đổi nhẹ sang sắc vàng gold sang trọng */
+}
+
+/* Khối Kính Avatar Tách Biệt Độc Lập (Chuẩn Liquid Glass 50px) */
+.glass-avatar {
+    position: relative;
+    width: 46px;
+    height: 46px;
+    border-radius: 50px;
+    /* Bo tròn đều 50px */
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 1.5px 1.5px 4px rgba(255, 255, 255, 0.4);
+    padding: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2),
