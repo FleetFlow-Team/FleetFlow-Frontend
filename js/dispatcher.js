@@ -247,6 +247,16 @@ async function loadBookings(status, tbodyId) {
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
 
+    // Tự động cập nhật class active cho các tab button
+    document.querySelectorAll('.btn-glass-tab').forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        if (onclickAttr.includes(`'${status}'`)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
     // Hiển thị trạng thái đang tải
     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin fs-4 text-secondary"></i><p class="mt-2 text-muted fw-medium">Đang tải dữ liệu hệ thống...</p></td></tr>';
 
@@ -1098,4 +1108,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     // Nạp sẵn một lần lúc mới load trang
     loadComplaints();
+});
+
+// Tự động chuyển trạng thái active cho các nút tab
+document.querySelectorAll('.btn-glass-tab').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (onclickAttr.includes(`'${status}'`)) {
+        btn.classList.add('active');
+    } else {
+        btn.classList.remove('active');
+    }
 });

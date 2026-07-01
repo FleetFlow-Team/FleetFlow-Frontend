@@ -641,7 +641,7 @@ window.viewAdminVehicleDetail = async function (id) {
             document.getElementById('vdEngine').innerText = v.engineNumber;
             document.getElementById('vdChassis').innerText = v.chassisNumber;
             document.getElementById('vdOdo').innerText = `${new Intl.NumberFormat('vi-VN').format(v.accumulatedKm)} km`;
-            
+
             document.getElementById('vehicleDetailModal').classList.add('active');
         } else {
             showSystemToast(result.message || "Không tìm thấy dữ liệu phương tiện!", "error");
@@ -651,7 +651,7 @@ window.viewAdminVehicleDetail = async function (id) {
     }
 };
 
-window.closeVehicleDetailModal = function() {
+window.closeVehicleDetailModal = function () {
     document.getElementById('vehicleDetailModal').classList.remove('active');
 };
 

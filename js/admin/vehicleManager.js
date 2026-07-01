@@ -121,7 +121,7 @@ async function loadVehicleTagsList() {
                     <td>${v.brand} ${v.model}</td>
                     <td><span class="badge bg-warning text-dark rounded-pill px-3">${tagCount} Tags</span></td>
                     <td>
-                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 shadow-sm hover-scale" onclick="vtOpenTagsModal(${v.vehicleId}, '${v.licensePlate}')">
+                        <button class="btn btn-sm btn-outline-warning rounded-pill px-3 shadow-sm hover-scale" onclick="vtOpenTagsModal(${v.vehicleId}, '${v.licensePlate}', '${v.brand} ${v.model}', '${v.typeName || 'Chưa phân loại'}')">
                             <i class="fa-solid fa-tags me-1"></i> Cấu hình
                         </button>
                     </td>
@@ -141,12 +141,18 @@ async function loadVehicleTagsList() {
  * Mở Modal cấu hình Tags và gọi API lấy danh sách Tags chi tiết của một xe.
  * @param {number} vehicleId - ID của phương tiện
  * @param {string} licensePlate - Biển số xe để hiển thị tiêu đề
+ * @param {string} vehicleName - Tên xe (Thương hiệu & Mẫu xe)
+ * @param {string} typeName - Loại xe
  */
-async function vtOpenTagsModal(vehicleId, licensePlate) {
+async function vtOpenTagsModal(vehicleId, licensePlate, vehicleName = '', typeName = 'Chưa phân loại') {
     vtCurrentVehicleId = vehicleId;
     vtCurrentTags = []; // Reset mảng
 
     document.getElementById('vtModalLicensePlate').textContent = licensePlate;
+    const nameSpan = document.getElementById('vtModalVehicleName');
+    if (nameSpan) nameSpan.textContent = vehicleName;
+    const typeSpan = document.getElementById('vtModalVehicleType');
+    if (typeSpan) typeSpan.textContent = typeName;
     const container = document.getElementById('vtModalTagsContainer');
     container.innerHTML = `<span class="text-white-50"><i class="fa-solid fa-circle-notch fa-spin me-2"></i>Đang tải...</span>`;
 
