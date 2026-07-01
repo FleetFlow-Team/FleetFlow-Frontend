@@ -969,7 +969,7 @@ async function loadComplaints() {
 
         if (response.ok && result.success) {
             tbody.innerHTML = '';
-            
+
             if (!result.data || result.data.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" class="text-center text-white-50 py-4"><i class="fa-regular fa-face-smile me-2"></i>Hiện không có khiếu nại nào cần xử lý</td></tr>`;
                 return;
@@ -978,7 +978,7 @@ async function loadComplaints() {
             result.data.forEach(c => {
                 let displayContent = c.Content || '';
                 let typeBadge = '';
-                
+
                 if (c.ComplaintType === 'LOST_LUGGAGE') {
                     typeBadge = `<span class="badge bg-warning text-dark mb-1">Thất lạc hành lý</span><br>`;
                     displayContent = `<strong>Tuyến:</strong> ${c.FromLocation || '?'} <i class="fa-solid fa-arrow-right mx-1"></i> ${c.ToLocation || '?'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
@@ -1031,10 +1031,10 @@ let currentResolvingComplaintId = null;
 function openResolveModal(complaintId) {
     currentResolvingComplaintId = complaintId;
     document.getElementById('complaintResolutionInput').value = '';
-    
+
     const errorMsg = document.getElementById('complaintResolutionError');
-    if(errorMsg) errorMsg.classList.add('d-none');
-    
+    if (errorMsg) errorMsg.classList.add('d-none');
+
     document.getElementById('resolveComplaintModal').style.display = 'flex';
 }
 
@@ -1051,10 +1051,10 @@ async function executeResolveComplaint() {
     const errorMsg = document.getElementById('complaintResolutionError');
 
     if (!resolutionInput) {
-        if(errorMsg) errorMsg.classList.remove('d-none');
+        if (errorMsg) errorMsg.classList.remove('d-none');
         return;
     }
-    if(errorMsg) errorMsg.classList.add('d-none');
+    if (errorMsg) errorMsg.classList.add('d-none');
 
     const btnSubmit = document.getElementById('btnSubmitResolution');
     const originalText = btnSubmit.innerHTML;
@@ -1092,7 +1092,7 @@ async function executeResolveComplaint() {
 document.addEventListener("DOMContentLoaded", function () {
     const disputeTabLink = document.querySelector('a[href="#disputes"]');
     if (disputeTabLink) {
-        disputeTabLink.addEventListener('click', function() {
+        disputeTabLink.addEventListener('click', function () {
             loadComplaints();
         });
     }

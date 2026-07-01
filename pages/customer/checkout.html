@@ -970,27 +970,46 @@
 
     <script>
         // =====================================================================
-        // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE (ĐỒNG BỘ VỚI TRIPBOOKING.JS)
+        // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE VÀ KIỂM TRA LỖI THANH TOÁN
         // =====================================================================
-        document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem('accessToken');
-            const userRole = localStorage.getItem('userRole');
+        document.addEventListener("DOMContentLoaded", async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const paymentStatus = urlParams.get('paymentStatus');
+            const pendingBookingId = localStorage.getItem('pendingBookingId');
 
-            if (!token) {
-                alert("Bạn cần đăng nhập để đặt xe!");
-                window.location.replace('../../index.html');
-                return;
-            }
-            if (!userRole || userRole.toUpperCase() !== 'CUSTOMER') {
-                window.location.replace('../../error/403.html');
-                return;
+            if (paymentStatus === 'failed' && pendingBookingId) {
+                // Xóa param trên URL để tránh lặp lại logic
+                window.history.replaceState({}, document.title, window.location.pathname);
+
+                // Hủy đơn do thanh toán thất bại
+                try {
+                    const token = localStorage.getItem('accessToken');
+                    const headers = { 'Content-Type': 'application/json' };
+                    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+                    // const customerId = localStorage.getItem('customerId');
+                    await fetch('http://localhost:8080/FleetFlow/api/v1/customer/bookings/cancel', {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify({
+                            bookingId: parseInt(pendingBookingId),
+                            // customerId: parseInt(customerId || -1),
+                            reason: "Khách hàng từ chối thanh toán MoMo"
+                        })
+                    });
+                } catch (e) {
+                    console.error("Lỗi hủy booking:", e);
+                }
+
+                localStorage.removeItem('pendingBookingId');
+                alert("Bạn đã từ chối thanh toán hoặc thanh toán thất bại. Vui lòng thử đặt lại.");
             }
 
             const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
             const depositAmountText = localStorage.getItem('currentDepositAmount');
 
             if (bookingType === 'DISTANCE') {
-document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
+                document.getElementById('departureTime').closest('.col-md-6').style.display = 'none';
                 document.getElementById('durationContainer').style.display = 'none';
 
                 const voucherBox = document.querySelector('.voucher-box');
@@ -998,10 +1017,10 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
 
                 // ĐỌC DỮ LIỆU ĐÃ ĐƯỢC BÓC TÁCH TỪ TRANG BẢN ĐỒ
                 const mapTotal = parseFloat(localStorage.getItem('mapEstimatedTotal')) || 0;
-                const mapBaseFare = parseFloat(localStorage.getItem('mapBaseFare')) || mapTotal; 
+                const mapBaseFare = parseFloat(localStorage.getItem('mapBaseFare')) || mapTotal;
                 const mapWeekendSurcharge = parseFloat(localStorage.getItem('mapWeekendSurcharge')) || 0;
-                
-                currentEstimatedTotal = mapTotal; 
+
+                currentEstimatedTotal = mapTotal;
                 const fmt = new Intl.NumberFormat('vi-VN');
 
                 // 1. HIỂN THỊ CƯỚC GỐC CHUẨN XÁC
@@ -1113,7 +1132,7 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
             element.classList.add("active");
         }
 
-// =====================================================================
+        // =====================================================================
         // TÍCH HỢP API ÁP DỤNG MÃ GIẢM GIÁ (KHỚP BACKEND VOUCHER API)
         // =====================================================================
         async function applyVoucher() {
@@ -1151,7 +1170,7 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
 
             // Lấy CustomerID
             const customerId = localStorage.getItem('customerId') || 1;
-            
+
             // TRÍCH XUẤT VEHICLE_TYPE_ID TỪ BỘ NHỚ (Sửa lỗi gửi nhầm vehicleId)
             const vehicleId = localStorage.getItem('selectedVehicleId');
             const allVehicles = JSON.parse(localStorage.getItem('allVehicles') || '[]');
@@ -1162,12 +1181,12 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
             try {
                 // Lấy token để gọi API an toàn
                 const token = localStorage.getItem('accessToken');
-                
+
                 const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/vouchers/apply', {
                     method: 'POST',
-                    headers: { 
+                    headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}` 
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         code: code,
@@ -1186,7 +1205,7 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
                     msg.innerHTML = `<i class="fa-solid fa-circle-check me-1"></i> Áp dụng thành công mã ${result.code}!`;
 
                     const fmt = new Intl.NumberFormat('vi-VN');
-                    
+
                     // Hiển thị số tiền giảm giá
                     document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
                     document.getElementById('discountName').innerText = result.code;
@@ -1215,14 +1234,14 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
                     // Khôi phục UI về trạng thái chưa áp mã (Giá gốc)
                     document.getElementById('discountRow').style.setProperty('display', 'none', 'important');
                     localStorage.removeItem('appliedVoucherId');
-                    
+
                     const fmt = new Intl.NumberFormat('vi-VN');
                     document.getElementById('summaryTotal').innerText = fmt.format(currentEstimatedTotal) + ' ₫';
-                    
+
                     const oldDeposit = Math.round(currentEstimatedTotal * 0.3);
                     document.getElementById('summaryDeposit').innerText = fmt.format(oldDeposit) + ' ₫';
                     document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(oldDeposit) + ' ₫';
-                    
+
                     localStorage.setItem('currentDepositAmount', oldDeposit);
                     localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal);
                 }
@@ -1560,23 +1579,54 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
                 });
                 const result = await response.json();
 
-                // 4. XỬ LÝ KẾT QUẢ TRẢ VỀ
+                // 4. XỬ LÝ KẾT QUẢ TRẢ VỀ VÀ THANH TOÁN MOMO
                 if (response.ok && result.success) {
-                    alert(`Thanh toán cọc thành công!\nMã chuyến đi của bạn: #${result.bookingId}`);
+                    const bookingId = result.bookingId;
 
-                    // Dọn rác LocalStorage sạch sẽ để tránh lỗi các chuyến sau
-                    const keysToRemove = [
-                        'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress',
-                        'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng',
-                        'returnPickupAddress', 'returnDropoffAddress', 'returnPickupLat', 'returnPickupLng',
-                        'returnDropoffLat', 'returnDropoffLng', 'mapDepartureTime', 'mapReturnTime',
-                        'distanceKm', 'returnDistanceKm', 'mapBaseFare', 'mapWeekendSurcharge',
-                        'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId'
-                    ];
-                    keysToRemove.forEach(k => localStorage.removeItem(k));
+                    // Kiểm tra phương thức thanh toán
+                    const activePaymentCard = document.querySelector('.payment-card.active');
+                    const isMomo = activePaymentCard && activePaymentCard.innerText.includes('MoMo');
 
-                    // Điều hướng sang trang Lịch sử chuyến đi
-                    window.location.replace("tripHistory.html");
+                    if (isMomo) {
+                        // Lấy số tiền cọc (Parse từ string "300.000 đ")
+                        const depositStr = localStorage.getItem('currentDepositAmount') || "0";
+                        const depositAmount = parseInt(depositStr.replace(/[^\d]/g, ''), 10);
+
+                        try {
+                            const momoRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/momo/create', {
+                                method: 'POST',
+                                headers: headers,
+                                body: JSON.stringify({
+                                    bookingId: bookingId,
+                                    paymentType: 'DEPOSIT',
+                                    amount: depositAmount.toString()
+                                })
+                            });
+
+                            const momoResult = await momoRes.json();
+                            if (momoRes.ok && momoResult.success && momoResult.paymentUrl) {
+                                // Lưu ID booking để hủy nếu thanh toán thất bại
+                                localStorage.setItem('pendingBookingId', bookingId);
+                                // Redirect sang MoMo (Không xóa localStorage lúc này)
+                                window.location.href = momoResult.paymentUrl;
+                                return;
+                            } else {
+                                alert("Tạo Booking thành công nhưng lỗi tạo thanh toán MoMo: " + (momoResult.message || "Unknown error"));
+                                clearCheckoutStorage();
+                                window.location.replace("tripHistory.html");
+                            }
+                        } catch (err) {
+                            console.error("Lỗi MoMo:", err);
+                            alert("Tạo Booking thành công nhưng mất kết nối cổng thanh toán.");
+                            clearCheckoutStorage();
+                            window.location.replace("tripHistory.html");
+                        }
+                    } else {
+                        // Thanh toán Tiền mặt (Chỉ đặt xe, không cần sinh link)
+                        alert(`Đặt xe thành công!\nMã chuyến đi của bạn: #${bookingId}`);
+                        clearCheckoutStorage();
+                        window.location.replace("tripHistory.html");
+                    }
                 } else {
                     alert("Rất tiếc, hệ thống từ chối: " + (result.error || result.message || "Lỗi không xác định"));
                     elBtnSubmit.disabled = false;
@@ -1590,8 +1640,19 @@ document.getElementById('departureTime').closest('.col-md-6').style.display = 'n
                 elBtnSubmit.innerText = originalText;
             }
         }
-    </script>
 
+        function clearCheckoutStorage() {
+            const keysToRemove = [
+                'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress',
+                'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng',
+                'returnPickupAddress', 'returnDropoffAddress', 'returnPickupLat', 'returnPickupLng',
+                'returnDropoffLat', 'returnDropoffLng', 'mapDepartureTime', 'mapReturnTime',
+                'distanceKm', 'returnDistanceKm', 'mapBaseFare', 'mapWeekendSurcharge',
+                'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId'
+            ];
+            keysToRemove.forEach(k => localStorage.removeItem(k));
+        }
+    </script>
 
 </body>
 

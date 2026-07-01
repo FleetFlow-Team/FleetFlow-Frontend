@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 34px; height: 34px; border-radius: 50%;" />
                     
                     <div class="dropdown-menu-modern shadow">
-                        <a href="profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                        <a href="../profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
                         <a href="tripHistory.html" class="dropdown-item-custom"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                         <hr style="margin: 5px 0; opacity: 0.1;">
                         <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // --- GIAO DIỆN MOBILE ---
         if (btnMobile) {
-            btnMobile.href = "profile.html"; // Trỏ về trang cá nhân thay vì trang login
+            btnMobile.href = "../profile.html"; // Trỏ về trang cá nhân thay vì trang login
 
             btnMobile.innerHTML = `
                 <img src="https://ui-avatars.com/api/?name=${avatarName}&background=00B14F&color=fff" style="width: 22px; height: 22px; border-radius: 50%; margin-bottom: 3px;" />

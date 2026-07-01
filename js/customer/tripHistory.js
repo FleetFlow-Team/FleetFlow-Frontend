@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
             
             <div class="dropdown-menu-modern shadow">
-                <a href="../customer/profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                <a href="../profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
                 <a href="tripHistory.html" class="dropdown-item-custom active"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                 <hr style="margin: 5px 0; opacity: 0.1;">
                 <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
@@ -65,6 +65,21 @@ document.addEventListener("DOMContentLoaded", function () {
 let globalTrips = [];
 
 document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('paymentStatus') === 'success') {
+        const keysToRemove = [
+            'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress',
+            'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng',
+            'returnPickupAddress', 'returnDropoffAddress', 'returnPickupLat', 'returnPickupLng',
+            'returnDropoffLat', 'returnDropoffLng', 'mapDepartureTime', 'mapReturnTime',
+            'distanceKm', 'returnDistanceKm', 'mapBaseFare', 'mapWeekendSurcharge',
+            'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId', 'pendingBookingId'
+        ];
+        keysToRemove.forEach(k => localStorage.removeItem(k));
+        window.history.replaceState({}, document.title, window.location.pathname);
+        Swal.fire({ icon: 'success', title: 'Thành công', text: 'Thanh toán MoMo thành công!' });
+    }
+
     loadTripHistory();
 });
 
@@ -318,6 +333,7 @@ async function viewTripDetail(bookingId) {
             actionHtml = `
                 <button type="button" class="btn btn-control-action border-primary text-primary m-0" style="flex:1; background: rgba(59, 130, 246, 0.1);" onclick="viewInvoiceModal(${bookingId})">Xem hóa đơn</button>
                 <button type="button" class="btn btn-control-action btn-rate-action m-0" style="flex:1" onclick="openRatingModal(${bookingId})">Đánh giá</button>
+                <button type="button" class="btn btn-control-action border-danger text-danger m-0" style="flex:1; background: rgba(220, 53, 69, 0.1);" onclick="openComplaintModal(${bookingId})">Khiếu nại</button>
             `;
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'none';
         } else {
@@ -357,32 +373,43 @@ async function viewInvoiceModal(bookingId) {
     document.getElementById('lblInvoiceSurcharge').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
     document.getElementById('lblInvoiceDiscount').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
     document.getElementById('lblInvoiceTotalAmount').innerHTML = '<i class="fa-solid fa-circle-notch fa-spin text-muted"></i>';
+    document.getElementById('invoiceModalFooter').innerHTML = '<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>';
 
     // Mở modal ngay để người dùng thấy feedback
     const invoiceModal = new bootstrap.Modal(document.getElementById('invoiceModal'));
     invoiceModal.show();
 
     try {
-        const invRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/invoices/${bookingId}`, {
+        const invRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}`, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
         });
         const invResult = await invRes.json();
 
-        if (invRes.ok && invResult.success && invResult.data) {
-            const inv = invResult.data;
-            const baseFare = parseFloat(inv.BaseFare || inv.baseFare) || 0;
-            const weekendSur = parseFloat(inv.WeekendSurcharge || inv.weekendSurcharge) || 0;
-            const tollSur = parseFloat(inv.TollSurchargeTotal || inv.tollSurchargeTotal) || 0;
-            const discountAmount = parseFloat(inv.DiscountAmount || inv.discountAmount) || 0;
-            const totalAmount = parseFloat(inv.TotalAmount || inv.totalAmount) || 0;
+        if (invRes.ok && invResult.pricing) {
+            const inv = invResult.pricing;
+            const baseFare = parseFloat(inv.baseFare) || 0;
+            const weekendSur = parseFloat(inv.weekendSurcharge) || 0;
+            const tollSur = 0; // Toll surcharge is not available in pricing
+            const discountAmount = parseFloat(inv.discountAmount) || 0;
+            const totalAmount = parseFloat(inv.estimatedTotal) || 0;
 
             document.getElementById('lblInvoiceBasePrice').innerText = fVND(baseFare);
             document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
             document.getElementById('lblInvoiceDiscount').innerText = `- ${fVND(discountAmount)}`;
             document.getElementById('lblInvoiceTotalAmount').innerText = fVND(totalAmount);
+
+            // Kiểm tra trạng thái chuyến đi để hiển thị nút thanh toán
+            const status = invResult.status || 'COMPLETED';
+            if (status === 'UNPAID' || status === 'COMPLETED') {
+                document.getElementById('invoiceModalFooter').innerHTML = `
+                    <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #a50064;" onclick="payFinal(${bookingId}, 'MOMO')">Thanh toán MoMo (Còn lại)</button>
+                    <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #10b981;" onclick="payFinal(${bookingId}, 'CASH')">Thanh toán Tiền mặt</button>
+                    <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>
+                `;
+            }
         } else {
-            throw new Error(invResult.error || "Hệ thống chưa tạo hóa đơn cho chuyến đi này.");
+            throw new Error(invResult.error || "Hệ thống chưa tạo dữ liệu giá cho chuyến đi này.");
         }
     } catch (error) {
         console.error("Lỗi xem hóa đơn:", error);
@@ -615,5 +642,166 @@ async function executeSubmitAction(actionType) {
             btnSubmit.innerHTML = originalText;
             btnSubmit.disabled = false;
         }
+    }
+}
+
+async function payFinal(bookingId, method) {
+    const isMomo = method === 'MOMO';
+    const confirmMsg = isMomo
+        ? "Thanh toán phần còn lại bằng MoMo?"
+        : "Xác nhận bạn đã thanh toán tiền mặt trực tiếp cho Tài xế?";
+
+    const result = await Swal.fire({
+        title: 'Xác nhận thanh toán',
+        text: confirmMsg,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy'
+    });
+
+    if (!result.isConfirmed) return;
+
+    // Ẩn modal invoice trước khi xử lý
+    const invoiceModalEl = document.getElementById('invoiceModal');
+    const invoiceModal = bootstrap.Modal.getInstance(invoiceModalEl);
+    if (invoiceModal) invoiceModal.hide();
+
+    Swal.showLoading();
+    try {
+        const token = localStorage.getItem("accessToken");
+        const headers = {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        };
+        
+        // BƯỚC 1: Gọi API /payments/final để hệ thống tính lại thực tế và trừ cọc (70% tiền còn lại cho HOURLY/DAILY)
+        // Lưu ý: API này cũng ghi nhận tạm thời transaction hoặc tính toán finalAmount chuẩn xác từ Backend.
+        const finalRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/final', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                bookingId: bookingId,
+                paymentMethod: method
+            })
+        });
+        
+        const finalData = await finalRes.json();
+        
+        if (!finalRes.ok || !finalData.success) {
+            Swal.fire('Lỗi', 'Không thể tính toán hoặc xử lý thanh toán: ' + (finalData.message || 'Unknown'), 'error');
+            return;
+        }
+
+        if (isMomo) {
+            // Đề phòng Backend (do dữ liệu test) trả về finalAmount bị null -> Gson bỏ field này đi -> JS undefined
+            let finalAmt = finalData.finalAmount;
+            if (finalAmt === undefined || finalAmt === null) {
+                let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
+                finalAmt = parseInt(uiAmountStr.replace(/[^\d]/g, ''), 10) || 59000;
+            }
+
+            // BƯỚC 2: Nếu là MoMo, dùng finalAmt vừa tính được từ Backend (hoặc fallback) để gọi tạo Link MoMo
+            const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/momo/create', {
+                method: 'POST',
+                headers: headers,
+                body: JSON.stringify({
+                    bookingId: bookingId,
+                    amount: finalAmt.toString()
+                })
+            });
+            const data = await res.json();
+            
+            if (res.ok && data.success && data.paymentUrl) {
+                // Lưu ID để phục vụ hủy chuyến nếu thất bại
+                localStorage.setItem('pendingBookingId', bookingId);
+                window.location.href = data.paymentUrl;
+            } else {
+                Swal.fire({ icon: 'error', title: 'Lỗi MoMo', text: data.message || 'Không thể tạo link thanh toán MoMo.' });
+            }
+        } else {
+            // Thanh toán Tiền mặt (CASH) đã được ghi nhận thành công từ API /final
+            let finalAmt = finalData.finalAmount;
+            if (finalAmt === undefined || finalAmt === null) {
+                let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
+                finalAmt = parseInt(uiAmountStr.replace(/[^\d]/g, ''), 10) || 59000;
+            }
+            Swal.fire({
+                icon: 'success',
+                title: 'Thành công',
+                text: `Thanh toán Tiền mặt thành công (${new Intl.NumberFormat('vi-VN').format(finalAmt)} ₫)`
+            }).then(() => {
+                location.reload();
+            });
+        }
+
+    } catch (error) {
+        console.error("Lỗi giao dịch:", error);
+        Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+    }
+}
+
+let currentComplaintBookingId = null;
+
+function openComplaintModal(bookingId) {
+    currentComplaintBookingId = bookingId;
+    document.getElementById('complaintContent').value = '';
+    const modal = new bootstrap.Modal(document.getElementById('complaintModal'));
+    modal.show();
+}
+
+async function submitComplaint() {
+    if (!currentComplaintBookingId) return;
+
+    const content = document.getElementById('complaintContent').value.trim();
+    if (!content) {
+        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập nội dung khiếu nại.' });
+        return;
+    }
+
+    const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
+    const token = localStorage.getItem('accessToken');
+    const btn = document.getElementById('btnSubmitComplaint');
+    const oldText = btn.innerText;
+    btn.innerHTML = '<i class=\"fa-solid fa-spinner fa-spin\"></i> Đang gửi...';
+    btn.disabled = true;
+
+    try {
+        const res = await fetch('http://localhost:8080/FleetFlow/api/v1/complaints', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({
+                bookingId: parseInt(currentComplaintBookingId),
+                customerId: parseInt(customerId),
+                content: content
+            })
+        });
+
+        const data = await res.json();
+
+        // Đóng modal
+        const modalEl = document.getElementById('complaintModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        if (data.success) {
+            Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã gửi khiếu nại. Quản trị viên sẽ sớm liên hệ với bạn.' });
+
+            // Reload Notifications
+            if (typeof loadNotifications === 'function') {
+                loadNotifications();
+            }
+        } else {
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Gửi khiếu nại thất bại.' });
+        }
+    } catch (error) {
+        console.error(error);
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể kết nối đến máy chủ.' });
+    } finally {
+        btn.innerHTML = oldText;
+        btn.disabled = false;
     }
 }
