@@ -343,6 +343,12 @@ async function loadNotifications() {
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
+    // Không gọi API này nếu đang ở role Dispatcher, Admin hoặc Driver
+    const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+    if (userRole && userRole !== 'CUSTOMER' && userRole !== 'KHÁCH HÀNG') {
+        return;
+    }
+
     // Hiển thị Loading mượt mà khi vừa bấm vào chuông
     container.innerHTML = `<li class="text-center p-4 text-muted"><i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải thông báo...</li>`;
 

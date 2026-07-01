@@ -1346,13 +1346,16 @@
             if (selectedCar) {
                 document.getElementById('checkoutCarName').innerText = `${selectedCar.brand} ${selectedCar.model}`;
 
-                // Lấy tên file từ từ điển
-                let fileName = vehicleImageMap[selectedCar.vehicleId];
-
-                // Nối đường dẫn chuẩn (lùi 2 cấp thư mục ../../ vì file checkout đang nằm trong pages/customer)
-                let carImage = fileName
-                    ? `../../assets/img/car-show/ImageUrl/${fileName}`
-                    : 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+                // Lấy tên file từ từ điển hoặc ưu tiên URL
+                let carImage = 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+                if (selectedCar.imageUrl && (selectedCar.imageUrl.startsWith('http://') || selectedCar.imageUrl.startsWith('https://'))) {
+                    carImage = selectedCar.imageUrl;
+                } else {
+                    let fileName = vehicleImageMap[selectedCar.vehicleId];
+                    if (fileName) {
+                        carImage = fileName.startsWith('http') ? fileName : `../../assets/img/car-show/ImageUrl/${fileName}`;
+                    }
+                }
 
                 document.getElementById('checkoutCarImage').src = carImage;
             }

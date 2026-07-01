@@ -12,14 +12,22 @@ const API = (function () {
     };
 
     const handleResponse = async (response) => {
+        const path = window.location.pathname;
+        let rootPrefix = '';
+        if (path.includes('/pages/admin/') || path.includes('/pages/driver/') || path.includes('/pages/customer/') || path.includes('/pages/dispatcher/')) {
+            rootPrefix = '../../';
+        } else if (path.includes('/pages/')) {
+            rootPrefix = '../';
+        }
+
         if (response.status === 401) {
             alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
             localStorage.clear();
-            window.location.href = window.location.pathname.includes('/pages/') ? '../index.html' : 'index.html';
+            window.location.href = rootPrefix + 'index.html';
             throw new Error("Unauthorized");
         }
         if (response.status === 403) {
-            window.location.href = window.location.pathname.includes('/pages/') ? '403.html' : 'pages/403.html';
+            window.location.href = rootPrefix + 'error/403.html';
             throw new Error("Forbidden");
         }
 

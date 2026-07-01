@@ -10,10 +10,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const brand = document.getElementById('vBrand').value.trim();
             const model = document.getElementById('vModel').value.trim();
             const seatCount = parseInt(document.getElementById('vSeatCount').value, 10);
-            const yearOfManufacture = document.getElementById('vYear').value ? parseInt(document.getElementById('vYear').value, 10) : null;
-            const color = document.getElementById('vColor').value.trim();
+            const chassisNumber = document.getElementById('vChassis').value.trim();
+            const engineNumber = document.getElementById('vEngine').value.trim();
+            const accumulatedKm = parseInt(document.getElementById('vOdo').value, 10) || 0;
+            const description = document.getElementById('vDesc').value.trim();
+            const fuelType = document.getElementById('vFuelType').value;
+            const imageUrl = document.getElementById('vImageUrl').value.trim();
 
-            if (!licensePlate || !brand || !seatCount) {
+            if (!licensePlate || !brand || !seatCount || !chassisNumber || !engineNumber || !fuelType) {
                 showSystemToast("Vui lòng điền các trường bắt buộc (*).", "error");
                 return;
             }
@@ -23,9 +27,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 brand,
                 model,
                 seatCount,
-                yearOfManufacture,
-                color,
-                // Các thông số mặc định khác nếu cần thiết
+                chassisNumber,
+                engineNumber,
+                accumulatedKm,
+                description,
+                fuelType,
+                imageUrl,
                 status: 'AVAILABLE'
             };
 
