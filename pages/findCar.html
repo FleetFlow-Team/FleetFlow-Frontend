@@ -822,8 +822,8 @@
                 </div>
                 <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
                     <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập"
-                        required>
-                    <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+                        required maxlength="50">
+                    <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required maxlength="50">
                     <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
                         <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
                             style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
@@ -918,7 +918,7 @@
             </div>
 
             <div class="chat-glass-input-area">
-                <input type="text" id="chat-input" class="glass-input" placeholder="Nhập yêu cầu...">
+                <input type="text" id="chat-input" class="glass-input" placeholder="Nhập yêu cầu..." maxlength="200">
                 <button class="glass-send-btn" onclick="sendMessage()">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>

@@ -785,7 +785,7 @@
 
                     <div class="form-floating mb-3 position-relative">
                         <input type="text" class="form-control" id="inputPickup" placeholder="Điểm đón" value=""
-                            oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()">
+                            oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()" maxlength="200">
                         <label for="inputPickup">Đón tại</label>
                         <div class="autocomplete-dropdown" id="pickupDropdown">
                             <div class="autocomplete-item"
@@ -800,7 +800,7 @@
 
                     <div class="form-floating">
                         <input type="text" class="form-control" id="inputDropoff" placeholder="Điểm trả"
-                            oninput="showMockAutocomplete('dropoffDropdown')" onchange="triggerMapCalculation()">
+                            oninput="showMockAutocomplete('dropoffDropdown')" onchange="triggerMapCalculation()" maxlength="200">
                         <label for="inputDropoff">Đến đâu?</label>
                         <div class="autocomplete-dropdown" id="dropoffDropdown">
                             <div class="autocomplete-item"
@@ -868,7 +868,7 @@
                         class="fa-solid fa-ticket me-1 text-success"></i> Mã ưu đãi</h6>
                 <div class="input-group mb-4 shadow-sm" style="border-radius: 50px; overflow: hidden;">
                     <input type="text" class="form-control bg-white bg-opacity-50 border-0 px-4 fw-semibold"
-                        id="voucherInput" placeholder="Ví dụ: HE2026" style="height: 50px; color: #1e293b;">
+                        id="voucherInput" placeholder="Ví dụ: HE2026" style="height: 50px; color: #1e293b;" maxlength="20">
                     <button class="btn btn-success fw-bold px-4 border-0" type="button" id="btnApplyVoucher"
                         onclick="applyVoucher()" style="height: 50px;">Áp dụng</button>
                 </div>

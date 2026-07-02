@@ -143,11 +143,11 @@
             <form id="profileForm" class="row g-4 mt-2" onsubmit="updateProfile(event)">
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Họ và tên</label>
-                <input id="inputFullName" type="text" class="form-control custom-input" />
+                <input id="inputFullName" type="text" class="form-control custom-input" maxlength="50" />
               </div>
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Số điện thoại</label>
-                <input id="inputPhone" type="tel" class="form-control custom-input text-muted" />
+                <input id="inputPhone" type="tel" class="form-control custom-input text-muted" maxlength="15" />
               </div>
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Email</label>
@@ -156,7 +156,7 @@
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Địa chỉ liên hệ</label>
                 <input id="inputAddress" type="text" class="form-control custom-input"
-                  placeholder="VD: 38 Lê Lợi, Quận 1, TP.HCM" />
+                  placeholder="VD: 38 Lê Lợi, Quận 1, TP.HCM" maxlength="200" />
               </div>
               <div class="col-12 text-end mt-5">
                 <button type="submit" class="btn-login px-5 py-3 fs-6">
@@ -248,15 +248,15 @@
             <form id="changePasswordForm" class="row g-4 mt-2">
               <div class="col-md-12 form-floating-custom">
                 <label class="mb-2 fw-semibold">Mật khẩu hiện tại</label>
-                <input type="password" id="oldPassword" class="form-control custom-input" required />
+                <input type="password" id="oldPassword" class="form-control custom-input" required maxlength="50" />
               </div>
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Mật khẩu mới</label>
-                <input type="password" id="newPassword" class="form-control custom-input" required />
+                <input type="password" id="newPassword" class="form-control custom-input" required maxlength="50" />
               </div>
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Xác nhận mật khẩu mới</label>
-                <input type="password" id="confirmPassword" class="form-control custom-input" required />
+                <input type="password" id="confirmPassword" class="form-control custom-input" required maxlength="50" />
               </div>
               <div class="col-12 text-end mt-5">
                 <button type="submit" id="btnSubmitChangePass" class="btn-login px-5 py-3 fs-6">

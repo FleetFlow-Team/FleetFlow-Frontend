@@ -706,8 +706,8 @@
         <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
       </div>
       <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
-        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
-        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required maxlength="50">
+        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required maxlength="50">
         <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
           <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
             style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
