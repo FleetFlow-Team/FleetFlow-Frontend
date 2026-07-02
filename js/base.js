@@ -320,16 +320,7 @@ async function handleLogin(event) {
 }
 
 
-// Warning cho tài xế
-document.addEventListener("DOMContentLoaded", function () {
-    // Kiểm tra biến cờ eKYC trong LocalStorage
-    const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
-
-    if (!isEkycComplete) {
-        const warningToast = document.getElementById('ekycWarningToast');
-        if (warningToast) warningToast.style.display = 'block';
-    }
-});
+// Warning cho tài xế đã bị gỡ bỏ
 
 // =========================================================================
 // HỆ THỐNG THÔNG BÁO VÀ ĐÁNH DẤU ĐÃ ĐỌC (OPTIMISTIC UI)

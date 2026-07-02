@@ -962,6 +962,31 @@
           userDropdown.classList.remove('d-none');
           userDropdown.classList.add('d-flex');
         }
+
+        // 🚀 BỔ SUNG: Logic phân quyền cho Menu Dropdown
+        const desktopMenuLinks = document.getElementById('desktopUserMenuLinks');
+        const navDesktopCustomerHistory = document.getElementById('navDesktopCustomerHistory');
+        
+        if (desktopMenuLinks && (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ' || userRole.toUpperCase() === 'ADMIN')) {
+          // Ẩn lịch sử khách hàng
+          if (navDesktopCustomerHistory) {
+              navDesktopCustomerHistory.style.display = 'none';
+          }
+          
+          // Chèn nút Chế độ Tài xế
+          const driverBtn = document.createElement('a');
+          driverBtn.href = "pages/driver/driver-workspace.html";
+          driverBtn.className = "dropdown-item-custom text-success";
+          driverBtn.innerHTML = '<i class="fa-solid fa-car-side"></i> Chế độ Tài xế';
+          
+          // Chèn vào trước HR
+          const hrElem = desktopMenuLinks.querySelector('hr');
+          if (hrElem) {
+              desktopMenuLinks.insertBefore(driverBtn, hrElem);
+          } else {
+              desktopMenuLinks.appendChild(driverBtn);
+          }
+        }
       }
     });
 
