@@ -1,0 +1,571 @@
+<!doctype html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FleetFlow - Dịch vụ Khách hàng</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           1. HỆ MÀU & BIẾN LIQUID GLASS CHUẨN
+        ========================================= */
+        :root {
+            --color-primary: #00b14f;
+            --color-bg-light: #f4f7f6;
+            --text-main: #4b5563;
+            --text-dark: #111111;
+            --liquid-easing: cubic-bezier(0.175, 0.885, 0.32, 1.2);
+            --bg-gradient: linear-gradient(135deg, #eaea6b40 0%, #f4f7f6 50%, #2efc002e 100%);
+            
+            /* Glassmorphism Variables */
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.45);
+            --glass-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            padding-top: 70px; /* Tránh bị Navbar đè lên nội dung */
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* =========================================
+           2. HEADER / NAVBAR (LIQUID GLASS STYLE)
+        ========================================= */
+        .custom-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background-color: var(--color-primary);
+            z-index: 1030;
+            transition: all 0.5s var(--liquid-easing);
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid transparent;
+        }
+
+        /* Khi cuộn chuột - Navbar biến hình thành thanh kính lỏng lơ lửng Apple Style */
+        .custom-navbar.is-scrolled {
+            top: 15px;
+            width: 95%;
+            left: 2.5%;
+            border-radius: 50px;
+            background-color: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), inset 1px 1px 3px rgba(255,255,255,0.5);
+        }
+
+        .navbar-container {
+            width: 100%;
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .logo-img {
+            height: 50px;
+            object-fit: contain;
+        }
+
+        /* Links giữa Navbar */
+        .navbar-center-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link-center {
+            display: flex;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 8px 20px;
+            border-radius: 50px;
+            transition: all 0.4s var(--liquid-easing);
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Đổi màu chữ link điều hướng khi cuộn sang trạng thái kính */
+        .custom-navbar.is-scrolled .nav-link-center {
+            color: #475569;
+        }
+
+        .nav-link-center:hover,
+        .nav-link-center.active {
+            color: white !important;
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1);
+        }
+        
+        .custom-navbar.is-scrolled .nav-link-center.active {
+            color: white !important;
+            background: var(--color-primary);
+        }
+
+        /* Nút đăng nhập Kính */
+        .btn-login {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 8px 22px;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .custom-navbar.is-scrolled .btn-login {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,177,79,0.2);
+        }
+
+        /* =========================================
+           3. HERO BANNER
+        ========================================= */
+        .support-hero {
+            background-color: var(--color-primary);
+            padding: 80px 0 60px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 177, 79, 0.15);
+        }
+
+        .support-hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, rgba(255,255,255,0.18) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .hero-title {
+            font-weight: 800;
+            font-size: 3rem;
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .hero-hotline {
+            font-size: 1.2rem;
+            font-weight: 500;
+            border-left: 2px solid rgba(255,255,255,0.4);
+            padding-left: 20px;
+        }
+
+        .hero-hotline span {
+            font-weight: 800;
+            font-size: 1.8rem;
+            display: block;
+            margin-top: 5px;
+            color: #ffde59; /* Màu vàng điểm nhấn đặc trưng */
+            text-shadow: 0 2px 10px rgba(255,222,89,0.3);
+        }
+
+        /* =========================================
+           4. LIQUID GLASS FORM CONTENT
+        ========================================= */
+        .support-container {
+            margin-top: -35px;
+            margin-bottom: 80px;
+            position: relative;
+            z-index: 10;
+            flex-grow: 1;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 50px;
+            box-shadow: var(--glass-shadow), inset 2px 2px 5px rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-tabs {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tab-item {
+            flex: 1;
+            text-align: center;
+            padding: 15px 10px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #64748b;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab-item.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .form-group { margin-bottom: 25px; }
+
+        .glass-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            padding: 16px 25px;
+            border-radius: 50px;
+            font-size: 1rem;
+            color: var(--text-dark);
+            outline: none;
+            box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+        }
+
+        .glass-input::placeholder { color: #94a3b8; font-style: italic; }
+
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.9);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 4px rgba(0, 177, 79, 0.15);
+            transform: translateY(-2px);
+        }
+
+        textarea.glass-input { border-radius: 25px; min-height: 150px; resize: vertical; }
+
+        .time-date-group {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.55);
+            border: 1px solid rgba(255, 255, 255, 0.85);
+            border-radius: 50px;
+            padding: 5px 25px;
+        }
+
+        .time-date-group span { color: #64748b; font-weight: 600; white-space: nowrap; margin-right: 10px; }
+        .time-date-group input { background: transparent; border: none; outline: none; padding: 10px 5px; width: 100%; color: var(--text-dark); }
+        .time-date-group .divider { width: 1px; height: 25px; background: rgba(0, 0, 0, 0.1); margin: 0 15px; }
+
+        .btn-submit-glass {
+            background: rgba(255, 255, 255, 0.85);
+            color: var(--text-dark);
+            border: 1px solid rgba(255, 255, 255, 1);
+            padding: 14px 45px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05), inset 1px 1px 2px white;
+            transition: all 0.4s var(--liquid-easing);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-submit-glass:hover {
+            background: var(--color-primary);
+            color: white;
+            border-color: var(--color-primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px rgba(0, 177, 79, 0.25);
+        }
+
+        /* =========================================
+           5. FOOTER STANDARD
+        ========================================= */
+        footer {
+            background-color: #111111;
+            color: #a0aec0;
+            padding: 60px 0 20px 0;
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        footer h5 { color: white; font-weight: 700; margin-bottom: 20px; }
+        footer ul { list-style: none; padding: 0; }
+        footer ul li { margin-bottom: 12px; }
+        footer ul a { color: #a0aec0; transition: 0.3s; }
+        footer ul a:hover { color: var(--color-primary); padding-left: 6px; }
+        .footer-bottom { border-top: 1px solid #2d3748; margin-top: 40px; padding-top: 20px; text-align: center; }
+
+        /* =========================================
+           6. MOBILE BOTTOM NAV (iOS STYLE FLOATING BAR)
+        ========================================= */
+        @media (max-width: 1200px) {
+            .mobile-bottom-nav {
+                position: fixed;
+                bottom: 25px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 92%;
+                max-width: 450px;
+                display: flex;
+                justify-content: space-around;
+                padding: 10px 15px;
+                border-radius: 50px;
+                z-index: 9999;
+                background: rgba(255, 255, 255, 0.7);
+                backdrop-filter: blur(25px);
+                -webkit-backdrop-filter: blur(25px);
+                border: 1px solid var(--glass-border);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), inset 1px 1px 3px rgba(255,255,255,1);
+            }
+
+            .mobile-bottom-nav .nav-link-center {
+                display: flex;
+                flex-direction: column;
+                padding: 6px 12px;
+                gap: 4px;
+                background: transparent;
+                color: #64748b;
+                width: auto;
+                border-radius: 20px;
+            }
+
+            .mobile-bottom-nav .nav-link-center i { font-size: 1.2rem; }
+            .mobile-bottom-nav .nav-link-center .nav-text { font-size: 0.65rem; font-weight: 700; white-space: nowrap; }
+
+            .mobile-bottom-nav .nav-link-center.active {
+                background: rgba(255, 255, 255, 0.95);
+                color: var(--color-primary);
+                box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+                transform: translateY(-3px);
+            }
+
+            body { padding-bottom: 100px !important; } /* Tránh bị Bottom Bar che khuất chân trang */
+        }
+
+        /* Responsive Fixes */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.2rem; }
+            .hero-hotline { border-left: none; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 20px; padding-top: 15px; padding-left: 0; }
+            .glass-panel { padding: 30px 20px; }
+            .tab-item { font-size: 0.95rem; padding: 10px 5px; }
+            .time-date-group { flex-direction: column; border-radius: 25px; padding: 15px; align-items: flex-start; }
+            .time-date-group .divider { width: 100%; height: 1px; margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+      <nav class="navbar custom-navbar" id="mainNavbar">
+        <div class="navbar-container">
+          
+          <a href="../index.html">
+            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+          </a>
+
+          <div class="navbar-center-links d-none d-lg-flex">
+            <a href="../index.html" class="nav-link-center">
+              <span class="nav-text">Trang chủ</span>
+            </a>
+            <a href="../pages/findCar.html" class="nav-link-center">
+              <span class="nav-text">Đặt xe</span>
+            </a>
+            <a href="../pages/customer/tripHistory.html" class="nav-link-center">
+              <span class="nav-text">Chuyến đi</span>
+            </a>
+            <a href="policy.html" class="nav-link-center">
+              <span class="nav-text">Chính sách</span>
+            </a>
+            <a href="#" class="nav-link-center active">
+              <span class="nav-text">Hỗ trợ</span>
+            </a>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <button id="btnLogin" class="btn-login">
+              <span>Đăng nhập</span>
+              <i class="fa-regular fa-user-circle fs-5"></i>
+            </button>
+          </div>
+
+        </div>
+      </nav>
+    </header>
+
+    <section class="support-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-7 text-center text-md-start mb-4 mb-md-0">
+                    <h1 class="hero-title">Dịch vụ<br>Khách hàng</h1>
+                </div>
+                <div class="col-md-5 d-flex justify-content-md-end justify-content-center">
+                    <div class="hero-hotline">
+                        Tổng đài CSKH toàn quốc:
+                        <span>1900 6789</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container support-container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="glass-panel">
+                    
+                    <div class="glass-tabs">
+                        <div class="tab-item active">Báo thất lạc hành lý</div>
+                        <div class="tab-item">Góp ý thái độ phục vụ</div>
+                        <div class="tab-item">Vấn đề khác</div>
+                    </div>
+
+                    <form>
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="glass-input" placeholder="Họ tên ...">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" class="glass-input" placeholder="Email ...">
+                                </div>
+                                <div class="form-group">
+                                    <input type="tel" class="glass-input" placeholder="Điện thoại ...">
+                                </div>
+                                <div class="form-group">
+                                    <div class="time-date-group">
+                                        <span>Lên xe lúc</span>
+                                        <input type="time">
+                                        <div class="divider"></div>
+                                        <input type="date">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="glass-input" placeholder="Đi từ ...">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="glass-input" placeholder="Đi đến ...">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="glass-input" placeholder="Cước phí / Mã chuyến (Nếu có) ...">
+                                </div>
+                                <div class="form-group">
+                                    <textarea class="glass-input" placeholder="Mô tả hành lý ..."></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-2">
+                            <button type="button" class="btn-submit-glass">
+                                Gửi tin <i class="fa-regular fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <div class="row g-4">
+          <div class="col-lg-4 pe-lg-5">
+            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="Logo" style="height: 60px; margin-bottom: 20px; object-fit: contain; filter: brightness(0) invert(1);" />
+            <p>FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình liên tỉnh.</p>
+          </div>
+          <div class="col-lg-2 col-6">
+            <h5>Dịch Vụ</h5>
+            <ul>
+              <li><a href="#">Đặt xe đường dài</a></li>
+              <li><a href="#">Thuê xe sân bay</a></li>
+              <li><a href="#">Tư vấn xe AI</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-2 col-6">
+            <h5>Hỗ Trợ</h5>
+            <ul>
+              <li><a href="#">Trung tâm trợ giúp</a></li>
+              <li><a href="policy.html">Chính sách & Điều khoản</a></li>
+              <li><a href="#">Giải quyết khiếu nại</a></li>
+            </ul>
+          </div>
+          <div class="col-lg-4">
+            <h5>Liên Hệ (Hotline)</h5>
+            <ul class="text-white-50">
+              <li class="mb-2"><i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888 (24/7)</li>
+              <li class="mb-2"><i class="fa-solid fa-envelope me-2 text-success"></i> support@fleetflow.vn</li>
+              <li><i class="fa-solid fa-location-dot me-2 text-success"></i> FPT University, Ho Chi Minh City</li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="mobile-bottom-nav d-lg-none">
+        <a href="../index.html" class="nav-link-center">
+            <i class="fa-solid fa-house"></i>
+            <span class="nav-text">Trang chủ</span>
+        </a>
+        <a href="findCar.html" class="nav-link-center">
+            <i class="fa-solid fa-car"></i>
+            <span class="nav-text">Đặt xe</span>
+        </a>
+        <a href="../pages/customer/tripHistory.html" class="nav-link-center">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span class="nav-text">Chuyến đi</span>
+        </a>
+        <a href="policy.html" class="nav-link-center">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span class="nav-text">Chính sách</span>
+        </a>
+        <a href="#" class="nav-link-center active">
+            <i class="fa-solid fa-headset"></i>
+            <span class="nav-text">Hỗ trợ</span>
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('mainNavbar');
+            if (window.scrollY > 40) {
+                navbar.classList.add('is-scrolled');
+            } else {
+                navbar.classList.remove('is-scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
