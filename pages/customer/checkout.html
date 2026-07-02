@@ -850,7 +850,7 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="email" class="form-control custom-input" id="emailInput"
-                                    placeholder="Email" onblur="validateEmail()" />
+                                    placeholder="Email" onblur="validateEmail()" maxlength="50" />
                                 <label>Email (Nhận hóa đơn điện tử)</label>
                                 <div class="invalid-feedback ms-3" id="emailError">Vui lòng nhập định dạng email hợp lệ.
                                 </div>
@@ -859,7 +859,7 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="tel" class="form-control custom-input" id="phoneInput"
-                                    placeholder="Số điện thoại" inputmode="numeric" onblur="validatePhone()" />
+                                    placeholder="Số điện thoại" inputmode="numeric" onblur="validatePhone()" maxlength="15" />
                                 <label>Số điện thoại</label>
                                 <div class="invalid-feedback ms-3" id="phoneError">Số điện thoại phải từ 10 chữ số.
                                 </div>
@@ -872,14 +872,14 @@
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control custom-input" id="fullName"
-                                    placeholder="Họ và tên" />
+                                    placeholder="Họ và tên" maxlength="50" />
                                 <label>Họ và tên</label>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control custom-input" id="address"
-                                    placeholder="Địa chỉ" />
+                                    placeholder="Địa chỉ" maxlength="200" />
                                 <label>Địa điểm đón chi tiết</label>
                             </div>
                         </div>
@@ -955,7 +955,7 @@
                         <div class="d-flex gap-2">
                             <div class="form-floating flex-grow-1">
                                 <input type="text" class="form-control custom-input text-uppercase fw-bold"
-                                    id="voucherCode" placeholder="Mã giảm giá" />
+                                    id="voucherCode" placeholder="Mã giảm giá" maxlength="20" />
                                 <label>Nhập mã giảm giá</label>
                             </div>
                             <button class="btn-apply" id="btnApplyVoucher" onclick="applyVoucher()">Áp dụng</button>

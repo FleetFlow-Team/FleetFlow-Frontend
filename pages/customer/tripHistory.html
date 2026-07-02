@@ -1088,7 +1088,7 @@
                         <label class="form-label small fw-bold text-muted text-uppercase">Lý do hủy chuyến (Tùy
                             chọn)</label>
                         <textarea class="form-control" rows="3"
-                            placeholder="Lý do của bạn giúp chúng tôi cải tiến dịch vụ..."></textarea>
+                            placeholder="Lý do của bạn giúp chúng tôi cải tiến dịch vụ..." maxlength="500"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 pt-3">
@@ -1146,7 +1146,7 @@
                         <option value="LOST_LUGGAGE">Thất lạc hành lý / Đồ đạc</option>
                         <option value="OTHER">Lý do khác</option>
                     </select>
-                    <textarea class="form-control premium-input mt-3" id="complaintContent" rows="4" placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, thái độ không tốt...)" style="resize: none;"></textarea>
+                    <textarea class="form-control premium-input mt-3" id="complaintContent" rows="4" placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, thái độ không tốt...)" style="resize: none;" maxlength="1000"></textarea>
                 </div>
                 <div class="modal-footer border-0 d-flex flex-column gap-2 pt-4">
                     <button type="button" class="btn btn-control-action w-100 m-0 text-white" style="background-color: #dc3545;" id="btnSubmitComplaint" onclick="submitComplaint()">GỬI KHIẾU NẠI</button>
@@ -1201,7 +1201,7 @@
                     </div>
 
                     <textarea id="ratingComment" class="form-control mt-3" rows="3"
-                        placeholder="Nhận xét chi tiết về tài xế hoặc phương tiện..."></textarea>
+                        placeholder="Nhận xét chi tiết về tài xế hoặc phương tiện..." maxlength="500"></textarea>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4">
                     <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0"
