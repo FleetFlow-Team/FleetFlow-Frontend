@@ -529,6 +529,27 @@ async function fetchPendingJobs() {
 }
 
 /**
+ * Xử lý sự kiện bấm nút Tải lại đơn mới tại tab Nhận chuyến
+ */
+window.triggerRefreshJobs = async function(btnElement) {
+    if (btnElement) {
+        btnElement.disabled = true;
+        const icon = btnElement.querySelector('.icon-refresh');
+        if (icon) icon.classList.add('fa-spin');
+    }
+    
+    await fetchPendingJobs();
+
+    if (btnElement) {
+        setTimeout(() => {
+            btnElement.disabled = false;
+            const icon = btnElement.querySelector('.icon-refresh');
+            if (icon) icon.classList.remove('fa-spin');
+        }, 800);
+    }
+};
+
+/**
  * Hàm biến đổi JSON Data thành cấu trúc HTML Card
  * @param {Array} jobs Mảng chứa các lệnh broadcast 
  */

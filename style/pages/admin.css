@@ -237,9 +237,18 @@ h3.text-danger {
     /* Kéo bảng lên một chút để bù lại khoảng cách thead */
 }
 
-/* 2. Căn chỉnh lại viền dưới của phần Tiêu đề (Thead) */
-.table-glass thead th {
-    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+/* 2. Căn chỉnh lại viền dưới của phần Tiêu đề (Thead) - Thống nhất nền trắng, chữ text-color, position sticky */
+.table-glass thead th,
+.table-audit thead th,
+.table thead th,
+table thead th {
+    background-color: #ffffff !important;
+    color: var(--text-color, #4b5563) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 10 !important;
+    border-bottom: 2px solid #cbd5e1 !important;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* 3. Giữ nguyên viền ngang trên/dưới cho toàn bộ các ô trong hàng */
@@ -641,12 +650,6 @@ img.rounded-circle.border-white {
 }
 
 /* --- BẢNG AUDIT LOG KÍNH LỎNG --- */
-.table-audit thead th {
-    background: rgba(11, 15, 23, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
-}
 
 .table-audit td {
     padding: 10px 15px !important;

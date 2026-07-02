@@ -108,14 +108,21 @@
                                         class="fa-solid fa-chart-pie me-2"></i> Tổng quan</a>
                             </li>
 
-                            <li class="menu-section-title">Quản lý Tài sản & Nhân sự</li>
+                            <li class="menu-section-title">Quản lý Phương tiện</li>
+                            <li>
+                                <a href="#tab-new-vehicle" class="toc-link"><i class="fa-solid fa-car me-2"></i>
+                                    Đăng ký Phương tiện</a>
+                            </li>
                             <li>
                                 <a href="#tab-fleet" class="toc-link"><i
                                         class="fa-solid fa-screwdriver-wrench me-2"></i> Quản lý Bảo dưỡng</a>
                             </li>
+
+
                             <li>
-                                <a href="#tab-new-vehicle" class="toc-link"><i class="fa-solid fa-car me-2"></i>
-                                    Đăng ký Phương tiện</a>
+                                <a href="#tab-vehicle-tags" class="toc-link"><i class="fa-solid fa-tags me-2"></i> Quản
+                                    lý
+                                    Tags</a>
                             </li>
 
 
@@ -127,11 +134,6 @@
                             <li>
                                 <a href="#tab-holiday" class="toc-link"><i class="fa-solid fa-calendar-day me-2"></i>
                                     Quản lý Ngày Lễ</a>
-                            </li>
-                            <li>
-                                <a href="#tab-vehicle-tags" class="toc-link"><i class="fa-solid fa-tags me-2"></i> Quản
-                                    lý
-                                    Tags Phương tiện</a>
                             </li>
                             <li>
                                 <a href="#tab-marketing-email" class="toc-link"><i
@@ -370,29 +372,40 @@
                                 <div class="row g-4">
                                     <!-- Ảnh -->
                                     <div class="col-md-12">
-                                        <label class="form-label text-white-50 fw-bold small">Hình ảnh Phương tiện</label>
-                                        <div class="glass-panel p-3 d-flex align-items-center gap-3" style="border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; background: rgba(0,0,0,0.15);">
-                                            <div id="vImagePreview" style="width: 80px; height: 80px; border-radius: 8px; background-color: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
+                                        <label class="form-label text-white-50 fw-bold small">Hình ảnh Phương
+                                            tiện</label>
+                                        <div class="glass-panel p-3 d-flex align-items-center gap-3"
+                                            style="border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; background: rgba(0,0,0,0.15);">
+                                            <div id="vImagePreview"
+                                                style="width: 80px; height: 80px; border-radius: 8px; background-color: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;">
                                                 <i class="fa-solid fa-image text-white-50 fs-2"></i>
                                             </div>
                                             <div class="flex-grow-1">
-                                                <input type="text" id="vImageUrl" class="form-control glass-input text-white mb-2" placeholder="Nhập đường dẫn URL hình ảnh xe..." oninput="document.getElementById('vImagePreview').innerHTML = this.value ? '<img src=\''+this.value+'\' style=\'width: 100%; height: 100%; object-fit: cover;\'>' : '<i class=\'fa-solid fa-image text-white-50 fs-2\'></i>'">
-                                                <small class="text-white-50"><i class="fa-solid fa-link me-1"></i> Dán link ảnh (http://...) vào đây để xem trước ảnh đại diện xe.</small>
+                                                <input type="text" id="vImageUrl"
+                                                    class="form-control glass-input text-white mb-2"
+                                                    placeholder="Nhập đường dẫn URL hình ảnh xe..."
+                                                    oninput="document.getElementById('vImagePreview').innerHTML = this.value ? '<img src=\''+this.value+'\' style=\'width: 100%; height: 100%; object-fit: cover;\'>' : '<i class=\'fa-solid fa-image text-white-50 fs-2\'></i>'">
+                                                <small class="text-white-50"><i class="fa-solid fa-link me-1"></i> Dán
+                                                    link ảnh (http://...) vào đây để xem trước ảnh đại diện xe.</small>
                                             </div>
                                         </div>
                                     </div>
                                     <!-- Hàng 1 -->
                                     <div class="col-md-4">
                                         <label class="form-label text-white-50 fw-bold small">Biển số xe *</label>
-                                        <input type="text" id="vLicensePlate" class="form-control glass-input fw-bold text-white" placeholder="VD: 51H-123.45" required>
+                                        <input type="text" id="vLicensePlate"
+                                            class="form-control glass-input fw-bold text-white"
+                                            placeholder="VD: 51H-123.45" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label text-white-50 fw-bold small">Thương hiệu *</label>
-                                        <input type="text" id="vBrand" class="form-control glass-input text-white" placeholder="VD: Toyota" required>
+                                        <input type="text" id="vBrand" class="form-control glass-input text-white"
+                                            placeholder="VD: Toyota" required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label text-white-50 fw-bold small">Mẫu xe (Model) *</label>
-                                        <input type="text" id="vModel" class="form-control glass-input text-white" placeholder="VD: Vios E 2023" required>
+                                        <input type="text" id="vModel" class="form-control glass-input text-white"
+                                            placeholder="VD: Vios E 2023" required>
                                     </div>
                                     <!-- Hàng 2 -->
                                     <div class="col-md-4">
@@ -414,21 +427,27 @@
                                         </select>
                                     </div>
                                     <div class="col-md-4">
-                                        <label class="form-label text-white-50 fw-bold small">Số KM đã đi (ODO) *</label>
-                                        <input type="number" id="vOdo" class="form-control glass-input text-white" placeholder="VD: 15000" required>
+                                        <label class="form-label text-white-50 fw-bold small">Số KM đã đi (ODO)
+                                            *</label>
+                                        <input type="number" id="vOdo" class="form-control glass-input text-white"
+                                            placeholder="VD: 15000" required>
                                     </div>
                                     <!-- Hàng 3 -->
                                     <div class="col-md-4">
-                                        <label class="form-label text-white-50 fw-bold small">Số khung (Chassis) *</label>
-                                        <input type="text" id="vChassis" class="form-control glass-input text-white" placeholder="VD: RL4..." required>
+                                        <label class="form-label text-white-50 fw-bold small">Số khung (Chassis)
+                                            *</label>
+                                        <input type="text" id="vChassis" class="form-control glass-input text-white"
+                                            placeholder="VD: RL4..." required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label text-white-50 fw-bold small">Số máy (Engine) *</label>
-                                        <input type="text" id="vEngine" class="form-control glass-input text-white" placeholder="VD: 2NR..." required>
+                                        <input type="text" id="vEngine" class="form-control glass-input text-white"
+                                            placeholder="VD: 2NR..." required>
                                     </div>
                                     <div class="col-md-4">
                                         <label class="form-label text-white-50 fw-bold small">Mô tả tình trạng *</label>
-                                        <input type="text" id="vDesc" class="form-control glass-input text-white" placeholder="VD: Xe mới" required>
+                                        <input type="text" id="vDesc" class="form-control glass-input text-white"
+                                            placeholder="VD: Xe mới" required>
                                     </div>
                                 </div>
                                 <div class="mt-4 pt-3 border-top border-secondary text-end">
@@ -448,20 +467,8 @@
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
                                 <h4 class="fw-bold m-0 text-white"><i
-                                        class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Định giá
-                                    &
-                                    Khuyến mãi</h4>
-                            </div>
-
-                            <div class="glass-panel mb-4 d-flex align-items-start gap-3 fade-in-up"
-                                style="background: rgba(245, 158, 11, 0.08); border-color: rgba(245, 158, 11, 0.5); padding: 20px;">
-                                <i class="fa-solid fa-circle-info fs-3 text-warning"></i>
-                                <div>
-                                    <h5 class="fw-bold mb-1 fs-6 text-white">Quy tắc Cấu hình Giá</h5>
-                                    <p class="m-0 text-white-50" style="font-size: 0.9rem;">Hệ thống tính giá hoàn toàn
-                                        tự động dựa theo khoảng cách (Map API) hoặc theo giờ/ngày. Bảng bên dưới cho
-                                        phép Admin điều chỉnh tham số tính giá cho từng loại hình xe.</p>
-                                </div>
+                                        class="fa-solid fa-file-invoice-dollar text-success me-2"></i>Cấu hình Giá cước
+                                    & Voucher</h4>
                             </div>
 
                             <!-- BẢNG PRICING RULES (MỚI) -->
@@ -539,45 +546,6 @@
                         </div>
                     </section>
 
-                    <!-- TAB HOLIDAY (MỚI THÊM) -->
-                    <section id="tab-holiday" class="dashboard-section" style="display: none;">
-                        <div class="glass-panel">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div>
-                                    <h4 class="fw-bold mb-1 text-white"><i
-                                            class="fa-solid fa-calendar-day text-success me-2"></i>Quản lý Ngày Lễ
-                                        (Holidays)</h4>
-                                    <p class="text-white-50 small m-0">Định nghĩa các ngày nghỉ lễ để áp dụng bảng giá
-                                        phụ thu tự động.</p>
-                                </div>
-                                <div class="d-flex gap-2 align-items-center">
-                                    <button class="btn-glass-action bg-success text-white border-success"
-                                        onclick="openAddHolidayModal()">
-                                        <i class="fa-solid fa-plus me-1"></i> Thêm Ngày Lễ
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="table-glass-wrapper overflow-auto" style="max-height: 400px;">
-                                <table class="table-glass w-100 mb-0">
-                                    <thead style="position: sticky; top: 0; z-index: 10;">
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Tên Ngày Lễ</th>
-                                            <th>Ngày</th>
-                                            <th>Hành động</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="holidayListBody">
-                                        <tr>
-                                            <td colspan="4" class="text-center text-white-50">Đang tải...</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
-
                     <section id="tab-vehicle-tags" class="dashboard-section">
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-end mb-4">
@@ -614,6 +582,45 @@
                                                 <i class="fa-solid fa-circle-notch fa-spin text-warning me-2"></i>Đang
                                                 tải dữ liệu...
                                             </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- TAB HOLIDAY (MỚI THÊM) -->
+                    <section id="tab-holiday" class="dashboard-section" style="display: none;">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-calendar-day text-success me-2"></i>Quản lý Ngày Lễ
+                                    </h4>
+                                    <p class="text-white-50 small m-0">Định nghĩa các ngày nghỉ lễ để áp dụng bảng giá
+                                        phụ thu tự động.</p>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <button class="btn-glass-action bg-success text-white border-success"
+                                        onclick="openAddHolidayModal()">
+                                        <i class="fa-solid fa-plus me-1"></i> Thêm Ngày Lễ
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-glass-wrapper overflow-auto" style="max-height: 400px;">
+                                <table class="table-glass w-100 mb-0">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Tên Ngày Lễ</th>
+                                            <th>Ngày</th>
+                                            <th>Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="holidayListBody">
+                                        <tr>
+                                            <td colspan="4" class="text-center text-white-50">Đang tải...</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -692,7 +699,7 @@
                                             <th>ID</th>
                                             <th>Khách hàng</th>
                                             <th>Liên hệ</th>
-                                            <th>Thanh toán hiện tại</th>
+                                            <th>Ví thanh toán</th>
                                             <th>Trạng thái</th>
                                             <th>Hành động</th>
                                         </tr>
@@ -916,9 +923,9 @@
                                             <th style="background-color: transparent;" width="15%">Thời gian</th>
                                             <th style="background-color: transparent;" width="20%">Nhân sự</th>
                                             <th style="background-color: transparent;" width="15%">Hành động</th>
-                                            <th style="background-color: transparent;" width="25%">Đối tượng</th>
+                                            <th style="background-color: transparent;" width="15%">Đối tượng</th>
                                             <th style="background-color: transparent;" width="15%">Thiết bị / IP</th>
-                                            <th style="background-color: transparent;" width="10%" class="text-center">
+                                            <th style="background-color: transparent;" width="20%" class="text-center">
                                                 Chi tiết</th>
                                         </tr>
                                     </thead>
@@ -965,8 +972,14 @@
                                 aria-label="Close"></button>
                         </div>
                         <div class="modal-body p-4">
-                            <h6 class="text-white-50 mb-3">Xe: <span id="vtModalLicensePlate"
-                                    class="text-white fw-bold"></span></h6>
+                            <h6 class="text-white-50 mb-3 d-flex align-items-center flex-wrap gap-2">
+                                <span>Xe: <span id="vtModalVehicleName" class="text-warning fw-bold"></span></span>
+                                <span class="text-white-50">-</span>
+                                <span id="vtModalLicensePlate" class="text-warning fw-bold"></span>
+                                <span class="text-white-50">|</span>
+                                <span>Loại xe: <span id="vtModalVehicleType"
+                                        class="badge bg-info text-dark fw-bold px-3 py-1 rounded-pill"></span></span>
+                            </h6>
                             <div class="glass-panel p-3 mb-3">
                                 <h6 class="fw-bold text-white mb-2">Tags hiện tại:</h6>
                                 <div id="vtModalTagsContainer" class="d-flex flex-wrap gap-2">
@@ -978,8 +991,7 @@
                                 <div class="row g-2">
                                     <div class="col-md-5">
                                         <input type="text" id="vtNewTagName"
-                                            class="form-control form-control-sm glass-input"
-                                            placeholder="Tên Tag (VD: Cốp rộng)">
+                                            class="form-control form-control-sm glass-input" placeholder="Tên Tag">
                                     </div>
                                     <div class="col-md-7">
                                         <div class="d-flex gap-2">
@@ -987,9 +999,10 @@
                                                 class="form-control form-control-sm glass-input"
                                                 placeholder="Mô tả ngắn">
                                             <button
-                                                class="btn btn-sm btn-outline-light text-white fw-bold text-nowrap btn-add"
-                                                onclick="vtAddTag()" style="border-radius: 25px;"><i
-                                                    class="fa-solid fa-plus"></i> Thêm</button>
+                                                class="btn btn-sm fw-bold text-nowrap text-white px-4 py-1 shadow-sm"
+                                                onclick="vtAddTag()"
+                                                style="border-radius: 25px; background-color: #5C636A"><i
+                                                    class="fa-solid fa-plus me-1"></i> Thêm</button>
                                         </div>
                                     </div>
                                 </div>

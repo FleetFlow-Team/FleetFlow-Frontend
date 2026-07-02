@@ -122,19 +122,22 @@ function renderAuditLogs(logs) {
 }
 
 function getActionBadgeClass(action) {
-    const base = "badge p-2 px-3 fw-bold shadow-sm border";
-    if (!action) return `${base} bg-secondary bg-opacity-25 text-secondary border-secondary`;
+    const base = "fw-bold";
+    if (!action) return `${base} text-white-50`;
     const act = action.toUpperCase();
-    if (act.includes('CREATE') || act.includes('ADD') || act.includes('REGISTER')) {
-        return `${base} bg-success bg-opacity-25 text-success border-success`;
+    if (act.includes('DRIVER_ACCEPT') || act.includes('START_TRIP') || act.includes('COMPLETE_TRIP')) {
+        return `${base} text-success`;
     }
-    if (act.includes('DELETE') || act.includes('REMOVE') || act.includes('FREEZE') || act.includes('LOCK')) {
-        return `${base} bg-danger bg-opacity-25 text-danger border-danger`;
+    if (act.includes('AUTO_DISPATCH_FAILED') || act.includes('DRIVER_REJECT')) {
+        return `${base} text-danger`;
     }
-    if (act.includes('UPDATE') || act.includes('EDIT')) {
-        return `${base} bg-warning bg-opacity-25 text-warning border-warning`;
+    if (act.includes('APPROVE_BOOKING') || act.includes('REJECT_BOOKING') || act.includes('BLOCK')) {
+        return `${base} text-warning`;
     }
-    return `${base} bg-info bg-opacity-25 text-info border-info`;
+    if (act.includes('AUTO_DISPATCH') || act.includes('DISPATCH_DRIVER') || act.includes('CONFIRM')) {
+        return `${base} text-info`;
+    }
+    return `${base} text-light`;
 }
 
 function getVietnameseAction(action) {

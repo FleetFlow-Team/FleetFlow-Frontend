@@ -53,6 +53,7 @@
         <!-- Menu Desktop: Guest (Mặc định) -->
         <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
           <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
+            <a href="pages/support.html" class="nav-link-center-1">Trung tâm hỗ trợ</a>
             <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
           </div>
 
@@ -63,57 +64,72 @@
 
           <!-- Dropdown User -->
           <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
-              <div class="dropdown me-3" id="notificationDropdownContainer">
-                  <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
-                      <i class="fa-regular fa-bell fs-5"></i>
-                      <span id="unreadBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none" data-count="0"></span>
-                  </div>
-                  <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0" style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList"><li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo nào</li></ul>
+            <div class="dropdown me-3" id="notificationDropdownContainer">
+              <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown"
+                aria-expanded="false" style="cursor: pointer;">
+                <i class="fa-regular fa-bell fs-5"></i>
+                <span id="unreadBadge"
+                  class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
+                  data-count="0"></span>
               </div>
+              <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0"
+                style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList">
+                <li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn
+                  chưa có thông báo nào</li>
+              </ul>
+            </div>
 
-              <div class="user-profile-btn position-relative dropdown" style="cursor: pointer;">
-                  <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown">
-                      <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
-                          <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);" id="navDesktopName"></span>
-                          <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;" id="navDesktopRole">Customer</span>
-                      </div>
-                      <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
-                  </div>
-                  <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end" id="desktopUserMenuLinks">
-                      <a href="pages/profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
-                      <a href="pages/customer/tripHistory.html" class="dropdown-item-custom" id="navDesktopCustomerHistory"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
-                      <hr style="margin: 5px 0; opacity: 0.1;">
-                      <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
-                  </div>
+            <div class="user-profile-btn position-relative dropdown" style="cursor: pointer;">
+              <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
+                  <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);"
+                    id="navDesktopName"></span>
+                  <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;"
+                    id="navDesktopRole">Customer</span>
+                </div>
+                <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
               </div>
+              <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
+                <a href="pages/customer/customer-profile.html" class="dropdown-item-custom"><i
+                    class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                <a href="pages/customer/tripHistory.html" class="dropdown-item-custom"><i
+                    class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
+                <hr style="margin: 5px 0; opacity: 0.1;">
+                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i
+                    class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+              </div>
+            </div>
           </div>
-      </div>
-
-      <div class="mobile-glass-dropdown" id="mobileDropdown">
-        <div class="dropdown-inner-content d-flex flex-column gap-3">
-          <!-- Mobile: Guest -->
-          <div id="guestMobileMenu" class="d-flex flex-column gap-3">
-            <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về chính
-              sách</a>
-          </div>
-
-          <!-- Mobile: Customer -->
-          <div id="customerMobileMenu" class="d-none flex-column gap-3">
-            <a href="index.html" class="mobile-nav-item active"><i class="fa-solid fa-house"></i> Trang chủ</a>
-            <a href="pages/findCar.html" class="mobile-nav-item"><i class="fa-solid fa-car"></i> Đặt xe</a>
-            <a href="pages/customer/tripHistory.html" class="mobile-nav-item"><i
-                class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
-            <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính sách</a>
-          </div>
-
-          <div class="divider-glass my-2"></div>
-
-          <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLogin">
-            <span class="fw-bold">Đăng nhập ngay</span>
-            <i class="fa-regular fa-user-circle fs-5"></i>
-          </button>
         </div>
-      </div>
+
+        <div class="mobile-glass-dropdown" id="mobileDropdown">
+          <div class="dropdown-inner-content d-flex flex-column gap-3">
+            <!-- Mobile: Guest -->
+            <div id="guestMobileMenu" class="d-flex flex-column gap-3">
+              <a href="pages/support.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trung tâm hỗ
+                trợ</a>
+              <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về chính
+                sách</a>
+            </div>
+
+            <!-- Mobile: Customer -->
+            <div id="customerMobileMenu" class="d-none flex-column gap-3">
+              <a href="index.html" class="mobile-nav-item active"><i class="fa-solid fa-house"></i> Trang chủ</a>
+              <a href="pages/findCar.html" class="mobile-nav-item"><i class="fa-solid fa-car"></i> Đặt xe</a>
+              <a href="pages/customer/tripHistory.html" class="mobile-nav-item"><i
+                  class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
+              <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính
+                sách</a>
+            </div>
+
+            <div class="divider-glass my-2"></div>
+
+            <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLogin">
+              <span class="fw-bold">Đăng nhập ngay</span>
+              <i class="fa-regular fa-user-circle fs-5"></i>
+            </button>
+          </div>
+        </div>
     </nav>
   </header>
 
@@ -196,9 +212,8 @@
               </div>
               <h4>Minh Bạch Chi Phí</h4>
               <p>
-                Bóc tách rõ ràng giá cước cơ bản và phụ phí cuối tuần. Các phụ
-                phí cầu đường (BOT, phà) đều phải khai báo minh bạch bằng hình
-                ảnh biên lai.
+                Bóc tách rõ ràng giá cước cơ bản và phụ phí cuối tuần. Các voucher, ưu đãi cho khách hàng được cập nhật
+                liên tục.
               </p>
             </div>
           </div>
@@ -951,25 +966,25 @@
         // 🚀 BỔ SUNG: Logic phân quyền cho Menu Dropdown
         const desktopMenuLinks = document.getElementById('desktopUserMenuLinks');
         const navDesktopCustomerHistory = document.getElementById('navDesktopCustomerHistory');
-        
+
         if (desktopMenuLinks && (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ' || userRole.toUpperCase() === 'ADMIN')) {
           // Ẩn lịch sử khách hàng
           if (navDesktopCustomerHistory) {
-              navDesktopCustomerHistory.style.display = 'none';
+            navDesktopCustomerHistory.style.display = 'none';
           }
-          
+
           // Chèn nút Chế độ Tài xế
           const driverBtn = document.createElement('a');
           driverBtn.href = "pages/driver/driver-workspace.html";
           driverBtn.className = "dropdown-item-custom text-success";
           driverBtn.innerHTML = '<i class="fa-solid fa-car-side"></i> Chế độ Tài xế';
-          
+
           // Chèn vào trước HR
           const hrElem = desktopMenuLinks.querySelector('hr');
           if (hrElem) {
-              desktopMenuLinks.insertBefore(driverBtn, hrElem);
+            desktopMenuLinks.insertBefore(driverBtn, hrElem);
           } else {
-              desktopMenuLinks.appendChild(driverBtn);
+            desktopMenuLinks.appendChild(driverBtn);
           }
         }
       }
