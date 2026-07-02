@@ -44,7 +44,7 @@ function handleTokenExpiredLogout() {
     if (typeof window.pauseMapTracking === 'function') {
         window.pauseMapTracking();
     }
-    
+
     alert("Phiên đăng nhập hoặc Token JWT đã hết hạn! Hệ thống sẽ tự động đăng xuất về trang chủ.");
     localStorage.clear();
     window.location.href = '../../index.html';
@@ -797,14 +797,14 @@ window.loadComplaints = async function () {
 
                 // Cột 2: Khách hàng
                 const customerHtml = `
-                    <div class="fw-bold fs-6 mb-1" style="color: var(--text-color); text-shadow: 0 0 10px rgba(0,242,254,0.3);">${fullName}</div>
+                    <div class="fw-bold fs-6 mb-1" style="color: var(--text-color); ">${fullName}</div>
                     <div class="small fw-medium mb-1" style="color: var(--text-color); font-size: 0.82rem;"><i class="fa-solid fa-phone me-1"></i>${phone}</div>
                     <div class="small fw-medium" style="color: var(--text-color); font-size: 0.82rem;"><i class="fa-solid fa-envelope me-1""></i>${email}</div>
                     ${c.bookingId ? `<div class="fw-bold small mt-1" style="color: var(--text-color); font-size: 0.78rem;"><i class="fa-solid fa-receipt me-1"></i>Đơn #${c.bookingId}</div>` : ''}
                 `;
 
                 // Cột 3: Khu vực
-                const provinceHtml = `<span class="glass-badge" style="background: rgba(0, 242, 254, 0.2); border: 1px solid rgba(0, 242, 254, 0.6); color: #00f2fe; font-size: 0.82rem;"><i class="fa-solid fa-location-dot me-1"></i>${province}</span>`;
+                const provinceHtml = `<span class="glass-badge" style=" font-size: 0.82rem;"><i class="fa-solid fa-location-dot me-1"></i>${province}</span>`;
 
                 // Cột 4: Vấn đề
                 let typeBadge = '';
@@ -833,9 +833,9 @@ window.loadComplaints = async function () {
                 } else {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
                 }
-                statusHtml += `<div class="small mt-1 text-warning" title="Thời gian tạo" style="font-size: 0.78rem;"><i class="fa-regular fa-clock me-1" style="color: #ffd700;"></i>${createdAt}</div>`;
+                statusHtml += `<div class="small mt-1 " title="Thời gian tạo" style="font-size: 0.9rem;"><i class="fa-regular fa-clock me-1" "></i>${createdAt}</div>`;
                 if (resolvedAt) {
-                    statusHtml += `<div class="small" title="Thời gian hoàn tất" style="color: #00B14F; font-size: 0.75rem;"><i class="fa-solid fa-check me-1"></i>${resolvedAt}</div>`;
+                    statusHtml += `<div class="small" title="Thời gian hoàn tất" style=" font-size: 0.9rem;"><i class="fa-solid fa-check me-1"></i>${resolvedAt}</div>`;
                 }
 
                 // Cột 6: Thao tác (Liquid Glass Actions)

@@ -224,7 +224,7 @@ function vtAddTag() {
         if (typeof showSystemToast === 'function') {
             showSystemToast("Vui lòng nhập Tên Tag!", "error");
         } else {
-            alert("Vui lòng nhập Tên Tag!");
+            showGlassAlert("Vui lòng nhập Tên Tag!", "warning");
         }
         return;
     }
@@ -290,7 +290,7 @@ async function vtSaveTags() {
             if (typeof showSystemToast === 'function') {
                 showSystemToast(result.error || "Có lỗi khi lưu Tags", "error");
             } else {
-                alert(result.error || "Có lỗi khi lưu Tags");
+                showGlassAlert(result.error || "Có lỗi khi lưu Tags", "error");
             }
         }
     } catch (err) {

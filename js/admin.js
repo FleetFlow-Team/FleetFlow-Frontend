@@ -9,6 +9,93 @@ window.globalStatusChart = null;
 let currentPendingDrivers = []; // Biến lưu danh sách tài xế chờ duyệt
 let globalAdminVehicles = []; // Biến lưu danh sách xe
 
+// Giao diện thông báo Glassmorphism Pop-up dùng chung cho Admin
+window.showGlassAlert = function (message, type = 'info', title = null) {
+    const modalEl = document.getElementById('glassAlertModal');
+    if (!modalEl) {
+        alert(message);
+        return;
+    }
+    const titleEl = document.getElementById('glassAlertTitle');
+    const msgEl = document.getElementById('glassAlertMessage');
+    const iconEl = document.getElementById('glassAlertIcon');
+
+    msgEl.textContent = message;
+    if (type === 'error') {
+        titleEl.textContent = title || 'Đã xảy ra lỗi';
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-xmark text-danger"></i>';
+    } else if (type === 'warning') {
+        titleEl.textContent = title || 'Cảnh báo';
+        iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-warning"></i>';
+    } else {
+        titleEl.textContent = title || 'Thông báo';
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-success"></i>';
+    }
+
+    const bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+};
+
+// Giao diện xác nhận Glassmorphism Pop-up dùng chung cho Admin
+window.showGlassConfirm = function (message, onConfirmCallback, options = {}) {
+    const modalEl = document.getElementById('glassConfirmModal');
+    if (!modalEl) {
+        if (confirm(message)) {
+            if (typeof onConfirmCallback === 'function') onConfirmCallback();
+        } else {
+            if (typeof options.onCancel === 'function') options.onCancel();
+        }
+        return;
+    }
+    const titleEl = document.getElementById('glassConfirmTitle');
+    const msgEl = document.getElementById('glassConfirmMessage');
+    const iconEl = document.getElementById('glassConfirmIcon');
+    const btnEl = document.getElementById('glassConfirmBtn');
+
+    titleEl.textContent = options.title || 'Xác nhận hành động';
+    msgEl.textContent = message;
+    btnEl.textContent = options.confirmText || 'Xác nhận';
+
+    if (options.btnColor) {
+        btnEl.style.background = options.btnColor;
+    } else if (options.type === 'danger') {
+        btnEl.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
+    } else if (options.type === 'success') {
+        btnEl.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+    } else {
+        btnEl.style.background = 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+    }
+
+    if (options.icon) {
+        iconEl.innerHTML = options.icon;
+    } else if (options.type === 'danger') {
+        iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-danger"></i>';
+    } else if (options.type === 'success') {
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-success"></i>';
+    } else {
+        iconEl.innerHTML = '<i class="fa-solid fa-circle-question text-warning"></i>';
+    }
+
+    const bsModal = new bootstrap.Modal(modalEl);
+    let isConfirmed = false;
+
+    btnEl.onclick = function () {
+        isConfirmed = true;
+        bsModal.hide();
+        if (typeof onConfirmCallback === 'function') onConfirmCallback();
+    };
+
+    const hiddenHandler = function () {
+        modalEl.removeEventListener('hidden.bs.modal', hiddenHandler);
+        if (!isConfirmed && typeof options.onCancel === 'function') {
+            options.onCancel();
+        }
+    };
+    modalEl.addEventListener('hidden.bs.modal', hiddenHandler);
+
+    bsModal.show();
+};
+
 document.addEventListener("DOMContentLoaded", function () {
     // 🚀 BẬT CHỐT CHẶN VÀ ĐỒNG BỘ NAVBAR ĐẦU TIÊN
     if (!initAdminSession()) return;
@@ -286,10 +373,14 @@ function initAdminSession() {
 
 function handleAdminLogout(e) {
     e.preventDefault();
-    if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị?")) {
-        localStorage.clear();
-        window.location.replace('../../index.html');
-    }
+    showGlassConfirm(
+        "Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị?",
+        () => {
+            localStorage.clear();
+            window.location.replace('../../index.html');
+        },
+        { title: "Đăng xuất hệ thống", confirmText: "Đăng xuất", type: "danger" }
+    );
 }
 
 window.showSystemToast = function (message, type = "success") {
@@ -655,23 +746,34 @@ window.closeVehicleDetailModal = function () {
     document.getElementById('vehicleDetailModal').classList.remove('active');
 };
 
-window.changeVehicleStatus = async function (id, newStatus) {
-    if (!confirm(`Xác nhận đổi trạng thái xe thành: ${newStatus.toUpperCase() === 'AVAILABLE' ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG'} ?`)) {
-        fetchAndRenderAdminVehicles();
-        return;
-    }
-    const token = localStorage.getItem('accessToken');
-    try {
-        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
-            method: 'PUT',
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: newStatus })
-        });
-        const result = await response.json();
-        if (response.ok && result.success) showSystemToast(`Đã đổi trạng thái thành công phương tiện #${id}`, "success");
-        else showSystemToast(result.error || result.message || "Lỗi cập nhật", "error");
-    } catch (error) { showSystemToast("Mất kết nối máy chủ", "error"); }
-    finally { fetchAndRenderAdminVehicles(); }
+window.changeVehicleStatus = function (id, newStatus) {
+    const isAvail = newStatus.toUpperCase() === 'AVAILABLE';
+    const statusText = isAvail ? 'SẴN SÀNG' : 'TẠM KHÓA / BẢO DƯỠNG';
+    const btnColor = isAvail ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)';
+
+    showGlassConfirm(
+        `Xác nhận đổi trạng thái xe thành: ${statusText} ?`,
+        async () => {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: newStatus })
+                });
+                const result = await response.json();
+                if (response.ok && result.success) showSystemToast(`Đã đổi trạng thái thành công phương tiện #${id}`, "success");
+                else showSystemToast(result.error || result.message || "Lỗi cập nhật", "error");
+            } catch (error) { showSystemToast("Mất kết nối máy chủ", "error"); }
+            finally { fetchAndRenderAdminVehicles(); }
+        },
+        {
+            title: "Đổi trạng thái phương tiện",
+            confirmText: "Xác nhận đổi",
+            btnColor: btnColor,
+            onCancel: () => fetchAndRenderAdminVehicles()
+        }
+    );
 };
 
 window.submitNewVehicle = async function (event) {
@@ -713,20 +815,25 @@ window.submitNewVehicle = async function (event) {
     finally { btn.innerHTML = originalText; btn.disabled = false; }
 };
 
-window.deleteAdminVehicle = async function (id, plate) {
-    if (!confirm(`⚠️ XÓA VĨNH VIỄN phương tiện [${plate}] khỏi hệ thống?`)) return;
-    const token = localStorage.getItem('accessToken');
-    try {
-        const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const result = await response.json();
-        if (response.ok && result.success) {
-            showSystemToast(`Đã thanh lý thành công [${plate}]`, "success");
-            fetchAndRenderAdminVehicles();
-        } else showSystemToast(result.error || result.message, "error");
-    } catch (error) { showSystemToast("Lỗi đường truyền", "error"); }
+window.deleteAdminVehicle = function (id, plate) {
+    showGlassConfirm(
+        `⚠️ XÓA VĨNH VIỄN phương tiện [${plate}] khỏi hệ thống?`,
+        async () => {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const response = await fetch(`${ADMIN_VEHICLE_API_URL}/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
+                if (response.ok && result.success) {
+                    showSystemToast(`Đã thanh lý thành công [${plate}]`, "success");
+                    fetchAndRenderAdminVehicles();
+                } else showSystemToast(result.error || result.message, "error");
+            } catch (error) { showSystemToast("Lỗi đường truyền", "error"); }
+        },
+        { title: "Thanh lý phương tiện", confirmText: "Xóa vĩnh viễn", type: "danger" }
+    );
 };
 
 // =========================================================================
@@ -848,10 +955,10 @@ window.submitEditPricingRule = async function () {
             closeEditPricingModal();
             loadPricingRules(); // Tải lại bảng giá
         } else {
-            alert('Lỗi lưu Cấu hình giá: ' + result.message);
+            showGlassAlert('Lỗi lưu Cấu hình giá: ' + result.message, 'error');
         }
     } catch (error) {
-        alert('Mất kết nối máy chủ!');
+        showGlassAlert('Mất kết nối máy chủ!', 'error');
     } finally {
         btn.innerHTML = originalHtml;
         btn.disabled = false;
@@ -945,7 +1052,7 @@ window.submitAddHoliday = async function () {
     const descInput = document.getElementById('addHolidayDesc').value;
 
     if (!dateInput || !descInput) {
-        alert("Vui lòng nhập đầy đủ ngày và tên ngày lễ!");
+        showGlassAlert("Vui lòng nhập đầy đủ ngày và tên ngày lễ!", "warning");
         return;
     }
 
@@ -968,34 +1075,38 @@ window.submitAddHoliday = async function () {
             closeAddHolidayModal();
             loadHolidays();
         } else {
-            alert("Lỗi khi thêm ngày lễ: " + (result.message || "Unknown error"));
+            showGlassAlert("Lỗi khi thêm ngày lễ: " + (result.message || "Unknown error"), "error");
         }
     } catch (err) {
-        alert("Lỗi kết nối máy chủ!");
+        showGlassAlert("Lỗi kết nối máy chủ!", "error");
     } finally {
         btn.innerHTML = originalHtml;
         btn.disabled = false;
     }
 };
 
-window.deleteHoliday = async function (id) {
-    if (!confirm("Bạn có chắc chắn muốn xóa ngày lễ này không? Hành động này sẽ ảnh hưởng đến việc tính giá dịch vụ.")) return;
+window.deleteHoliday = function (id) {
+    showGlassConfirm(
+        "Bạn có chắc chắn muốn xóa ngày lễ này không? Hành động này sẽ ảnh hưởng đến việc tính giá dịch vụ.",
+        async () => {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/admin/holidays/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
 
-    const token = localStorage.getItem('accessToken');
-    try {
-        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/admin/holidays/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const result = await response.json();
-
-        if (result.success) {
-            showSystemToast('Đã xóa ngày lễ thành công!', 'success');
-            loadHolidays();
-        } else {
-            alert("Lỗi khi xóa ngày lễ: " + (result.message || "Unknown error"));
-        }
-    } catch (err) {
-        alert("Lỗi kết nối máy chủ!");
-    }
+                if (result.success) {
+                    showSystemToast('Đã xóa ngày lễ thành công!', 'success');
+                    loadHolidays();
+                } else {
+                    showGlassAlert("Lỗi khi xóa ngày lễ: " + (result.message || "Unknown error"), "error");
+                }
+            } catch (err) {
+                showGlassAlert("Lỗi kết nối máy chủ!", "error");
+            }
+        },
+        { title: "Xóa ngày lễ", confirmText: "Xóa ngay", type: "danger" }
+    );
 };
