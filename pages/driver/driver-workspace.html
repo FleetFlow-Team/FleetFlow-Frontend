@@ -84,8 +84,8 @@
                         </div>
 
                         <div class="dropdown-menu-modern shadow-lg">
-                            <a href="../../pages/profile.html" class="dropdown-item-custom text-white">
-                                <i class="fa-solid fa-user-shield"></i> Hồ sơ định danh
+                            <a href="../../pages/profile.html" class="dropdown-item-custom text-dark">
+                                <i class="fa-solid fa-lock"></i> Đổi mật khẩu
                             </a>
                             <hr class="dropdown-divider-custom">
                             <a href="#"
@@ -121,10 +121,7 @@
                                 <a onclick="switchTab('tab-job-board', this)" class="toc-link active"><i
                                         class="fa-solid fa-satellite-dish me-2"></i> Nhận chuyến</a>
                             </li>
-                            <li>
-                                <a onclick="switchTab('tab-income', this)" class="toc-link"><i
-                                        class="fa-solid fa-chart-pie me-2"></i> Lịch sử thu nhập</a>
-                            </li>
+
                             <li>
                                 <a onclick="switchTab('tab-history', this)" class="toc-link"><i
                                         class="fa-solid fa-clock-rotate-left me-2"></i> Chuyến đi cũ</a>
@@ -308,87 +305,6 @@
                         </div>
                     </section>
 
-                    <section id="tab-income" class="dashboard-section">
-                        <div class="d-flex justify-content-between align-items-end mb-4">
-                            <h4 class="fw-bold m-0 text-white"><i
-                                    class="fa-solid fa-chart-pie text-warning me-2"></i>Bảng điều khiển Tài chính</h4>
-                        </div>
-
-                        <div class="row g-4 mb-4">
-                            <div class="col-xl-4 col-md-6">
-                                <div class="glass-panel kpi-glass-card">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng thu nhập
-                                                ròng</div>
-                                            <h3 class="text-white fw-bold mb-0"><span id="dashNetIncome">0</span> đ</h3>
-                                        </div>
-                                        <div class="kpi-icon-glass bg-primary bg-opacity-25 text-primary">
-                                            <i class="fa-solid fa-wallet"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-4 col-md-6">
-                                <div class="glass-panel kpi-glass-card">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Tổng chuyến
-                                                hoàn thành</div>
-                                            <h3 class="text-info fw-bold mb-0"><span id="dashTotalTrips">0</span> <span
-                                                    class="fs-6 text-white-50 fw-normal">Chuyến</span></h3>
-                                        </div>
-                                        <div class="kpi-icon-glass bg-info bg-opacity-25 text-info">
-                                            <i class="fa-solid fa-car-side"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-xl-4 col-md-6">
-                                <div class="glass-panel kpi-glass-card">
-                                    <div class="d-flex justify-content-between align-items-start mb-3">
-                                        <div>
-                                            <div class="text-white-50 small fw-bold text-uppercase mb-1">Thưởng & Đền bù
-                                                hủy</div>
-                                            <h3 class="text-warning fw-bold mb-0"><span id="dashBonus">0</span> đ</h3>
-                                        </div>
-                                        <div class="kpi-icon-glass bg-warning bg-opacity-25 text-warning">
-                                            <i class="fa-solid fa-gift"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="glass-panel mb-4">
-                            <h5 class="fw-bold text-white mb-4">Biểu đồ Doanh thu theo tháng</h5>
-                            <div style="height: 300px;"><canvas id="incomeChart"></canvas></div>
-                        </div>
-
-                        <div class="glass-panel">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h5 class="fw-bold text-white m-0">Chi tiết Biến động Ví giao dịch</h5>
-                            </div>
-
-                            <div class="table-glass-wrapper overflow-auto">
-                                <table class="table-glass w-100">
-                                    <thead>
-                                        <tr>
-                                            <th>Mã GD & Thời gian</th>
-                                            <th>Loại giao dịch</th>
-                                            <th>Tổng (Gross)</th>
-                                            <th>Phí công ty</th>
-                                            <th>Thực nhận (Net)</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="transactionTableBody">
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </section>
 
                     <section id="tab-history" class="dashboard-section">
                         <div class="d-flex justify-content-between align-items-end mb-4">
@@ -495,11 +411,7 @@
                                         id="accDriverRating">
                                         <i class="fa-solid fa-star me-1"></i> Đang tải...
                                     </span>
-                                    <span
-                                        class="badge bg-white bg-opacity-10 text-white border border-secondary p-2 px-3"
-                                        id="accDriverVehicle">
-                                        <i class="fa-solid fa-car me-1"></i> Đang tải...
-                                    </span>
+
                                 </div>
                             </div>
                         </div>
@@ -512,8 +424,7 @@
     <nav class="bottom-nav-glass d-lg-none">
         <a onclick="switchTab('tab-job-board', this)" class="nav-item active"><i
                 class="fa-solid fa-satellite-dish"></i><span>Nhận chuyến</span></a>
-        <a onclick="switchTab('tab-income', this)" class="nav-item"><i class="fa-solid fa-chart-pie"></i><span>Thu
-                nhập</span></a>
+
         <a onclick="switchTab('tab-history', this)" class="nav-item"><i
                 class="fa-solid fa-clock-rotate-left"></i><span>Lịch sử</span></a>
         <a onclick="switchTab('tab-account', this)" class="nav-item"><i class="fa-solid fa-circle-user"></i><span>Tài
@@ -828,67 +739,10 @@
         });
         document.getElementById(tabId).classList.add("active");
 
-        // Vẽ biểu đồ nếu vào tab Thu nhập lần đầu
-        if (tabId === "tab-income" && !isChartInitialized) {
-          renderIncomeChart();
-          isChartInitialized = true;
-        }
+
       }
 
-      // Vẽ biểu đồ thu nhập (Đã chuyển style cho hợp Dark Mode)
-      function renderIncomeChart() {
-        const chartEl = document.getElementById("incomeChart");
-        if (!chartEl) return;
-        const ctx = chartEl.getContext("2d");
-        
-        let gradientBlue = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientBlue.addColorStop(0, "rgba(56, 189, 248, 0.8)");
-        gradientBlue.addColorStop(1, "rgba(56, 189, 248, 0.2)");
-        
-        let gradientOrange = ctx.createLinearGradient(0, 0, 0, 400);
-        gradientOrange.addColorStop(0, "rgba(251, 191, 36, 0.8)");
-        gradientOrange.addColorStop(1, "rgba(251, 191, 36, 0.2)");
 
-        new Chart(ctx, {
-          type: "bar",
-          data: {
-            labels: ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "CN"],
-            datasets: [
-              {
-                label: "Cước chuyến đi",
-                data: [450000, 600000, 0, 800000, 1200000, 900000, 300000],
-                backgroundColor: gradientBlue,
-                borderRadius: 8,
-                barThickness: 24,
-              },
-              {
-                label: "Thưởng / Phụ phí",
-                data: [0, 150000, 0, 35000, 0, 115000, 0],
-                backgroundColor: gradientOrange,
-                borderRadius: 8,
-                barThickness: 24,
-              },
-            ],
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: { mode: "index", intersect: false },
-            plugins: {
-              legend: {
-                position: "top",
-                align: "end",
-                labels: { color: "#ffffff", usePointStyle: true, boxWidth: 10, padding: 20, font: { family: "Inter", weight: "600" } },
-              },
-              tooltip: { backgroundColor: "rgba(0,0,0,0.8)", titleFont: { family: "Inter", size: 14 }, bodyFont: { family: "Inter", size: 13 }, padding: 12, cornerRadius: 8 },
-            },
-            scales: {
-              x: { stacked: true, grid: { display: false }, ticks: { font: { family: "Inter", weight: "600" }, color: "rgba(255,255,255,0.7)" } },
-              y: { stacked: true, border: { display: false }, grid: { color: "rgba(255,255,255,0.1)" }, ticks: { font: { family: "Inter" }, color: "rgba(255,255,255,0.5)", callback: function (value) { return value.toLocaleString("vi-VN") + " đ"; } } },
-            },
-          },
-        });
-      }
 
       document.addEventListener("DOMContentLoaded", () => {
         toastError = new bootstrap.Toast(document.getElementById("systemErrorToast"), { delay: 3000 });

@@ -967,6 +967,7 @@
                         <button class="tab-pill" onclick="filterTrips('pending', this)">Đang chờ</button>
                         <button class="tab-pill" onclick="filterTrips('active', this)">Đang chạy</button>
                         <button class="tab-pill" onclick="filterTrips('completed', this)">Hoàn thành</button>
+                        <button class="tab-pill" onclick="filterTrips('cancelled', this)">Đã hủy</button>
                     </div>
 
                     <div class="empty-state-box" id="emptyState">
@@ -1140,6 +1141,11 @@
                 </div>
                 <div class="modal-body pb-0 text-center">
                     <p class="text-muted mb-4 fs-6">Chúng tôi rất tiếc về trải nghiệm không tốt của bạn. Vui lòng cho chúng tôi biết chi tiết vấn đề.</p>
+                    <select class="form-select premium-input mb-3 fw-medium" id="complaintType">
+                        <option value="SERVICE_FEEDBACK" selected>Chất lượng dịch vụ / Thái độ tài xế</option>
+                        <option value="LOST_LUGGAGE">Thất lạc hành lý / Đồ đạc</option>
+                        <option value="OTHER">Lý do khác</option>
+                    </select>
                     <textarea class="form-control premium-input mt-3" id="complaintContent" rows="4" placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, thái độ không tốt...)" style="resize: none;"></textarea>
                 </div>
                 <div class="modal-footer border-0 d-flex flex-column gap-2 pt-4">

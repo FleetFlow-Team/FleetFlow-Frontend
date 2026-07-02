@@ -1,466 +1,458 @@
 <!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FleetFlow - Hồ sơ cá nhân</title>
 
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
-    />
-    
-    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FleetFlow - Hồ sơ cá nhân</title>
 
-    <link rel="stylesheet" href="../style/base.css" />
-    <link rel="stylesheet" href="../style/profile.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
-    <script>
+  <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+
+  <link rel="stylesheet" href="../style/base.css" />
+  <link rel="stylesheet" href="../style/profile.css" />
+
+  <script>
     if (!localStorage.getItem('accessToken')) window.location.replace('../error/403.html');
   </script>
 
-    
-  </head>
-  <body>
-    <svg
-      style="width: 0; height: 0; position: absolute"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <defs>
-        <filter id="liquid-distortion">
-          <feTurbulence
-            type="fractalNoise"
-            baseFrequency="0.015"
-            numOctaves="3"
-            result="noise"
-          />
-          <feDisplacementMap
-            in="SourceGraphic"
-            in2="noise"
-            scale="5"
-            xChannelSelector="R"
-            yChannelSelector="G"
-          />
-        </filter>
-      </defs>
-    </svg>
 
-    <header>
-      <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
-        <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
-          
-          <a class="navbar-brand brand-overflow" href="../index.html">
-            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
-          </a>
+</head>
 
-          <div class="navbar-center-links d-none d-lg-flex">
-            <a href="../index.html" class="nav-link-center">Trang chủ</a>
-            <a href="findCar.html" class="nav-link-center">Đặt xe</a>
-            <a href="customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
-            <a href="policy.html" class="nav-link-center">Chính sách</a>
-          </div>
+<body>
+  <svg style="width: 0; height: 0; position: absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="liquid-distortion">
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
 
-          <div class="nav-right-actions d-flex align-items-center gap-3">
-            <button class="btn-login d-none d-lg-flex align-items-center gap-2" id="btnLogin">
-              <span>Đăng nhập</span>
-            </button>
+  <header>
+    <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+      <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
 
-            <div class="user-profile-btn d-flex d-lg-none align-items-center gap-2 p-1" id="mobileToggleBtn" style="cursor: pointer; border-radius: 50%;">
-              <img id="mobileNavAvatar" src="" style="width: 38px; height: 38px; border-radius: 50%;" />
-            </div>
+        <a class="navbar-brand brand-overflow" href="../index.html">
+          <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+        </a>
 
-          </div>
+        <div class="navbar-center-links d-none d-lg-flex">
+          <a href="../index.html" class="nav-link-center">Trang chủ</a>
+          <a href="findCar.html" class="nav-link-center">Đặt xe</a>
+          <a href="customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
+          <a href="policy.html" class="nav-link-center">Chính sách</a>
         </div>
 
-        <div class="mobile-glass-dropdown" id="mobileDropdown" style="max-width: 300px;">
-          <div class="dropdown-inner-content d-flex flex-column gap-2">
-            <div class="text-center mb-3">
-              <img id="profileAvatar" src="https://ui-avatars.com/api/?name=User&background=00B14F&color=fff" class="rounded-circle mb-2 shadow-sm" style="width: 60px; border: 2px solid rgba(255,255,255,0.5);">
-              <h6 id="profileDisplayName" class="fw-bold text-white mb-0 fs-6">Đang tải...</h6>
-              <span id="profileDisplayRole" class="text-white-50" style="font-size: 0.8rem;">...</span>
-            </div>
-            
-            <div class="divider-glass mb-2"></div>
+        <div class="nav-right-actions d-flex align-items-center gap-3">
+          <button class="btn-login d-none d-lg-flex align-items-center gap-2" id="btnLogin">
+            <span>Đăng nhập</span>
+          </button>
 
-            <button class="mobile-nav-item active text-start w-100 border-0" data-bs-toggle="pill" data-bs-target="#content-profile" onclick="document.getElementById('mobileToggleBtn').click()">
-              <i class="fa-regular fa-user"></i> Hồ sơ
-            </button>
-            <button class="mobile-nav-item text-start w-100 border-0" data-bs-toggle="pill" data-bs-target="#content-ekyc" onclick="document.getElementById('mobileToggleBtn').click()">
-              <i class="fa-solid fa-user-check"></i> eKYC
-            </button>
-            <button class="mobile-nav-item text-start w-100 border-0" data-bs-toggle="pill" data-bs-target="#content-security" onclick="document.getElementById('mobileToggleBtn').click()">
-              <i class="fa-solid fa-lock"></i> Mật khẩu
-            </button>
-
-            <a href="driver/driver-workspace.html" class="mobile-nav-item text-start w-100 border-0 text-decoration-none d-none" id="mobileDriverWorkspaceBtn">
-              <i class="fa-solid fa-car-side text-success"></i> <span class="text-success">Chế độ Tài xế</span>
-            </a>
-            
-            <div class="divider-glass my-2"></div>
-            
-            <button class="mobile-nav-item text-start w-100 border-0" style="background: rgba(255, 60, 60, 0.1);" onclick="localStorage.clear(); window.location.href='../index.html';">
-              <i class="fa-solid fa-right-from-bracket text-danger"></i> <span class="text-danger">Đăng xuất</span>
-            </button>
+          <div class="user-profile-btn d-flex d-lg-none align-items-center gap-2 p-1" id="mobileToggleBtn"
+            style="cursor: pointer; border-radius: 50%;">
+            <img id="mobileNavAvatar" src="" style="width: 38px; height: 38px; border-radius: 50%;" />
           </div>
+
         </div>
-      </nav>
-    </header>
-
-    <main class="container my-5" style="margin-top: 100px !important">
-      <div class="row g-5">
-        <aside class="col-lg-3">
-          <div
-            class="glass-panel profile-sidebar text-center reveal-on-scroll delay-1"
-          >
-            <div class="user-avatar-box mb-4">
-              <div class="position-relative d-inline-block">
-                <img id="sidebarAvatar" src="" class="avatar-img" />
-                <label for="avatarInput" class="avatar-edit-btn position-absolute"><i class="fa-solid fa-camera"></i></label>
-                <input type="file" id="avatarInput" class="d-none" />
-              </div>
-              <h5 id="sidebarName" class="fw-bold mt-3 mb-0 text-dark">Đang tải...</h5>
-              <p id="sidebarRole" class="text-muted small">...</p>
-            </div>
-
-            <div
-              class="nav flex-column nav-pills text-start"
-              id="v-pills-tab"
-              role="tablist"
-            >
-              <button
-                class="btn-hero shadow active"
-                data-bs-toggle="pill"
-                data-bs-target="#content-profile"
-              >
-                <i class="fa-regular fa-user me-2"></i> Thông tin cá nhân
-              </button>
-              <button
-                class="btn-hero shadow"
-                data-bs-toggle="pill"
-                data-bs-target="#content-ekyc"
-              >
-                <i class="fa-solid fa-shield-halved me-2"></i> Xác thực eKYC
-              </button>
-              <button
-                class="btn-hero shadow"
-                data-bs-toggle="pill"
-                data-bs-target="#content-security"
-              >
-                <i class="fa-solid fa-lock me-2"></i> Đổi mật khẩu
-              </button>
-              <button
-                class="btn-hero shadow"
-                data-bs-toggle="pill"
-                data-bs-target="#content-wallet"
-                onclick="loadWalletHistory()"
-              >
-                <i class="fa-solid fa-wallet me-2"></i> Ví của tôi
-              </button>
-            </div>
-          </div>
-        </aside>
-
-        <section class="col-lg-9">
-          <div
-            class="glass-panel p-5 tab-content reveal-on-scroll delay-2"
-            id="v-pills-tabContent"
-          >
-            <div class="tab-pane fade show active" id="content-profile">
-              <h3 class="fw-bold mb-4 text-dark">
-                <i class="fa-regular fa-address-card me-2 text-success"></i>
-                Thông tin cá nhân
-              </h3>
-              <form id="profileForm" class="row g-4 mt-2" onsubmit="updateProfile(event)">
-                <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Họ và tên</label>
-                  <input id="inputFullName" type="text" class="form-control custom-input" />
-                </div>
-                <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Số điện thoại</label>
-                  <input id="inputPhone" type="tel" class="form-control custom-input text-muted" />
-                </div>
-                <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Email</label>
-                  <input id="inputEmail" readonly type="email" class="form-control custom-input bg-light" />
-                </div>
-                <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Địa chỉ liên hệ</label>
-                  <input id="inputAddress" type="text" class="form-control custom-input" placeholder="VD: 38 Lê Lợi, Quận 1, TP.HCM" />
-                </div>
-                <div class="col-12 text-end mt-5">
-                  <button type="submit" class="btn-login px-5 py-3 fs-6">
-                    Lưu thay đổi
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="tab-pane fade" id="content-ekyc">
-              <h3 class="fw-bold mb-4 text-dark">
-                <i class="fa-solid fa-user-check me-2 text-success"></i> Xác minh danh tính
-              </h3>
-              <p class="text-muted mb-4">
-                Vui lòng tải lên ảnh chụp giấy tờ tùy thân của bạn để kích hoạt đầy đủ quyền lợi trên hệ thống.
-              </p>
-              
-              <div id="ekycStatusAlert" class="alert d-none mb-4" role="alert" style="border-radius: 15px;">
-                  <h5 class="alert-heading fw-bold d-flex align-items-center mb-2" id="ekycAlertTitle"></h5>
-                  <p class="mb-0" id="ekycAlertMessage"></p>
-                  <hr id="ekycAlertDivider" class="d-none">
-                  <p class="mb-0 fw-bold d-none text-danger" id="ekycRejectReasonBox">
-                      <i class="fa-solid fa-arrow-turn-down fa-rotate-90 me-2"></i>Lý do từ chối: <span id="ekycRejectReasonText" class="fw-normal"></span>
-                  </p>
-              </div>
-
-              <form id="ekycProfileForm" class="row g-4 mt-2">
-                <div class="col-12"><h5 class="text-dark fw-bold mb-0 fs-6">1. Căn cước công dân (Mặt trước & Mặt sau)</h5></div>
-                <div class="col-md-6">
-                  <div class="upload-box" onclick="document.getElementById('idFront').click()">
-                    <i class="fa-regular fa-id-card mb-3"></i>
-                    <div class="fs-5">Mặt trước CCCD</div>
-                    <small class="text-muted mt-2" id="idFrontName">Nhấn để tải ảnh lên</small>
-                  </div>
-                  <input type="file" id="idFront" class="d-none" accept="image/*" onchange="document.getElementById('idFrontName').innerText = this.files[0].name" />
-                </div>
-                <div class="col-md-6">
-                  <div class="upload-box" onclick="document.getElementById('idBack').click()">
-                    <i class="fa-solid fa-address-card mb-3"></i>
-                    <div class="fs-5">Mặt sau CCCD</div>
-                    <small class="text-muted mt-2" id="idBackName">Nhấn để tải ảnh lên</small>
-                  </div>
-                  <input type="file" id="idBack" class="d-none" accept="image/*" onchange="document.getElementById('idBackName').innerText = this.files[0].name" />
-                </div>
-
-                <div id="driverLicenseSection" class="col-12 row g-4 m-0 p-0 d-none">
-                  <div class="col-12 mt-4"><h5 class="text-dark fw-bold mb-0 fs-6 text-info">2. Bằng lái xe (Chỉ dành cho Đối tác Tài xế)</h5></div>
-                  <div class="col-md-6">
-                    <div class="upload-box" onclick="document.getElementById('licenseFront').click()" style="border-color: #0dcaf0;">
-                      <i class="fa-regular fa-id-badge mb-3 text-info"></i>
-                      <div class="fs-5">Mặt trước Bằng lái</div>
-                      <small class="text-muted mt-2" id="licenseFrontName">Nhấn để tải ảnh lên</small>
-                    </div>
-                    <input type="file" id="licenseFront" class="d-none" accept="image/*" onchange="document.getElementById('licenseFrontName').innerText = this.files[0].name" />
-                  </div>
-                  <div class="col-md-6">
-                    <div class="upload-box" onclick="document.getElementById('licenseBack').click()" style="border-color: #0dcaf0;">
-                      <i class="fa-solid fa-id-badge mb-3 text-info"></i>
-                      <div class="fs-5">Mặt sau Bằng lái</div>
-                      <small class="text-muted mt-2" id="licenseBackName">Nhấn để tải ảnh lên</small>
-                    </div>
-                    <input type="file" id="licenseBack" class="d-none" accept="image/*" onchange="document.getElementById('licenseBackName').innerText = this.files[0].name" />
-                  </div>
-                </div>
-
-                <div class="col-12 text-end mt-4">
-                  <button type="button" class="btn-login px-5 py-3 fs-6" id="btnSubmitEkyc" onclick="submitEkycProfile()">
-                    Gửi hồ sơ xét duyệt
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="tab-pane fade" id="content-security">
-              <h3 class="fw-bold mb-4 text-dark">
-                <i class="fa-solid fa-key me-2 text-success"></i> Đổi mật khẩu
-              </h3>
-              <form id="changePasswordForm" class="row g-4 mt-2">
-                <div class="col-md-12 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Mật khẩu hiện tại</label>
-                  <input type="password" id="oldPassword" class="form-control custom-input" required />
-                </div>
-                <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Mật khẩu mới</label>
-                  <input type="password" id="newPassword" class="form-control custom-input" required />
-                </div>
-                <div class="col-md-6 form-floating-custom">
-                  <label class="mb-2 fw-semibold">Xác nhận mật khẩu mới</label>
-                  <input type="password" id="confirmPassword" class="form-control custom-input" required />
-                </div>
-                <div class="col-12 text-end mt-5">
-                  <button type="submit" id="btnSubmitChangePass" class="btn-login px-5 py-3 fs-6">
-                    Cập nhật mật khẩu
-                  </button>
-                </div>
-              </form>
-            </div>
-
-            <div class="tab-pane fade" id="content-wallet">
-              <h3 class="fw-bold mb-4 text-dark">
-                <i class="fa-solid fa-wallet me-2 text-success"></i> Lịch sử ví & Giao dịch
-              </h3>
-              
-              <div id="walletHistoryContainer" class="mt-4">
-                <div class="text-center text-muted py-4">
-                  <div class="spinner-border text-success spinner-border-sm me-2"></div> Đang tải lịch sử ví...
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </section>
       </div>
 
-      
-    </main>
+      <div class="mobile-glass-dropdown" id="mobileDropdown" style="max-width: 300px;">
+        <div class="dropdown-inner-content d-flex flex-column gap-2">
+          <div class="text-center mb-3">
+            <img id="profileAvatar" src="https://ui-avatars.com/api/?name=User&background=00B14F&color=fff"
+              class="rounded-circle mb-2 shadow-sm" style="width: 60px; border: 2px solid rgba(255,255,255,0.5);">
+            <h6 id="profileDisplayName" class="fw-bold text-white mb-0 fs-6">Đang tải...</h6>
+            <span id="profileDisplayRole" class="text-white-50" style="font-size: 0.8rem;">...</span>
+          </div>
 
-    
+          <div class="divider-glass mb-2"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../js/api.js"></script>
-    <script src="../js/base.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function() {
-          const fullName = localStorage.getItem('fullName');
+          <button class="mobile-nav-item active text-start w-100 border-0" data-bs-toggle="pill"
+            data-bs-target="#content-profile" onclick="document.getElementById('mobileToggleBtn').click()">
+            <i class="fa-regular fa-user"></i> Hồ sơ
+          </button>
+          <button class="mobile-nav-item text-start w-100 border-0" data-bs-toggle="pill" data-bs-target="#content-ekyc"
+            onclick="document.getElementById('mobileToggleBtn').click()">
+            <i class="fa-solid fa-user-check"></i> eKYC
+          </button>
+          <button class="mobile-nav-item text-start w-100 border-0" data-bs-toggle="pill"
+            data-bs-target="#content-security" onclick="document.getElementById('mobileToggleBtn').click()">
+            <i class="fa-solid fa-lock"></i> Mật khẩu
+          </button>
+
+          <a href="driver/driver-workspace.html"
+            class="mobile-nav-item text-start w-100 border-0 text-decoration-none d-none" id="mobileDriverWorkspaceBtn">
+            <i class="fa-solid fa-car-side text-success"></i> <span class="text-success">Chế độ Tài xế</span>
+          </a>
+
+          <div class="divider-glass my-2"></div>
+
+          <button class="mobile-nav-item text-start w-100 border-0" style="background: rgba(255, 60, 60, 0.1);"
+            onclick="localStorage.clear(); window.location.href='../index.html';">
+            <i class="fa-solid fa-right-from-bracket text-danger"></i> <span class="text-danger">Đăng xuất</span>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-5" style="margin-top: 100px !important">
+    <div class="row g-5">
+      <aside class="col-lg-3">
+        <div class="glass-panel profile-sidebar text-center reveal-on-scroll delay-1">
+          <div class="user-avatar-box mb-4">
+            <div class="position-relative d-inline-block">
+              <img id="sidebarAvatar" src="" class="avatar-img" />
+              <label for="avatarInput" class="avatar-edit-btn position-absolute"><i
+                  class="fa-solid fa-camera"></i></label>
+              <input type="file" id="avatarInput" class="d-none" />
+            </div>
+            <h5 id="sidebarName" class="fw-bold mt-3 mb-0 text-dark">Đang tải...</h5>
+            <p id="sidebarRole" class="text-muted small">...</p>
+          </div>
+
+          <div class="nav flex-column nav-pills text-start" id="v-pills-tab" role="tablist">
+            <button class="btn-hero shadow text-dark active" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-profile">
+              <i class="fa-regular fa-user me-2"></i> Thông tin cá nhân
+            </button>
+            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-ekyc">
+              <i class="fa-solid fa-shield-halved me-2"></i> Xác thực eKYC
+            </button>
+            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-security">
+              <i class="fa-solid fa-lock me-2"></i> Đổi mật khẩu
+            </button>
+            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-wallet"
+              onclick="loadWalletHistory()">
+              <i class="fa-solid fa-wallet me-2"></i> Ví của tôi
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <section class="col-lg-9">
+        <div class="glass-panel p-5 tab-content reveal-on-scroll delay-2" id="v-pills-tabContent">
+          <div class="tab-pane fade show active" id="content-profile">
+            <h3 class="fw-bold mb-4 text-dark">
+              <i class="fa-regular fa-address-card me-2 text-success"></i>
+              Thông tin cá nhân
+            </h3>
+            <form id="profileForm" class="row g-4 mt-2" onsubmit="updateProfile(event)">
+              <div class="col-md-6 form-floating-custom">
+                <label class="mb-2 fw-semibold">Họ và tên</label>
+                <input id="inputFullName" type="text" class="form-control custom-input" />
+              </div>
+              <div class="col-md-6 form-floating-custom">
+                <label class="mb-2 fw-semibold">Số điện thoại</label>
+                <input id="inputPhone" type="tel" class="form-control custom-input text-muted" />
+              </div>
+              <div class="col-md-6 form-floating-custom">
+                <label class="mb-2 fw-semibold">Email</label>
+                <input id="inputEmail" readonly type="email" class="form-control custom-input bg-light" />
+              </div>
+              <div class="col-md-6 form-floating-custom">
+                <label class="mb-2 fw-semibold">Địa chỉ liên hệ</label>
+                <input id="inputAddress" type="text" class="form-control custom-input"
+                  placeholder="VD: 38 Lê Lợi, Quận 1, TP.HCM" />
+              </div>
+              <div class="col-12 text-end mt-5">
+                <button type="submit" class="btn-login px-5 py-3 fs-6">
+                  Lưu thay đổi
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="tab-pane fade" id="content-ekyc">
+            <h3 class="fw-bold mb-4 text-dark">
+              <i class="fa-solid fa-user-check me-2 text-success"></i> Xác minh danh tính
+            </h3>
+            <p class="text-muted mb-4">
+              Vui lòng tải lên ảnh chụp giấy tờ tùy thân của bạn để kích hoạt đầy đủ quyền lợi trên hệ thống.
+            </p>
+
+            <div id="ekycStatusAlert" class="alert d-none mb-4" role="alert" style="border-radius: 15px;">
+              <h5 class="alert-heading fw-bold d-flex align-items-center mb-2" id="ekycAlertTitle"></h5>
+              <p class="mb-0" id="ekycAlertMessage"></p>
+              <hr id="ekycAlertDivider" class="d-none">
+              <p class="mb-0 fw-bold d-none text-danger" id="ekycRejectReasonBox">
+                <i class="fa-solid fa-arrow-turn-down fa-rotate-90 me-2"></i>Lý do từ chối: <span
+                  id="ekycRejectReasonText" class="fw-normal"></span>
+              </p>
+            </div>
+
+            <form id="ekycProfileForm" class="row g-4 mt-2">
+              <div class="col-12">
+                <h5 class="text-dark fw-bold mb-0 fs-6">1. Căn cước công dân (Mặt trước & Mặt sau)</h5>
+              </div>
+              <div class="col-md-6">
+                <div class="upload-box" onclick="document.getElementById('idFront').click()">
+                  <i class="fa-regular fa-id-card mb-3"></i>
+                  <div class="fs-5">Mặt trước CCCD</div>
+                  <small class="text-muted mt-2" id="idFrontName">Nhấn để tải ảnh lên</small>
+                </div>
+                <input type="file" id="idFront" class="d-none" accept="image/*"
+                  onchange="document.getElementById('idFrontName').innerText = this.files[0].name" />
+              </div>
+              <div class="col-md-6">
+                <div class="upload-box" onclick="document.getElementById('idBack').click()">
+                  <i class="fa-solid fa-address-card mb-3"></i>
+                  <div class="fs-5">Mặt sau CCCD</div>
+                  <small class="text-muted mt-2" id="idBackName">Nhấn để tải ảnh lên</small>
+                </div>
+                <input type="file" id="idBack" class="d-none" accept="image/*"
+                  onchange="document.getElementById('idBackName').innerText = this.files[0].name" />
+              </div>
+
+              <div id="driverLicenseSection" class="col-12 row g-4 m-0 p-0 d-none">
+                <div class="col-12 mt-4">
+                  <h5 class="text-dark fw-bold mb-0 fs-6 text-info">2. Bằng lái xe (Chỉ dành cho Đối tác Tài xế)</h5>
+                </div>
+                <div class="col-md-6">
+                  <div class="upload-box" onclick="document.getElementById('licenseFront').click()"
+                    style="border-color: #0dcaf0;">
+                    <i class="fa-regular fa-id-badge mb-3 text-info"></i>
+                    <div class="fs-5">Mặt trước Bằng lái</div>
+                    <small class="text-muted mt-2" id="licenseFrontName">Nhấn để tải ảnh lên</small>
+                  </div>
+                  <input type="file" id="licenseFront" class="d-none" accept="image/*"
+                    onchange="document.getElementById('licenseFrontName').innerText = this.files[0].name" />
+                </div>
+                <div class="col-md-6">
+                  <div class="upload-box" onclick="document.getElementById('licenseBack').click()"
+                    style="border-color: #0dcaf0;">
+                    <i class="fa-solid fa-id-badge mb-3 text-info"></i>
+                    <div class="fs-5">Mặt sau Bằng lái</div>
+                    <small class="text-muted mt-2" id="licenseBackName">Nhấn để tải ảnh lên</small>
+                  </div>
+                  <input type="file" id="licenseBack" class="d-none" accept="image/*"
+                    onchange="document.getElementById('licenseBackName').innerText = this.files[0].name" />
+                </div>
+              </div>
+
+              <div class="col-12 text-end mt-4">
+                <button type="button" class="btn-login px-5 py-3 fs-6" id="btnSubmitEkyc" onclick="submitEkycProfile()">
+                  Gửi hồ sơ xét duyệt
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="tab-pane fade" id="content-security">
+            <h3 class="fw-bold mb-4 text-dark">
+              <i class="fa-solid fa-key me-2 text-success"></i> Đổi mật khẩu
+            </h3>
+            <form id="changePasswordForm" class="row g-4 mt-2">
+              <div class="col-md-12 form-floating-custom">
+                <label class="mb-2 fw-semibold">Mật khẩu hiện tại</label>
+                <input type="password" id="oldPassword" class="form-control custom-input" required />
+              </div>
+              <div class="col-md-6 form-floating-custom">
+                <label class="mb-2 fw-semibold">Mật khẩu mới</label>
+                <input type="password" id="newPassword" class="form-control custom-input" required />
+              </div>
+              <div class="col-md-6 form-floating-custom">
+                <label class="mb-2 fw-semibold">Xác nhận mật khẩu mới</label>
+                <input type="password" id="confirmPassword" class="form-control custom-input" required />
+              </div>
+              <div class="col-12 text-end mt-5">
+                <button type="submit" id="btnSubmitChangePass" class="btn-login px-5 py-3 fs-6">
+                  Cập nhật mật khẩu
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div class="tab-pane fade" id="content-wallet">
+            <h3 class="fw-bold mb-4 text-dark">
+              <i class="fa-solid fa-wallet me-2 text-success"></i> Lịch sử ví & Giao dịch
+            </h3>
+
+            <div id="walletHistoryContainer" class="mt-4">
+              <div class="text-center text-muted py-4">
+                <div class="spinner-border text-success spinner-border-sm me-2"></div> Đang tải lịch sử ví...
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+
+  </main>
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/base.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const fullName = localStorage.getItem('fullName');
+      const email = localStorage.getItem('email');
+      const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+      if (fullName) {
+        document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff&size=256`;
+        document.getElementById('profileDisplayName').innerText = fullName;
+        document.getElementById('inputFullName').value = fullName;
+      }
+
+      if (email) document.getElementById('inputEmail').value = email;
+      if (userRole) document.getElementById('profileDisplayRole').innerText = userRole;
+    });
+
+    // LOGIC XỬ LÝ ĐỔI MẬT KHẨU TỪ TAB SECURITY
+    document.addEventListener("DOMContentLoaded", function () {
+      const cpForm = document.getElementById('changePasswordForm');
+      const cpBtn = document.getElementById('btnSubmitChangePass');
+
+      if (cpForm) {
+        cpForm.addEventListener('submit', async function (e) {
+          e.preventDefault(); // Ngăn trình duyệt reload lại trang
+
+          const oldPassword = document.getElementById('oldPassword').value;
+          const newPassword = document.getElementById('newPassword').value;
+          const confirmPassword = document.getElementById('confirmPassword').value;
+
+          // Lấy email ngầm từ LocalStorage (đã được lưu lúc đăng nhập)
           const email = localStorage.getItem('email');
-          const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
-          if (fullName) {
-              document.getElementById('profileAvatar').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff&size=256`;
-              document.getElementById('profileDisplayName').innerText = fullName;
-              document.getElementById('inputFullName').value = fullName;
+          if (!email) {
+            alert("Phiên đăng nhập đã lỗi. Vui lòng đăng nhập lại!");
+            localStorage.clear();
+            window.location.href = '../index.html';
+            return;
           }
-          
-          if (email) document.getElementById('inputEmail').value = email;
-          if (userRole) document.getElementById('profileDisplayRole').innerText = userRole;
-      });
 
-// LOGIC XỬ LÝ ĐỔI MẬT KHẨU TỪ TAB SECURITY
-      document.addEventListener("DOMContentLoaded", function() {
-          const cpForm = document.getElementById('changePasswordForm');
-          const cpBtn = document.getElementById('btnSubmitChangePass');
-
-          if (cpForm) {
-              cpForm.addEventListener('submit', async function(e) {
-                  e.preventDefault(); // Ngăn trình duyệt reload lại trang
-                  
-                  const oldPassword = document.getElementById('oldPassword').value;
-                  const newPassword = document.getElementById('newPassword').value;
-                  const confirmPassword = document.getElementById('confirmPassword').value;
-                  
-                  // Lấy email ngầm từ LocalStorage (đã được lưu lúc đăng nhập)
-                  const email = localStorage.getItem('email');
-
-                  if (!email) {
-                      alert("Phiên đăng nhập đã lỗi. Vui lòng đăng nhập lại!");
-                      localStorage.clear();
-                      window.location.href = '../index.html';
-                      return;
-                  }
-
-                  // Kiểm tra mật khẩu xác nhận
-                  if (newPassword !== confirmPassword) {
-                      alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
-                      return;
-                  }
-
-                  // Hiệu ứng Loading cho nút bấm
-                  const originalText = cpBtn.innerHTML;
-                  cpBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
-                  cpBtn.disabled = true;
-
-                  // Đóng gói data gửi xuống Java Servlet
-                  const formData = new URLSearchParams();
-                  formData.append('email', email);
-                  formData.append('oldPassword', oldPassword);
-                  formData.append('newPassword', newPassword);
-                  formData.append('confirmPassword', confirmPassword);
-
-                  try {
-                      // Gọi API tới ChangePasswordController
-                      const response = await fetch('http://localhost:8080/FleetFlow/api/v1/auth/change-password', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                          body: formData.toString()
-                      });
-
-                      const data = await response.json();
-
-                      if (data.success) {
-                          alert("Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.");
-                          
-                          // Reset form, xóa token và đẩy về trang chủ để đăng nhập lại
-                          cpForm.reset();
-                          localStorage.clear();
-                          window.location.href = '../index.html'; 
-                      } else {
-                          alert("Thất bại: " + data.message);
-                      }
-                  } catch (error) {
-                      console.error("Lỗi gọi API Đổi mật khẩu:", error);
-                      alert("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.");
-                  } finally {
-                      // Khôi phục nút bấm nếu có lỗi
-                      cpBtn.innerHTML = originalText;
-                      cpBtn.disabled = false;
-                  }
-              });
+          // Kiểm tra mật khẩu xác nhận
+          if (newPassword !== confirmPassword) {
+            alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            return;
           }
-      });
-    </script>
 
-<script>
+          // Hiệu ứng Loading cho nút bấm
+          const originalText = cpBtn.innerHTML;
+          cpBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang xử lý...';
+          cpBtn.disabled = true;
+
+          // Đóng gói data gửi xuống Java Servlet
+          const formData = new URLSearchParams();
+          formData.append('email', email);
+          formData.append('oldPassword', oldPassword);
+          formData.append('newPassword', newPassword);
+          formData.append('confirmPassword', confirmPassword);
+
+          try {
+            // Gọi API tới ChangePasswordController
+            const response = await fetch('http://localhost:8080/FleetFlow/api/v1/auth/change-password', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: formData.toString()
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              alert("Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.");
+
+              // Reset form, xóa token và đẩy về trang chủ để đăng nhập lại
+              cpForm.reset();
+              localStorage.clear();
+              window.location.href = '../index.html';
+            } else {
+              alert("Thất bại: " + data.message);
+            }
+          } catch (error) {
+            console.error("Lỗi gọi API Đổi mật khẩu:", error);
+            alert("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.");
+          } finally {
+            // Khôi phục nút bấm nếu có lỗi
+            cpBtn.innerHTML = originalText;
+            cpBtn.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
+
+  <script>
     const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
     const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customers';
-    let currentApprovalStatus = 'PENDING'; 
+    let currentApprovalStatus = 'PENDING';
 
-    document.addEventListener("DOMContentLoaded", function() {
-        initLocalProfileUI();
+    document.addEventListener("DOMContentLoaded", function () {
+      initLocalProfileUI();
+
+      const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+
+      // ========================================================
+      // ĐIỀU PHỐI (ROUTER): TÁCH LUỒNG KHÁCH HÀNG & TÀI XẾ
+      // ========================================================
+      if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG' || userRole === 'ADMIN') {
+        // Khách hàng không cần xác thực CCCD/Bằng lái -> Ẩn tab eKYC đi cho gọn UI
+        const ekycTabBtn = document.querySelector('button[data-bs-target="#content-ekyc"]');
+        if (ekycTabBtn) ekycTabBtn.style.display = 'none';
+
+        // Kích hoạt luồng Fetch API Khách hàng
+        loadCustomerProfileFromAPI();
+      } else {
+        // 🚀 BỔ SUNG: Xóa hoàn toàn tab Thông tin cá nhân, eKYC, Ví cho Đối tác Tài xế
+        const tabsToRemove = [
+            '[data-bs-target="#content-profile"]',
+            '[data-bs-target="#content-ekyc"]',
+            '[data-bs-target="#content-wallet"]'
+        ];
         
-        const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-        
-        // ========================================================
-        // ĐIỀU PHỐI (ROUTER): TÁCH LUỒNG KHÁCH HÀNG & TÀI XẾ
-        // ========================================================
-        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG' || userRole === 'ADMIN' ) {
-            // Khách hàng không cần xác thực CCCD/Bằng lái -> Ẩn tab eKYC đi cho gọn UI
-            const ekycTabBtn = document.querySelector('button[data-bs-target="#content-ekyc"]');
-            if (ekycTabBtn) ekycTabBtn.style.display = 'none';
-            
-            // Kích hoạt luồng Fetch API Khách hàng
-            loadCustomerProfileFromAPI();
-        } else {
-            // 🚀 BỔ SUNG: Hiển thị box Bằng lái xe cho Đối tác Tài xế
-            const licenseSection = document.getElementById('driverLicenseSection');
-            if (licenseSection) {
-                licenseSection.classList.remove('d-none');
-            }
+        tabsToRemove.forEach(selector => {
+            document.querySelectorAll(selector).forEach(el => el.remove());
+        });
 
-            // Hiển thị thêm nút "Chế độ Tài xế" trên Mobile Navbar (nếu bạn muốn)
-            const mobileWorkspaceBtn = document.getElementById('mobileDriverWorkspaceBtn');
-            if (mobileWorkspaceBtn) mobileWorkspaceBtn.classList.remove('d-none');
+        const panesToRemove = ['content-profile', 'content-ekyc', 'content-wallet'];
+        panesToRemove.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        });
 
-            // Kích hoạt luồng Fetch API Tài xế
-            loadDriverProfileFromAPI(true);
+        const securityTabBtn = document.querySelector('button[data-bs-target="#content-security"]');
+        if (securityTabBtn) {
+          // Mặc định chuyển sang tab Đổi mật khẩu
+          document.querySelectorAll('.btn-hero').forEach(btn => btn.classList.remove('active'));
+          document.querySelectorAll('.tab-pane').forEach(pane => {
+            pane.classList.remove('show', 'active');
+          });
+          securityTabBtn.classList.add('active');
+          const securityContent = document.getElementById('content-security');
+          if (securityContent) securityContent.classList.add('show', 'active');
         }
+
+        // Kích hoạt luồng Fetch API Tài xế (Chỉ lấy thông tin cơ bản)
+        loadDriverProfileFromAPI(true);
+      }
     });
 
     function initLocalProfileUI() {
-        const fullName = localStorage.getItem('fullName');
-        const email = localStorage.getItem('email');
-        const userRole = localStorage.getItem('userRole') || 'Tài xế';
+      const fullName = localStorage.getItem('fullName');
+      const email = localStorage.getItem('email');
+      const userRole = localStorage.getItem('userRole') || 'Tài xế';
 
-        if (fullName) {
-            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
-            document.querySelectorAll('#mobileNavAvatar, #sidebarAvatar, #profileAvatar').forEach(img => {
-                if(img) img.src = avatarUrl;
-            });
-            document.querySelectorAll('#sidebarName, #profileDisplayName').forEach(el => {
-                if(el) el.innerText = fullName;
-            });
-            if(document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
-        }
-        if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
-        if (userRole && document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
-        if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
+      if (fullName) {
+        const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+        document.querySelectorAll('#mobileNavAvatar, #sidebarAvatar, #profileAvatar').forEach(img => {
+          if (img) img.src = avatarUrl;
+        });
+        document.querySelectorAll('#sidebarName, #profileDisplayName').forEach(el => {
+          if (el) el.innerText = fullName;
+        });
+        if (document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
+      }
+      if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
+      if (userRole && document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
+      if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
     }
 
     // =========================================================================
@@ -471,89 +463,89 @@
      * [GET] Lấy chi tiết hồ sơ Khách hàng và Binding vào Input
      */
     async function loadCustomerProfileFromAPI() {
-        const token = localStorage.getItem('accessToken');
-        if (!token) return;
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
 
-        try {
-            const response = await fetch(`${CUSTOMER_API_BASE}/profile`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            const result = await response.json();
-            
-            if (result.success && result.data) {
-                const data = result.data;
-                
-                // 1. Điền (Binding) dữ liệu vào Form
-                const inputName = document.getElementById('inputFullName');
-                const inputPhone = document.getElementById('inputPhone');
-                const inputEmail = document.getElementById('inputEmail');
-                const inputAddress = document.getElementById('inputAddress');
-                
-                if (inputName) inputName.value = data.fullName || '';
-                if (inputPhone) inputPhone.value = data.phoneNumber || '';
-                if (inputEmail) inputEmail.value = data.email || '';
-                if (inputAddress) inputAddress.value = data.address || '';
-                
-                // 2. Lưu trữ các thông số nội bộ (Cực kỳ quan trọng cho TripBooking)
-                localStorage.setItem('customerId', data.customerId || '');
-                localStorage.setItem('accountId', data.accountId || '');
-                localStorage.setItem('debtBalance', data.debtBalance || '0');
-                localStorage.setItem('bookingStatus', data.bookingStatus || 'Active');
-                
-                initLocalProfileUI();
-            }
-        } catch (error) {
-            console.error("Lỗi API Customer Profile:", error);
+      try {
+        const response = await fetch(`${CUSTOMER_API_BASE}/profile`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          const data = result.data;
+
+          // 1. Điền (Binding) dữ liệu vào Form
+          const inputName = document.getElementById('inputFullName');
+          const inputPhone = document.getElementById('inputPhone');
+          const inputEmail = document.getElementById('inputEmail');
+          const inputAddress = document.getElementById('inputAddress');
+
+          if (inputName) inputName.value = data.fullName || '';
+          if (inputPhone) inputPhone.value = data.phoneNumber || '';
+          if (inputEmail) inputEmail.value = data.email || '';
+          if (inputAddress) inputAddress.value = data.address || '';
+
+          // 2. Lưu trữ các thông số nội bộ (Cực kỳ quan trọng cho TripBooking)
+          localStorage.setItem('customerId', data.customerId || '');
+          localStorage.setItem('accountId', data.accountId || '');
+          localStorage.setItem('debtBalance', data.debtBalance || '0');
+          localStorage.setItem('bookingStatus', data.bookingStatus || 'Active');
+
+          initLocalProfileUI();
         }
+      } catch (error) {
+        console.error("Lỗi API Customer Profile:", error);
+      }
     }
 
     /**
      * [POST] Cập nhật hồ sơ Khách hàng
      */
     async function updateCustomerProfile(btn, originalText) {
-        const token = localStorage.getItem('accessToken');
-        if (!token) {
-            alert("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!");
-            return;
+      const token = localStorage.getItem('accessToken');
+      if (!token) {
+        alert("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!");
+        return;
+      }
+
+      const fullName = document.getElementById('inputFullName')?.value.trim() || '';
+      const phoneNumber = document.getElementById('inputPhone')?.value.trim() || '';
+      const address = document.getElementById('inputAddress')?.value.trim() || '';
+
+      const params = new URLSearchParams();
+      if (fullName) params.append('fullName', fullName);
+      if (phoneNumber) params.append('phoneNumber', phoneNumber);
+      if (address) params.append('address', address);
+
+      try {
+        const response = await fetch(`${CUSTOMER_API_BASE}/profile/update`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: params.toString()
+        });
+        const result = await response.json();
+
+        if (result.success) {
+          alert("Cập nhật thông tin cá nhân thành công!");
+          localStorage.setItem('fullName', fullName);
+          initLocalProfileUI();
+        } else {
+          alert("Lỗi hệ thống: " + result.message);
         }
-
-        const fullName = document.getElementById('inputFullName')?.value.trim() || '';
-        const phoneNumber = document.getElementById('inputPhone')?.value.trim() || '';
-        const address = document.getElementById('inputAddress')?.value.trim() || '';
-
-        const params = new URLSearchParams();
-        if (fullName) params.append('fullName', fullName);
-        if (phoneNumber) params.append('phoneNumber', phoneNumber);
-        if (address) params.append('address', address);
-
-        try {
-            const response = await fetch(`${CUSTOMER_API_BASE}/profile/update`, {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/x-www-form-urlencoded' 
-                },
-                body: params.toString()
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                alert("Cập nhật thông tin cá nhân thành công!");
-                localStorage.setItem('fullName', fullName);
-                initLocalProfileUI();
-            } else {
-                alert("Lỗi hệ thống: " + result.message);
-            }
-        } catch (error) {
-            alert("Không thể kết nối đến máy chủ.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
+      } catch (error) {
+        alert("Không thể kết nối đến máy chủ.");
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
     }
 
 
@@ -566,121 +558,95 @@
       if (!accountId || accountId === 'undefined' || !isDriver) return;
 
       const showToastForce = (id) => {
-          const el = document.getElementById(id);
-          if (!el) return;
-          el.classList.remove('d-none');
-          el.style.display = 'block';
-          el.style.opacity = '1';
-          el.style.zIndex = '999999';
-          void el.offsetWidth;
-          el.classList.add('show');
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.remove('d-none');
+        el.style.display = 'block';
+        el.style.opacity = '1';
+        el.style.zIndex = '999999';
+        void el.offsetWidth;
+        el.classList.add('show');
       };
 
       try {
-          const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
-          const result = await response.json();
-          
-          if (result.success && result.data) {
-              const data = result.data; 
-              
-              const inputName = document.getElementById('inputFullName');
-              const inputPhone = document.getElementById('inputPhone');
-              if (inputName && data.fullName) inputName.value = data.fullName;
-              if (inputPhone && data.phoneNumber) inputPhone.value = data.phoneNumber;
-              
-              localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
-              localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
-              localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
-              localStorage.setItem('termsAcceptedAt', data.termsAcceptedAt || '');
-              localStorage.setItem('averageRating', data.averageRating || '0');
-              localStorage.setItem('walletBalance', data.walletBalance || '0');
+        const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
+        const result = await response.json();
 
-              let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? false;
-              let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
-              localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
-              
-              const storedApproval = localStorage.getItem('approvalStatus');
-              const storedTerms = localStorage.getItem('termsAccepted');
-              
-              if (storedApproval !== 'APPROVED') {
-                  const ekycToastEl = document.getElementById('ekycWarningToast');
-                  const isEkycComplete = localStorage.getItem('isEkycComplete') === 'true';
-                  if (ekycToastEl) {
-                      const toastSpan = ekycToastEl.querySelector('.toast-body span');
-                      const toastIcon = ekycToastEl.querySelector('i');
-                      
-                      if (storedApproval === 'REJECTED') {
-                          ekycToastEl.className = "toast align-items-center border border-danger shadow-lg position-fixed start-0 show";
-                          if(toastIcon) toastIcon.className = "fa-solid fa-circle-xmark fs-3 text-danger fa-beat mt-1";
-                          if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>bị từ chối</b>. Vui lòng tải lại CCCD & Bằng lái!";
-                      } else if (isEkycComplete) {
-                          ekycToastEl.className = "toast align-items-center border border-info shadow-lg position-fixed start-0 show";
-                          if(toastIcon) toastIcon.className = "fa-solid fa-clock-rotate-left fs-3 text-info fa-spin-pulse mt-1";
-                          if(toastSpan) toastSpan.innerHTML = "Hồ sơ <b>đang chờ phê duyệt</b>. Vui lòng quay lại sau!";
-                      } else {
-                          ekycToastEl.className = "toast align-items-center border border-warning shadow-lg position-fixed start-0 show";
-                          if(toastIcon) toastIcon.className = "fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1";
-                      }
-                  }
-                  showToastForce('ekycWarningToast'); 
-              } else {
-                  const el = document.getElementById('ekycWarningToast');
-                  if (el) el.style.display = 'none';
-              }
+        if (result.success && result.data) {
+          const data = result.data;
 
-              if (storedTerms !== 'true') { 
-                  showToastForce('termsWarningToast');
-              } else {
-                  const el = document.getElementById('termsWarningToast');
-                  if (el) el.style.display = 'none';
-              }
+          const inputName = document.getElementById('inputFullName');
+          const inputPhone = document.getElementById('inputPhone');
+          if (inputName && data.fullName) inputName.value = data.fullName;
+          if (inputPhone && data.phoneNumber) inputPhone.value = data.phoneNumber;
 
-          } else {
-              localStorage.setItem('termsAccepted', 'false');
-              localStorage.setItem('approvalStatus', 'PENDING');
-              showToastForce('termsWarningToast');
-              showToastForce('ekycWarningToast');
+          localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
+          localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
+          localStorage.setItem('availabilityStatus', data.availabilityStatus || '');
+          localStorage.setItem('termsAcceptedAt', data.termsAcceptedAt || '');
+          localStorage.setItem('averageRating', data.averageRating || '0');
+          localStorage.setItem('walletBalance', data.walletBalance || '0');
+
+          let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? false;
+          let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
+          localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
+
+          const storedApproval = localStorage.getItem('approvalStatus');
+          const storedTerms = localStorage.getItem('termsAccepted');
+
+          if (storedApproval !== 'APPROVED') {
+              // Removed eKYC toast logic for drivers
           }
-          fetchEkycApprovalDetails();
+
+          if (storedTerms !== 'true') {
+            // terms toast logic removed
+          } else {
+            // terms toast logic removed
+          }
+
+        } else {
+          localStorage.setItem('termsAccepted', 'false');
+          localStorage.setItem('approvalStatus', 'PENDING');
+        }
       } catch (error) {
-          console.error("Lỗi API Profile:", error);
+        console.error("Lỗi API Profile:", error);
       }
-  }
+    }
 
     async function updateDriverProfile(btn, originalText) {
-        const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-        if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
+      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+      if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
 
-        const fullName = document.getElementById('inputFullName')?.value.trim() || '';
-        const phoneNumber = document.getElementById('inputPhone')?.value.trim() || '';
+      const fullName = document.getElementById('inputFullName')?.value.trim() || '';
+      const phoneNumber = document.getElementById('inputPhone')?.value.trim() || '';
 
-        const params = new URLSearchParams();
-        params.append('fullName', fullName);
-        params.append('phoneNumber', phoneNumber);
-        
-        const currentStatus = localStorage.getItem('availabilityStatus') || 'OFFLINE';
-        params.append('availabilityStatus', currentStatus); // Bắt buộc cho API Tài xế
+      const params = new URLSearchParams();
+      params.append('fullName', fullName);
+      params.append('phoneNumber', phoneNumber);
 
-        try {
-            const response = await fetch(`${DRIVER_API_BASE}/profile/update?accountID=${accountId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params.toString()
-            });
-            const result = await response.json();
-            if (result.success) {
-                alert("Cập nhật thông tin cá nhân thành công!");
-                localStorage.setItem('fullName', fullName);
-                initLocalProfileUI();
-            } else {
-                alert("Lỗi hệ thống: " + result.message);
-            }
-        } catch (error) {
-            alert("Không thể kết nối đến máy chủ.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
+      const currentStatus = localStorage.getItem('availabilityStatus') || 'OFFLINE';
+      params.append('availabilityStatus', currentStatus); // Bắt buộc cho API Tài xế
+
+      try {
+        const response = await fetch(`${DRIVER_API_BASE}/profile/update?accountID=${accountId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+        const result = await response.json();
+        if (result.success) {
+          alert("Cập nhật thông tin cá nhân thành công!");
+          localStorage.setItem('fullName', fullName);
+          initLocalProfileUI();
+        } else {
+          alert("Lỗi hệ thống: " + result.message);
         }
+      } catch (error) {
+        alert("Không thể kết nối đến máy chủ.");
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
     }
 
 
@@ -688,212 +654,198 @@
     // HÀM ĐIỀU PHỐI (ROUTER) KHI BẤM NÚT "LƯU THAY ĐỔI"
     // =========================================================================
     async function updateProfile(event) {
-        event.preventDefault();
-        const btn = event.submitter || document.activeElement; 
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang lưu...';
-        btn.disabled = true;
+      event.preventDefault();
+      const btn = event.submitter || document.activeElement;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang lưu...';
+      btn.disabled = true;
 
-        const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-        
-        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
-            await updateCustomerProfile(btn, originalText);
-        } else {
-            await updateDriverProfile(btn, originalText);
-        }
+      const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+
+      if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
+        await updateCustomerProfile(btn, originalText);
+      } else {
+        await updateDriverProfile(btn, originalText);
+      }
     }
 
     async function fetchEkycApprovalDetails() {
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-      const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
       
-      if (!accountId || userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') return;
+      if (!accountId) return;
 
       try {
-          const response = await fetch(`${DRIVER_API_BASE}/approval-status?accountID=${accountId}`);
-          const result = await response.json();
+        const response = await fetch(`${DRIVER_API_BASE}/approval-status?accountID=${accountId}`);
+        const result = await response.json();
 
-          if (result.success && result.data) {
-              const data = result.data;
-              const status = String(data.approvalStatus).toUpperCase();
-              currentApprovalStatus = status;
+        if (result.success && result.data) {
+          const data = result.data;
+          const status = String(data.approvalStatus).toUpperCase();
+          currentApprovalStatus = status;
 
-              const alertBox = document.getElementById('ekycStatusAlert');
-              const alertTitle = document.getElementById('ekycAlertTitle');
-              const alertMsg = document.getElementById('ekycAlertMessage');
-              const rejectBox = document.getElementById('ekycRejectReasonBox');
-              const rejectText = document.getElementById('ekycRejectReasonText');
-              const alertDivider = document.getElementById('ekycAlertDivider');
-              const btnSubmit = document.getElementById('btnSubmitEkyc');
-              const formInputs = document.querySelectorAll('#ekycProfileForm input[type="file"]');
+          const alertBox = document.getElementById('ekycStatusAlert');
+          const alertTitle = document.getElementById('ekycAlertTitle');
+          const alertMsg = document.getElementById('ekycAlertMessage');
+          const rejectBox = document.getElementById('ekycRejectReasonBox');
+          const rejectText = document.getElementById('ekycRejectReasonText');
+          const alertDivider = document.getElementById('ekycAlertDivider');
+          const btnSubmit = document.getElementById('btnSubmitEkyc');
+          const formInputs = document.querySelectorAll('#ekycProfileForm input[type="file"]');
 
-              alertBox.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger', 'alert-info');
+          alertBox.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger', 'alert-info');
 
-              if (status === 'APPROVED') {
-                  alertBox.classList.add('alert-success');
-                  alertTitle.innerHTML = '<i class="fa-solid fa-circle-check fs-4 me-2"></i> Hồ sơ đã được duyệt';
-                  alertMsg.innerText = 'Giấy tờ của bạn đã hợp lệ. Bạn hiện có thể nhận chuyến đi trên hệ thống FleetFlow.';
-                  btnSubmit.style.display = 'none';
-                  formInputs.forEach(input => input.disabled = true);
+          if (status === 'APPROVED') {
+            alertBox.classList.add('alert-success');
+            alertTitle.innerHTML = '<i class="fa-solid fa-circle-check fs-4 me-2"></i> Hồ sơ đã được duyệt';
+            alertMsg.innerText = 'Giấy tờ của bạn đã hợp lệ. Bạn hiện có thể nhận chuyến đi trên hệ thống FleetFlow.';
+            btnSubmit.style.display = 'none';
+            formInputs.forEach(input => input.disabled = true);
 
-              } else if (status === 'PENDING') {
-                  // 🚀 FIX LOGIC: Phân biệt "Mới tạo" và "Đã nộp chờ duyệt"
-                  const docs = data.documents || [];
-                  if (docs.length === 0) {
-                      // TRƯỜNG HỢP 1: Tài xế mới, chưa nộp giấy tờ nào -> HIỆN NÚT SUBMIT
-                      alertBox.classList.add('alert-warning');
-                      alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Chưa nộp hồ sơ';
-                      alertMsg.innerText = 'Vui lòng tải lên ảnh CCCD và Bằng lái xe để hệ thống xét duyệt.';
-                      btnSubmit.style.display = 'block'; 
-                      formInputs.forEach(input => input.disabled = false);
-                  } else {
-                      // TRƯỜNG HỢP 2: Đã nộp giấy tờ, đang chờ Admin duyệt -> ẨN NÚT SUBMIT
-                      alertBox.classList.add('alert-info');
-                      alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
-                      alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Admin sẽ tiến hành kiểm duyệt trong thời gian tới.';
-                      btnSubmit.style.display = 'none';
-                      formInputs.forEach(input => input.disabled = true);
-                  }
+          } else if (status === 'PENDING') {
+            // 🚀 FIX LOGIC: Phân biệt "Mới tạo" và "Đã nộp chờ duyệt"
+            const docs = data.documents || [];
+            if (docs.length === 0) {
+              // TRƯỜNG HỢP 1: Tài xế mới, chưa nộp giấy tờ nào -> HIỆN NÚT SUBMIT
+              alertBox.classList.add('alert-warning');
+              alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Chưa nộp hồ sơ';
+              alertMsg.innerText = 'Vui lòng tải lên ảnh CCCD và Bằng lái xe để hệ thống xét duyệt.';
+              btnSubmit.style.display = 'block';
+              formInputs.forEach(input => input.disabled = false);
+            } else {
+              // TRƯỜNG HỢP 2: Đã nộp giấy tờ, đang chờ Admin duyệt -> ẨN NÚT SUBMIT
+              alertBox.classList.add('alert-info');
+              alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
+              alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Admin sẽ tiến hành kiểm duyệt trong thời gian tới.';
+              btnSubmit.style.display = 'none';
+              formInputs.forEach(input => input.disabled = true);
+            }
 
-              } else if (status === 'REJECTED') {
-                  alertBox.classList.add('alert-danger');
-                  alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Hồ sơ bị từ chối';
-                  alertMsg.innerText = 'Rất tiếc, giấy tờ định danh của bạn không đạt yêu cầu. Vui lòng kiểm tra lý do bên dưới và tải lại TOÀN BỘ giấy tờ.';
-                  
-                  if (data.documents && data.documents.length > 0) {
-                      const rejectedDoc = data.documents.find(doc => doc.rejectReason != null && doc.rejectReason !== '');
-                      if (rejectedDoc) {
-                          alertDivider.classList.remove('d-none');
-                          rejectBox.classList.remove('d-none');
-                          rejectText.innerText = rejectedDoc.rejectReason;
-                      }
-                  }
-                  btnSubmit.style.display = 'block'; // Kích hoạt lại nút Submit
-                  btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-right me-2"></i> Tải lại hồ sơ';
-                  btnSubmit.classList.replace('btn-login', 'btn-danger'); 
-                  formInputs.forEach(input => input.disabled = false);
+          } else if (status === 'REJECTED') {
+            alertBox.classList.add('alert-danger');
+            alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Hồ sơ bị từ chối';
+            alertMsg.innerText = 'Rất tiếc, giấy tờ định danh của bạn không đạt yêu cầu. Vui lòng kiểm tra lý do bên dưới và tải lại TOÀN BỘ giấy tờ.';
+
+            if (data.documents && data.documents.length > 0) {
+              const rejectedDoc = data.documents.find(doc => doc.rejectReason != null && doc.rejectReason !== '');
+              if (rejectedDoc) {
+                alertDivider.classList.remove('d-none');
+                rejectBox.classList.remove('d-none');
+                rejectText.innerText = rejectedDoc.rejectReason;
               }
+            }
+            btnSubmit.style.display = 'block'; // Kích hoạt lại nút Submit
+            btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-right me-2"></i> Tải lại hồ sơ';
+            btnSubmit.classList.replace('btn-login', 'btn-danger');
+            formInputs.forEach(input => input.disabled = false);
           }
+        }
       } catch (error) {
-          console.error("Lỗi lấy chi tiết trạng thái kiểm duyệt (API 7):", error);
+        console.error("Lỗi lấy chi tiết trạng thái kiểm duyệt (API 7):", error);
       }
     }
 
     async function submitEkycProfile() {
-        const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-        if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
+      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+      if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
 
-        const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
-        
-        // 🚀 FIX LOGIC: Khóa cứng hoàn toàn Khách hàng, không cho bấm Submit
-        if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG') {
-            return alert("Tính năng tải giấy tờ eKYC này chỉ dành cho Đối tác Tài xế.");
+      const idFront = document.getElementById('idFront').files[0];
+      const idBack = document.getElementById('idBack').files[0];
+      const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
+      const licenseBack = document.getElementById('licenseBack') ? document.getElementById('licenseBack').files[0] : null;
+
+      if (!idFront || !idBack) return alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
+
+      const btn = document.getElementById('btnSubmitEkyc');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
+      btn.disabled = true;
+
+      const formData = new FormData();
+      formData.append('identityCard', idFront);
+      formData.append('driverLicense', licenseFront);
+
+      const endpoint = (currentApprovalStatus === 'REJECTED') ? 'documents/reupload' : 'documents/submit';
+
+      try {
+        const response = await fetch(`${DRIVER_API_BASE}/${endpoint}?accountID=${accountId}`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (data.success) {
+          alert(data.message);
+          localStorage.setItem('isEkycComplete', 'true');
+          window.location.reload();
+        } else {
+          alert("Lỗi từ hệ thống: " + data.message);
         }
-
-        const idFront = document.getElementById('idFront').files[0];
-        const idBack = document.getElementById('idBack').files[0];
-        const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
-        const licenseBack = document.getElementById('licenseBack') ? document.getElementById('licenseBack').files[0] : null;
-
-        if (!idFront || !idBack) return alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
-        
-        // Bắt buộc chọn đủ 2 mặt Bằng lái (Mặc dù Backend Java hiện chỉ bóc 1 file)
-        if (!licenseFront || !licenseBack) {
-            return alert("Tài khoản của bạn là Đối tác Tài xế. Vui lòng tải lên đầy đủ 2 mặt Bằng lái xe!");
-        }
-
-        const btn = document.getElementById('btnSubmitEkyc');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
-        btn.disabled = true;
-
-        const formData = new FormData();
-        formData.append('identityCard', idFront); 
-        formData.append('driverLicense', licenseFront); 
-
-        const endpoint = (currentApprovalStatus === 'REJECTED') ? 'documents/reupload' : 'documents/submit';
-
-        try {
-            const response = await fetch(`${DRIVER_API_BASE}/${endpoint}?accountID=${accountId}`, {
-                method: 'POST',
-                body: formData
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert(data.message); 
-                localStorage.setItem('isEkycComplete', 'true');
-                window.location.reload(); 
-            } else {
-                // Sẽ ném ra lỗi nếu tài xế chưa accept Terms trong Policy
-                alert("Lỗi từ hệ thống: " + data.message); 
-            }
-        } catch (error) {
-            alert("Không thể kết nối đến máy chủ.");
-        } finally {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-        }
+      } catch (error) {
+        alert("Không thể kết nối đến máy chủ.");
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
     }
-    
+
     // =========================================================================
     // TÍCH HỢP API: LỊCH SỬ VÍ & CÔNG NỢ (WALLET HISTORY)
     // =========================================================================
     async function loadWalletHistory() {
-        const container = document.getElementById('walletHistoryContainer');
-        if (!container) return;
+      const container = document.getElementById('walletHistoryContainer');
+      if (!container) return;
 
-        const token = localStorage.getItem("accessToken");
-        if (!token) {
-            container.innerHTML = `<div class="alert alert-warning">Vui lòng đăng nhập để xem ví.</div>`;
-            return;
-        }
+      const token = localStorage.getItem("accessToken");
+      if (!token) {
+        container.innerHTML = `<div class="alert alert-warning">Vui lòng đăng nhập để xem ví.</div>`;
+        return;
+      }
 
-        try {
-            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/wallet`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json"
-                }
-            });
+      try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/wallet`, {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
 
-            const result = await response.json();
+        const result = await response.json();
 
-            if (response.ok && result.success && result.data) {
-                const transactions = result.data;
+        if (response.ok && result.success && result.data) {
+          const transactions = result.data;
 
-                if (transactions.length === 0) {
-                    container.innerHTML = `
+          if (transactions.length === 0) {
+            container.innerHTML = `
                         <div class="text-center py-5 bg-white rounded-3 border">
                             <i class="fa-solid fa-receipt fs-1 text-muted opacity-50 mb-3"></i>
                             <h6 class="text-muted">Chưa có giao dịch nào phát sinh</h6>
                         </div>`;
-                    return;
-                }
+            return;
+          }
 
-                let htmlContent = '';
-                
-                transactions.forEach(tx => {
-                    // Logic nhận diện loại giao dịch
-                    const isPayment = tx.TransactionType === 'PAYMENT';
-                    
-                    // Lấy giá trị tuyệt đối (Bỏ dấu trừ của DB đi)
-                    const amountValue = Math.abs(tx.Amount);
-                    const formattedAmount = amountValue.toLocaleString('vi-VN') + ' đ';
+          let htmlContent = '';
 
-                    // CẤU HÌNH UI/UX DỰA TRÊN NGHIỆP VỤ:
-                    const colorClass = isPayment ? 'text-danger' : 'text-success'; // Đỏ nếu là PAYMENT, Xanh nếu REFUND
-                    const sign = isPayment ? '-' : '+';
-                    const icon = isPayment ? 'fa-arrow-trend-down' : 'fa-arrow-trend-up';
-                    const title = isPayment ? 'Thanh toán cước xe' : 'Hoàn tiền / Nạp ví';
-                    const bookingRef = tx.BookingID ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${tx.BookingID}</span>` : '';
+          transactions.forEach(tx => {
+            // Logic nhận diện loại giao dịch
+            const isPayment = tx.TransactionType === 'PAYMENT';
 
-                    // Xử lý ngày tháng đẹp
-                    const dateObj = new Date(tx.CreatedAt);
-                    const formattedDate = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')} - ${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+            // Lấy giá trị tuyệt đối (Bỏ dấu trừ của DB đi)
+            const amountValue = Math.abs(tx.Amount);
+            const formattedAmount = amountValue.toLocaleString('vi-VN') + ' đ';
 
-                    // Gắn vào thẻ HTML siêu đẹp
-                    htmlContent += `
+            // CẤU HÌNH UI/UX DỰA TRÊN NGHIỆP VỤ:
+            const colorClass = isPayment ? 'text-danger' : 'text-success'; // Đỏ nếu là PAYMENT, Xanh nếu REFUND
+            const sign = isPayment ? '-' : '+';
+            const icon = isPayment ? 'fa-arrow-trend-down' : 'fa-arrow-trend-up';
+            const title = isPayment ? 'Thanh toán cước xe' : 'Hoàn tiền / Nạp ví';
+            const bookingRef = tx.BookingID ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${tx.BookingID}</span>` : '';
+
+            // Xử lý ngày tháng đẹp
+            const dateObj = new Date(tx.CreatedAt);
+            const formattedDate = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')} - ${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+
+            // Gắn vào thẻ HTML siêu đẹp
+            htmlContent += `
                         <div class="d-flex justify-content-between align-items-center p-3 mb-3 bg-white rounded-3 shadow-sm border" style="transition: transform 0.2s;">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="rounded-circle d-flex justify-content-center align-items-center bg-opacity-10 ${isPayment ? 'bg-danger' : 'bg-success'}" style="width: 45px; height: 45px;">
@@ -912,113 +864,88 @@
                             </div>
                         </div>
                     `;
-                });
+          });
 
-                container.innerHTML = htmlContent;
-            } else {
-                container.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white">Lỗi tải dữ liệu: ${result.message || 'Không xác định'}</div>`;
-            }
-        } catch (error) {
-            console.error("Lỗi tải API Ví:", error);
-            container.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white"><i class="fa-solid fa-triangle-exclamation me-2"></i>Không thể kết nối đến máy chủ.</div>`;
+          container.innerHTML = htmlContent;
+        } else {
+          container.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white">Lỗi tải dữ liệu: ${result.message || 'Không xác định'}</div>`;
         }
+      } catch (error) {
+        console.error("Lỗi tải API Ví:", error);
+        container.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white"><i class="fa-solid fa-triangle-exclamation me-2"></i>Không thể kết nối đến máy chủ.</div>`;
+      }
     }
-    </script>
-    <!-- Box warning cho ekyc (Nằm sát dưới cùng) -->
-    <div id="ekycWarningToast" class="toast align-items-center border border-warning shadow-lg position-fixed start-0" 
-         role="alert" style="bottom: 3svh; margin-left: 3svw; z-index: 10000; background: rgba(0,0,0,0.85); box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); display: none; width: calc(100vw - 6svw); max-width: 350px;">
-        <div class="d-flex p-3">
-            <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
-                <i class="fa-solid fa-triangle-exclamation fs-3 text-warning fa-fade mt-1"></i> 
-                <span style="color: var(--color-2)">Tài khoản chưa xác thực. Vui lòng vào <a href="../profile.html" class="text-warning fw-bold">Hồ sơ</a> bổ sung CCCD và Bằng lái xe để nhận chuyến!</span>
-            </div>
-            <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('ekycWarningToast').style.display='none'"></button>
-        </div>
-    </div>
-
-    <!-- Box warning cho chính sách (Được đẩy lên cao hơn hộp ekyc 110px) -->
-    <div id="termsWarningToast" class="toast align-items-center border border-danger shadow-lg position-fixed start-0" 
-         role="alert" style="bottom: calc(3svh + 120px); margin-left: 3svw; z-index: 10000; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); display: none; width: calc(100vw - 6svw); max-width: 350px;">
-        <div class="d-flex p-3">
-            <div class="toast-body p-0 fw-medium fs-6 d-flex align-items-start gap-3 text-white">
-                <i class="fa-solid fa-file-signature fs-3 text-danger fa-beat mt-1"></i> 
-                <span>Tài khoản của bạn chưa xác nhận điều khoản. Vui lòng vào <a href="../policy.html" class="text-danger fw-bold text-decoration-underline">Chính sách</a> để đọc và đồng ý!</span>
-            </div>
-            <button type="button" class="btn-close btn-close-white ms-auto mt-1" onclick="document.getElementById('termsWarningToast').style.display='none'"></button>
-        </div>
-    </div>
-  </body>
-  <footer>
-      <div class="container reveal-on-scroll">
-        <div class="row g-4">
-          <div class="col-lg-4 pe-lg-5">
-            <img
-              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
-              alt="Logo"
-              style="height: 80px; margin-bottom: 20px; object-fit: contain"
-            />
-            <p>
-              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
-              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
-              liên tỉnh.
-            </p>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Dịch Vụ</h5>
-            <ul>
-              <li><a href="../pages/findCar.html">Đặt xe đường dài</a></li>
-              <li><a href="../pages/findCar.html">Thuê xe sân bay</a></li>
-              <li><a href="../pages/findCar.html">Tư vấn xe AI</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Hỗ Trợ</h5>
-            <ul>
-              <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="policy.html">Giải quyết khiếu nại</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-4">
-            <h5>Liên Hệ (Hotline)</h5>
-            <ul class="text-white-50">
-              <li class="mb-2">
-                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
-                (24/7)
-              </li>
-              <li class="mb-2">
-                <i class="fa-solid fa-envelope me-2 text-success"></i>
-                support@fleetflow.vn
-              </li>
-              <li>
-                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
-                University, Ho Chi Minh City
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
-        </div>
+  </script>
+</body>
+<footer>
+  <div class="container reveal-on-scroll">
+    <div class="row g-4">
+      <div class="col-lg-4 pe-lg-5">
+        <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="Logo"
+          style="height: 80px; margin-bottom: 20px; object-fit: contain" />
+        <p>
+          FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
+          minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
+          liên tỉnh.
+        </p>
       </div>
-    </footer>
+      <div class="col-lg-2 col-6">
+        <h5>Dịch Vụ</h5>
+        <ul>
+          <li><a href="../pages/findCar.html">Đặt xe đường dài</a></li>
+          <li><a href="../pages/findCar.html">Thuê xe sân bay</a></li>
+          <li><a href="../pages/findCar.html">Tư vấn xe AI</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-2 col-6">
+        <h5>Hỗ Trợ</h5>
+        <ul>
+          <li><a href="#">Trung tâm trợ giúp</a></li>
+          <li><a href="policy.html">Chính sách & Điều khoản</a></li>
+          <li><a href="policy.html">Giải quyết khiếu nại</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h5>Liên Hệ (Hotline)</h5>
+        <ul class="text-white-50">
+          <li class="mb-2">
+            <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
+            (24/7)
+          </li>
+          <li class="mb-2">
+            <i class="fa-solid fa-envelope me-2 text-success"></i>
+            support@fleetflow.vn
+          </li>
+          <li>
+            <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
+            University, Ho Chi Minh City
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
 
-  <div class="mobile-bottom-nav d-lg-none">
-    <a href="../index.html" class="nav-link-center">
-        <i class="fa-solid fa-house mobile-icon"></i>
-        <span class="nav-text">Trang chủ</span>
-    </a>
-    <a href="findCar.html" class="nav-link-center">
-        <i class="fa-solid fa-car mobile-icon"></i>
-        <span class="nav-text">Đặt xe</span>
-    </a>
-    <a href="../pages/customer/tripHistory.html" class="nav-link-center">
-        <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
-        <span class="nav-text">Chuyến đi</span>
-    </a>
-    <a href="policy.html" class="nav-link-center">
-        <i class="fa-solid fa-shield-halved mobile-icon"></i>
-        <span class="nav-text">Chính sách</span>
-    </a>
+<div class="mobile-bottom-nav d-lg-none">
+  <a href="../index.html" class="nav-link-center">
+    <i class="fa-solid fa-house mobile-icon"></i>
+    <span class="nav-text">Trang chủ</span>
+  </a>
+  <a href="findCar.html" class="nav-link-center">
+    <i class="fa-solid fa-car mobile-icon"></i>
+    <span class="nav-text">Đặt xe</span>
+  </a>
+  <a href="../pages/customer/tripHistory.html" class="nav-link-center">
+    <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
+    <span class="nav-text">Chuyến đi</span>
+  </a>
+  <a href="policy.html" class="nav-link-center">
+    <i class="fa-solid fa-shield-halved mobile-icon"></i>
+    <span class="nav-text">Chính sách</span>
+  </a>
 </div>
+
 </html>

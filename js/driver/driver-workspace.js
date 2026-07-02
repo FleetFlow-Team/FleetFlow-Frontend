@@ -78,10 +78,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof fetchPendingJobs === "function") {
         fetchPendingJobs();
     }
-    
-    // Tải thông báo khi mở trang
+
+    // Tải thông báo khi mở trang và thiết lập lặp mỗi 10s
     if (typeof loadDriverNotifications === "function") {
         loadDriverNotifications();
+        setInterval(loadDriverNotifications, 10000);
     }
     // Lắng nghe sự kiện bật/tắt ô nhập "Lý do khác" của Modal Từ chối
     const rejectRadios = document.querySelectorAll('input[name="rejectReason"]');
@@ -291,17 +292,6 @@ window.handleOnlineToggle = function (currentInput, walletBalance = 100000) {
     // Đồng bộ nút gạt
     toggleInputs.forEach(input => input.checked = currentInput.checked);
 
-    // Cập nhật thẻ trạng thái UI
-    const accVehicle = document.getElementById('accDriverVehicle');
-    if (accVehicle) {
-        if (currentInput.checked) {
-            accVehicle.innerHTML = `<i class="fa-solid fa-car me-1"></i> Đang trực tuyến`;
-            accVehicle.className = "badge bg-success bg-opacity-25 text-success border border-success p-2 px-3";
-        } else {
-            accVehicle.innerHTML = `<i class="fa-solid fa-moon me-1"></i> Tạm nghỉ`;
-            accVehicle.className = "badge bg-secondary bg-opacity-25 text-secondary border border-secondary p-2 px-3";
-        }
-    }
 };
 
 // ============================================================================
@@ -951,9 +941,12 @@ function startGpsTracking(bookingId) {
     // Gọi hàm lần đầu tiên NGAY LẬP TỨC khi vừa bấm "Bắt đầu chuyến đi"
     sendLocationToServer();
 
-    // Thiết lập vòng lặp cứ đúng 30 giây (30000 ms) thì gọi lại hàm trên
+    // Thiết lập vòng lặp GPS (30s)
     currentGpsInterval = setInterval(sendLocationToServer, 30000);
 }
+
+// Biến lưu trữ notification ID đã hiển thị để không báo lại liên tục
+let lastNotifiedIds = new Set();
 
 /**
  * BƯỚC 3: Xử lý khi tài xế bấm "Hoàn thành chuyến"
@@ -1077,7 +1070,7 @@ async function loadDriverNotifications() {
         const result = await response.json();
         if (response.ok && result.success) {
             const notis = result.notifications || [];
-            
+
             // Tính số lượng thông báo chưa đọc
             const unreadCount = notis.filter(n => n.isRead === false).length;
             const badge = document.getElementById("notiCount");
@@ -1087,6 +1080,31 @@ async function loadDriverNotifications() {
                     badge.classList.remove('d-none');
                 } else {
                     badge.classList.add('d-none');
+                }
+            }
+
+            let hasNewNotification = false;
+            notis.forEach(n => {
+                if (!n.isRead && !lastNotifiedIds.has(n.notificationId)) {
+                    hasNewNotification = true;
+                    lastNotifiedIds.add(n.notificationId);
+
+                    // Hiện Toast thông báo mới
+                    const errorSpan = document.querySelector("#systemErrorToast .toast-body span");
+                    const errorIcon = document.querySelector("#systemErrorToast .toast-body i");
+                    if (errorSpan && errorIcon) {
+                        errorSpan.innerText = n.title;
+                        errorIcon.className = "fa-solid fa-bell fs-3 text-info"; // Đổi icon thành cái chuông
+                    }
+                    if (window.toastError) window.toastError.show();
+                }
+            });
+
+            // Nếu có thông báo mới (ví dụ khách hủy chuyến, hoặc có chuyến mới được auto-dispatch)
+            // Lập tức refresh lại trang nhận chuyến để chuyến đó biến mất (nếu bị hủy) hoặc hiện ra (nếu mới gán)
+            if (hasNewNotification) {
+                if (typeof fetchPendingJobs === "function") {
+                    fetchPendingJobs();
                 }
             }
 
@@ -1104,13 +1122,13 @@ async function loadDriverNotifications() {
             listEl.innerHTML = '';
             notis.forEach(n => {
                 const li = document.createElement("li");
-                
+
                 // Định dạng thời gian
                 let timeStr = n.createdAt;
                 try {
                     const d = new Date(n.createdAt);
                     timeStr = isNaN(d) ? n.createdAt : d.toLocaleString('vi-VN');
-                } catch(e) {}
+                } catch (e) { }
 
                 // Hiệu ứng chưa đọc
                 const bgClass = n.isRead ? '' : 'bg-success bg-opacity-25';
@@ -1210,17 +1228,17 @@ async function fetchDriverHistory(statusFilter = '') {
 let currentRatingBookingId = null;
 let currentRatingValue = 0;
 
-window.showDriverRatingModal = function(bookingId) {
+window.showDriverRatingModal = function (bookingId) {
     currentRatingBookingId = bookingId;
     currentRatingValue = 0;
     document.getElementById("driverRatingComment").value = '';
     document.querySelectorAll('#driverRatingModal .rating-star').forEach(s => s.classList.replace('fa-solid', 'fa-regular'));
-    
+
     const ratingModal = new bootstrap.Modal(document.getElementById("driverRatingModal"));
     ratingModal.show();
 }
 
-window.rateCustomer = function(star) {
+window.rateCustomer = function (star) {
     currentRatingValue = star;
     document.querySelectorAll('#driverRatingModal .rating-star').forEach((s, idx) => {
         if (5 - idx <= star) {
@@ -1233,15 +1251,15 @@ window.rateCustomer = function(star) {
     });
 }
 
-window.skipDriverRating = function() {
+window.skipDriverRating = function () {
     const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
     if (modal) modal.hide();
-    
+
     const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
     completeModal.show();
 }
 
-window.submitDriverRating = async function() {
+window.submitDriverRating = async function () {
     const selectedStar = document.querySelector('input[name="driverRateStars"]:checked');
     const starValue = selectedStar ? parseInt(selectedStar.value) : 0;
 
@@ -1252,7 +1270,7 @@ window.submitDriverRating = async function() {
 
     const token = localStorage.getItem("accessToken");
     const comment = document.getElementById("driverRatingComment").value;
-    
+
     document.getElementById("btnSubmitDriverRating").disabled = true;
     document.getElementById("btnSubmitDriverRating").innerHTML = 'Đang gửi...';
 
@@ -1262,14 +1280,14 @@ window.submitDriverRating = async function() {
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ bookingId: currentRatingBookingId, customerRating: starValue, comment: comment })
         });
-        
+
         const data = await res.json();
         const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
         if (modal) modal.hide();
-        
+
         const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
         completeModal.show();
-    } catch(e) {
+    } catch (e) {
         alert("Lỗi kết nối!");
     } finally {
         document.getElementById("btnSubmitDriverRating").disabled = false;
