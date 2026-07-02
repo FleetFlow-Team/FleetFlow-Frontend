@@ -209,7 +209,7 @@ window.acceptJob = async function (btnElement, broadcastId, explicitBookingId) {
     // 2. Lấy Token từ LocalStorage
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        alert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+        showModalAlert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!", "Thông báo", "warning");
         window.location.href = '../../index.html';
         return;
     }
@@ -709,7 +709,7 @@ window.rejectJob = function (btnElement, broadcastId) {
         const rejectModal = new bootstrap.Modal(rejectModalEl);
         rejectModal.show();
     } else {
-        alert("Lỗi: Không tìm thấy khung giao diện 'rejectModal' trong file HTML!");
+        showModalAlert("Lỗi: Không tìm thấy khung giao diện 'rejectModal' trong file HTML!", "Lỗi", "error");
     }
 };
 
@@ -722,7 +722,7 @@ window.confirmRejectJob = async function () {
     // 1. Thu thập dữ liệu Lý do từ các nút Radio chọn lựa
     const checkedRadio = document.querySelector('input[name="rejectReason"]:checked');
     if (!checkedRadio) {
-        alert("Vui lòng chọn một lý do từ chối!");
+        showModalAlert("Vui lòng chọn một lý do từ chối!", "Cảnh báo", "warning");
         return;
     }
 
@@ -731,7 +731,7 @@ window.confirmRejectJob = async function () {
         const otherInput = document.getElementById('otherReasonInput');
         reason = otherInput ? otherInput.value.trim() : '';
         if (!reason) {
-            alert("Vui lòng nhập lý do từ chối cụ thể của bạn!");
+            showModalAlert("Vui lòng nhập lý do từ chối cụ thể của bạn!", "Cảnh báo", "warning");
             return;
         }
     }
@@ -747,7 +747,7 @@ window.confirmRejectJob = async function () {
     // 3. Kiểm tra và xác thực mã quyền Token đăng nhập
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        alert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!");
+        showModalAlert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại!", "Thông báo", "warning");
         window.location.replace('../../index.html');
         return;
     }
@@ -783,17 +783,17 @@ window.confirmRejectJob = async function () {
 
             // Thông báo cho người dùng
             setTimeout(() => {
-                alert("Đã từ chối chuyến thành công!");
+                showModalAlert("Đã từ chối chuyến thành công!", "Thành công", "success");
             }, 500);
 
         } else {
             // [THẤT BẠI TỪ SERVER]
-            alert(result.error || "Có lỗi xảy ra từ máy chủ khi thực hiện từ chối chuyến.");
+            showModalAlert(result.error || "Có lỗi xảy ra từ máy chủ khi thực hiện từ chối chuyến.", "Lỗi", "error");
         }
 
     } catch (error) {
         console.error("Lỗi kết nối API Reject:", error);
-        alert("Mất kết nối! Không thể gửi tín hiệu đến máy chủ Backend.");
+        showModalAlert("Mất kết nối! Không thể gửi tín hiệu đến máy chủ Backend.", "Lỗi mạng", "error");
     } finally {
         // Khôi phục lại trạng thái ban đầu cho nút bấm
         if (btnSubmit) {
@@ -824,7 +824,7 @@ window.startTrip = async function (btnElement, bookingId) {
     // 2. Lấy Token
     const token = localStorage.getItem("accessToken");
     if (!token) {
-        alert("Vui lòng đăng nhập lại!");
+        showModalAlert("Vui lòng đăng nhập lại!", "Cảnh báo", "warning");
         return;
     }
 
@@ -864,19 +864,19 @@ window.startTrip = async function (btnElement, bookingId) {
             }
 
             // d. KÍCH HOẠT BẮN GPS NGẦM (Sẽ viết code ở Bước 2)
-            alert("Đã bắt đầu chuyến đi. Hệ thống định vị đã được bật!");
+            showModalAlert("Đã bắt đầu chuyến đi. Hệ thống định vị đã được bật!", "Thành công", "success");
             startGpsTracking(bookingId);
 
         } else {
             // [THẤT BẠI]
-            alert(result.error || "Không thể bắt đầu chuyến đi lúc này!");
+            showModalAlert(result.error || "Không thể bắt đầu chuyến đi lúc này!", "Lỗi", "error");
             btnElement.innerHTML = originalText;
             btnElement.disabled = false;
         }
 
     } catch (error) {
         console.error("Lỗi API Start Trip:", error);
-        alert("Lỗi kết nối máy chủ!");
+        showModalAlert("Lỗi kết nối máy chủ!", "Lỗi mạng", "error");
         btnElement.innerHTML = originalText;
         btnElement.disabled = false;
     }
@@ -947,7 +947,7 @@ function startGpsTracking(bookingId) {
                 // Xử lý lỗi nếu tài xế tắt GPS hoặc từ chối cấp quyền
                 console.error("[GPS] Lỗi lấy tọa độ: ", error.message);
                 if (error.code === 1) { // 1 = PERMISSION_DENIED
-                    alert("CẢNH BÁO: Cần cấp quyền truy cập vị trí để hệ thống theo dõi chuyến đi!");
+                    showModalAlert("CẢNH BÁO: Cần cấp quyền truy cập vị trí để hệ thống theo dõi chuyến đi!", "Quyền vị trí", "warning");
                 }
             },
             {
@@ -1055,7 +1055,7 @@ window.completeTrip = async function (btnElement, bookingId) {
 
         } else {
             // [THẤT BẠI TỪ SERVER]
-            alert(result.error || "Không thể hoàn thành chuyến đi lúc này!");
+            showModalAlert(result.error || "Không thể hoàn thành chuyến đi lúc này!", "Lỗi", "error");
             btnElement.innerHTML = originalText;
             btnElement.disabled = false;
         }
@@ -1063,7 +1063,7 @@ window.completeTrip = async function (btnElement, bookingId) {
     } catch (error) {
         // [LỖI MẤT KẾT NỐI]
         console.error("Lỗi kết nối API Complete Trip:", error);
-        alert("Mất tín hiệu đường truyền máy chủ! Vui lòng kiểm tra lại mạng.");
+        showModalAlert("Mất tín hiệu đường truyền máy chủ! Vui lòng kiểm tra lại mạng.", "Lỗi mạng", "error");
         btnElement.innerHTML = originalText;
         btnElement.disabled = false;
     }
@@ -1285,7 +1285,7 @@ window.submitDriverRating = async function () {
     const starValue = selectedStar ? parseInt(selectedStar.value) : 0;
 
     if (!currentRatingBookingId || starValue === 0) {
-        alert("Vui lòng chọn số sao!");
+        showModalAlert("Vui lòng chọn số sao!", "Cảnh báo", "warning");
         return;
     }
 
@@ -1309,7 +1309,7 @@ window.submitDriverRating = async function () {
         const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
         completeModal.show();
     } catch (e) {
-        alert("Lỗi kết nối!");
+        showModalAlert("Lỗi kết nối!", "Lỗi mạng", "error");
     } finally {
         document.getElementById("btnSubmitDriverRating").disabled = false;
         document.getElementById("btnSubmitDriverRating").innerHTML = 'Gửi đánh giá';

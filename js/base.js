@@ -496,3 +496,122 @@ document.addEventListener("DOMContentLoaded", () => {
         loadNotifications();
     }
 });
+
+// =========================================
+// X. GLOBAL MODAL (ALERT & CONFIRM)
+// =========================================
+document.addEventListener("DOMContentLoaded", function () {
+    const modalHtml = `
+    <!-- Global Alert Modal -->
+    <div class="modal fade" id="globalAlertModal" tabindex="-1" aria-labelledby="globalAlertLabel" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                <div class="modal-body text-center p-4">
+                    <div id="globalAlertIcon" class="mb-3" style="font-size: 3rem;"></div>
+                    <h5 id="globalAlertTitle" class="fw-bold mb-3">Thông báo</h5>
+                    <p id="globalAlertMessage" class="text-muted mb-4"></p>
+                    <button type="button" class="btn btn-dark w-100 fw-bold" style="border-radius: 10px; padding: 12px;" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Confirm Modal -->
+    <div class="modal fade" id="globalConfirmModal" tabindex="-1" aria-labelledby="globalConfirmLabel" aria-hidden="true" style="z-index: 9999;">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 15px; border: none; box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                <div class="modal-body text-center p-4">
+                    <div id="globalConfirmIcon" class="mb-3 text-warning" style="font-size: 3rem;"><i class="fa-solid fa-circle-question"></i></div>
+                    <h5 id="globalConfirmTitle" class="fw-bold mb-3">Xác nhận</h5>
+                    <p id="globalConfirmMessage" class="text-muted mb-4"></p>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-light w-50 fw-bold" style="border-radius: 10px; padding: 12px;" id="btnGlobalConfirmCancel">Hủy</button>
+                        <button type="button" class="btn btn-primary w-50 fw-bold" style="border-radius: 10px; padding: 12px;" id="btnGlobalConfirmOk">Đồng ý</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    `;
+    
+    // Chèn HTML modal vào cuối body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+});
+
+// Hàm gọi Alert Modal
+window.showModalAlert = function(message, title = 'Thông báo', type = 'info') {
+    let iconHtml = '<i class="fa-solid fa-circle-info text-info"></i>';
+    if(type === 'success') iconHtml = '<i class="fa-solid fa-circle-check text-success"></i>';
+    else if(type === 'error') iconHtml = '<i class="fa-solid fa-circle-xmark text-danger"></i>';
+    else if(type === 'warning') iconHtml = '<i class="fa-solid fa-triangle-exclamation text-warning"></i>';
+
+    document.getElementById('globalAlertIcon').innerHTML = iconHtml;
+    document.getElementById('globalAlertTitle').innerText = title;
+    document.getElementById('globalAlertMessage').innerText = message;
+
+    const alertModalEl = document.getElementById('globalAlertModal');
+    if (alertModalEl) {
+        const alertModal = bootstrap.Modal.getOrCreateInstance(alertModalEl);
+        alertModal.show();
+    }
+};
+
+// Hàm gọi Confirm Modal (Trả về Promise)
+window.showModalConfirm = function(message, title = 'Xác nhận', type = 'warning') {
+    return new Promise((resolve) => {
+        let iconHtml = '<i class="fa-solid fa-circle-question text-warning"></i>';
+        if(type === 'danger') iconHtml = '<i class="fa-solid fa-triangle-exclamation text-danger"></i>';
+        
+        document.getElementById('globalConfirmIcon').innerHTML = iconHtml;
+        document.getElementById('globalConfirmTitle').innerText = title;
+        document.getElementById('globalConfirmMessage').innerText = message;
+
+        const confirmModalEl = document.getElementById('globalConfirmModal');
+        const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmModalEl);
+        
+        const btnOk = document.getElementById('btnGlobalConfirmOk');
+        const btnCancel = document.getElementById('btnGlobalConfirmCancel');
+        
+        // Cập nhật giao diện nút Ok nếu là dạng Danger
+        if (type === 'danger') {
+            btnOk.className = 'btn btn-danger w-50 fw-bold';
+        } else {
+            btnOk.className = 'btn btn-primary w-50 fw-bold';
+        }
+        
+        // Remove old event listeners by cloning
+        const newBtnOk = btnOk.cloneNode(true);
+        const newBtnCancel = btnCancel.cloneNode(true);
+        btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+        btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
+        
+        let isResolved = false;
+
+        newBtnOk.addEventListener('click', () => {
+            if (!isResolved) {
+                isResolved = true;
+                confirmModal.hide();
+                resolve(true);
+            }
+        });
+        
+        newBtnCancel.addEventListener('click', () => {
+            if (!isResolved) {
+                isResolved = true;
+                confirmModal.hide();
+                resolve(false);
+            }
+        });
+
+        // Xử lý khi bấm nút X hoặc click ra ngoài Modal
+        confirmModalEl.addEventListener('hidden.bs.modal', function onHidden() {
+            confirmModalEl.removeEventListener('hidden.bs.modal', onHidden);
+            if (!isResolved) {
+                isResolved = true;
+                resolve(false);
+            }
+        });
+
+        confirmModal.show();
+    });
+};

@@ -614,7 +614,7 @@ window.selectCarAndGo = async function (vehicleId) {
                         const lockModal = new bootstrap.Modal(document.getElementById('lockAccountModal'));
                         lockModal.show();
                     } else {
-                        alert("Tài khoản của bạn đang bị tạm khóa. Không thể đặt xe mới.");
+                        showModalAlert("Tài khoản của bạn đang bị tạm khóa. Không thể đặt xe mới.", "Tài khoản bị khóa", "error");
                     }
                     return; // Dừng lại, không cho chọn xe và không chuyển trang
                 }
@@ -782,7 +782,7 @@ window.viewCarDetail = async function (id) {
                 btnBookInner.onclick = (e) => {
                     e.stopPropagation();
                     if (v.status !== 'Available') {
-                        alert("Phương tiện này hiện không sẵn sàng. Vui lòng chọn xe khác!");
+                        showModalAlert("Phương tiện này hiện không sẵn sàng. Vui lòng chọn xe khác!", "Phương tiện bận", "warning");
                         return;
                     }
                     selectCarAndGo(v.vehicleId);

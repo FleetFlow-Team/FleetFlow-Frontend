@@ -1057,7 +1057,7 @@
                 }
 
                 localStorage.removeItem('pendingBookingId');
-                alert("Bạn đã từ chối thanh toán hoặc thanh toán thất bại. Vui lòng thử đặt lại.");
+                showModalAlert("Bạn đã từ chối thanh toán hoặc thanh toán thất bại. Vui lòng thử đặt lại.", "Lỗi thanh toán", "error");
             }
 
             const bookingType = localStorage.getItem('bookingType') || 'DISTANCE';
@@ -1324,7 +1324,7 @@
 
             // 2. Chặn đứng giao dịch nếu bất kỳ cờ (flag) nào bị false
             if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
-                alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
+                showModalAlert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).", "Lỗi dữ liệu", "error");
                 return; // Dừng hàm tại đây, không cho gọi API
             }
 
@@ -1338,7 +1338,7 @@
 
             // 4. Giả lập delay 2 giây của API Cổng thanh toán (VNPAY/MoMo...)
             setTimeout(() => {
-                alert(`Giao dịch thanh toán cọc thành công!\nMã chuyến đi của bạn là: #${bookingId}`);
+                showModalAlert(`Giao dịch thanh toán cọc thành công!\nMã chuyến đi của bạn là: #${bookingId}`, "Thành công", "success");
 
                 // Xóa cache localStorage để tránh tình trạng back lại trang này thanh toán lần 2
                 localStorage.removeItem('currentBookingId');
@@ -1543,7 +1543,7 @@
 
             // 2. Chặn đứng giao dịch nếu Form sai hoặc bỏ trống
             if (!formState.emailValid || !formState.phoneValid || !formState.nameValid || !formState.addressValid) {
-                alert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).");
+                showModalAlert("Giao dịch thất bại! Vui lòng kiểm tra lại các trường bị viền đỏ (Email, SĐT, Tên hoặc Địa chỉ đón).", "Lỗi dữ liệu", "error");
                 return;
             }
 
@@ -1677,13 +1677,13 @@
                                 window.location.href = momoResult.paymentUrl;
                                 return;
                             } else {
-                                alert("Tạo Booking thành công nhưng lỗi tạo thanh toán MoMo: " + (momoResult.message || "Unknown error"));
+                                showModalAlert("Tạo Booking thành công nhưng lỗi tạo thanh toán MoMo: " + (momoResult.message || "Unknown error"), "Lỗi thanh toán", "warning");
                                 clearCheckoutStorage();
                                 window.location.replace("tripHistory.html");
                             }
                         } catch (err) {
                             console.error("Lỗi MoMo:", err);
-                            alert("Tạo Booking thành công nhưng mất kết nối cổng thanh toán.");
+                            showModalAlert("Tạo Booking thành công nhưng mất kết nối cổng thanh toán.", "Lỗi mạng", "warning");
                             clearCheckoutStorage();
                             window.location.replace("tripHistory.html");
                         }
@@ -1707,7 +1707,7 @@
                         }
 
                         // Thanh toán Tiền mặt (Chỉ đặt xe, không cần sinh link)
-                        alert(`Đặt xe thành công!\nMã chuyến đi của bạn: #${bookingId}`);
+                        showModalAlert(`Đặt xe thành công!\nMã chuyến đi của bạn: #${bookingId}`, "Thành công", "success");
                         clearCheckoutStorage();
                         window.location.replace("tripHistory.html");
                     }

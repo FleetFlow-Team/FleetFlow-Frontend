@@ -276,12 +276,12 @@ window.viewTripDetails = async function (bookingId) {
                 }
             }
         } else {
-            alert('Không thể tải chi tiết lộ trình: ' + (data.error || 'Lỗi không xác định'));
+            showModalAlert('Không thể tải chi tiết lộ trình: ' + (data.error || 'Lỗi không xác định'), 'Lỗi', 'error');
             navigateBackToHistory();
         }
     } catch (e) {
         console.error("Crash trong viewTripDetails:", e);
-        alert('Có lỗi xảy ra trong quá trình truy xuất dữ liệu chi tiết!');
+        showModalAlert('Có lỗi xảy ra trong quá trình truy xuất dữ liệu chi tiết!', 'Lỗi', 'error');
         navigateBackToHistory();
     }
 
