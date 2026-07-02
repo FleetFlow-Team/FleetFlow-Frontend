@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
     if (!accessToken || !fullName) {
-        alert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!");
-        window.location.href = '../../index.html';
+        showModalAlert("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!", "Cảnh báo", "warning");
+        setTimeout(() => { window.location.href = '../../index.html'; }, 1500);
         return;
     }
     if (userRole.toUpperCase() !== 'CUSTOMER') {
@@ -39,9 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
 
-        document.getElementById('btnLogout').addEventListener('click', (e) => {
+        document.getElementById('btnLogout').addEventListener('click', async (e) => {
             e.preventDefault();
-            if (confirm('Đăng xuất khỏi FleetFlow?')) {
+            if (await showModalConfirm('Đăng xuất khỏi FleetFlow?')) {
                 localStorage.clear();
                 window.location.href = '../../index.html';
             }

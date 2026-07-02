@@ -515,54 +515,54 @@
             <div class="col-xl-10 col-lg-11 col-12 mx-auto">
                 <div class="glass-panel">
 
-                    <div class="glass-tabs">
-                        <div class="tab-item active">Báo thất lạc hành lý</div>
-                        <div class="tab-item">Góp ý thái độ phục vụ</div>
-                        <div class="tab-item">Vấn đề khác</div>
+                    <div class="tabs-category" id="complaintTabs">
+                        <div class="tab-item active" data-type="LOST_LUGGAGE">Quên đồ trên xe</div>
+                        <div class="tab-item" data-type="SERVICE_FEEDBACK">Góp ý tài xế</div>
+                        <div class="tab-item" data-type="SERVICE_FEEDBACK">Góp ý thái độ phục vụ</div>
+                        <div class="tab-item" data-type="OTHER">Vấn đề khác</div>
                     </div>
 
                     <form>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="glass-input" placeholder="Họ tên ..." maxlength="50">
+                                    <input type="text" id="cpFullName" class="glass-input" placeholder="Họ tên ...">
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" class="glass-input" placeholder="Email ..." maxlength="50">
+                                    <input type="email" id="cpEmail" class="glass-input" placeholder="Email ...">
                                 </div>
                                 <div class="form-group">
-                                    <input type="tel" class="glass-input" placeholder="Điện thoại ..." maxlength="15">
+                                    <input type="tel" id="cpPhone" class="glass-input" placeholder="Điện thoại ...">
                                 </div>
                                 <div class="form-group">
                                     <div class="time-date-group">
                                         <span>Lên xe lúc</span>
-                                        <input type="time">
+                                        <input type="time" id="cpTime">
                                         <div class="divider"></div>
-                                        <input type="date">
+                                        <input type="date" id="cpDate">
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="text" class="glass-input" placeholder="Đi từ ..." maxlength="200">
+                                    <input type="text" id="cpFrom" class="glass-input" placeholder="Đi từ ...">
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" class="glass-input" placeholder="Đi đến ..." maxlength="200">
+                                    <input type="text" id="cpTo" class="glass-input" placeholder="Đi đến ...">
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" class="glass-input"
-                                        placeholder="Cước phí / Mã chuyến (Nếu có) ..." maxlength="200">
+                                    <input type="text" id="cpExtra" class="glass-input"
+                                        placeholder="Cước phí / Mã chuyến (Nếu có) ...">
                                 </div>
                                 <div class="form-group">
-                                    <textarea class="glass-input" placeholder="Mô tả hành lý ..."
-                                        maxlength="200"></textarea>
+                                    <textarea id="cpContent" class="glass-input" placeholder="Mô tả hành lý ..."></textarea>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-end mt-2">
-                            <button type="button" class="btn-submit-glass">
+                            <button type="button" id="btnSubmitComplaint" class="btn-submit-glass">
                                 Gửi tin <i class="fa-regular fa-paper-plane"></i>
                             </button>
                         </div>
@@ -676,15 +676,137 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../js/api.js"></script>
     <script src="../js/base.js"></script>
     <script>
-
-        // Xử lý chuyển tab hỗ trợ
-        document.querySelectorAll('.tab-item').forEach(tab => {
-            tab.addEventListener('click', function () {
-                document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Xử lý chuyển tab hỗ trợ và thay đổi placeholder tương ứng
+            const tabs = document.querySelectorAll('#complaintTabs .tab-item');
+            const contentArea = document.getElementById('cpContent');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    // Xóa active cũ
+                    tabs.forEach(t => t.classList.remove('active'));
+                    // Thêm active mới
+                    this.classList.add('active');
+                    
+                    // Đổi Placeholder linh hoạt theo chủ đề
+                    const type = this.getAttribute('data-type');
+                    if (type === 'LOST_LUGGAGE') {
+                        contentArea.placeholder = "Mô tả hành lý (màu sắc, nhãn hiệu, bên trong có gì...) ...";
+                    } else if (type === 'SERVICE_FEEDBACK') {
+                        contentArea.placeholder = "Chi tiết ý kiến đóng góp của bạn ...";
+                    } else {
+                        contentArea.placeholder = "Mô tả vấn đề bạn gặp phải ...";
+                    }
+                });
             });
+
+            // 2. Logic gửi Data Lên Backend
+            const btnSubmit = document.getElementById('btnSubmitComplaint');
+            if (btnSubmit) {
+                btnSubmit.addEventListener('click', async () => {
+                    // Thu thập dữ liệu
+                    const fullName = document.getElementById('cpFullName').value.trim();
+                    const email = document.getElementById('cpEmail').value.trim();
+                    const phone = document.getElementById('cpPhone').value.trim();
+                    const content = document.getElementById('cpContent').value.trim();
+
+                    // Validate cơ bản
+                    if (!fullName || !phone || !content) {
+                        showModalAlert("Vui lòng nhập đầy đủ: Họ tên, Số điện thoại và Nội dung góp ý!", "Thiếu thông tin", "warning");
+                        return;
+                    }
+
+                    // Lấy type từ Tab đang active
+                    const activeTab = document.querySelector('#complaintTabs .tab-item.active');
+                    const type = activeTab ? activeTab.getAttribute('data-type') : 'OTHER';
+
+                    // Lắp ráp thời gian lên xe (nếu có)
+                    const dateVal = document.getElementById('cpDate').value;
+                    const timeVal = document.getElementById('cpTime').value;
+                    let boardingTime = "";
+                    if (dateVal && timeVal) {
+                        // Backend cần dạng Timestamp nên ta ghép chuỗi chuẩn ISO (hoặc T)
+                        boardingTime = `${dateVal}T${timeVal}:00`;
+                    }
+
+                    // Phân loại "Cước phí / Mã chuyến"
+                    const extraVal = document.getElementById('cpExtra').value.trim();
+                    let bookingId = null;
+                    let fare = null;
+                    
+                    if (extraVal) {
+                        // Xử lý heuristic nhẹ nhàng:
+                        // Nếu bắt đầu bằng # và toàn số, hoặc toàn số ngắn -> khả năng là Booking ID
+                        const digitsOnly = extraVal.replace(/[^\d]/g, '');
+                        if (digitsOnly.length > 0 && digitsOnly.length < 10 && /^[#\d]+$/.test(extraVal.trim())) {
+                            bookingId = parseInt(digitsOnly, 10);
+                        } else if (digitsOnly.length > 0) {
+                            fare = parseFloat(digitsOnly); // Nếu dài hoặc có chữ, tách số ra coi như tiền cước
+                        }
+                    }
+
+                    // Xây dựng JSON Request
+                    const payload = {
+                        type: type,
+                        fullName: fullName,
+                        email: email,
+                        phone: phone,
+                        content: content,
+                        fromLocation: document.getElementById('cpFrom').value.trim(),
+                        toLocation: document.getElementById('cpTo').value.trim()
+                    };
+
+                    if (boardingTime) payload.boardingTime = boardingTime;
+                    if (bookingId) payload.bookingId = bookingId;
+                    if (fare) payload.fare = fare;
+
+                    // UX Loading
+                    const originalText = btnSubmit.innerHTML;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+                    btnSubmit.disabled = true;
+
+                    try {
+                        // API Backend URL (Dùng API_BASE nếu api.js có khai báo sẵn, hoặc fallback)
+                        const API_URL = typeof API_BASE !== 'undefined' ? `${API_BASE}/complaints` : 'http://localhost:8080/FleetFlow/api/v1/complaints';
+                        
+                        const response = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok) {
+                            showModalAlert("Cảm ơn bạn đã gửi ý kiến! Đội ngũ CSKH sẽ liên hệ lại với bạn trong thời gian sớm nhất.", "Gửi thành công", "success");
+                            
+                            // Reset sạch sẽ form
+                            document.getElementById('cpFullName').value = '';
+                            document.getElementById('cpEmail').value = '';
+                            document.getElementById('cpPhone').value = '';
+                            document.getElementById('cpTime').value = '';
+                            document.getElementById('cpDate').value = '';
+                            document.getElementById('cpFrom').value = '';
+                            document.getElementById('cpTo').value = '';
+                            document.getElementById('cpExtra').value = '';
+                            document.getElementById('cpContent').value = '';
+                        } else {
+                            showModalAlert(data.message || "Đã xảy ra lỗi hệ thống khi xử lý. Vui lòng thử lại!", "Thất bại", "error");
+                        }
+                    } catch (error) {
+                        console.error("Lỗi gửi góp ý:", error);
+                        showModalAlert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền mạng!", "Mất kết nối", "error");
+                    } finally {
+                        btnSubmit.innerHTML = originalText;
+                        btnSubmit.disabled = false;
+                    }
+                });
+            }
         });
     </script>
 </body>

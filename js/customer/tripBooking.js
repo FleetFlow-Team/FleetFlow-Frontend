@@ -39,9 +39,9 @@ document.addEventListener("DOMContentLoaded", function () {
             `;
 
             // Kích hoạt sự kiện Đăng xuất
-            document.getElementById('btnLogout').addEventListener('click', function (e) {
+            document.getElementById('btnLogout').addEventListener('click', async function (e) {
                 e.preventDefault();
-                if (confirm('Bạn có chắc chắn muốn đăng xuất khỏi FleetFlow?')) {
+                if (await showModalConfirm('Bạn có chắc chắn muốn đăng xuất khỏi FleetFlow?')) {
                     localStorage.clear(); // Xóa token
                     window.location.reload(); // Tải lại trang (sẽ tự quay về trạng thái chưa đăng nhập)
                 }
@@ -103,8 +103,8 @@ const currentVehicleId = parseInt(localStorage.getItem('selectedVehicleId'));
 
 // 🚀 BẢO MẬT LUỒNG: Nếu khách chưa chọn xe mà vào thẳng trang này -> Đuổi về Trạm 1
 if (!currentVehicleId) {
-    alert("Vui lòng chọn loại phương tiện trước khi thiết lập lộ trình!");
-    window.location.replace("../../pages/findCar.html");
+    showModalAlert("Vui lòng chọn loại phương tiện trước khi thiết lập lộ trình!", "Cảnh báo", "warning");
+    setTimeout(() => { window.location.replace("../../pages/findCar.html"); }, 1500);
 }
 
 
@@ -516,7 +516,7 @@ window.simulateBookingSubmit = function () {
 
     // Giả lập delay chuyển trang hoặc gọi API tạo chuyến
     setTimeout(() => {
-        alert("Lộ trình đã được chốt! Đang đợi tài xế...");
+        showModalAlert("Lộ trình đã được chốt! Đang đợi tài xế...", "Thành công", "success");
         // window.location.href = 'selectCar.html'; // Bật dòng này khi có trang tiếp theo
         btn.innerHTML = `Chốt lộ trình`;
         btn.disabled = false;
