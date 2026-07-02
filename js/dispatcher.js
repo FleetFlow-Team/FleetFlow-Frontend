@@ -764,10 +764,10 @@ window.loadComplaints = async function () {
 
                 // Cột 2: Khách hàng
                 const customerHtml = `
-                    <div class="fw-bold fs-6 mb-1" style="color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.3);">${fullName}</div>
-                    <div class="small fw-medium mb-1" style="color: #00B14F; font-size: 0.82rem;"><i class="fa-solid fa-phone me-1"></i>${phone}</div>
-                    <div class="small fw-medium" style="color: rgba(255,255,255,0.85); font-size: 0.82rem;"><i class="fa-solid fa-envelope me-1" style="color: #ffd700;"></i>${email}</div>
-                    ${c.bookingId ? `<div class="fw-bold small mt-1" style="color: #ffd700; font-size: 0.78rem;"><i class="fa-solid fa-receipt me-1"></i>Đơn #${c.bookingId}</div>` : ''}
+                    <div class="fw-bold fs-6 mb-1" style="color: var(--text-color); text-shadow: 0 0 10px rgba(0,242,254,0.3);">${fullName}</div>
+                    <div class="small fw-medium mb-1" style="color: var(--text-color); font-size: 0.82rem;"><i class="fa-solid fa-phone me-1"></i>${phone}</div>
+                    <div class="small fw-medium" style="color: var(--text-color); font-size: 0.82rem;"><i class="fa-solid fa-envelope me-1""></i>${email}</div>
+                    ${c.bookingId ? `<div class="fw-bold small mt-1" style="color: var(--text-color); font-size: 0.78rem;"><i class="fa-solid fa-receipt me-1"></i>Đơn #${c.bookingId}</div>` : ''}
                 `;
 
                 // Cột 3: Khu vực
@@ -776,17 +776,16 @@ window.loadComplaints = async function () {
                 // Cột 4: Vấn đề
                 let typeBadge = '';
                 if (type === 'SERVICE_FEEDBACK') {
-                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(49, 130, 206, 0.25); border: 1px solid rgba(49, 130, 206, 0.6); color: #63b3ed; font-size: 0.78rem;"><i class="fa-solid fa-user-check me-1"></i> Thái độ / Dịch vụ</span>`;
+                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(49, 130, 206, 0.6); color: #63b6ed; font-size: 0.78rem;"><i class="fa-solid fa-user-check me-1"></i> Thái độ / Dịch vụ</span>`;
                 } else if (type === 'LOST_LUGGAGE') {
-                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(237, 137, 54, 0.25); border: 1px solid rgba(237, 137, 54, 0.6); color: #fbd38d; font-size: 0.78rem;"><i class="fa-solid fa-suitcase me-1"></i> Thất lạc hành lý</span>`;
+                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(237, 137, 54, 0.6); color: #F7B942; font-size: 0.78rem;"><i class="fa-solid fa-suitcase me-1"></i> Thất lạc hành lý</span>`;
                 } else {
-                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(160, 174, 192, 0.25); border: 1px solid rgba(160, 174, 192, 0.6); color: #e2e8f0; font-size: 0.78rem;"><i class="fa-solid fa-circle-question me-1"></i> Vấn đề khác</span>`;
+                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(160, 174, 192, 0.6); color: gray; font-size: 0.78rem;"><i class="fa-solid fa-circle-question me-1"></i> Vấn đề khác</span>`;
                 }
 
                 let problemHtml = `
                     ${typeBadge}
-                    <div class="small fw-bold mb-1" style="color: #ffd700;"><i class="fa-solid fa-circle-exclamation me-1"></i> ${issueType}</div>
-                    <div class="p-2 mt-1" style="background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; color: #f8fafc; font-size: 0.85rem; line-height: 1.4; box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);">
+                    <div class="p-2 mt-1" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; color: var(--text-color); font-size: 0.85rem; line-height: 1.4; box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);">
                         "${content}"
                     </div>
                 `;
@@ -797,11 +796,11 @@ window.loadComplaints = async function () {
                 // Cột 5: Tình trạng
                 let statusHtml = '';
                 if (status === 'PENDING') {
-                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 215, 0, 0.2); border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
+                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: #FBFFB3; border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
                 } else {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
                 }
-                statusHtml += `<div class="small mt-1" title="Thời gian tạo" style="color: rgba(255,255,255,0.7); font-size: 0.78rem;"><i class="fa-regular fa-clock me-1" style="color: #ffd700;"></i>${createdAt}</div>`;
+                statusHtml += `<div class="small mt-1 text-warning" title="Thời gian tạo" style="font-size: 0.78rem;"><i class="fa-regular fa-clock me-1" style="color: #ffd700;"></i>${createdAt}</div>`;
                 if (resolvedAt) {
                     statusHtml += `<div class="small" title="Thời gian hoàn tất" style="color: #00B14F; font-size: 0.75rem;"><i class="fa-solid fa-check me-1"></i>${resolvedAt}</div>`;
                 }
@@ -812,9 +811,7 @@ window.loadComplaints = async function () {
                     actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Giải Quyết</button>`;
                 }
                 actionHtml += `<button class="btn btn-glass-dispatch w-100 fw-bold" style="font-size: 0.82rem;" onclick="openComplaintDetailModal(${id})"><i class="fa-solid fa-eye me-1"></i> Chi tiết</button>`;
-                if (status !== 'PENDING') {
-                    actionHtml += `<div class="small fw-bold text-center mt-2" style="color: #00B14F;"><i class="fa-solid fa-shield-check me-1"></i>Hoàn tất</div>`;
-                }
+
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -982,7 +979,7 @@ window.openComplaintDetailModal = function (complaintId) {
 
     let statusHtml = '';
     if (finalStatus === 'PENDING') {
-        statusHtml = `<span class="glass-badge" style="background: rgba(255, 215, 0, 0.2); border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i> Đang chờ xử lý</span>`;
+        statusHtml = `<span class="glass-badge" style="background: #FBFFB3; border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i> Đang chờ xử lý</span>`;
     } else {
         statusHtml = `<span class="glass-badge" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i> Đã giải quyết xong</span>`;
     }
