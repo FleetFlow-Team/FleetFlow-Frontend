@@ -17,11 +17,64 @@ function postAuthHeader() {
 }
 
 // ==========================================
+// HÀM KIỂM TRA TOKEN JWT HẾT HẠN
+// ==========================================
+function isJwtExpired(token) {
+    if (!token) return true;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+        if (payload && payload.exp) {
+            return (payload.exp * 1000) < Date.now();
+        }
+        return false;
+    } catch (e) {
+        return true; // Token sai định dạng coi như hết hạn
+    }
+}
+
+// ==========================================
+// HÀM XỬ LÝ ĐĂNG XUẤT KHI HẾT HẠN TOKEN
+// ==========================================
+function handleTokenExpiredLogout() {
+    if (window.isLoggedOutByToken) return;
+    window.isLoggedOutByToken = true;
+
+    if (typeof window.pauseMapTracking === 'function') {
+        window.pauseMapTracking();
+    }
+    
+    alert("Phiên đăng nhập hoặc Token JWT đã hết hạn! Hệ thống sẽ tự động đăng xuất về trang chủ.");
+    localStorage.clear();
+    window.location.href = '../../index.html';
+}
+
+// ==========================================
+// BỘ ĐÁNH CHẶN FETCH TOÀN CỤC (GLOBAL INTERCEPTOR)
+// ==========================================
+const originalFetch = window.fetch;
+window.fetch = async function (...args) {
+    const response = await originalFetch(...args);
+    if (response.status === 401 || response.status === 403) {
+        handleTokenExpiredLogout();
+    }
+    return response;
+};
+
+// ==========================================
 // 8. TÍCH HỢP PROFILE TỪ LOCALSTORAGE & LOGOUT
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
     const fullName = localStorage.getItem('fullName');
     const userRole = localStorage.getItem('userRole');
+    const token = localStorage.getItem('accessToken');
+
+    // Kiểm tra Token JWT ngay khi tải trang
+    if (!token || isJwtExpired(token)) {
+        handleTokenExpiredLogout();
+        return;
+    }
 
     // Cập nhật giao diện nếu đã đăng nhập
     if (fullName) {
@@ -246,6 +299,16 @@ async function processRejectBooking() {
 async function loadBookings(status, tbodyId) {
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
+
+    // Tự động cập nhật class active cho các tab button
+    document.querySelectorAll('.btn-glass-tab').forEach(btn => {
+        const onclickAttr = btn.getAttribute('onclick') || '';
+        if (onclickAttr.includes(`'${status}'`)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 
     // Hiển thị trạng thái đang tải
     tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin fs-4 text-secondary"></i><p class="mt-2 text-muted fw-medium">Đang tải dữ liệu hệ thống...</p></td></tr>';
@@ -556,27 +619,7 @@ async function fetchLiveMapData() {
         // 2. XỬ LÝ LỖI 401 TỪ BACKEND TRẢ VỀ
         if (response.status === 401 || response.status === 403) {
             console.error("Token hết hạn hoặc không có quyền truy cập. Dừng quét map.");
-
-            // Dừng vòng lặp gọi API 30s
-            if (typeof window.pauseMapTracking === 'function') {
-                window.pauseMapTracking();
-            }
-
-            // Báo lỗi cho Dispatcher
-            if (typeof showSystemToast === 'function') {
-                showSystemToast("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!", "error");
-            }
-
-            // Đợi 2 giây rồi đá văng về trang Login an toàn
-            setTimeout(() => {
-                if (typeof window.handleDispatcherLogout === 'function') {
-                    window.handleDispatcherLogout();
-                } else {
-                    localStorage.clear();
-                    window.location.href = '../../index.html';
-                }
-            }, 2000);
-
+            handleTokenExpiredLogout();
             return; // Thoát hàm ngay lập tức
         }
 
@@ -648,7 +691,9 @@ function updateMapMarkers(ongoingTrips) {
             delete activeMarkers[storedBookingId];
         }
     });
-}// ==========================================
+}
+
+// ==========================================
 // 16. QUẢN LÝ KHIẾU NẠI (COMPLAINTS)
 // ==========================================
 let currentResolveComplaintId = null;
@@ -675,26 +720,140 @@ window.loadComplaints = async function () {
                 return;
             }
 
+            // --- BỘ SIÊU BÓC TÁCH (SUPER FALLBACK PARSER) ---
+            const parseSuperFeedback = (rawStr) => {
+                if (!rawStr) return { issue: 'Vấn đề chung', actualContent: 'Không có chi tiết', fullName: null, phone: null, email: null, type: null, resolution: null };
+                let str = rawStr.trim();
+                let issue = '';
+                let actualContent = str;
+                let fullName = null, phone = null, email = null, type = null, resolution = null;
+
+                if (str.includes('Giải quyết:')) {
+                    let idx = str.indexOf('Giải quyết:');
+                    resolution = str.substring(idx + 11).trim();
+                    str = str.substring(0, idx).trim();
+                }
+                if (str.includes('Nội dung:')) {
+                    let idx = str.indexOf('Nội dung:');
+                    actualContent = str.substring(idx + 9).trim();
+                    str = str.substring(0, idx).trim();
+                }
+                if (str.includes('Liên hệ:')) {
+                    let idx = str.indexOf('Liên hệ:');
+                    let contactStr = str.substring(idx + 8).trim();
+                    if (contactStr.includes('@')) email = contactStr;
+                    else phone = contactStr;
+                    str = str.substring(0, idx).trim();
+                }
+                if (str.includes('Họ tên:')) {
+                    let idx = str.indexOf('Họ tên:');
+                    fullName = str.substring(idx + 7).trim();
+                    str = str.substring(0, idx).trim();
+                }
+                if (str.startsWith('[')) {
+                    let closeIdx = str.indexOf(']');
+                    if (closeIdx !== -1) {
+                        type = str.substring(1, closeIdx).trim();
+                        issue = str.substring(closeIdx + 1).replace(/^[-\s]+/, '').trim();
+                        if (!actualContent || actualContent === rawStr.trim()) {
+                            if (!issue) actualContent = str.substring(closeIdx + 1).trim();
+                        }
+                    } else {
+                        issue = str.replace(/^[-\s]+/, '').trim();
+                    }
+                } else if (str !== actualContent && str.length > 0) {
+                    issue = str;
+                }
+                return { issue, actualContent: actualContent || 'Không có chi tiết', fullName, phone, email, type, resolution };
+            };
+
+            window.currentComplaintsList = result.data;
             tbody.innerHTML = '';
+
             result.data.forEach(c => {
-                const isPending = c.status === 'PENDING';
-                let statusBadge = isPending ? '<span class="glass-badge bg-warning text-dark" style="font-size: 12px;">Chờ xử lý</span>' : '<span class="glass-badge bg-success text-white" style="font-size: 12px;">Đã giải quyết</span>';
+                const id = c.complaintId || c.ComplaintID || 'N/A';
+                const rawContent = c.content || c.Content || '';
+                const parsed = parseSuperFeedback(rawContent);
 
-                let actionHtml = isPending ? `<button class="btn-glass-action bg-success text-white border-success w-100" onclick="openResolveModal(${c.complaintId})"><i class="fa-solid fa-check-to-slot me-1"></i> Xử lý</button>` : `<span class="text-success fw-bold"><i class="fa-solid fa-shield-check"></i> Hoàn tất</span>`;
+                let fullName = (c.fullName && c.fullName !== 'N/A' && isNaN(c.fullName)) ? c.fullName : (parsed.fullName || (c.customerId ? `Thành viên #${c.customerId}` : 'Khách vãng lai'));
+                let email = (c.email && c.email !== 'N/A' && c.email !== 'Chưa có Email') ? c.email : (parsed.email || 'Chưa có Email');
+                let phone = (c.phone && c.phone !== 'N/A' && c.phone !== 'Chưa có SĐT') ? c.phone : (parsed.phone || 'Chưa có SĐT');
+                let province = c.province || c.region || 'Không xác định';
 
-                let dateStr = new Date(c.createdAt).toLocaleString('vi-VN');
+                const type = (c.type && c.type !== 'OTHER') ? c.type : (parsed.type || c.type || c.complaintType || 'OTHER');
+                const issueType = (c.issueType && !c.issueType.includes('Họ tên:')) ? c.issueType : (parsed.issue || 'Vấn đề chung');
+                const content = (c.content && !c.content.includes('Họ tên:')) ? c.content : (parsed.actualContent || 'Không có chi tiết');
+                const resolution = c.resolution || c.Resolution || parsed.resolution || '';
+
+                const status = c.status || 'PENDING';
+                const formatTime = (timeStr) => {
+                    if (!timeStr) return '';
+                    const d = new Date(timeStr);
+                    if (isNaN(d.getTime())) return timeStr;
+                    return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+                };
+                const createdAt = formatTime(c.createdAt);
+                const resolvedAt = formatTime(c.resolvedAt);
+
+                // Cột 2: Khách hàng
+                const customerHtml = `
+                    <div class="fw-bold fs-6 mb-1" style="color: var(--text-color); text-shadow: 0 0 10px rgba(0,242,254,0.3);">${fullName}</div>
+                    <div class="small fw-medium mb-1" style="color: var(--text-color); font-size: 0.82rem;"><i class="fa-solid fa-phone me-1"></i>${phone}</div>
+                    <div class="small fw-medium" style="color: var(--text-color); font-size: 0.82rem;"><i class="fa-solid fa-envelope me-1""></i>${email}</div>
+                    ${c.bookingId ? `<div class="fw-bold small mt-1" style="color: var(--text-color); font-size: 0.78rem;"><i class="fa-solid fa-receipt me-1"></i>Đơn #${c.bookingId}</div>` : ''}
+                `;
+
+                // Cột 3: Khu vực
+                const provinceHtml = `<span class="glass-badge" style="background: rgba(0, 242, 254, 0.2); border: 1px solid rgba(0, 242, 254, 0.6); color: #00f2fe; font-size: 0.82rem;"><i class="fa-solid fa-location-dot me-1"></i>${province}</span>`;
+
+                // Cột 4: Vấn đề
+                let typeBadge = '';
+                if (type === 'SERVICE_FEEDBACK') {
+                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(49, 130, 206, 0.6); color: #63b6ed; font-size: 0.78rem;"><i class="fa-solid fa-user-check me-1"></i> Thái độ / Dịch vụ</span>`;
+                } else if (type === 'LOST_LUGGAGE') {
+                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(237, 137, 54, 0.6); color: #F7B942; font-size: 0.78rem;"><i class="fa-solid fa-suitcase me-1"></i> Thất lạc hành lý</span>`;
+                } else {
+                    typeBadge = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(160, 174, 192, 0.6); color: gray; font-size: 0.78rem;"><i class="fa-solid fa-circle-question me-1"></i> Vấn đề khác</span>`;
+                }
+
+                let problemHtml = `
+                    ${typeBadge}
+                    <div class="p-2 mt-1" style="background: rgba(255, 255, 255, 0.387); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 12px; color: var(--text-color); font-size: 0.85rem; line-height: 1.4; box-shadow: inset 0 2px 6px rgba(0,0,0,0.3);">
+                        "${content}"
+                    </div>
+                `;
+                if (resolution) {
+                    problemHtml += `<div class="p-2 mt-2" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.5); border-radius: 12px; color: #00B14F; font-size: 0.8rem;"><i class="fa-solid fa-check-double me-1"></i><strong>Giải quyết:</strong> ${resolution}</div>`;
+                }
+
+                // Cột 5: Tình trạng
+                let statusHtml = '';
+                if (status === 'PENDING') {
+                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: #FBFFB3; border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
+                } else {
+                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
+                }
+                statusHtml += `<div class="small mt-1 text-warning" title="Thời gian tạo" style="font-size: 0.78rem;"><i class="fa-regular fa-clock me-1" style="color: #ffd700;"></i>${createdAt}</div>`;
+                if (resolvedAt) {
+                    statusHtml += `<div class="small" title="Thời gian hoàn tất" style="color: #00B14F; font-size: 0.75rem;"><i class="fa-solid fa-check me-1"></i>${resolvedAt}</div>`;
+                }
+
+                // Cột 6: Thao tác (Liquid Glass Actions)
+                let actionHtml = '';
+                if (status === 'PENDING') {
+                    actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Giải Quyết</button>`;
+                }
+                actionHtml += `<button class="btn btn-glass-dispatch w-100 fw-bold" style="font-size: 0.82rem;" onclick="openComplaintDetailModal(${id})"><i class="fa-solid fa-eye me-1"></i> Chi tiết</button>`;
+
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td><strong>#${c.complaintId}</strong></td>
-                    <td><strong>${c.bookingId}</strong></td>
-                    <td>${c.customerId}</td>
-                    <td>
-                        <div class="fw-bold mb-1" style="max-width: 250px; white-space: normal; color: var(--text-color);">${c.content}</div>
-                        ${c.resolution ? `<div class="small text-success mt-1"><strong>Giải quyết:</strong> ${c.resolution}</div>` : ''}
-                    </td>
-                    <td>${statusBadge}<br><small class=" mt-1 d-block">${dateStr}</small></td>
-                    <td>${actionHtml}</td>
+                    <td class="fw-bold">#${id}</td>
+                    <td>${customerHtml}</td>
+                    <td>${provinceHtml}</td>
+                    <td style="font-size: 0.85rem; max-width: 320px;">${problemHtml}</td>
+                    <td>${statusHtml}</td>
+                    <td class="text-center">${actionHtml}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -762,6 +921,128 @@ window.executeResolveComplaint = async function () {
     }
 };
 
+// --- MỞ & ĐÓNG MODAL CHI TIẾT KHIẾU NẠI (LIQUID GLASS APPLE THEME) ---
+window.openComplaintDetailModal = function (complaintId) {
+    if (!window.currentComplaintsList) return;
+    const c = window.currentComplaintsList.find(item => (item.complaintId || item.ComplaintID) == complaintId);
+    if (!c) return;
+
+    const rawContent = c.content || c.Content || '';
+    let str = rawContent.trim();
+    let issue = '';
+    let actualContent = str;
+    let fullName = null, phone = null, email = null, type = null, resolution = null;
+
+    if (str.includes('Giải quyết:')) {
+        let idx = str.indexOf('Giải quyết:');
+        resolution = str.substring(idx + 11).trim();
+        str = str.substring(0, idx).trim();
+    }
+    if (str.includes('Nội dung:')) {
+        let idx = str.indexOf('Nội dung:');
+        actualContent = str.substring(idx + 9).trim();
+        str = str.substring(0, idx).trim();
+    }
+    if (str.includes('Liên hệ:')) {
+        let idx = str.indexOf('Liên hệ:');
+        let contactStr = str.substring(idx + 8).trim();
+        if (contactStr.includes('@')) email = contactStr;
+        else phone = contactStr;
+        str = str.substring(0, idx).trim();
+    }
+    if (str.includes('Họ tên:')) {
+        let idx = str.indexOf('Họ tên:');
+        fullName = str.substring(idx + 7).trim();
+        str = str.substring(0, idx).trim();
+    }
+    if (str.startsWith('[')) {
+        let closeIdx = str.indexOf(']');
+        if (closeIdx !== -1) {
+            type = str.substring(1, closeIdx).trim();
+            issue = str.substring(closeIdx + 1).replace(/^[-\s]+/, '').trim();
+            if (!actualContent || actualContent === rawContent.trim()) {
+                if (!issue) actualContent = str.substring(closeIdx + 1).trim();
+            }
+        } else {
+            issue = str.replace(/^[-\s]+/, '').trim();
+        }
+    } else if (str !== actualContent && str.length > 0) {
+        issue = str;
+    }
+
+    const finalFullName = (c.fullName && c.fullName !== 'N/A' && isNaN(c.fullName)) ? c.fullName : (fullName || (c.customerId ? `Thành viên #${c.customerId}` : 'Khách vãng lai'));
+    const finalEmail = (c.email && c.email !== 'N/A' && c.email !== 'Chưa có Email') ? c.email : (email || 'Chưa cập nhật Email');
+    const finalPhone = (c.phone && c.phone !== 'N/A' && c.phone !== 'Chưa có SĐT') ? c.phone : (phone || 'Chưa cập nhật SĐT');
+    const finalProvince = c.province || c.region || 'Không xác định';
+    const finalType = (c.type && c.type !== 'OTHER') ? c.type : (type || c.complaintType || 'OTHER');
+    const finalIssue = (c.issueType && !c.issueType.includes('Họ tên:')) ? c.issueType : (issue || 'Vấn đề chung');
+    const finalContent = (c.content && !c.content.includes('Họ tên:')) ? c.content : (actualContent || 'Không có chi tiết');
+    const finalResolution = c.resolution || c.Resolution || resolution || '';
+    const finalStatus = c.status || 'PENDING';
+
+    const formatTime = (timeStr) => {
+        if (!timeStr) return 'N/A';
+        const d = new Date(timeStr);
+        if (isNaN(d.getTime())) return timeStr;
+        return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    };
+
+    const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const setHtml = (id, val) => { const el = document.getElementById(id); if (el) el.innerHTML = val; };
+
+    setTxt('detailComplaintId', '#' + complaintId);
+    setTxt('detailFullName', finalFullName);
+    setTxt('detailPhone', finalPhone);
+    setTxt('detailEmail', finalEmail);
+    setTxt('detailBookingId', c.bookingId ? '#' + c.bookingId : 'Không gắn với đơn cụ thể');
+    setTxt('detailProvince', finalProvince);
+    setTxt('detailIssueType', finalIssue);
+    setTxt('detailContent', finalContent);
+    setTxt('detailCreatedAt', formatTime(c.createdAt));
+
+    let typeBadgeHtml = '';
+    if (finalType === 'SERVICE_FEEDBACK') {
+        typeBadgeHtml = `<span class="glass-badge" style="background: rgba(49, 130, 206, 0.25); border: 1px solid rgba(49, 130, 206, 0.6); color: #63b3ed; font-size: 0.8rem;"><i class="fa-solid fa-user-check me-1"></i> Thái độ / Dịch vụ</span>`;
+    } else if (finalType === 'LOST_LUGGAGE') {
+        typeBadgeHtml = `<span class="glass-badge" style="background: rgba(237, 137, 54, 0.25); border: 1px solid rgba(237, 137, 54, 0.6); color: #fbd38d; font-size: 0.8rem;"><i class="fa-solid fa-suitcase me-1"></i> Thất lạc hành lý</span>`;
+    } else {
+        typeBadgeHtml = `<span class="glass-badge" style="background: rgba(160, 174, 192, 0.25); border: 1px solid rgba(160, 174, 192, 0.6); color: #e2e8f0; font-size: 0.8rem;"><i class="fa-solid fa-circle-question me-1"></i> Vấn đề khác</span>`;
+    }
+    setHtml('detailTypeBadge', typeBadgeHtml);
+
+    let statusHtml = '';
+    if (finalStatus === 'PENDING') {
+        statusHtml = `<span class="glass-badge" style="background: #FBFFB3; border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i> Đang chờ xử lý</span>`;
+    } else {
+        statusHtml = `<span class="glass-badge" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i> Đã giải quyết xong</span>`;
+    }
+    setHtml('detailStatus', statusHtml);
+
+    const resBox = document.getElementById('detailResolutionBox');
+    if (resBox) {
+        if (finalResolution) {
+            setTxt('detailResolution', finalResolution);
+            resBox.classList.remove('d-none');
+        } else {
+            resBox.classList.add('d-none');
+        }
+    }
+
+    const modal = document.getElementById('complaintDetailModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('active');
+    }
+};
+
+window.closeComplaintDetailModal = function () {
+    const modal = document.getElementById('complaintDetailModal');
+    if (modal) {
+        modal.style.display = 'none';
+        modal.classList.remove('active');
+    }
+};
+
 // Lắng nghe sự kiện chuyển Tab để tự động load dữ liệu
 document.addEventListener('DOMContentLoaded', () => {
     const complaintsLink = document.querySelector('a[href="#disputes"]');
@@ -771,6 +1052,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+
 
 // ==========================================
 // 10. NOTIFICATION MODULE (Tích hợp API thực tế)
@@ -950,152 +1233,18 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(fetchDispatcherNotifications, 5000);
 });
 
-// ==========================================
-// 12. TÍCH HỢP HỆ THỐNG KHIẾU NẠI & TRANH CHẤP
-// ==========================================
 
-// --- TẢI DANH SÁCH KHIẾU NẠI (GET) ---
-async function loadComplaints() {
-    const tbody = document.getElementById('complaintsListBody');
-    if (!tbody) return;
-
-    try {
-        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints`, {
-            method: 'GET',
-            headers: getAuthHeader()
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            tbody.innerHTML = '';
-
-            if (!result.data || result.data.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-white-50 py-4"><i class="fa-regular fa-face-smile me-2"></i>Hiện không có khiếu nại nào cần xử lý</td></tr>`;
-                return;
-            }
-
-            result.data.forEach(c => {
-                let displayContent = c.Content || '';
-                let typeBadge = '';
-
-                if (c.ComplaintType === 'LOST_LUGGAGE') {
-                    typeBadge = `<span class="badge bg-warning text-dark mb-1">Thất lạc hành lý</span><br>`;
-                    displayContent = `<strong>Tuyến:</strong> ${c.FromLocation || '?'} <i class="fa-solid fa-arrow-right mx-1"></i> ${c.ToLocation || '?'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
-                } else if (c.ComplaintType === 'SERVICE_FEEDBACK') {
-                    typeBadge = `<span class="badge bg-primary mb-1">Thái độ phục vụ</span><br>`;
-                    displayContent = `<strong>Vấn đề:</strong> ${c.IssueType || 'Khác'}<br><strong>Chi tiết:</strong> ${c.Content || 'Không có'}`;
-                } else {
-                    typeBadge = `<span class="badge bg-secondary mb-1">Vấn đề khác</span><br>`;
-                }
-
-                let statusHtml = '';
-                let actionBtn = '';
-                if (c.Status === 'PENDING') {
-                    statusHtml = `<span class="glass-badge bg-warning text-dark"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
-                    actionBtn = `<button class="btn btn-sm btn-outline-light rounded-pill" onclick="openResolveModal(${c.ComplaintID})"><i class="fa-solid fa-gavel me-1"></i> Giải quyết</button>`;
-                } else {
-                    statusHtml = `<span class="glass-badge bg-success text-white"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
-                    actionBtn = `<span class="text-success small fw-bold"><i class="fa-solid fa-check"></i> Hoàn tất</span>`;
-                }
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="fw-bold">#${c.ComplaintID}</td>
-                    <td><span class="text-info fw-bold">${c.BookingID ? '#' + c.BookingID : 'N/A'}</span></td>
-                    <td>
-                        <div class="fw-bold text-white">${c.FullName}</div>
-                        <div class="text-white-50 small"><i class="fa-solid fa-phone me-1"></i>${c.Phone}</div>
-                    </td>
-                    <td style="font-size: 0.85rem;">
-                        ${typeBadge}
-                        <div class="text-white-50">${displayContent}</div>
-                    </td>
-                    <td>${statusHtml}</td>
-                    <td>${actionBtn}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        } else {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi tải dữ liệu: ${result.message}</td></tr>`;
-        }
-    } catch (error) {
-        console.error("Lỗi tải khiếu nại:", error);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">Lỗi kết nối máy chủ!</td></tr>`;
-    }
-}
-
-// --- XỬ LÝ MỞ / ĐÓNG MODAL RESOLVE ---
-let currentResolvingComplaintId = null;
-
-function openResolveModal(complaintId) {
-    currentResolvingComplaintId = complaintId;
-    document.getElementById('complaintResolutionInput').value = '';
-
-    const errorMsg = document.getElementById('complaintResolutionError');
-    if (errorMsg) errorMsg.classList.add('d-none');
-
-    document.getElementById('resolveComplaintModal').style.display = 'flex';
-}
-
-function closeResolveModal() {
-    currentResolvingComplaintId = null;
-    document.getElementById('resolveComplaintModal').style.display = 'none';
-}
-
-// --- THỰC THI RESOLVE (PUT API) ---
-async function executeResolveComplaint() {
-    if (!currentResolvingComplaintId) return;
-
-    const resolutionInput = document.getElementById('complaintResolutionInput').value.trim();
-    const errorMsg = document.getElementById('complaintResolutionError');
-
-    if (!resolutionInput) {
-        if (errorMsg) errorMsg.classList.remove('d-none');
-        return;
-    }
-    if (errorMsg) errorMsg.classList.add('d-none');
-
-    const btnSubmit = document.getElementById('btnSubmitResolution');
-    const originalText = btnSubmit.innerHTML;
-    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
-    btnSubmit.disabled = true;
-
-    try {
-        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentResolvingComplaintId}/resolve`, {
-            method: 'PUT',
-            headers: postAuthHeader(),
-            body: JSON.stringify({ resolution: resolutionInput })
-        });
-
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            closeResolveModal();
-            if (typeof showSystemToast === 'function') {
-                showSystemToast("Đã đóng khiếu nại thành công!", "success");
-            }
-            loadComplaints(); // Tải lại bảng sau khi thành công
-        } else {
-            alert("Lỗi: " + (result.message || "Không thể giải quyết khiếu nại"));
-        }
-    } catch (error) {
-        console.error("Lỗi resolve khiếu nại:", error);
-        alert("Lỗi kết nối máy chủ!");
-    } finally {
-        btnSubmit.innerHTML = originalText;
-        btnSubmit.disabled = false;
-    }
-}
-
-// Tự động tải danh sách khiếu nại khi Dispatcher chuyển sang tab Khiếu nại
+// Tự động tải sẵn khi load trang
 document.addEventListener("DOMContentLoaded", function () {
-    const disputeTabLink = document.querySelector('a[href="#disputes"]');
-    if (disputeTabLink) {
-        disputeTabLink.addEventListener('click', function () {
-            loadComplaints();
-        });
-    }
-    // Nạp sẵn một lần lúc mới load trang
     loadComplaints();
+});
+
+// Tự động chuyển trạng thái active cho các nút tab
+document.querySelectorAll('.btn-glass-tab').forEach(btn => {
+    const onclickAttr = btn.getAttribute('onclick') || '';
+    if (onclickAttr.includes(`'${status}'`)) {
+        btn.classList.add('active');
+    } else {
+        btn.classList.remove('active');
+    }
 });

@@ -541,7 +541,8 @@
                 </a>
 
                 <!-- Menu Desktop: Khách hàng (Ẩn mặc định) -->
-                <div id="customerDesktopMenu" class="navbar-center-links d-none" style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 35px;">
+                <div id="customerDesktopMenu" class="navbar-center-links d-none"
+                    style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 35px;">
                     <a href="../index.html" class="nav-link-center-1">Trang chủ</a>
                     <a href="findCar.html" class="nav-link-center-1 active">Đặt xe</a>
                     <a href="customer/tripHistory.html" class="nav-link-center-1">Chuyến đi</a>
@@ -555,7 +556,7 @@
                 <!-- Menu Desktop: Guest (Mặc định) -->
                 <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
                     <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
-                        <a href="register.html" class="nav-link-center-1">Trở thành tài xế</a>
+                        <a href="support.html" class="nav-link-center-1">Trung tâm hỗ trợ</a>
                         <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
                     </div>
 
@@ -567,26 +568,41 @@
                     <!-- Dropdown User -->
                     <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
                         <div class="dropdown me-3" id="notificationDropdownContainer">
-                            <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+                            <div id="notificationBtn" class="notification-btn position-relative"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
                                 <i class="fa-regular fa-bell fs-5"></i>
-                                <span id="unreadBadge" class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none" data-count="0"></span>
+                                <span id="unreadBadge"
+                                    class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
+                                    data-count="0"></span>
                             </div>
-                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0" style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList"><li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo nào</li></ul>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0"
+                                style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList">
+                                <li class="text-center p-4 text-muted"><i
+                                        class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo
+                                    nào</li>
+                            </ul>
                         </div>
 
                         <div class="user-profile-btn position-relative dropdown" style="cursor: pointer;">
                             <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown">
                                 <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
-                                    <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);" id="navDesktopName"></span>
-                                    <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;" id="navDesktopRole">Customer</span>
+                                    <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);"
+                                        id="navDesktopName"></span>
+                                    <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;"
+                                        id="navDesktopRole">Customer</span>
                                 </div>
-                                <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
+                                <img id="navDesktopAvatar" src=""
+                                    style="width: 34px; height: 34px; border-radius: 50%;">
                             </div>
                             <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
-                                <a href="customer/customer-profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
-                                <a href="customer/tripHistory.html" class="dropdown-item-custom"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
+                                <a href="customer/customer-profile.html" class="dropdown-item-custom"><i
+                                        class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                                <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
+                                        class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                                 <hr style="margin: 5px 0; opacity: 0.1;">
-                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"
+                                    onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                    Đăng xuất</a>
                             </div>
                         </div>
                     </div>
@@ -597,21 +613,26 @@
                 <div class="dropdown-inner-content d-flex flex-column gap-3">
                     <!-- Mobile: Guest -->
                     <div id="guestMobileMenu" class="d-flex flex-column gap-3">
-                        <a href="register.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trở thành tài xế FleetFlow</a>
-                        <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về chính sách</a>
+                        <a href="register.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trở thành
+                            tài xế FleetFlow</a>
+                        <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về chính
+                            sách</a>
                     </div>
 
                     <!-- Mobile: Customer -->
                     <div id="customerMobileMenu" class="d-none flex-column gap-3">
                         <a href="../index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Trang chủ</a>
                         <a href="findCar.html" class="mobile-nav-item active"><i class="fa-solid fa-car"></i> Đặt xe</a>
-                        <a href="customer/tripHistory.html" class="mobile-nav-item"><i class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
-                        <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính sách</a>
+                        <a href="customer/tripHistory.html" class="mobile-nav-item"><i
+                                class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
+                        <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính
+                            sách</a>
                     </div>
-                    
+
                     <div class="divider-glass my-2"></div>
-                    
-                    <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2" id="btnLogin">
+
+                    <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2"
+                        id="btnLogin">
                         <span class="fw-bold">Đăng nhập ngay</span>
                         <i class="fa-regular fa-user-circle fs-5"></i>
                     </button>
@@ -1310,58 +1331,58 @@
         </div>
     </div>
     <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const fullName = localStorage.getItem('fullName');
-        const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+        document.addEventListener("DOMContentLoaded", function () {
+            const fullName = localStorage.getItem('fullName');
+            const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
-        if (fullName) {
-            const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+            if (fullName) {
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
 
-            const avatarImg = document.getElementById('navDesktopAvatar');
-            const nameSpan = document.getElementById('navDesktopName');
-            const roleSpan = document.getElementById('navDesktopRole');
-            if (avatarImg) avatarImg.src = avatarUrl;
-            if (nameSpan) nameSpan.innerText = fullName;
-            if (roleSpan) roleSpan.innerText = userRole;
+                const avatarImg = document.getElementById('navDesktopAvatar');
+                const nameSpan = document.getElementById('navDesktopName');
+                const roleSpan = document.getElementById('navDesktopRole');
+                if (avatarImg) avatarImg.src = avatarUrl;
+                if (nameSpan) nameSpan.innerText = fullName;
+                if (roleSpan) roleSpan.innerText = userRole;
 
-            // Chuyển đổi Navbar Menu
-            const guestDesktopMenu = document.getElementById('guestDesktopMenu');
-            const customerDesktopMenu = document.getElementById('customerDesktopMenu');
-            if(guestDesktopMenu) { guestDesktopMenu.classList.remove('d-flex'); guestDesktopMenu.classList.add('d-none'); }
-            if(customerDesktopMenu) { customerDesktopMenu.classList.remove('d-none'); customerDesktopMenu.classList.add('d-none', 'd-lg-flex'); } // Fix cho responsive lg
+                // Chuyển đổi Navbar Menu
+                const guestDesktopMenu = document.getElementById('guestDesktopMenu');
+                const customerDesktopMenu = document.getElementById('customerDesktopMenu');
+                if (guestDesktopMenu) { guestDesktopMenu.classList.remove('d-flex'); guestDesktopMenu.classList.add('d-none'); }
+                if (customerDesktopMenu) { customerDesktopMenu.classList.remove('d-none'); customerDesktopMenu.classList.add('d-none', 'd-lg-flex'); } // Fix cho responsive lg
 
-            const guestMobileMenu = document.getElementById('guestMobileMenu');
-            const customerMobileMenu = document.getElementById('customerMobileMenu');
-            if(guestMobileMenu) { guestMobileMenu.classList.remove('d-flex'); guestMobileMenu.classList.add('d-none'); }
-            if(customerMobileMenu) { customerMobileMenu.classList.remove('d-none'); customerMobileMenu.classList.add('d-flex'); }
+                const guestMobileMenu = document.getElementById('guestMobileMenu');
+                const customerMobileMenu = document.getElementById('customerMobileMenu');
+                if (guestMobileMenu) { guestMobileMenu.classList.remove('d-flex'); guestMobileMenu.classList.add('d-none'); }
+                if (customerMobileMenu) { customerMobileMenu.classList.remove('d-none'); customerMobileMenu.classList.add('d-flex'); }
 
-            // Ẩn Nút Login
-            const loginBtns = document.querySelectorAll('#btnLogin');
-            loginBtns.forEach(btn => btn.classList.add('d-none'));
-            
-            // Xóa class d-lg-flex d-flex cũ nếu cần
-            loginBtns.forEach(btn => {
-                btn.classList.remove('d-lg-flex');
-                btn.classList.remove('d-flex');
-            });
+                // Ẩn Nút Login
+                const loginBtns = document.querySelectorAll('#btnLogin');
+                loginBtns.forEach(btn => btn.classList.add('d-none'));
 
-            // Hiển thị User Dropdown
-            const userDropdown = document.getElementById('userProfileDropdown');
-            if(userDropdown) {
-                userDropdown.classList.remove('d-none');
-                userDropdown.classList.add('d-flex');
+                // Xóa class d-lg-flex d-flex cũ nếu cần
+                loginBtns.forEach(btn => {
+                    btn.classList.remove('d-lg-flex');
+                    btn.classList.remove('d-flex');
+                });
+
+                // Hiển thị User Dropdown
+                const userDropdown = document.getElementById('userProfileDropdown');
+                if (userDropdown) {
+                    userDropdown.classList.remove('d-none');
+                    userDropdown.classList.add('d-flex');
+                }
             }
-        }
-    });
+        });
 
-    function handleLogout(e) {
-        e.preventDefault();
-        localStorage.removeItem('fullName');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('accountId');
-        localStorage.removeItem('token');
-        window.location.href = '../index.html';
-    }
+        function handleLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('accountId');
+            localStorage.removeItem('token');
+            window.location.href = '../index.html';
+        }
     </script>
 </body>
 
