@@ -53,7 +53,6 @@
         <!-- Menu Desktop: Guest (Mặc định) -->
         <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
           <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
-            <a href="pages/register.html" class="nav-link-center-1">Trở thành tài xế</a>
             <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
           </div>
 
@@ -80,9 +79,9 @@
                       </div>
                       <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
                   </div>
-                  <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
-                      <a href="pages/customer/customer-profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
-                      <a href="pages/customer/tripHistory.html" class="dropdown-item-custom"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
+                  <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end" id="desktopUserMenuLinks">
+                      <a href="pages/profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                      <a href="pages/customer/tripHistory.html" class="dropdown-item-custom" id="navDesktopCustomerHistory"><i class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                       <hr style="margin: 5px 0; opacity: 0.1;">
                       <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
                   </div>
@@ -94,8 +93,6 @@
         <div class="dropdown-inner-content d-flex flex-column gap-3">
           <!-- Mobile: Guest -->
           <div id="guestMobileMenu" class="d-flex flex-column gap-3">
-            <a href="pages/register.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trở thành tài xế
-              FleetFlow</a>
             <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về chính
               sách</a>
           </div>
@@ -949,6 +946,31 @@
         if (userDropdown) {
           userDropdown.classList.remove('d-none');
           userDropdown.classList.add('d-flex');
+        }
+
+        // 🚀 BỔ SUNG: Logic phân quyền cho Menu Dropdown
+        const desktopMenuLinks = document.getElementById('desktopUserMenuLinks');
+        const navDesktopCustomerHistory = document.getElementById('navDesktopCustomerHistory');
+        
+        if (desktopMenuLinks && (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ' || userRole.toUpperCase() === 'ADMIN')) {
+          // Ẩn lịch sử khách hàng
+          if (navDesktopCustomerHistory) {
+              navDesktopCustomerHistory.style.display = 'none';
+          }
+          
+          // Chèn nút Chế độ Tài xế
+          const driverBtn = document.createElement('a');
+          driverBtn.href = "pages/driver/driver-workspace.html";
+          driverBtn.className = "dropdown-item-custom text-success";
+          driverBtn.innerHTML = '<i class="fa-solid fa-car-side"></i> Chế độ Tài xế';
+          
+          // Chèn vào trước HR
+          const hrElem = desktopMenuLinks.querySelector('hr');
+          if (hrElem) {
+              desktopMenuLinks.insertBefore(driverBtn, hrElem);
+          } else {
+              desktopMenuLinks.appendChild(driverBtn);
+          }
         }
       }
     });
