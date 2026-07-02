@@ -17,11 +17,64 @@ function postAuthHeader() {
 }
 
 // ==========================================
+// HÀM KIỂM TRA TOKEN JWT HẾT HẠN
+// ==========================================
+function isJwtExpired(token) {
+    if (!token) return true;
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const payload = JSON.parse(window.atob(base64));
+        if (payload && payload.exp) {
+            return (payload.exp * 1000) < Date.now();
+        }
+        return false;
+    } catch (e) {
+        return true; // Token sai định dạng coi như hết hạn
+    }
+}
+
+// ==========================================
+// HÀM XỬ LÝ ĐĂNG XUẤT KHI HẾT HẠN TOKEN
+// ==========================================
+function handleTokenExpiredLogout() {
+    if (window.isLoggedOutByToken) return;
+    window.isLoggedOutByToken = true;
+
+    if (typeof window.pauseMapTracking === 'function') {
+        window.pauseMapTracking();
+    }
+    
+    alert("Phiên đăng nhập hoặc Token JWT đã hết hạn! Hệ thống sẽ tự động đăng xuất về trang chủ.");
+    localStorage.clear();
+    window.location.href = '../../index.html';
+}
+
+// ==========================================
+// BỘ ĐÁNH CHẶN FETCH TOÀN CỤC (GLOBAL INTERCEPTOR)
+// ==========================================
+const originalFetch = window.fetch;
+window.fetch = async function (...args) {
+    const response = await originalFetch(...args);
+    if (response.status === 401 || response.status === 403) {
+        handleTokenExpiredLogout();
+    }
+    return response;
+};
+
+// ==========================================
 // 8. TÍCH HỢP PROFILE TỪ LOCALSTORAGE & LOGOUT
 // ==========================================
 document.addEventListener("DOMContentLoaded", function () {
     const fullName = localStorage.getItem('fullName');
     const userRole = localStorage.getItem('userRole');
+    const token = localStorage.getItem('accessToken');
+
+    // Kiểm tra Token JWT ngay khi tải trang
+    if (!token || isJwtExpired(token)) {
+        handleTokenExpiredLogout();
+        return;
+    }
 
     // Cập nhật giao diện nếu đã đăng nhập
     if (fullName) {
@@ -566,27 +619,7 @@ async function fetchLiveMapData() {
         // 2. XỬ LÝ LỖI 401 TỪ BACKEND TRẢ VỀ
         if (response.status === 401 || response.status === 403) {
             console.error("Token hết hạn hoặc không có quyền truy cập. Dừng quét map.");
-
-            // Dừng vòng lặp gọi API 30s
-            if (typeof window.pauseMapTracking === 'function') {
-                window.pauseMapTracking();
-            }
-
-            // Báo lỗi cho Dispatcher
-            if (typeof showSystemToast === 'function') {
-                showSystemToast("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại!", "error");
-            }
-
-            // Đợi 2 giây rồi đá văng về trang Login an toàn
-            setTimeout(() => {
-                if (typeof window.handleDispatcherLogout === 'function') {
-                    window.handleDispatcherLogout();
-                } else {
-                    localStorage.clear();
-                    window.location.href = '../../index.html';
-                }
-            }, 2000);
-
+            handleTokenExpiredLogout();
             return; // Thoát hàm ngay lập tức
         }
 
