@@ -99,7 +99,7 @@ async function openVoucherModal(id = null) {
             }
         } catch (err) {
             console.error("Lỗi lấy chi tiết voucher", err);
-            alert("Không thể kết nối tải chi tiết Voucher!");
+            showGlassAlert("Không thể kết nối tải chi tiết Voucher!", "error");
             return;
         }
     } else {
@@ -151,11 +151,11 @@ async function viewVoucherDetail(id) {
 
             detailModal.show();
         } else {
-            alert("Không tìm thấy dữ liệu voucher!");
+            showGlassAlert("Không tìm thấy dữ liệu voucher!", "error");
         }
     } catch (err) {
         console.error("Lỗi lấy chi tiết voucher", err);
-        alert("Lỗi! Không thể kết nối lấy chi tiết Voucher.");
+        showGlassAlert("Lỗi! Không thể kết nối lấy chi tiết Voucher.", "error");
     }
 }
 
@@ -194,21 +194,25 @@ async function saveVoucher() {
         fetchVouchers(); // Refresh lại danh sách
     } catch (err) {
         console.error("Lỗi khi lưu voucher", err);
-        alert("Có lỗi xảy ra khi lưu Voucher: " + (err.message || 'Máy chủ từ chối yêu cầu.'));
+        showGlassAlert("Có lỗi xảy ra khi lưu Voucher: " + (err.message || 'Máy chủ từ chối yêu cầu.'), "error");
     }
 }
 
 /**
  * Xóa / Vô hiệu hóa Voucher
  */
-async function deleteVoucher(id) {
-    if (confirm("Hành động này sẽ xóa/vô hiệu hóa Voucher. Bạn có chắc chắn không?")) {
-        try {
-            await API.delete(`${VOUCHER_API_URL}/${id}`);
-            fetchVouchers(); // Refresh lại danh sách
-        } catch (err) {
-            console.error("Lỗi xóa voucher", err);
-            alert("Lỗi! Không thể thực thi yêu cầu xóa Voucher.");
-        }
-    }
+function deleteVoucher(id) {
+    showGlassConfirm(
+        "Hành động này sẽ xóa/vô hiệu hóa Voucher. Bạn có chắc chắn không?",
+        async () => {
+            try {
+                await API.delete(`${VOUCHER_API_URL}/${id}`);
+                fetchVouchers(); // Refresh lại danh sách
+            } catch (err) {
+                console.error("Lỗi xóa voucher", err);
+                showGlassAlert("Lỗi! Không thể thực thi yêu cầu xóa Voucher.", "error");
+            }
+        },
+        { title: "Xóa Voucher", confirmText: "Xóa ngay", type: "danger" }
+    );
 }

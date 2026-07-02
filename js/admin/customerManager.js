@@ -130,54 +130,58 @@ function renderCustomers(customers) {
 /**
  * Khóa tài khoản khách hàng
  */
-async function lockCustomerAccount(id, name) {
-    if (!confirm(`Bạn có chắc chắn muốn khóa tài khoản của khách hàng "${name}" không?\nHành động này sẽ ngăn khách hàng tạo đặt xe mới.`)) {
-        return;
-    }
+function lockCustomerAccount(id, name) {
+    showGlassConfirm(
+        `Bạn có chắc chắn muốn khóa tài khoản của khách hàng "${name}" không?\nHành động này sẽ ngăn khách hàng tạo đặt xe mới.`,
+        async () => {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const response = await fetch(`${CUSTOMER_API_URL}/${id}/lock`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
 
-    const token = localStorage.getItem('accessToken');
-    try {
-        const response = await fetch(`${CUSTOMER_API_URL}/${id}/lock`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            showSystemToast(`Đã khóa thành công tài khoản "${name}"`, "success");
-            fetchAndRenderCustomers(); // Reload lại bảng từ API
-        } else {
-            showSystemToast(result.error || result.message || "Lỗi khi khóa tài khoản", "error");
-        }
-    } catch (err) {
-        showSystemToast("Mất kết nối API máy chủ.", "error");
-    }
+                if (response.ok && result.success) {
+                    showSystemToast(`Đã khóa thành công tài khoản "${name}"`, "success");
+                    fetchAndRenderCustomers(); // Reload lại bảng từ API
+                } else {
+                    showGlassAlert(result.error || result.message || "Lỗi khi khóa tài khoản", "error");
+                }
+            } catch (err) {
+                showGlassAlert("Mất kết nối API máy chủ.", "error");
+            }
+        },
+        { title: "Khóa tài khoản khách hàng", confirmText: "Khóa tài khoản", type: "danger" }
+    );
 }
 
 /**
  * Mở khóa tài khoản khách hàng
  */
-async function unlockCustomerAccount(id, name) {
-    if (!confirm(`Xác nhận mở khóa tài khoản của "${name}"?\nKhách hàng sẽ có thể đặt xe trở lại.`)) {
-        return;
-    }
+function unlockCustomerAccount(id, name) {
+    showGlassConfirm(
+        `Xác nhận mở khóa tài khoản của "${name}"?\nKhách hàng sẽ có thể đặt xe trở lại.`,
+        async () => {
+            const token = localStorage.getItem('accessToken');
+            try {
+                const response = await fetch(`${CUSTOMER_API_URL}/${id}/unlock`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const result = await response.json();
 
-    const token = localStorage.getItem('accessToken');
-    try {
-        const response = await fetch(`${CUSTOMER_API_URL}/${id}/unlock`, {
-            method: 'POST',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            showSystemToast(`Đã mở khóa thành công tài khoản "${name}"`, "success");
-            fetchAndRenderCustomers(); // Reload lại bảng từ API
-        } else {
-            // Lỗi xảy ra (VD: Khách còn nợ quá giới hạn) => Show lỗi trả về từ Backend
-            showSystemToast(result.error || result.message || "Không thể mở khóa tài khoản", "error");
-        }
-    } catch (err) {
-        showSystemToast("Mất kết nối API máy chủ.", "error");
-    }
+                if (response.ok && result.success) {
+                    showSystemToast(`Đã mở khóa thành công tài khoản "${name}"`, "success");
+                    fetchAndRenderCustomers(); // Reload lại bảng từ API
+                } else {
+                    // Lỗi xảy ra (VD: Khách còn nợ quá giới hạn) => Show lỗi trả về từ Backend
+                    showGlassAlert(result.error || result.message || "Không thể mở khóa tài khoản", "error");
+                }
+            } catch (err) {
+                showGlassAlert("Mất kết nối API máy chủ.", "error");
+            }
+        },
+        { title: "Mở khóa tài khoản", confirmText: "Mở khóa ngay", type: "success" }
+    );
 }
