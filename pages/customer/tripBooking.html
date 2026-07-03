@@ -837,7 +837,8 @@
                             oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()"
                             maxlength="200" style="padding-right: 48px;">
                         <label for="inputPickup">Đón tại</label>
-                        <button type="button" class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-2 p-2 text-primary"
+                        <button type="button"
+                            class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-2 p-2 text-primary"
                             id="btnGetGpsLocation" onclick="fetchCurrentLocationAndReverseGeocode('inputPickup')"
                             title="Lấy vị trí hiện tại của bạn" style="z-index: 10; text-decoration: none;">
                             <i class="fa-solid fa-location-crosshairs fs-5 live-pulse" id="gpsIcon"></i>
@@ -848,6 +849,13 @@
                                 <i class="fa-solid fa-location-dot"></i>
                                 <div><span class="autocomplete-main-text">Vinhomes Grand Park</span><span
                                         class="autocomplete-sub-text">512 Nguyễn Xiển phường Long Bình TPHCM</span>
+                                </div>
+                            </div>
+                            <div class="autocomplete-item"
+                                onclick="selectLocation('inputPickup', 'Vườn Quốc Gia Tràm Chim', 'pickupDropdown')">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div><span class="autocomplete-main-text">Vườn Quốc Gia Tràm Chim</span><span
+                                        class="autocomplete-sub-text">Ấp 4, xã Tràm Chim, tỉnh Đồng Tháp</span>
                                 </div>
                             </div>
                         </div>
@@ -866,10 +874,16 @@
                                         class="autocomplete-sub-text">Đường Thùy Vân, TP. Vũng Tàu</span></div>
                             </div>
                             <div class="autocomplete-item"
-                                onclick="selectLocation('inputDropoff', 'Chợ Bến Thành, Q1', 'dropoffDropdown')">
+                                onclick="selectLocation('inputDropoff', 'BV Nhi Đồng 1', 'dropoffDropdown')">
                                 <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">Chợ Bến Thành</span><span
-                                        class="autocomplete-sub-text">Phường Bến Thành, Quận 1, HCM</span></div>
+                                <div><span class="autocomplete-main-text">Bệnh viện Nhi Đồng 1</span><span
+                                        class="autocomplete-sub-text">Đường Lý Thái Tổ, Quận 10, HCM</span></div>
+                            </div>
+                            <div class="autocomplete-item"
+                                onclick="selectLocation('inputDropoff', 'Cảng Hàng Không Q.Tế Tân Sơn Nhất', 'dropoffDropdown')">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <div><span class="autocomplete-main-text">Sân bay Q.Tế Tân Sơn Nhất</span><span
+                                        class="autocomplete-sub-text">Đường Trường Sơn, Tân Bình, HCM</span></div>
                             </div>
                         </div>
                     </div>
