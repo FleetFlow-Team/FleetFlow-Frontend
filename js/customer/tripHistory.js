@@ -475,7 +475,9 @@ function filterTrips(status, btnElement) {
             } else if (status === 'active') {
                 return ['ACTIVE', 'IN_PROGRESS', 'ONGOING'].includes(rawStatus);
             } else if (status === 'completed') {
-                return ['COMPLETED', 'CANCELLED', 'UNPAID', 'REJECTED'].includes(rawStatus);
+                return ['COMPLETED', 'UNPAID'].includes(rawStatus);
+            } else if (status === 'cancelled') {
+                return ['CANCELLED', 'REJECTED'].includes(rawStatus);
             }
             return rawStatus === status.toUpperCase();
         });
