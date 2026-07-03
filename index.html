@@ -39,11 +39,12 @@
 
         <!-- Menu Desktop: Khách hàng (Ẩn mặc định) -->
         <div id="customerDesktopMenu" class="navbar-center-links d-none"
-          style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 35px;">
+          style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 1rem;">
           <a href="index.html" class="nav-link-center-1 active">Trang chủ</a>
           <a href="pages/findCar.html" class="nav-link-center-1">Đặt xe</a>
           <a href="pages/customer/tripHistory.html" class="nav-link-center-1">Chuyến đi</a>
           <a href="pages/policy.html" class="nav-link-center-1">Chính sách</a>
+          <a href="pages/support.html" class="nav-link-center-1">Trợ giúp</a>
         </div>
 
         <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
@@ -53,8 +54,8 @@
         <!-- Menu Desktop: Guest (Mặc định) -->
         <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
           <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
-            <a href="pages/support.html" class="nav-link-center-1">Trung tâm hỗ trợ</a>
-            <a href="pages/policy.html" class="nav-link-center-1">Về chính sách</a>
+            <a href="pages/support.html" class="nav-link-center-2">Trung tâm hỗ trợ</a>
+            <a href="pages/policy.html" class="nav-link-center-2">Về chính sách</a>
           </div>
 
           <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
@@ -120,6 +121,7 @@
                   class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
               <a href="pages/policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính
                 sách</a>
+              <a href="support.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trợ giúp</a>
             </div>
 
             <div class="divider-glass my-2"></div>
@@ -498,8 +500,9 @@
                 <i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i
                   class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i>
               </div>
-              <p class="fst-italic">"Thích nhất là sự minh bạch. Hóa đơn cuối cùng báo rõ ràng tiền BOT và phà kèm biên
-                lai tài xế chụp. Không bị vòi vĩnh hay mập mờ như xe ngoài."</p>
+              <p class="fst-italic">"Mình rất hài lòng với dịch vụ này! Ưng nhất là vụ voucher được gửi mail liên tục
+                vào những ngày ưu đãi, tiết kiệm được kha khá chi phí. Tài xế cũng
+                rất thân thiện và nhiệt tình nữa. Mọi thứ đều tạo cảm giác rất an tâm và chuyên nghiệp. 5 sao nhé!"</p>
             </div>
           </div>
 
@@ -526,21 +529,17 @@
     </section>
 
     <!-- GỘP CTA & PREMIUM REGISTER SỬ DỤNG LIQUID SWITCHER (BỐ CỤC 1 CỘT DỌC - ĐÃ FIX CANH GIỮA) -->
-    <section id="join-us-section" class="py-6 position-relative overflow-hidden"
+    <!-- <section id="join-us-section" class="py-6 position-relative overflow-hidden"
       style="background-color: #0b0f17; padding: 100px 0;">
-      <!-- Nền ánh sáng ngầm -->
       <div class="luxury-glow-bg">
         <div class="glow-sphere sphere-1"></div>
         <div class="glow-sphere sphere-2"></div>
       </div>
 
-      <!-- FIX: Dùng .container thay cho .container-base để hủy flex space-between -->
       <div class="container position-relative z-3">
 
-        <!-- Ép thẻ cha căn giữa tuyệt đối theo trục dọc và ngang -->
         <div class="d-flex flex-column align-items-center justify-content-center text-center w-100 mx-auto">
 
-          <!-- 1. TIÊU ĐỀ TRÊN CÙNG -->
           <div class="reveal-on-scroll w-100">
             <h2 class="luxury-title mb-3" style="font-size: 3rem;">
               Đồng Hành Cùng <span class="text-gradient-gold">FleetFlow</span>
@@ -550,22 +549,18 @@
             </p>
           </div>
 
-          <!-- 2. SWITCHER NẰM Ở GIỮA -->
           <div class="sliding-tabs-container mb-5 reveal-on-scroll delay-1">
             <div id="tabIndicator" class="tab-indicator"></div>
             <button class="tab-pill active" onclick="switchRoleTab('customer', this)">Khách hàng</button>
             <button class="tab-pill" onclick="switchRoleTab('driver', this)">Tài xế</button>
           </div>
 
-          <!-- 3. THẺ FORM NẰM DƯỚI CÙNG -->
           <div class="w-100 reveal-on-scroll delay-2" style="max-width: 900px; margin: 0 auto;">
 
-            <!-- NỘI DUNG 1: KHÁCH HÀNG -->
             <div id="customer-content" class="tab-content-pane active">
               <div class="luxury-register-card p-4 p-md-5 mx-auto">
                 <div class="row align-items-center g-5 text-center text-md-start">
 
-                  <!-- Chữ bên trong thẻ kính -->
                   <div class="col-md-6">
                     <span class="premium-tag mb-3 d-inline-block">FLEETFLOW MEMBERSHIP</span>
                     <h2 class="luxury-title mb-3" style="font-size: 2rem;">
@@ -577,7 +572,6 @@
                     </p>
                   </div>
 
-                  <!-- Form đăng ký -->
                   <div class="col-md-6">
                     <div class="luxury-form-wrapper p-4 text-center h-100 d-flex flex-column justify-content-center">
                       <h5 class="form-title mb-4">NHẬN VOUCHER ĐẶC QUYỀN</h5>
@@ -597,7 +591,6 @@
               </div>
             </div>
 
-            <!-- NỘI DUNG 2: TÀI XẾ -->
             <div id="driver-content" class="tab-content-pane">
               <div class="luxury-register-card p-4 p-md-5 mx-auto">
                 <div class="text-center">
@@ -625,7 +618,7 @@
 
         </div>
       </div>
-    </section>
+    </section> -->
 
 
 
@@ -706,8 +699,10 @@
         <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
       </div>
       <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
-        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required maxlength="50">
-        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required maxlength="50">
+        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required
+          maxlength="50">
+        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required
+          maxlength="50">
         <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
           <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
             style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">

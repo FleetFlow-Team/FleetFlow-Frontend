@@ -1,272 +1,432 @@
 ﻿<!doctype html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FleetFlow - Chính sách Dịch vụ & Điều khoản</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"/>
-    
-    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
-    
-    <link rel="stylesheet" href="../style/base.css" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FleetFlow - Chính sách Dịch vụ & Điều khoản</title>
 
-    <style> 
-      /* =========================================
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+
+  <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+
+  <link rel="stylesheet" href="../style/base.css" />
+
+  <style>
+    /* =========================================
          1. NỀN TRANG (BACKGROUND GRADIENT)
       ========================================= */
-      body {
-        font-family: "Inter", sans-serif;
-        /* Nền tối hơn một chút để mảng kính trong suốt nổi bật rực rỡ hơn */
-        background: var(--bg-gradient-light);
-        color: var(--text-color);
-        line-height: 1.7;
-        overflow-x: hidden;
-      }
+    body {
+      font-family: "Inter", sans-serif;
+      /* Nền tối hơn một chút để mảng kính trong suốt nổi bật rực rỡ hơn */
+      background: var(--bg-gradient-light);
+      color: var(--text-color);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
 
-      /* =========================================
+    /* =========================================
          2. NAVBAR LIQUID EFFECT
       ========================================= */
-      
-      .navbar-center-links { 
-          position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; gap: 35px; 
-      }
-      
+
+    .navbar-center-links {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      gap: 1rem;
+    }
 
 
-      .navbar-login-btn {
-          padding: 10px 24px;
-          font-size: 0.95rem;
-      }
 
-      /* =========================================
+    .navbar-login-btn {
+      padding: 10px 24px;
+      font-size: 0.95rem;
+    }
+
+    /* =========================================
          3. HERO BANNER
       ========================================= */
-      .policy-hero {
-        background: linear-gradient(135deg, var(--color-1) 0%, #008f3f 100%);
-        position: relative;
-        padding: 80px 0 60px;
-        text-align: center;
-        overflow: hidden;
-        margin-bottom: 20px;
-      }
-      .policy-hero::after {
-          content: ''; position: absolute; inset: 0;
-          background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+') repeat;
-          pointer-events: none;
-      }
-      .policy-hero h1 { font-weight: 800; font-size: 2.8rem; margin-bottom: 15px; letter-spacing: -0.5px; color: white; position: relative; z-index: 2;}
-      .policy-hero p { font-size: 1.15rem; color: rgba(255,255,255,0.9); max-width: 650px; margin: 0 auto; position: relative; z-index: 2;}
+    .policy-hero {
+      background: #00B14F;
+      position: relative;
+      padding: 80px 0 60px;
+      text-align: center;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
 
-      /* =========================================
+    .policy-hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .policy-hero h1 {
+      font-weight: 800;
+      font-size: 2.8rem;
+      margin-bottom: 15px;
+      letter-spacing: -0.5px;
+      color: white;
+      position: relative;
+      z-index: 2;
+    }
+
+    .policy-hero p {
+      font-size: 1.15rem;
+      color: rgba(255, 255, 255, 0.9);
+      max-width: 650px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* =========================================
          4. GLASS PANELS (CẬP NHẬT CHUẨN LIQUID & 50PX)
       ========================================= */
-      .policy-container { margin-top: 20px; margin-bottom: 80px; }
-      /* =========================================
+    .policy-container {
+      margin-top: 20px;
+      margin-bottom: 80px;
+    }
+
+    /* =========================================
          KHỐI SIDEBAR MỤC LỤC (Đồng bộ Liquid Glass với Navbar khi cuộn)
       ========================================= */
-      .policy-sidebar { position: sticky; top: 100px; z-index: 10; }
+    .policy-sidebar {
+      position: sticky;
+      top: 100px;
+      z-index: 10;
+    }
 
-      /* Giao diện kính lỏng trong suốt y hệt Navbar lúc cuộn */
-      .policy-sidebar .glass-panel {
-          background-color: transparent !important;
-          border-radius: 50px;
-          border: 1px solid rgba(255, 255, 255, 0.4) !important;
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15); /* Đổ bóng sâu như navbar */
-          position: relative;
-          isolation: isolate;
-          transform-style: preserve-3d;
-          transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease;
-      }
+    /* Giao diện kính lỏng trong suốt y hệt Navbar lúc cuộn */
+    .policy-sidebar .glass-panel {
+      background-color: transparent !important;
+      border-radius: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.4) !important;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      /* Đổ bóng sâu như navbar */
+      position: relative;
+      isolation: isolate;
+      transform-style: preserve-3d;
+      transition: transform 0.6s var(--liquid-easing), box-shadow 0.6s ease;
+    }
 
-      /* Lớp filter lượn sóng chất lỏng */
-      .policy-sidebar .glass-panel::after {
-          content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit;
-          background: rgba(140, 140, 140, 0.15); /* Nền mờ nhẹ nhàng */
-          backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-          filter: url(#liquid-distortion); 
-          opacity: 1; /* Hiển thị tĩnh luôn không cần chờ cuộn */
-      }
+    /* Lớp filter lượn sóng chất lỏng */
+    .policy-sidebar .glass-panel::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background: rgba(140, 140, 140, 0.15);
+      /* Nền mờ nhẹ nhàng */
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      filter: url(#liquid-distortion);
+      opacity: 1;
+      /* Hiển thị tĩnh luôn không cần chờ cuộn */
+    }
 
-      /* Viền sáng và bóng đổ bên trong mặt kính */
-      .policy-sidebar .glass-panel::before {
-          content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; pointer-events: none;
-          box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.6), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.1);
-          opacity: 1;
-      }
+    /* Viền sáng và bóng đổ bên trong mặt kính */
+    .policy-sidebar .glass-panel::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      border-radius: inherit;
+      pointer-events: none;
+      box-shadow: inset 1px 1px 3px 0 rgba(255, 255, 255, 0.6), inset -1px -1px 3px 0 rgba(0, 0, 0, 0.1);
+      opacity: 1;
+    }
 
-      .policy-sidebar .glass-panel:hover {
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-          transform: translateY(-5px);
-      }
+    .policy-sidebar .glass-panel:hover {
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      transform: translateY(-5px);
+    }
 
-      /* Phần Header chữ và Icon bên trong */
-      .toc-header { 
-          padding: 20px 20px 15px; font-weight: 800; 
-          color: var(--color-dark); /* Trả về màu tối để dễ đọc trên kính trong */
-          font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.5px; 
-          position: relative; z-index: 3;
-      }
+    /* Phần Header chữ và Icon bên trong */
+    .toc-header {
+      padding: 20px 20px 15px;
+      font-weight: 800;
+      color: var(--color-dark);
+      /* Trả về màu tối để dễ đọc trên kính trong */
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      z-index: 3;
+    }
 
-      /* --- THAY THẾ CÁC CLASS CŨ CỦA TOC-LIST BẰNG ĐOẠN NÀY --- */
+    /* --- THAY THẾ CÁC CLASS CŨ CỦA TOC-LIST BẰNG ĐOẠN NÀY --- */
 
-/* Khung chứa danh mục */
-.toc-list { 
-    list-style: none; 
-    padding: 0 15px 20px; 
-    margin: 0; 
-    position: relative; 
-}
+    /* Khung chứa danh mục */
+    .toc-list {
+      list-style: none;
+      padding: 0 15px 20px;
+      margin: 0;
+      position: relative;
+    }
 
-/* Các nút bấm chữ bên trong */
-.toc-list a { 
-    display: block; 
-    padding: 12px 20px; 
-    color: #475569; 
-    text-decoration: none; 
-    font-weight: 600; 
-    font-size: 0.95rem;
-    border-radius: 50px; 
-    margin-bottom: 8px;
-    position: relative; 
-    z-index: 2; /* Đẩy chữ lên trên cùng, cao hơn cục kính */
-    transition: color 0.3s ease, transform 0.4s var(--liquid-easing);
-    border: 1px solid transparent;
-}
+    /* Các nút bấm chữ bên trong */
+    .toc-list a {
+      display: block;
+      padding: 12px 20px;
+      color: #475569;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border-radius: 50px;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 2;
+      /* Đẩy chữ lên trên cùng, cao hơn cục kính */
+      transition: color 0.3s ease, transform 0.4s var(--liquid-easing);
+      border: 1px solid transparent;
+    }
 
-/* Hiệu ứng Hover chữ nhẹ nhàng */
-.toc-list a:hover { 
-    color: var(--color-dark);
-}
+    /* Hiệu ứng Hover chữ nhẹ nhàng */
+    .toc-list a:hover {
+      color: var(--color-dark);
+    }
 
-/* Đánh dấu mục đang đọc - ĐÃ XÓA background, border, và box-shadow dư thừa */
-.toc-list a.active { 
-    color: var(--color-1); 
-    transform: translateX(5px);
-    
-}
+    /* Đánh dấu mục đang đọc - ĐÃ XÓA background, border, và box-shadow dư thừa */
+    .toc-list a.active {
+      color: var(--color-1);
+      transform: translateX(5px);
 
-/* CỤC KÍNH TRƯỢT DỌC (The Vertical Glass Pill) */
-.toc-indicator {
-    position: absolute;
-    left: 15px; /* Khớp chính xác với padding-left của .toc-list */
-    width: calc(100% - 30px); /* Chiều rộng co giãn vừa khít với không gian của thẻ a */
-    height: 0; /* Sẽ được JS tự động tính toán và cập nhật */
-    top: 0; /* Sẽ được JS thay đổi qua thuộc tính transform translateY */
-    
-    /* Đồng bộ giao diện kính Glassmorphism từ file mẫu */
-    background: rgba(255, 255, 255, 0.4); 
-    backdrop-filter: blur(16px); 
-    -webkit-backdrop-filter: blur(16px);
-    border-radius: 50px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1), 
-                inset 1px 1px 2px rgba(255, 255, 255, 1);
-    border: 1px solid rgba(255, 255, 255, 0.6);
-    
-    /* Hiệu ứng trượt lỏng theo chiều dọc (Nảy cao su) */
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2), 
-                height 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1);
-    z-index: 1; /* Nằm dưới lớp chữ của thẻ a */
-    pointer-events: none; /* Đảm bảo không cản trở sự kiện click chuột vào chữ */
-}
+    }
 
-      /* Tinh chỉnh phần Text Nội dung */
-      .policy-content-box { padding: 50px; z-index: 3; }
-      .policy-content-box > * { position: relative; z-index: 3; } /* Đẩy text lên trên lớp kính */
-      
-      .policy-section { scroll-margin-top: 100px; padding-bottom: 40px; border-bottom: 1px dashed rgba(0,0,0,0.1); margin-bottom: 40px;}
-      .policy-section:last-child { padding-bottom: 10vh; border-bottom: none; }
+    /* CỤC KÍNH TRƯỢT DỌC (The Vertical Glass Pill) */
+    .toc-indicator {
+      position: absolute;
+      left: 15px;
+      /* Khớp chính xác với padding-left của .toc-list */
+      width: calc(100% - 30px);
+      /* Chiều rộng co giãn vừa khít với không gian của thẻ a */
+      height: 0;
+      /* Sẽ được JS tự động tính toán và cập nhật */
+      top: 0;
+      /* Sẽ được JS thay đổi qua thuộc tính transform translateY */
 
-      .section-title { font-size: 1.6rem; font-weight: 800; color: var(--color-dark); margin-bottom: 24px; display: flex; align-items: center; gap: 12px;}
-      .section-title::before { content: ''; display: block; width: 6px; height: 24px; background: var(--color-1); border-radius: 50px;}
-      
-      .sub-title { font-size: 1.2rem; font-weight: 700; color: var(--color-1); margin-top: 30px; margin-bottom: 15px; }
-      .policy-text { color: #334155; font-size: 1.05rem; text-align: justify; margin-bottom: 16px; line-height: 1.8;}
-      .policy-list { padding-left: 20px; margin-bottom: 20px; color: #334155; line-height: 1.8;}
-      .policy-list li { margin-bottom: 10px; }
+      /* Đồng bộ giao diện kính Glassmorphism từ file mẫu */
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 50px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1),
+        inset 1px 1px 2px rgba(255, 255, 255, 1);
+      border: 1px solid rgba(255, 255, 255, 0.6);
 
-      /* Bảng và Alert cũng được làm mờ nhẹ */
-      .alert-box { 
-          background: rgba(255, 235, 204, 0.4); backdrop-filter: blur(10px);
-          border-left: 4px solid #dd6b20; padding: 18px 24px; border-radius: 50px; 
-          margin: 24px 0; font-size: 1rem; color: #9c4221; font-weight: 500;
-          border: 1px solid rgba(255, 255, 255, 0.5);
-      }
-      
-      .table-legal { width: 100%; border-collapse: separate; border-spacing: 0; margin: 25px 0; border-radius: 25px; overflow: hidden; border: 1px solid rgba(255,255,255,0.6); box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
-      .table-legal th { background: rgba(255, 255, 255, 0.6); color: #4a5568; padding: 16px 20px; text-align: left; font-weight: 700; border-bottom: 1px solid rgba(0,0,0,0.05); }
-      .table-legal td { padding: 16px 20px; border-bottom: 1px solid rgba(0,0,0,0.05); color: #334155; vertical-align: middle; background: rgba(255,255,255,0.2); backdrop-filter: blur(5px);}
-      .badge-penalty { background-color: rgba(255, 245, 245, 0.8); color: #e53e3e; padding: 6px 12px; border-radius: 50px; font-weight: 700; font-size: 0.85rem; border: 1px solid #fed7d7; }
+      /* Hiệu ứng trượt lỏng theo chiều dọc (Nảy cao su) */
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+        height 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+      z-index: 1;
+      /* Nằm dưới lớp chữ của thẻ a */
+      pointer-events: none;
+      /* Đảm bảo không cản trở sự kiện click chuột vào chữ */
+    }
 
-      /* =========================================
+    /* Tinh chỉnh phần Text Nội dung */
+    .policy-content-box {
+      padding: 50px;
+      z-index: 3;
+    }
+
+    .policy-content-box>* {
+      position: relative;
+      z-index: 3;
+    }
+
+    /* Đẩy text lên trên lớp kính */
+
+    .policy-section {
+      scroll-margin-top: 100px;
+      padding-bottom: 40px;
+      border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+      margin-bottom: 40px;
+    }
+
+    .policy-section:last-child {
+      padding-bottom: 10vh;
+      border-bottom: none;
+    }
+
+    .section-title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--color-dark);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 24px;
+      background: var(--color-1);
+      border-radius: 50px;
+    }
+
+    .sub-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--color-1);
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+
+    .policy-text {
+      color: #334155;
+      font-size: 1.05rem;
+      text-align: justify;
+      margin-bottom: 16px;
+      line-height: 1.8;
+    }
+
+    .policy-list {
+      padding-left: 20px;
+      margin-bottom: 20px;
+      color: #334155;
+      line-height: 1.8;
+    }
+
+    .policy-list li {
+      margin-bottom: 10px;
+    }
+
+    /* Bảng và Alert cũng được làm mờ nhẹ */
+    .alert-box {
+      background: rgba(255, 235, 204, 0.4);
+      backdrop-filter: blur(10px);
+      border-left: 4px solid #dd6b20;
+      padding: 18px 24px;
+      border-radius: 50px;
+      margin: 24px 0;
+      font-size: 1rem;
+      color: #9c4221;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+    }
+
+    .table-legal {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 25px 0;
+      border-radius: 25px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+    }
+
+    .table-legal th {
+      background: rgba(255, 255, 255, 0.6);
+      color: #4a5568;
+      padding: 16px 20px;
+      text-align: left;
+      font-weight: 700;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .table-legal td {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+      color: #334155;
+      vertical-align: middle;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .badge-penalty {
+      background-color: rgba(255, 245, 245, 0.8);
+      color: #e53e3e;
+      padding: 6px 12px;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      border: 1px solid #fed7d7;
+    }
+
+    /* =========================================
          5. NÚT LIÊN HỆ TRÔI NỔI
       ========================================= */
-      .floating-contact-buttons { position: fixed; bottom: 40px; right: 25px; z-index: 999; }
+    .floating-contact-buttons {
+      position: fixed;
+      bottom: 40px;
+      right: 25px;
+      z-index: 999;
+    }
 
-      /* =========================================
+    /* =========================================
    6. HỘP XÁC NHẬN ĐIỀU KHOẢN TÀI XẾ (IN-PAGE GLASS)
 ========================================= */
-.driver-terms-box {
-    background: rgba(255, 255, 255, 0.65);
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    border: 1px solid rgba(0, 143, 63, 0.2);
-    border-radius: 25px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 1px 1px 5px rgba(255, 255, 255, 1);
-    position: relative;
-    overflow: hidden;
-    margin-top: 40px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+    .driver-terms-box {
+      background: rgba(255, 255, 255, 0.65);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(0, 143, 63, 0.2);
+      border-radius: 25px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05), inset 1px 1px 5px rgba(255, 255, 255, 1);
+      position: relative;
+      overflow: hidden;
+      margin-top: 40px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-.driver-terms-box:hover {
-    box-shadow: 0 15px 35px rgba(0, 143, 63, 0.1), inset 1px 1px 5px rgba(255, 255, 255, 1);
-    transform: translateY(-3px);
-}
+    .driver-terms-box:hover {
+      box-shadow: 0 15px 35px rgba(0, 143, 63, 0.1), inset 1px 1px 5px rgba(255, 255, 255, 1);
+      transform: translateY(-3px);
+    }
 
-.driver-terms-box::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 6px;
-    height: 100%;
-    background: linear-gradient(180deg, var(--color-1) 0%, #008f3f 100%);
-    border-radius: 25px 0 0 25px;
-}
+    .driver-terms-box::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 6px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--color-1) 0%, #008f3f 100%);
+      border-radius: 25px 0 0 25px;
+    }
 
-.driver-terms-title {
-    color: var(--color-dark);
-    font-size: 1.25rem;
-    font-weight: 800;
-}
+    .driver-terms-title {
+      color: var(--color-dark);
+      font-size: 1.25rem;
+      font-weight: 800;
+    }
 
-.custom-checkbox-wrap .form-check-input {
-    width: 1.3em;
-    height: 1.3em;
-    margin-top: 0.15em;
-    border-color: var(--color-1);
-    cursor: pointer;
-}
+    .custom-checkbox-wrap .form-check-input {
+      width: 1.3em;
+      height: 1.3em;
+      margin-top: 0.15em;
+      border-color: var(--color-1);
+      cursor: pointer;
+    }
 
-.custom-checkbox-wrap .form-check-input:checked {
-    background-color: var(--color-1);
-    border-color: var(--color-1);
-}
+    .custom-checkbox-wrap .form-check-input:checked {
+      background-color: var(--color-1);
+      border-color: var(--color-1);
+    }
 
-.custom-checkbox-wrap .form-check-label {
-    color: #334155;
-    font-weight: 600;
-    font-size: 1.05rem;
-    cursor: pointer;
-    user-select: none;
-}
-      
-      @media (max-width: 1200px) {
-    /* CHUYỂN BOTTOM BAR LƠ LỬNG KIỂU iOS */
-    .mobile-bottom-nav {
+    .custom-checkbox-wrap .form-check-label {
+      color: #334155;
+      font-weight: 600;
+      font-size: 1.05rem;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    @media (max-width: 1200px) {
+
+      /* CHUYỂN BOTTOM BAR LƠ LỬNG KIỂU iOS */
+      .mobile-bottom-nav {
         position: fixed;
         bottom: 25px;
         left: 50%;
@@ -280,32 +440,32 @@
         border-radius: 50px;
         z-index: 9999;
         isolation: isolate;
-        
+
         /* Nền kính sáng (Glassmorphism) */
         background: rgba(255, 255, 255, 0.65);
         backdrop-filter: blur(25px);
         -webkit-backdrop-filter: blur(25px);
         border: 1px solid rgba(255, 255, 255, 0.8);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), 
-                    inset 1px 1px 3px rgba(255, 255, 255, 1);
-    }
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2),
+          inset 1px 1px 3px rgba(255, 255, 255, 1);
+      }
 
-    /* Viền chất lỏng cho Bottom Bar */
-    .mobile-bottom-nav::after {
-        content: ''; 
-        position: absolute; 
-        inset: -8px; 
+      /* Viền chất lỏng cho Bottom Bar */
+      .mobile-bottom-nav::after {
+        content: '';
+        position: absolute;
+        inset: -8px;
         z-index: -1;
-        backdrop-filter: blur(15px); 
+        backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
-        filter: url(#liquid-distortion); 
+        filter: url(#liquid-distortion);
         clip-path: inset(8px round 50px);
-        background: transparent; 
+        background: transparent;
         border-radius: 60px;
-    }
+      }
 
-    /* ĐỊNH DẠNG ICON VÀ CHỮ (TỰ ĐỘNG CANH DỌC) */
-    .mobile-bottom-nav .nav-link-center {
+      /* ĐỊNH DẠNG ICON VÀ CHỮ (TỰ ĐỘNG CANH DỌC) */
+      .mobile-bottom-nav .nav-link-center {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -317,557 +477,581 @@
         color: #64748b;
         border-radius: 20px;
         transition: all 0.3s ease;
-    }
+      }
 
-    .mobile-bottom-nav .nav-link-center i {
+      .mobile-bottom-nav .nav-link-center i {
         font-size: 1.3rem;
-    }
+      }
 
-    .mobile-bottom-nav .nav-link-center .nav-text {
+      .mobile-bottom-nav .nav-link-center .nav-text {
         font-size: 0.65rem;
         font-weight: 700;
         white-space: nowrap;
-    }
+      }
 
-    /* TRẠNG THÁI ACTIVE VÀ HOVER */
-    .mobile-bottom-nav .nav-link-center.active {
+      /* TRẠNG THÁI ACTIVE VÀ HOVER */
+      .mobile-bottom-nav .nav-link-center.active {
         background: rgba(255, 255, 255, 0.95);
         color: var(--color-1);
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08), inset 1px 1px 2px #fff;
         transform: translateY(-4px);
-    }
+      }
 
-    .mobile-bottom-nav .nav-link-center:hover {
+      .mobile-bottom-nav .nav-link-center:hover {
         transform: translateY(-4px);
         color: var(--color-dark);
-    }
+      }
 
-    /* ĐẨY KHUNG NỘI DUNG LÊN TRÁNH BỊ BOTTOM BAR ĐÈ LÊN */
-    main.container {
+      /* ĐẨY KHUNG NỘI DUNG LÊN TRÁNH BỊ BOTTOM BAR ĐÈ LÊN */
+      main.container {
         padding-bottom: 120px !important;
-    }
-    
-    .floating-contact-buttons {
-        bottom: 110px !important; 
-    }
+      }
 
-    
-}
-    </style>
-  </head>
-  <body>
-    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
-        <defs>
-            <filter id="liquid-distortion">
-                <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
-                <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
-            </filter>
-        </defs>
-    </svg>
+      .floating-contact-buttons {
+        bottom: 110px !important;
+      }
 
-    <header>
-      <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
-        <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
-          
-          <a class="navbar-brand brand-overflow" href="../index.html">
-            <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+
+    }
+  </style>
+</head>
+
+<body>
+  <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+    <defs>
+      <filter id="liquid-distortion">
+        <feTurbulence type="fractalNoise" baseFrequency="0.015" numOctaves="3" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+  <header>
+    <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
+      <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
+
+        <a class="navbar-brand brand-overflow" href="../index.html">
+          <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo" class="logo-img" />
+        </a>
+
+        <div class="navbar-center-links d-none d-lg-flex">
+          <a href="../index.html" class="nav-link-center">
+            <i class="fa-solid fa-house mobile-icon d-lg-none"></i>
+            <span class="nav-text">Trang chủ</span>
           </a>
-
-          <div class="navbar-center-links d-none d-lg-flex">
-            <a href="../index.html" class="nav-link-center">
-              <i class="fa-solid fa-house mobile-icon d-lg-none"></i>
-              <span class="nav-text">Trang chủ</span>
-            </a>
-            <a href="../pages/findCar.html" class="nav-link-center">
-              <i class="fa-solid fa-car mobile-icon d-lg-none"></i>
-              <span class="nav-text">Đặt xe</span>
-            </a>
-            <a href="../pages/customer/tripHistory.html" class="nav-link-center">
-              <i class="fa-solid fa-clock-rotate-left mobile-icon d-lg-none"></i>
-              <span class="nav-text">Chuyến đi</span>
-            </a>
-            <a href="policy.html" class="nav-link-center active">
-              <i class="fa-solid fa-shield-halved mobile-icon d-lg-none"></i>
-              <span class="nav-text">Chính sách</span>
-            </a>
-          </div>
-
-          <div class="d-flex align-items-center gap-3">
-  <button id="btnLogin" class="btn-login d-none d-lg-flex align-items-center gap-2">
-    <span>Đăng nhập</span>
-    <i class="fa-regular fa-user-circle fs-5"></i>
-  </button>
-
-  <button id="btnLoginMobile" class="btn-login d-flex d-lg-none align-items-center justify-content-center" 
-          style="width: 45px; height: 45px; padding: 0; border-radius: 50%;">
-    <i class="fa-regular fa-user-circle fs-4" style="margin: 0;"></i>
-  </button>
-</div>
-
+          <a href="../pages/findCar.html" class="nav-link-center">
+            <i class="fa-solid fa-car mobile-icon d-lg-none"></i>
+            <span class="nav-text">Đặt xe</span>
+          </a>
+          <a href="../pages/customer/tripHistory.html" class="nav-link-center">
+            <i class="fa-solid fa-clock-rotate-left mobile-icon d-lg-none"></i>
+            <span class="nav-text">Chuyến đi</span>
+          </a>
+          <a href="policy.html" class="nav-link-center active">
+            <i class="fa-solid fa-shield-halved mobile-icon d-lg-none"></i>
+            <span class="nav-text">Chính sách</span>
+          </a>
+          <a href="support.html" class="nav-link-center">
+            <i class="fa-solid fa-envelope mobile-icon d-lg-none"></i>
+            <span class="nav-text">Trợ giúp</span>
+          </a>
         </div>
-      </nav>
-    </header>
 
-    
+        <div class="d-flex align-items-center gap-3">
+          <button id="btnLogin" class="btn-login d-none d-lg-flex align-items-center gap-2">
+            <span>Đăng nhập</span>
+            <i class="fa-regular fa-user-circle fs-5"></i>
+          </button>
 
-    <section class="policy-hero">
-      <div class="container reveal-on-scroll delay-1">
-        <h1>Chính sách Dịch vụ & Điều khoản</h1>
-        <p>Minh bạch, Rõ ràng và An tâm. Các quy định pháp lý nhằm bảo vệ quyền lợi tối đa của hành khách trên mọi chuyến đi cùng FleetFlow.</p>
+          <button id="btnLoginMobile" class="btn-login d-flex d-lg-none align-items-center justify-content-center"
+            style="width: 45px; height: 45px; padding: 0; border-radius: 50%;">
+            <i class="fa-regular fa-user-circle fs-4" style="margin: 0;"></i>
+          </button>
+        </div>
+
       </div>
-    </section>
+    </nav>
+  </header>
 
-    <main class="container policy-container">
-      <div class="row g-5">
-        
-        <aside class="col-lg-3 d-none d-lg-block">
-          <div class="policy-sidebar">
-            <div class="glass-panel reveal-on-scroll delay-1">
-              <div class="toc-header">
-                <i class="fa-solid fa-scale-balanced me-2 text-secondary"></i>Danh mục quy định
-              </div>
-              <ul class="toc-list" id="tocMenu">
-                <div id="tocIndicator" class="toc-indicator"></div>
-                <li><a href="#sec-dat-xe" class="active">1. Đặt xe & Thanh toán cọc</a></li>
-                <li><a href="#sec-huy-chuyen">2. Hủy chuyến & Bồi thường</a></li>
-                <li><a href="#sec-phu-phi">3. Quy định về Phụ phí</a></li>
-                <li><a href="#sec-bao-mat">4. Quyền riêng tư & Dữ liệu</a></li>
-                <li><a href="#sec-danh-gia">5. Đánh giá & Tranh chấp</a></li>
-              </ul>
+
+
+  <section class="policy-hero">
+    <div class="container reveal-on-scroll delay-1">
+      <h1>Chính sách Dịch vụ & Điều khoản</h1>
+      <p>Minh bạch, Rõ ràng và An tâm. Các quy định pháp lý nhằm bảo vệ quyền lợi tối đa của hành khách trên mọi chuyến
+        đi cùng FleetFlow.</p>
+    </div>
+  </section>
+
+  <main class="container policy-container">
+    <div class="row g-5">
+
+      <aside class="col-lg-3 d-none d-lg-block">
+        <div class="policy-sidebar">
+          <div class="glass-panel reveal-on-scroll delay-1">
+            <div class="toc-header">
+              <i class="fa-solid fa-scale-balanced me-2 text-secondary"></i>Danh mục quy định
             </div>
+            <ul class="toc-list" id="tocMenu">
+              <div id="tocIndicator" class="toc-indicator"></div>
+              <li><a href="#sec-dat-xe" class="active">1. Đặt xe & Thanh toán cọc</a></li>
+              <li><a href="#sec-huy-chuyen">2. Hủy chuyến & Bồi thường</a></li>
+              <li><a href="#sec-phu-phi">3. Quy định về Phụ phí</a></li>
+              <li><a href="#sec-bao-mat">4. Quyền riêng tư & Dữ liệu</a></li>
+              <li><a href="#sec-danh-gia">5. Đánh giá & Tranh chấp</a></li>
+            </ul>
           </div>
-        </aside>
+        </div>
+      </aside>
 
-        <div class="col-lg-9">
-          <div class="glass-panel policy-content-box reveal-on-scroll delay-2">
-            <div class="text-end mb-4">
-              <span class="badge bg-white text-secondary shadow-sm px-3 py-2" style="border-radius: 50px;">Cập nhật lần cuối: 31/05/2026</span>
-            </div>
+      <div class="col-lg-9">
+        <div class="glass-panel policy-content-box reveal-on-scroll delay-2">
+          <div class="text-end mb-4">
+            <span class="badge bg-white text-secondary shadow-sm px-3 py-2" style="border-radius: 50px;">Cập nhật lần
+              cuối: 31/05/2026</span>
+          </div>
 
-            <p class="policy-text text-muted fst-italic mb-5">
-              Chào mừng Quý khách đến với FleetFlow. Khi sử dụng dịch vụ thuê xe
-              đường dài kèm tài xế của chúng tôi, Quý khách được xem là đã đọc,
-              hiểu rõ và đồng ý tuân thủ toàn bộ các điều khoản được quy định
-              dưới đây. Các điều khoản này cấu thành một hợp đồng pháp lý giữa
-              Khách hàng và Công ty TNHH Dịch vụ Vận tải FleetFlow.
-            </p>
+          <p class="policy-text text-muted fst-italic mb-5">
+            Chào mừng Quý khách đến với FleetFlow. Khi sử dụng dịch vụ thuê xe
+            đường dài kèm tài xế của chúng tôi, Quý khách được xem là đã đọc,
+            hiểu rõ và đồng ý tuân thủ toàn bộ các điều khoản được quy định
+            dưới đây. Các điều khoản này cấu thành một hợp đồng pháp lý giữa
+            Khách hàng và Công ty TNHH Dịch vụ Vận tải FleetFlow.
+          </p>
 
-            <section id="sec-dat-xe" class="policy-section">
-              <h2 class="section-title">1. Quy định Đặt xe & Thanh toán Cọc</h2>
-              <h3 class="sub-title">1.1. Yêu cầu về Lộ trình (Distance Minimization)</h3>
-              <p class="policy-text">
-                Dịch vụ của FleetFlow được thiết kế chuyên biệt cho phân khúc di
-                chuyển đường dài liên tỉnh. Theo đó, hệ thống sẽ tự động tính
-                toán lộ trình tối ưu thông qua Google Maps API. Chuyến đi chỉ
-                được hệ thống chấp nhận nếu tổng quãng đường di chuyển đạt <b>tối
+          <section id="sec-dat-xe" class="policy-section">
+            <h2 class="section-title">1. Quy định Đặt xe & Thanh toán Cọc</h2>
+            <h3 class="sub-title">1.1. Yêu cầu về Lộ trình (Distance Minimization)</h3>
+            <p class="policy-text">
+              Dịch vụ của FleetFlow được thiết kế chuyên biệt cho phân khúc di
+              chuyển đường dài liên tỉnh. Theo đó, hệ thống sẽ tự động tính
+              toán lộ trình tối ưu thông qua Google Maps API. Chuyến đi chỉ
+              được hệ thống chấp nhận nếu tổng quãng đường di chuyển đạt <b>tối
                 thiểu trên 20km</b>. Các yêu cầu dưới khoảng cách này sẽ bị từ
-                chối phục vụ.
-              </p>
-
-              <h3 class="sub-title">1.2. Thời gian Đặt trước & Tiền cọc (Lead Time & Deposit)</h3>
-              <p class="policy-text">
-                Để đảm bảo công tác điều phối phương tiện và tài xế đạt chuẩn
-                chất lượng cao nhất, Quý khách vui lòng lưu ý:
-              </p>
-              <ul class="policy-list policy-text">
-                <li>Thời gian đặt xe thành công phải <b>trước thời điểm khởi hành dự kiến ít nhất 120 phút</b>.</li>
-                <li>Ngay sau khi chọn xe, hệ thống yêu cầu thanh toán <b>khoản cọc tương đương 30%</b> tổng cước phí cơ bản qua Cổng thanh toán trực tuyến.</li>
-                <li>Đơn đặt xe chỉ chính thức chuyển sang trạng thái chờ Điều phối viên phát sóng tìm tài xế sau khi giao dịch cọc 30% được hệ thống ghi nhận thành công.</li>
-              </ul>
-            </section>
-
-            <section id="sec-huy-chuyen" class="policy-section">
-              <h2 class="section-title">2. Chính sách Hủy chuyến & Phí Bồi thường</h2>
-              <p class="policy-text">
-                FleetFlow hiểu rằng kế hoạch di chuyển của Quý khách có thể thay
-                đổi. Tuy nhiên, việc hủy chuyến sát giờ ảnh hưởng trực tiếp đến
-                thu nhập của Tài xế và kế hoạch điều phối xe của công ty. Do đó,
-                hệ thống sẽ <b>tự động tính toán Phí phạt hủy chuyến lũy tiến</b>
-                căn cứ trên mốc thời gian khách hàng thực hiện thao tác hủy trên
-                hệ thống.
-              </p>
-
-              <table class="table-legal">
-                <thead>
-                  <tr>
-                    <th width="55%">Thời điểm Hủy chuyến (So với Giờ khởi hành)</th>
-                    <th width="45%">Phí bồi thường phát sinh</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>Mức 1 (Miễn phí):</strong> Hủy trong vòng 60 phút đầu kể từ lúc đặt, VÀ cách giờ khởi hành ít nhất 12 tiếng.</td>
-                    <td><span class="badge bg-success text-white px-3 py-2" style="border-radius: 50px;">Hoàn trả 100% cọc</span></td>
-                  </tr>
-                  <tr>
-                    <td><strong>Mức 2:</strong> Từ 06 tiếng đến dưới 12 tiếng.</td>
-                    <td><span class="badge-penalty">Phạt 30%</span> (Khấu trừ cọc)</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Mức 3:</strong> Dưới 06 tiếng trước giờ khởi hành.</td>
-                    <td><span class="badge-penalty">Phạt 50%</span> cước phí cơ bản</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Mức 4 (Nghiêm trọng):</strong> Khách hủy khi tài xế đã đến điểm đón, hoặc không xuất hiện sau 30 phút.</td>
-                    <td><span class="badge-penalty">Phạt 60%</span> cước phí cơ bản</td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div class="alert-box shadow-sm">
-                <i class="fa-solid fa-circle-info me-2"></i><strong>Mục đích của phí bồi thường:</strong> 40% khoản phí thu
-                được từ việc hủy chuyến sai quy định sẽ được hệ thống cộng trực
-                tiếp vào ví của Tài xế để bù đắp chi phí cơ hội.
-              </div>
-            </section>
-
-            <section id="sec-phu-phi" class="policy-section">
-              <h2 class="section-title">3. Quy định về Cước phí & Phụ phí</h2>
-              <h3 class="sub-title">3.1. Phụ phí Cao điểm (Dynamic Surge Pricing)</h3>
-              <p class="policy-text">
-                Nhằm đảm bảo nguồn cung xe trong các dịp cao điểm, hệ thống được
-                cấu hình tự động nhân <b>hệ số 1.1 (tăng 10% giá cước cơ sở)</b>
-                nếu thời gian khởi hành của hành trình rơi vào Thứ Bảy, Chủ Nhật
-                hoặc Lễ/Tết. Khoản phụ phí này được bóc tách minh bạch ngay tại màn hình đặt xe.
-              </p>
-
-              <h3 class="sub-title">3.2. Phụ phí Dọc đường (Cầu đường, Bến bãi, Phà)</h3>
-              <p class="policy-text">
-                Giá cước niêm yết khi đặt xe là giá cước vận hành phương tiện
-                theo Km. <b>Giá chưa bao gồm các loại thuế phí phát sinh thực tế trên đường</b>.
-              </p>
-              <ul class="policy-list policy-text">
-                <li>Tài xế sẽ trực tiếp thanh toán các khoản phí như: Vé trạm thu phí BOT, phà, phí vào cổng sân bay.</li>
-                <li>Tài xế bắt buộc chụp ảnh biên lai rõ nét và khai báo lên hệ thống.</li>
-                <li>Khách hàng không cần thanh toán tiền mặt. Các khoản phí này sau khi được phê duyệt sẽ cộng gộp vào Hóa đơn điện tử cuối cùng.</li>
-              </ul>
-            </section>
-
-            <section id="sec-bao-mat" class="policy-section">
-              <h2 class="section-title">4. Quyền Riêng tư & Bảo mật Dữ liệu</h2>
-              <ul class="policy-list policy-text mt-3">
-                <li>
-                  <strong>Phạm vi tiếp cận dữ liệu của Tài xế:</strong> Chỉ xem được <i>Họ Tên</i> và <i>Số điện thoại</i> từ lúc giành đơn. Khi chuyến đi kết thúc/hủy, hệ thống lập tức thu hồi và ẩn thông tin này.
-                </li>
-                <li>
-                  <strong>Dữ liệu Thanh toán:</strong> Được mã hóa và xử lý bởi Đối tác Cổng thanh toán (như MoMo). FleetFlow không lưu trữ dữ liệu thẻ của khách hàng.
-                </li>
-              </ul>
-            </section>
-
-            <section id="sec-danh-gia" class="policy-section">
-              <h2 class="section-title">5. Đánh giá & Giải quyết Tranh chấp</h2>
-              <h3 class="sub-title">5.1. Quyền Đánh giá (Rating Rights)</h3>
-              <p class="policy-text">
-                Quyền gửi đánh giá sẽ tự động mở khi chuyến đi kết thúc và <b>có hiệu lực trong đúng 168 giờ (7 ngày)</b>. Quá thời hạn này, cổng nhận xét sẽ bị khóa vĩnh viễn.
-              </p>
-
-              <h3 class="sub-title">5.2. Quy trình Xử lý Tranh chấp Hóa đơn</h3>
-              <p class="policy-text">
-                Nếu không đồng ý với chất lượng phục vụ hoặc nghi ngờ phụ phí khai báo sai, Quý khách hãy nhấn nút <b>"Báo cáo Sự cố"</b> trên ứng dụng.
-                Điều phối viên sẽ lập tức <b>Đóng băng Hóa đơn</b>, tạm dừng trừ tiền thẻ để điều tra.
-              </p>
-            </section>
-
-            <div id="driverTermsAcceptanceBox" class="driver-terms-box p-4 p-md-5 d-none">
-              <div class="row align-items-center g-4">
-                <div class="col-md-7 col-lg-8">
-                  <h4 class="driver-terms-title mb-2">
-                    <i class="fa-solid fa-file-contract text-success me-2"></i> Xác nhận Điều khoản Đối tác
-                  </h4>
-                  <p class="policy-text mb-0" style="font-size: 0.95rem;">
-                    Vui lòng đọc kỹ các chính sách phía trên. Bạn cần xác nhận đồng ý với toàn bộ các điều khoản dịch vụ để hệ thống kích hoạt quyền nhận chuyến xe.
-                  </p>
-                </div>
-                
-                <div class="col-md-5 col-lg-4 d-flex flex-column align-items-md-end gap-3">
-                  <div class="form-check custom-checkbox-wrap m-0 d-flex align-items-center gap-2">
-                    <input class="form-check-input shadow-sm" type="checkbox" id="agreeTermsCheckbox" onchange="document.getElementById('btnAcceptTerms').disabled = !this.checked">
-                    <label class="form-check-label" for="agreeTermsCheckbox">
-                      Tôi đã đọc và đồng ý
-                    </label>
-                  </div>
-                  <button id="btnAcceptTerms" class="btn btn-success fw-bold px-4 py-2 w-100 shadow-sm" style="border-radius: 50px; font-size: 1.05rem;" disabled onclick="acceptDriverTerms()">
-                    Xác nhận ngay
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </main>
-
-    <footer>
-      <div class="container reveal-on-scroll">
-        <div class="row g-4">
-          <div class="col-lg-4 pe-lg-5">
-            <img
-              src="../assets/img/FleetFlow_-_Logo-removebg-preview.png"
-              alt="Logo"
-              style="height: 80px; margin-bottom: 20px; object-fit: contain"
-            />
-            <p>
-              FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
-              minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
-              liên tỉnh.
+              chối phục vụ.
             </p>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Dịch Vụ</h5>
-            <ul>
-              <li><a href="findCar.html">Đặt xe đường dài</a></li>
-              <li><a href="findCar.html">Thuê xe sân bay</a></li>
-              <li><a href="findCar.html">Tư vấn xe AI</a></li>
+
+            <h3 class="sub-title">1.2. Thời gian Đặt trước & Tiền cọc (Lead Time & Deposit)</h3>
+            <p class="policy-text">
+              Để đảm bảo công tác điều phối phương tiện và tài xế đạt chuẩn
+              chất lượng cao nhất, Quý khách vui lòng lưu ý:
+            </p>
+            <ul class="policy-list policy-text">
+              <li>Thời gian đặt xe thành công phải <b>trước thời điểm khởi hành dự kiến ít nhất 120 phút</b>.</li>
+              <li>Ngay sau khi chọn xe, hệ thống yêu cầu thanh toán <b>khoản cọc tương đương 30%</b> tổng cước phí cơ
+                bản qua Cổng thanh toán trực tuyến.</li>
+              <li>Đơn đặt xe chỉ chính thức chuyển sang trạng thái chờ Điều phối viên phát sóng tìm tài xế sau khi giao
+                dịch cọc 30% được hệ thống ghi nhận thành công.</li>
             </ul>
-          </div>
-          <div class="col-lg-2 col-6">
-            <h5>Hỗ Trợ</h5>
-            <ul>
-              <li><a href="#">Trung tâm trợ giúp</a></li>
-              <li><a href="policy.html">Chính sách & Điều khoản</a></li>
-              <li><a href="policy.html">Giải quyết khiếu nại</a></li>
+          </section>
+
+          <section id="sec-huy-chuyen" class="policy-section">
+            <h2 class="section-title">2. Chính sách Hủy chuyến & Phí Bồi thường</h2>
+            <p class="policy-text">
+              FleetFlow hiểu rằng kế hoạch di chuyển của Quý khách có thể thay
+              đổi. Tuy nhiên, việc hủy chuyến sát giờ ảnh hưởng trực tiếp đến
+              thu nhập của Tài xế và kế hoạch điều phối xe của công ty. Do đó,
+              hệ thống sẽ <b>tự động tính toán Phí phạt hủy chuyến lũy tiến</b>
+              căn cứ trên mốc thời gian khách hàng thực hiện thao tác hủy trên
+              hệ thống.
+            </p>
+
+            <table class="table-legal">
+              <thead>
+                <tr>
+                  <th width="55%">Thời điểm Hủy chuyến (So với Giờ khởi hành)</th>
+                  <th width="45%">Phí bồi thường phát sinh</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Mức 1 (Miễn phí):</strong> Hủy trong vòng 60 phút đầu kể từ lúc đặt, VÀ cách giờ khởi hành
+                    ít nhất 12 tiếng.</td>
+                  <td><span class="badge bg-success text-white px-3 py-2" style="border-radius: 50px;">Hoàn trả 100%
+                      cọc</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Mức 2:</strong> Từ 06 tiếng đến dưới 12 tiếng.</td>
+                  <td><span class="badge-penalty">Phạt 30%</span> (Khấu trừ cọc)</td>
+                </tr>
+                <tr>
+                  <td><strong>Mức 3:</strong> Dưới 06 tiếng trước giờ khởi hành.</td>
+                  <td><span class="badge-penalty">Phạt 50%</span> cước phí cơ bản</td>
+                </tr>
+                <tr>
+                  <td><strong>Mức 4 (Nghiêm trọng):</strong> Khách hủy khi tài xế đã đến điểm đón, hoặc không xuất hiện
+                    sau 30 phút.</td>
+                  <td><span class="badge-penalty">Phạt 60%</span> cước phí cơ bản</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="alert-box shadow-sm">
+              <i class="fa-solid fa-circle-info me-2"></i><strong>Mục đích của phí bồi thường:</strong> 40% khoản phí
+              thu
+              được từ việc hủy chuyến sai quy định sẽ được hệ thống cộng trực
+              tiếp vào ví của Tài xế để bù đắp chi phí cơ hội.
+            </div>
+          </section>
+
+          <section id="sec-phu-phi" class="policy-section">
+            <h2 class="section-title">3. Quy định về Cước phí & Phụ phí</h2>
+            <h3 class="sub-title">3.1. Phụ phí Cao điểm (Dynamic Surge Pricing)</h3>
+            <p class="policy-text">
+              Nhằm đảm bảo nguồn cung xe trong các dịp cao điểm, hệ thống được
+              cấu hình tự động nhân <b>hệ số 1.1 (tăng 10% giá cước cơ sở)</b>
+              nếu thời gian khởi hành của hành trình rơi vào Thứ Bảy, Chủ Nhật
+              hoặc Lễ/Tết. Khoản phụ phí này được bóc tách minh bạch ngay tại màn hình đặt xe.
+            </p>
+
+            <h3 class="sub-title">3.2. Phụ phí Dọc đường (Cầu đường, Bến bãi, Phà)</h3>
+            <p class="policy-text">
+              Giá cước niêm yết khi đặt xe là giá cước vận hành phương tiện
+              theo Km. <b>Giá chưa bao gồm các loại thuế phí phát sinh thực tế trên đường</b>.
+            </p>
+            <ul class="policy-list policy-text">
+              <li>Tài xế sẽ trực tiếp thanh toán các khoản phí như: Vé trạm thu phí BOT, phà, phí vào cổng sân bay.</li>
+              <li>Tài xế bắt buộc chụp ảnh biên lai rõ nét và khai báo lên hệ thống.</li>
+              <li>Khách hàng không cần thanh toán tiền mặt. Các khoản phí này sau khi được phê duyệt sẽ cộng gộp vào Hóa
+                đơn điện tử cuối cùng.</li>
             </ul>
-          </div>
-          <div class="col-lg-4">
-            <h5>Liên Hệ (Hotline)</h5>
-            <ul class="text-white-50">
-              <li class="mb-2">
-                <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
-                (24/7)
-              </li>
-              <li class="mb-2">
-                <i class="fa-solid fa-envelope me-2 text-success"></i>
-                support@fleetflow.vn
+          </section>
+
+          <section id="sec-bao-mat" class="policy-section">
+            <h2 class="section-title">4. Quyền Riêng tư & Bảo mật Dữ liệu</h2>
+            <ul class="policy-list policy-text mt-3">
+              <li>
+                <strong>Phạm vi tiếp cận dữ liệu của Tài xế:</strong> Chỉ xem được <i>Họ Tên</i> và <i>Số điện thoại</i>
+                từ lúc giành đơn. Khi chuyến đi kết thúc/hủy, hệ thống lập tức thu hồi và ẩn thông tin này.
               </li>
               <li>
-                <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
-                University, Ho Chi Minh City
+                <strong>Dữ liệu Thanh toán:</strong> Được mã hóa và xử lý bởi Đối tác Cổng thanh toán (như MoMo).
+                FleetFlow không lưu trữ dữ liệu thẻ của khách hàng.
               </li>
             </ul>
+          </section>
+
+          <section id="sec-danh-gia" class="policy-section">
+            <h2 class="section-title">5. Đánh giá & Giải quyết Tranh chấp</h2>
+            <h3 class="sub-title">5.1. Quyền Đánh giá (Rating Rights)</h3>
+            <p class="policy-text">
+              Quyền gửi đánh giá sẽ tự động mở khi chuyến đi kết thúc và <b>có hiệu lực trong đúng 168 giờ (7 ngày)</b>.
+              Quá thời hạn này, cổng nhận xét sẽ bị khóa vĩnh viễn.
+            </p>
+
+            <h3 class="sub-title">5.2. Quy trình Xử lý Tranh chấp Hóa đơn</h3>
+            <p class="policy-text">
+              Nếu không đồng ý với chất lượng phục vụ hoặc nghi ngờ phụ phí khai báo sai, Quý khách hãy nhấn nút <b>"Báo
+                cáo Sự cố"</b> trên ứng dụng.
+              Điều phối viên sẽ lập tức <b>Đóng băng Hóa đơn</b>, tạm dừng trừ tiền thẻ để điều tra.
+            </p>
+          </section>
+
+          <div id="driverTermsAcceptanceBox" class="driver-terms-box p-4 p-md-5 d-none">
+            <div class="row align-items-center g-4">
+              <div class="col-md-7 col-lg-8">
+                <h4 class="driver-terms-title mb-2">
+                  <i class="fa-solid fa-file-contract text-success me-2"></i> Xác nhận Điều khoản Đối tác
+                </h4>
+                <p class="policy-text mb-0" style="font-size: 0.95rem;">
+                  Vui lòng đọc kỹ các chính sách phía trên. Bạn cần xác nhận đồng ý với toàn bộ các điều khoản dịch vụ
+                  để hệ thống kích hoạt quyền nhận chuyến xe.
+                </p>
+              </div>
+
+              <div class="col-md-5 col-lg-4 d-flex flex-column align-items-md-end gap-3">
+                <div class="form-check custom-checkbox-wrap m-0 d-flex align-items-center gap-2">
+                  <input class="form-check-input shadow-sm" type="checkbox" id="agreeTermsCheckbox"
+                    onchange="document.getElementById('btnAcceptTerms').disabled = !this.checked">
+                  <label class="form-check-label" for="agreeTermsCheckbox">
+                    Tôi đã đọc và đồng ý
+                  </label>
+                </div>
+                <button id="btnAcceptTerms" class="btn btn-success fw-bold px-4 py-2 w-100 shadow-sm"
+                  style="border-radius: 50px; font-size: 1.05rem;" disabled onclick="acceptDriverTerms()">
+                  Xác nhận ngay
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-        <div class="footer-bottom">
-          <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
         </div>
       </div>
-    </footer>
+    </div>
 
-    <div class="login-modal-overlay" id="loginModal">
-          <div class="glass-login-container">
-            <button class="close-modal-btn" id="closeLoginModal">&times;</button>
-            
-            <div class="text-center mb-4">
-              <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow" style="height: 100px; object-fit: contain;">
-              <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
-              <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
-            </div>
-            <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
-              <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
-              <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
-              <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
-                <a href="../pages/forgotPassword.html" class="text-danger text-decoration-none" style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
-                  <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
-                </a>
-              </div>
-              <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
-            </form>
-            <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
-              <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
-              <a href="../pages/register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
-            </div>
-          </div>
+  </main>
+
+  <footer>
+    <div class="container reveal-on-scroll">
+      <div class="row g-4">
+        <div class="col-lg-4 pe-lg-5">
+          <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="Logo"
+            style="height: 80px; margin-bottom: 20px; object-fit: contain" />
+          <p>
+            FleetFlow là nền tảng quản trị và đặt thuê xe đường dài thông
+            minh, mang đến sự an tâm và minh bạch tuyệt đối cho mọi hành trình
+            liên tỉnh.
+          </p>
         </div>
-    <aside class="floating-contact-buttons d-flex flex-column gap-3 reveal-on-scroll delay-4">
-        <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
-            <img src="../assets/img/zalo.png" alt="Zalo" style="width: 35px; height: 35px; border-radius: 50%;">
-        </a>
-        <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #9D32FA;" title="Chat Messenger">
-            <img src="../assets/img/messenger.png" alt="Messenger" style="width: 35px; height: 35px; border-radius: 50%;">
-        </a>
-        <a href="tel:1900xxxx" class="social-icon-btn" style="border: 2px solid var(--color-1);" title="Gọi hotline">
-            <img src="../assets/img/calling.png" alt="Phone" style="width: 35px; height: 35px; border-radius: 50%;">
-        </a>
-    </aside>
+        <div class="col-lg-2 col-6">
+          <h5>Dịch Vụ</h5>
+          <ul>
+            <li><a href="findCar.html">Đặt xe đường dài</a></li>
+            <li><a href="findCar.html">Thuê xe sân bay</a></li>
+            <li><a href="findCar.html">Tư vấn xe AI</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-2 col-6">
+          <h5>Hỗ Trợ</h5>
+          <ul>
+            <li><a href="#">Trung tâm trợ giúp</a></li>
+            <li><a href="policy.html">Chính sách & Điều khoản</a></li>
+            <li><a href="policy.html">Giải quyết khiếu nại</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-4">
+          <h5>Liên Hệ (Hotline)</h5>
+          <ul class="text-white-50">
+            <li class="mb-2">
+              <i class="fa-solid fa-phone me-2 text-success"></i> 1900 8888
+              (24/7)
+            </li>
+            <li class="mb-2">
+              <i class="fa-solid fa-envelope me-2 text-success"></i>
+              support@fleetflow.vn
+            </li>
+            <li>
+              <i class="fa-solid fa-location-dot me-2 text-success"></i> FPT
+              University, Ho Chi Minh City
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="mb-0">&copy; 2026 FleetFlow. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-    <div class="mobile-bottom-nav d-lg-none">
+  <div class="login-modal-overlay" id="loginModal">
+    <div class="glass-login-container">
+      <button class="close-modal-btn" id="closeLoginModal">&times;</button>
+
+      <div class="text-center mb-4">
+        <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow"
+          style="height: 100px; object-fit: contain;">
+        <h3 class="glass-login-title mt-3" style="font-size: 2rem;">Đăng Nhập</h3>
+        <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
+      </div>
+      <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
+        <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
+        <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required>
+        <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
+          <a href="../pages/forgotPassword.html" class="text-danger text-decoration-none"
+            style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
+            <i class="fa-solid fa-circle-exclamation me-1"></i> Quên tài khoản hoặc mật khẩu?
+          </a>
+        </div>
+        <button type="submit" class="glass-btn-submit mt-3" id="btnSubmitLogin">Đăng nhập</button>
+      </form>
+      <div class="text-center mt-4 pt-4 border-top" style="border-color: rgba(255,255,255,0.1) !important;">
+        <span class="text-white-50" style="font-size: 0.95rem;">Bạn chưa có tài khoản?</span>
+        <a href="../pages/register.html" class="glow-register-link ms-1">Đăng ký ngay!</a>
+      </div>
+    </div>
+  </div>
+  <aside class="floating-contact-buttons d-flex flex-column gap-3 reveal-on-scroll delay-4">
+    <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
+      <img src="../assets/img/zalo.png" alt="Zalo" style="width: 35px; height: 35px; border-radius: 50%;">
+    </a>
+    <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #9D32FA;" title="Chat Messenger">
+      <img src="../assets/img/messenger.png" alt="Messenger" style="width: 35px; height: 35px; border-radius: 50%;">
+    </a>
+    <a href="tel:1900xxxx" class="social-icon-btn" style="border: 2px solid var(--color-1);" title="Gọi hotline">
+      <img src="../assets/img/calling.png" alt="Phone" style="width: 35px; height: 35px; border-radius: 50%;">
+    </a>
+  </aside>
+
+  <div class="mobile-bottom-nav d-lg-none">
     <a href="../index.html" class="nav-link-center">
-        <i class="fa-solid fa-house mobile-icon"></i>
-        <span class="nav-text">Trang chủ</span>
+      <i class="fa-solid fa-house mobile-icon"></i>
+      <span class="nav-text">Trang chủ</span>
     </a>
     <a href="findCar.html" class="nav-link-center">
-        <i class="fa-solid fa-car mobile-icon"></i>
-        <span class="nav-text">Đặt xe</span>
+      <i class="fa-solid fa-car mobile-icon"></i>
+      <span class="nav-text">Đặt xe</span>
     </a>
     <a href="../pages/customer/tripHistory.html" class="nav-link-center">
-        <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
-        <span class="nav-text">Chuyến đi</span>
+      <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
+      <span class="nav-text">Chuyến đi</span>
     </a>
     <a href="policy.html" class="nav-link-center active">
-        <i class="fa-solid fa-shield-halved mobile-icon"></i>
-        <span class="nav-text">Chính sách</span>
+      <i class="fa-solid fa-shield-halved mobile-icon"></i>
+      <span class="nav-text">Chính sách</span>
     </a>
-</div>
+    <a href="support.html" class="nav-link-center">
+      <i class="fa-solid fa-envelope mobile-icon"></i>
+      <span class="nav-text">Trợ giúp</span>
+    </a>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-      
-      document.addEventListener("DOMContentLoaded", function () {
-  const sections = document.querySelectorAll(".policy-section");
-  const navLinks = document.querySelectorAll(".toc-list a");
-  const indicator = document.getElementById('tocIndicator');
+  <script>
 
-  // Hàm tính toán và điều khiển cục kính trượt theo chiều dọc
-  function updateVerticalIndicator() {
-    const activeLink = document.querySelector('.toc-list a.active');
-    if (activeLink) {
-      // Trượt cục kính đến đúng vị trí đỉnh (Top) của thẻ a đang active
-      indicator.style.transform = `translateY(${activeLink.offsetTop}px)`;
-      // Tự động co giãn chiều cao (Height) vừa vặn với thẻ a
-      indicator.style.height = `${activeLink.offsetHeight}px`;
-    }
-  }
+    document.addEventListener("DOMContentLoaded", function () {
+      const sections = document.querySelectorAll(".policy-section");
+      const navLinks = document.querySelectorAll(".toc-list a");
+      const indicator = document.getElementById('tocIndicator');
 
-  // Sự kiện cuộn trang
-  window.addEventListener("scroll", () => {
-    let current = "";
-    sections.forEach((section) => {
-      const sectionTop = section.offsetTop;
-      if (scrollY >= sectionTop - 120) {
-        current = section.getAttribute("id");
+      // Hàm tính toán và điều khiển cục kính trượt theo chiều dọc
+      function updateVerticalIndicator() {
+        const activeLink = document.querySelector('.toc-list a.active');
+        if (activeLink) {
+          // Trượt cục kính đến đúng vị trí đỉnh (Top) của thẻ a đang active
+          indicator.style.transform = `translateY(${activeLink.offsetTop}px)`;
+          // Tự động co giãn chiều cao (Height) vừa vặn với thẻ a
+          indicator.style.height = `${activeLink.offsetHeight}px`;
+        }
       }
-    });
 
-    if (window.innerHeight + Math.round(window.scrollY) >= document.body.offsetHeight - 10) {
-      current = sections[sections.length - 1].getAttribute("id");
-    }
+      // Sự kiện cuộn trang
+      window.addEventListener("scroll", () => {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          if (scrollY >= sectionTop - 120) {
+            current = section.getAttribute("id");
+          }
+        });
 
-    navLinks.forEach((link) => {
-      link.classList.remove("active");
-      if (link.getAttribute("href").includes(current)) {
-        link.classList.add("active");
-      }
-    });
+        if (window.innerHeight + Math.round(window.scrollY) >= document.body.offsetHeight - 10) {
+          current = sections[sections.length - 1].getAttribute("id");
+        }
 
-    // Cập nhật vị trí kính lỏng ngay khi class active thay đổi lúc cuộn
-    updateVerticalIndicator();
-  });
+        navLinks.forEach((link) => {
+          link.classList.remove("active");
+          if (link.getAttribute("href").includes(current)) {
+            link.classList.add("active");
+          }
+        });
 
-  // Sự kiện nhấp chuột vào mục lục
-  navLinks.forEach((link) => {
-    link.addEventListener("click", function (e) {
-      e.preventDefault();
-      const targetId = this.getAttribute("href").substring(1);
-      const targetSection = document.getElementById(targetId);
-
-      window.scrollTo({
-        top: targetSection.offsetTop - 90, 
-        behavior: "smooth",
+        // Cập nhật vị trí kính lỏng ngay khi class active thay đổi lúc cuộn
+        updateVerticalIndicator();
       });
 
-      // Kích hoạt hiệu ứng trượt kính ngay lập tức khi click thay vì chờ cuộn xong
-      navLinks.forEach(l => l.classList.remove("active"));
-      this.classList.add("active");
-      updateVerticalIndicator();
+      // Sự kiện nhấp chuột vào mục lục
+      navLinks.forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href").substring(1);
+          const targetSection = document.getElementById(targetId);
+
+          window.scrollTo({
+            top: targetSection.offsetTop - 90,
+            behavior: "smooth",
+          });
+
+          // Kích hoạt hiệu ứng trượt kính ngay lập tức khi click thay vì chờ cuộn xong
+          navLinks.forEach(l => l.classList.remove("active"));
+          this.classList.add("active");
+          updateVerticalIndicator();
+        });
+      });
+
+      // Kích hoạt vị trí ban đầu cho cục kính sau khi trang tải xong ổn định
+      setTimeout(updateVerticalIndicator, 150);
     });
-  });
 
-  // Kích hoạt vị trí ban đầu cho cục kính sau khi trang tải xong ổn định
-  setTimeout(updateVerticalIndicator, 150);
-});
+    document.addEventListener("DOMContentLoaded", function () {
+      const fullName = localStorage.getItem('fullName');
+      const email = localStorage.getItem('email');
+      const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
-document.addEventListener("DOMContentLoaded", function() {
-    const fullName = localStorage.getItem('fullName');
-    const email = localStorage.getItem('email');
-    const userRole = localStorage.getItem('userRole') || 'Khách hàng';
-
-    if (fullName) {
+      if (fullName) {
         const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
 
         // 1. Cập nhật Navbar Desktop (Phần tôi đã thiếu sót)
-        if(document.getElementById('navDesktopAvatar')) document.getElementById('navDesktopAvatar').src = avatarUrl;
-        if(document.getElementById('navDesktopName')) document.getElementById('navDesktopName').innerText = fullName;
-        if(document.getElementById('navDesktopRole')) document.getElementById('navDesktopRole').innerText = userRole;
+        if (document.getElementById('navDesktopAvatar')) document.getElementById('navDesktopAvatar').src = avatarUrl;
+        if (document.getElementById('navDesktopName')) document.getElementById('navDesktopName').innerText = fullName;
+        if (document.getElementById('navDesktopRole')) document.getElementById('navDesktopRole').innerText = userRole;
 
         // 2. Cập nhật Navbar Mobile (Đã sửa lại đúng ID navMobileAvatar)
-        if(document.getElementById('navMobileAvatar')) document.getElementById('navMobileAvatar').src = avatarUrl;
+        if (document.getElementById('navMobileAvatar')) document.getElementById('navMobileAvatar').src = avatarUrl;
 
         // 3. Cập nhật Sidebar bên trái
-        if(document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatarUrl;
-        if(document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = fullName;
-        if(document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
+        if (document.getElementById('sidebarAvatar')) document.getElementById('sidebarAvatar').src = avatarUrl;
+        if (document.getElementById('sidebarName')) document.getElementById('sidebarName').innerText = fullName;
+        if (document.getElementById('sidebarRole')) document.getElementById('sidebarRole').innerText = userRole;
 
         // 4. Cập nhật Mobile Dropdown Menu
-        if(document.getElementById('profileAvatar')) document.getElementById('profileAvatar').src = avatarUrl;
-        if(document.getElementById('profileDisplayName')) document.getElementById('profileDisplayName').innerText = fullName;
-        
+        if (document.getElementById('profileAvatar')) document.getElementById('profileAvatar').src = avatarUrl;
+        if (document.getElementById('profileDisplayName')) document.getElementById('profileDisplayName').innerText = fullName;
+
         // 5. Cập nhật Form Thông tin cá nhân
-        if(document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
-    }
-    
-    if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
-    if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
-});
+        if (document.getElementById('inputFullName')) document.getElementById('inputFullName').value = fullName;
+      }
 
-const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
-  document.addEventListener("DOMContentLoaded", async function() {
-    const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-    const termsBox = document.getElementById('driverTermsAcceptanceBox');
-    
-    const showBoxForce = () => {
+      if (email && document.getElementById('inputEmail')) document.getElementById('inputEmail').value = email;
+      if (userRole && document.getElementById('profileDisplayRole')) document.getElementById('profileDisplayRole').innerText = userRole;
+    });
+
+    const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
+    document.addEventListener("DOMContentLoaded", async function () {
+      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
+      const termsBox = document.getElementById('driverTermsAcceptanceBox');
+
+      const showBoxForce = () => {
         if (termsBox) {
-            termsBox.classList.remove('d-none');
-            termsBox.style.setProperty('display', 'block', 'important');
+          termsBox.classList.remove('d-none');
+          termsBox.style.setProperty('display', 'block', 'important');
         }
-    };
+      };
 
-    // Nếu chưa đăng nhập thì không làm gì cả
-    if (!accountId || accountId === 'undefined') return;
+      // Nếu chưa đăng nhập thì không làm gì cả
+      if (!accountId || accountId === 'undefined') return;
 
-    try {
+      try {
         const response = await fetch(`${DRIVER_API_BASE}/profile?accountID=${accountId}`);
         const result = await response.json();
 
         // NẾU LÀ TÀI XẾ (Có dữ liệu trong bảng Driver)
         if (result.success && result.data) {
-            const data = result.data;
-            
-            localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
-            localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
-            
-            let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? data.isTermsAccepted ?? false;
-            let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
-            
-            localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
+          const data = result.data;
 
-            if (isTermsAccepted) {
-                if (termsBox) {
-                    termsBox.classList.add('d-none');
-                    termsBox.style.setProperty('display', 'none', 'important');
-                }
-            } else {
-                showBoxForce(); // Tài xế chưa đồng ý -> Bắt buộc hiện
-            }
-        } else {
-            // LÀ KHÁCH HÀNG THUẦN TÚY -> ẨN BẢNG ĐIỀU KHOẢN
+          localStorage.setItem('driverId', data.id || data.driverID || data.driverId || '');
+          localStorage.setItem('approvalStatus', String(data.approvalStatus || 'PENDING').toUpperCase());
+
+          let rawTerms = data.termsAccepted ?? data.TermsAccepted ?? data.isTermsAccepted ?? false;
+          let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
+
+          localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
+
+          if (isTermsAccepted) {
             if (termsBox) {
-                termsBox.classList.add('d-none');
-                termsBox.style.setProperty('display', 'none', 'important');
+              termsBox.classList.add('d-none');
+              termsBox.style.setProperty('display', 'none', 'important');
             }
+          } else {
+            showBoxForce(); // Tài xế chưa đồng ý -> Bắt buộc hiện
+          }
+        } else {
+          // LÀ KHÁCH HÀNG THUẦN TÚY -> ẨN BẢNG ĐIỀU KHOẢN
+          if (termsBox) {
+            termsBox.classList.add('d-none');
+            termsBox.style.setProperty('display', 'none', 'important');
+          }
         }
-    } catch (error) {
+      } catch (error) {
         console.error("Lỗi API Policy:", error);
-    }
-});
+      }
+    });
 
-  // 3. HÀM XÁC NHẬN ĐIỀU KHOẢN (DUY NHẤT 1 HÀM CHUẨN)
-  async function acceptDriverTerms() {
+    // 3. HÀM XÁC NHẬN ĐIỀU KHOẢN (DUY NHẤT 1 HÀM CHUẨN)
+    async function acceptDriverTerms() {
       const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
       if (!accountId) {
-          alert("Lỗi phiên làm việc. Vui lòng đăng nhập lại!");
-          return;
+        alert("Lỗi phiên làm việc. Vui lòng đăng nhập lại!");
+        return;
       }
 
       const btn = document.getElementById('btnAcceptTerms');
@@ -876,42 +1060,43 @@ const DRIVER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/driver';
       btn.disabled = true;
 
       try {
-          const response = await fetch(`${DRIVER_API_BASE}/terms/accept?accountID=${accountId}`, {
-              method: 'POST'
-          });
-          const data = await response.json();
+        const response = await fetch(`${DRIVER_API_BASE}/terms/accept?accountID=${accountId}`, {
+          method: 'POST'
+        });
+        const data = await response.json();
 
-          if (data.success) {
-              alert("Cảm ơn bạn đã xác nhận đồng ý Điều khoản dịch vụ của FleetFlow!");
-              
-              // Lưu vào bộ nhớ cục bộ
-              localStorage.setItem('termsAccepted', 'true');
-              
-              // Ẩn bảng đi
-              const termsBox = document.getElementById('driverTermsAcceptanceBox');
-              if (termsBox) {
-                  termsBox.classList.add('d-none');
-                  termsBox.style.setProperty('display', 'none', 'important');
-              }
-          } else {
-              alert("Lỗi hệ thống: " + data.message);
-              btn.disabled = false;
-              btn.innerHTML = originalText;
+        if (data.success) {
+          alert("Cảm ơn bạn đã xác nhận đồng ý Điều khoản dịch vụ của FleetFlow!");
+
+          // Lưu vào bộ nhớ cục bộ
+          localStorage.setItem('termsAccepted', 'true');
+
+          // Ẩn bảng đi
+          const termsBox = document.getElementById('driverTermsAcceptanceBox');
+          if (termsBox) {
+            termsBox.classList.add('d-none');
+            termsBox.style.setProperty('display', 'none', 'important');
           }
-      } catch (error) {
-          console.error("Lỗi gọi API Điều khoản:", error);
-          alert("Không thể kết nối đến máy chủ.");
+        } else {
+          alert("Lỗi hệ thống: " + data.message);
           btn.disabled = false;
           btn.innerHTML = originalText;
+        }
+      } catch (error) {
+        console.error("Lỗi gọi API Điều khoản:", error);
+        alert("Không thể kết nối đến máy chủ.");
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
-  }
+    }
 
 
-    </script>
+  </script>
 
-    
-    
-    <script src="../js/api.js"></script>
-    <script src="../js/base.js"></script>
-  </body>
+
+
+  <script src="../js/api.js"></script>
+  <script src="../js/base.js"></script>
+</body>
+
 </html>

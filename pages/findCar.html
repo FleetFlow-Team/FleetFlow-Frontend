@@ -29,6 +29,9 @@
             padding: 8px 16px;
             transition: all 0.4s var(--liquid-easing);
             border-radius: 50px;
+            width: 130px;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-link-center-1:hover {
@@ -542,11 +545,12 @@
 
                 <!-- Menu Desktop: Khách hàng (Ẩn mặc định) -->
                 <div id="customerDesktopMenu" class="navbar-center-links d-none"
-                    style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 35px;">
+                    style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 1rem;">
                     <a href="../index.html" class="nav-link-center-1">Trang chủ</a>
                     <a href="findCar.html" class="nav-link-center-1 active">Đặt xe</a>
                     <a href="customer/tripHistory.html" class="nav-link-center-1">Chuyến đi</a>
                     <a href="policy.html" class="nav-link-center-1">Chính sách</a>
+                    <a href="support.html" class="nav-link-center-1">Trợ giúp</a>
                 </div>
 
                 <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
@@ -556,8 +560,8 @@
                 <!-- Menu Desktop: Guest (Mặc định) -->
                 <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
                     <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
-                        <a href="support.html" class="nav-link-center-1">Trung tâm hỗ trợ</a>
-                        <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
+                        <a href="support.html" class="nav-link-center-2">Trung tâm hỗ trợ</a>
+                        <a href="policy.html" class="nav-link-center-2">Về chính sách</a>
                     </div>
 
                     <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
@@ -627,6 +631,7 @@
                                 class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
                         <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Chính
                             sách</a>
+                        <a href="support.html" class="mobile-nav-item"><i class="fa-solid fa-envelope"></i> Trợ giúp</a>
                     </div>
 
                     <div class="divider-glass my-2"></div>
@@ -821,9 +826,10 @@
                     <p class="glass-login-title mt-2" style="font-size: 0.9rem;">Chào mừng bạn quay lại FleetFlow</p>
                 </div>
                 <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
-                    <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập"
-                        required maxlength="50">
-                    <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required maxlength="50">
+                    <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required
+                        maxlength="50">
+                    <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required
+                        maxlength="50">
                     <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
                         <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
                             style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">

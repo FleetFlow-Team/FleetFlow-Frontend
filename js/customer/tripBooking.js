@@ -196,8 +196,8 @@ function initUserLocationDefault() {
                     const res = await fetch(`${MAPS_API_BASE}/reverse-geocode?lat=${lat}&lng=${lng}`);
                     if (res.ok) {
                         const data = await res.json();
-                        inputPickup.value = (data.display && data.display !== "Không tìm thấy địa chỉ cho tọa độ này") 
-                            ? data.display 
+                        inputPickup.value = (data.display && data.display !== "Không tìm thấy địa chỉ cho tọa độ này")
+                            ? data.display
                             : `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
                     } else {
                         inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
@@ -337,7 +337,7 @@ window.fetchCurrentLocationAndReverseGeocode = function (targetInputId = 'inputP
         },
         (error) => {
             console.warn("Khách hàng từ chối quyền GPS hoặc lỗi định vị:", error.message);
-            
+
             showGpsGlassModal(
                 'Yêu cầu quyền truy cập GPS',
                 'Không thể định vị vị trí hiện tại của bạn. Vui lòng kiểm tra và cho phép quyền truy cập vị trí (Location) trên trình duyệt hoặc cài đặt thiết bị!',
