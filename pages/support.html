@@ -121,29 +121,82 @@
             box-shadow: var(--glass-shadow), inset 2px 2px 5px rgba(255, 255, 255, 0.6);
         }
 
-        .glass-tabs {
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-            margin-bottom: 40px;
-            flex-wrap: wrap;
+        /* =========================================
+           SLIDING TABS CONTAINER & TABS CATEGORY (FROM TRIPHISTORY.HTML)
+        ========================================= */
+        .sliding-tabs-container,
+        .tabs-category {
+            position: relative;
+            display: inline-flex;
+            background: var(--glass-highlight, rgba(241, 245, 249, 0.65));
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 6px;
+            border-radius: 50px;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.08),
+                0 1px 0 rgba(255, 255, 255, 0.8);
+            margin-bottom: 35px;
+            z-index: 1;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            max-width: 100%;
         }
 
+        .sliding-tabs-container::-webkit-scrollbar,
+        .tabs-category::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Cục kính trượt (The Glass Pill Indicator) */
+        .tab-indicator {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            height: calc(100% - 12px);
+            width: 130px;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 177, 79, 0.2),
+                inset 1px 1px 2px rgba(255, 255, 255, 1);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2),
+                width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Các nút Text (Đẩy lên trên cùng) */
+        .tab-pill,
         .tab-item {
-            flex: 1;
-            text-align: center;
-            padding: 15px 10px;
-            font-size: 1.15rem;
+            position: relative;
+            z-index: 2;
+            flex: 0 0 auto;
+            padding: 12px 24px;
             font-weight: 700;
+            font-size: 1.05rem;
             color: #64748b;
+            background: transparent !important;
+            border: none;
+            border-radius: 50px;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease, transform 0.3s ease;
+            white-space: nowrap;
+            user-select: none;
+            box-shadow: none !important;
         }
 
+        .tab-pill:hover:not(.active),
+        .tab-item:hover:not(.active) {
+            transform: translateY(-1px);
+        }
+
+        /* Đổi màu chữ khi được khối kính trượt tới */
+        .tab-pill.active,
         .tab-item.active {
-            color: var(--color-primary);
-            border-bottom-color: var(--color-primary);
+            color: var(--color-primary, #00B14F) !important;
+            font-weight: 800;
         }
 
         .form-group {
@@ -280,6 +333,8 @@
             text-align: center;
         }
 
+
+
         /* =========================================
            6. MOBILE BOTTOM NAV (iOS STYLE FLOATING BAR)
         ========================================= */
@@ -358,7 +413,7 @@
 
             .tab-item {
                 font-size: 0.95rem;
-                padding: 10px 5px;
+                padding: 10px 16px;
             }
 
             .time-date-group {
@@ -390,11 +445,12 @@
 
                 <!-- Menu Desktop: Khách hàng (Ẩn mặc định) -->
                 <div id="customerDesktopMenu" class="navbar-center-links d-none"
-                    style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 35px;">
+                    style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 1rem;">
                     <a href="../index.html" class="nav-link-center-1">Trang chủ</a>
                     <a href="findCar.html" class="nav-link-center-1">Đặt xe</a>
                     <a href="customer/tripHistory.html" class="nav-link-center-1">Chuyến đi</a>
                     <a href="policy.html" class="nav-link-center-1">Chính sách</a>
+                    <a href="support.html" class="nav-link-center-1 active">Trợ giúp</a>
                 </div>
 
                 <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
@@ -404,8 +460,8 @@
                 <!-- Menu Desktop: Guest (Mặc định) -->
                 <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
                     <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
-                        <a href="support.html" class="nav-link-center-1">Trung tâm hỗ trợ</a>
-                        <a href="policy.html" class="nav-link-center-1">Về chính sách</a>
+                        <a href="support.html" class="nav-link-center-2">Trung tâm hỗ trợ</a>
+                        <a href="policy.html" class="nav-link-center-2">Về chính sách</a>
                     </div>
 
                     <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
@@ -417,7 +473,8 @@
                     <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
                         <div class="dropdown me-3" id="notificationDropdownContainer">
                             <div id="notificationBtn" class="notification-btn position-relative"
-                                data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;" onclick="loadNotifications()">
+                                data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;"
+                                onclick="loadNotifications()">
                                 <i class="fa-regular fa-bell fs-5"></i>
                                 <span id="unreadBadge"
                                     class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
@@ -448,7 +505,7 @@
                                 <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
                                         class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                                 <hr style="margin: 5px 0; opacity: 0.1;">
-                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"
+                                <a href="" id="btnLogout" class="dropdown-item-custom text-danger"
                                     onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i>
                                     Đăng xuất</a>
                             </div>
@@ -461,12 +518,11 @@
                 <div class="dropdown-inner-content d-flex flex-column gap-3">
                     <!-- Mobile: Guest -->
                     <div id="guestMobileMenu" class="d-flex flex-column gap-3">
-                        <a href="register.html" class="mobile-nav-item"><i class="fa-solid fa-id-card"></i> Trở
-                            thành tài xế FleetFlow</a>
+                        <a href="support.html" class="mobile-nav-item active"><i class="fa-solid fa-id-card"></i> Trung
+                            tâm hỗ
+                            trợ</a>
                         <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về
                             chính sách</a>
-                        <a href="support.html" class="mobile-nav-item active"><i class="fa-solid fa-headset"></i> Hỗ
-                            trợ</a>
                     </div>
 
                     <!-- Mobile: Customer -->
@@ -478,8 +534,8 @@
                                 class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
                         <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i>
                             Chính sách</a>
-                        <a href="support.html" class="mobile-nav-item active"><i class="fa-solid fa-headset"></i> Hỗ
-                            trợ</a>
+                        <a href="support.html" class="mobile-nav-item active"><i class="fa-solid fa-id-card"></i> Trợ
+                            giúp</a>
                     </div>
 
                     <div class="divider-glass my-2"></div>
@@ -515,11 +571,12 @@
             <div class="col-xl-10 col-lg-11 col-12 mx-auto">
                 <div class="glass-panel">
 
-                    <div class="glass-tabs" id="complaintTabs">
-                        <div class="tab-item active" data-type="LOST_LUGGAGE">Quên đồ trên xe</div>
-                        <div class="tab-item" data-type="SERVICE_FEEDBACK">Góp ý tài xế</div>
-                        <div class="tab-item" data-type="SERVICE_FEEDBACK">Góp ý thái độ phục vụ</div>
-                        <div class="tab-item" data-type="OTHER">Vấn đề khác</div>
+                    <div class="tabs-category sliding-tabs-container" id="complaintTabs">
+                        <div id="supportTabIndicator" class="tab-indicator"></div>
+                        <div class="tab-item tab-pill active" data-type="LOST_LUGGAGE">Quên đồ trên xe</div>
+                        <div class="tab-item tab-pill" data-type="SERVICE_FEEDBACK">Góp ý tài xế</div>
+                        <div class="tab-item tab-pill" data-type="SERVICE_FEEDBACK">Góp ý thái độ phục vụ</div>
+                        <div class="tab-item tab-pill" data-type="OTHER">Vấn đề khác</div>
                     </div>
 
                     <form>
@@ -556,7 +613,8 @@
                                         placeholder="Cước phí / Mã chuyến (Nếu có) ...">
                                 </div>
                                 <div class="form-group">
-                                    <textarea id="cpContent" class="glass-input" placeholder="Mô tả hành lý ..."></textarea>
+                                    <textarea id="cpContent" class="glass-input"
+                                        placeholder="Mô tả hành lý ..."></textarea>
                                 </div>
                             </div>
                         </div>
@@ -643,6 +701,21 @@
         </div>
     </div>
 
+    <!-- Toast Thông Báo Yêu Cầu Đăng Nhập (Glass Premium) -->
+    <div class="toast-container position-fixed top-0 end-0 p-4" style="z-index: 99999; margin-top: 20px;">
+        <div id="loginRequireToast" class="toast align-items-center border-0 shadow-lg" role="alert"
+            aria-live="assertive" aria-atomic="true"
+            style="border-radius: 50px; background: rgba(255, 255, 255, 0.31); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.9) !important; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25); color: #1e293b;">
+            <div class="d-flex px-3 py-2 align-items-center">
+                <div class="toast-body d-flex align-items-center fw-bold" style="font-size: 0.95rem;">
+                    <i class="fa-solid fa-triangle-exclamation me-2 fs-5 text-warning"></i>
+                    <span>Vui lòng đăng nhập để tiếp tục</span>
+                </div>
+                <button type="button" class="btn-close ms-2" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
     <aside class="floating-contact-buttons d-flex flex-column gap-3">
         <a href="#" target="_blank" class="social-icon-btn" style="border: 2px solid #0068ff;" title="Chat Zalo">
             <img src="../assets/img/zalo.png" alt="Zalo" style="width: 35px; height: 35px; border-radius: 50%;">
@@ -680,17 +753,90 @@
     <script src="../js/base.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Đồng bộ giao diện Navbar khi đã đăng nhập
+            const fullName = localStorage.getItem('fullName');
+            const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+            if (fullName) {
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+
+                const avatarImg = document.getElementById('navDesktopAvatar');
+                const nameSpan = document.getElementById('navDesktopName');
+                const roleSpan = document.getElementById('navDesktopRole');
+                if (avatarImg) avatarImg.src = avatarUrl;
+                if (nameSpan) nameSpan.innerText = fullName;
+                if (roleSpan) roleSpan.innerText = userRole;
+
+                // Chuyển đổi Navbar Menu
+                const guestDesktopMenu = document.getElementById('guestDesktopMenu');
+                const customerDesktopMenu = document.getElementById('customerDesktopMenu');
+                if (guestDesktopMenu) { guestDesktopMenu.classList.remove('d-flex'); guestDesktopMenu.classList.add('d-none'); }
+                if (customerDesktopMenu) { customerDesktopMenu.classList.remove('d-none'); customerDesktopMenu.classList.add('d-none', 'd-lg-flex'); }
+
+                const guestMobileMenu = document.getElementById('guestMobileMenu');
+                const customerMobileMenu = document.getElementById('customerMobileMenu');
+                if (guestMobileMenu) { guestMobileMenu.classList.remove('d-flex'); guestMobileMenu.classList.add('d-none'); }
+                if (customerMobileMenu) { customerMobileMenu.classList.remove('d-none'); customerMobileMenu.classList.add('d-flex'); }
+
+                // Ẩn Nút Login
+                const loginBtns = document.querySelectorAll('#btnLogin, #btnLoginMobile');
+                loginBtns.forEach(btn => {
+                    btn.classList.add('d-none');
+                    btn.classList.remove('d-lg-flex', 'd-flex');
+                });
+
+                // Hiển thị User Dropdown
+                const userDropdown = document.getElementById('userProfileDropdown');
+                if (userDropdown) {
+                    userDropdown.classList.remove('d-none');
+                    userDropdown.classList.add('d-flex');
+                }
+            }
+
+            // Hàm cập nhật vị trí cục kính trượt (Tab Indicator) theo chuẩn tripHistory.html
+            const updateSupportTabIndicator = (targetTab, withTransition = true) => {
+                const indicator = document.getElementById('supportTabIndicator');
+                if (!targetTab || !indicator) return;
+
+                if (!withTransition) {
+                    indicator.style.transition = 'none';
+                } else {
+                    indicator.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2), width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                }
+
+                indicator.style.width = `${targetTab.offsetWidth}px`;
+                indicator.style.transform = `translateX(${targetTab.offsetLeft - 6}px)`;
+            };
+
             // 1. Xử lý chuyển tab hỗ trợ và thay đổi placeholder tương ứng
             const tabs = document.querySelectorAll('#complaintTabs .tab-item');
             const contentArea = document.getElementById('cpContent');
-            
+            const formContainer = document.querySelector('.glass-panel form');
+
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
                     // Xóa active cũ
                     tabs.forEach(t => t.classList.remove('active'));
                     // Thêm active mới
                     this.classList.add('active');
-                    
+
+                    // Di chuyển cục kính trượt tới vị trí tab mới
+                    updateSupportTabIndicator(this, true);
+
+                    // Tự động cuộn mượt (scrollIntoView) để tab đang chọn nằm giữa màn hình (rất mượt trên mobile)
+                    this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+
+                    // Hiệu ứng Fade-in mượt mà cho vùng Form khi chuyển tab
+                    if (formContainer) {
+                        formContainer.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+                        formContainer.style.opacity = '0.3';
+                        formContainer.style.transform = 'translateY(6px)';
+                        setTimeout(() => {
+                            formContainer.style.opacity = '1';
+                            formContainer.style.transform = 'translateY(0)';
+                        }, 100);
+                    }
+
                     // Đổi Placeholder linh hoạt theo chủ đề
                     const type = this.getAttribute('data-type');
                     if (type === 'LOST_LUGGAGE') {
@@ -703,111 +849,157 @@
                 });
             });
 
+            // Khởi tạo vị trí cục kính trượt ban đầu (khi trang vừa load xong)
+            const activeTab = document.querySelector('#complaintTabs .tab-item.active');
+            if (activeTab) {
+                updateSupportTabIndicator(activeTab, false);
+                setTimeout(() => {
+                    const indicator = document.getElementById('supportTabIndicator');
+                    if (indicator) {
+                        indicator.style.transition = 'transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.2), width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)';
+                    }
+                }, 100);
+            }
+
+            // Cập nhật lại vị trí cục kính khi resize màn hình
+            window.addEventListener('resize', () => {
+                const currentActive = document.querySelector('#complaintTabs .tab-item.active');
+                if (currentActive) updateSupportTabIndicator(currentActive, false);
+            });
+
             // 2. Logic gửi Data Lên Backend
             const btnSubmit = document.getElementById('btnSubmitComplaint');
             if (btnSubmit) {
                 btnSubmit.addEventListener('click', async () => {
-                    // Thu thập dữ liệu
-                    const fullName = document.getElementById('cpFullName').value.trim();
-                    const email = document.getElementById('cpEmail').value.trim();
-                    const phone = document.getElementById('cpPhone').value.trim();
-                    const content = document.getElementById('cpContent').value.trim();
+                    // Kiểm tra quyền: Phải là Customer đã đăng nhập thì mới được gửi tin nhắn
+                    const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
+                    const accessToken = localStorage.getItem('accessToken');
 
-                    // Validate cơ bản
-                    if (!fullName || !phone || !content) {
-                        showModalAlert("Vui lòng nhập đầy đủ: Họ tên, Số điện thoại và Nội dung góp ý!", "Thiếu thông tin", "warning");
-                        return;
-                    }
+                    if (accessToken && (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG')) {
+                        // Thu thập dữ liệu
+                        const fullName = document.getElementById('cpFullName').value.trim();
+                        const email = document.getElementById('cpEmail').value.trim();
+                        const phone = document.getElementById('cpPhone').value.trim();
+                        const content = document.getElementById('cpContent').value.trim();
 
-                    // Lấy type từ Tab đang active
-                    const activeTab = document.querySelector('#complaintTabs .tab-item.active');
-                    const type = activeTab ? activeTab.getAttribute('data-type') : 'OTHER';
-
-                    // Lắp ráp thời gian lên xe (nếu có)
-                    const dateVal = document.getElementById('cpDate').value;
-                    const timeVal = document.getElementById('cpTime').value;
-                    let boardingTime = "";
-                    if (dateVal && timeVal) {
-                        // Backend cần dạng Timestamp nên ta ghép chuỗi chuẩn ISO (hoặc T)
-                        boardingTime = `${dateVal}T${timeVal}:00`;
-                    }
-
-                    // Phân loại "Cước phí / Mã chuyến"
-                    const extraVal = document.getElementById('cpExtra').value.trim();
-                    let bookingId = null;
-                    let fare = null;
-                    
-                    if (extraVal) {
-                        // Xử lý heuristic nhẹ nhàng:
-                        // Nếu bắt đầu bằng # và toàn số, hoặc toàn số ngắn -> khả năng là Booking ID
-                        const digitsOnly = extraVal.replace(/[^\d]/g, '');
-                        if (digitsOnly.length > 0 && digitsOnly.length < 10 && /^[#\d]+$/.test(extraVal.trim())) {
-                            bookingId = parseInt(digitsOnly, 10);
-                        } else if (digitsOnly.length > 0) {
-                            fare = parseFloat(digitsOnly); // Nếu dài hoặc có chữ, tách số ra coi như tiền cước
+                        // Validate cơ bản
+                        if (!fullName || !phone || !content) {
+                            showModalAlert("Vui lòng nhập đầy đủ: Họ tên, Số điện thoại và Nội dung góp ý!", "Thiếu thông tin", "warning");
+                            return;
                         }
-                    }
 
-                    // Xây dựng JSON Request
-                    const payload = {
-                        type: type,
-                        fullName: fullName,
-                        email: email,
-                        phone: phone,
-                        content: content,
-                        fromLocation: document.getElementById('cpFrom').value.trim(),
-                        toLocation: document.getElementById('cpTo').value.trim()
-                    };
+                        // Lấy type từ Tab đang active
+                        const activeTab = document.querySelector('#complaintTabs .tab-item.active');
+                        const type = activeTab ? activeTab.getAttribute('data-type') : 'OTHER';
 
-                    if (boardingTime) payload.boardingTime = boardingTime;
-                    if (bookingId) payload.bookingId = bookingId;
-                    if (fare) payload.fare = fare;
-
-                    // UX Loading
-                    const originalText = btnSubmit.innerHTML;
-                    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
-                    btnSubmit.disabled = true;
-
-                    try {
-                        // API Backend URL (Dùng API_BASE nếu api.js có khai báo sẵn, hoặc fallback)
-                        const API_URL = typeof API_BASE !== 'undefined' ? `${API_BASE}/complaints` : 'http://localhost:8080/FleetFlow/api/v1/complaints';
-                        
-                        const response = await fetch(API_URL, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-
-                        const data = await response.json();
-
-                        if (response.ok) {
-                            showModalAlert("Cảm ơn bạn đã gửi ý kiến! Đội ngũ CSKH sẽ liên hệ lại với bạn trong thời gian sớm nhất.", "Gửi thành công", "success");
-                            
-                            // Reset sạch sẽ form
-                            document.getElementById('cpFullName').value = '';
-                            document.getElementById('cpEmail').value = '';
-                            document.getElementById('cpPhone').value = '';
-                            document.getElementById('cpTime').value = '';
-                            document.getElementById('cpDate').value = '';
-                            document.getElementById('cpFrom').value = '';
-                            document.getElementById('cpTo').value = '';
-                            document.getElementById('cpExtra').value = '';
-                            document.getElementById('cpContent').value = '';
-                        } else {
-                            showModalAlert(data.message || "Đã xảy ra lỗi hệ thống khi xử lý. Vui lòng thử lại!", "Thất bại", "error");
+                        // Lắp ráp thời gian lên xe (nếu có)
+                        const dateVal = document.getElementById('cpDate').value;
+                        const timeVal = document.getElementById('cpTime').value;
+                        let boardingTime = "";
+                        if (dateVal && timeVal) {
+                            // Backend cần dạng Timestamp nên ta ghép chuỗi chuẩn ISO (hoặc T)
+                            boardingTime = `${dateVal}T${timeVal}:00`;
                         }
-                    } catch (error) {
-                        console.error("Lỗi gửi góp ý:", error);
-                        showModalAlert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền mạng!", "Mất kết nối", "error");
-                    } finally {
-                        btnSubmit.innerHTML = originalText;
-                        btnSubmit.disabled = false;
+
+                        // Phân loại "Cước phí / Mã chuyến"
+                        const extraVal = document.getElementById('cpExtra').value.trim();
+                        let bookingId = null;
+                        let fare = null;
+
+                        if (extraVal) {
+                            // Xử lý heuristic nhẹ nhàng:
+                            // Nếu bắt đầu bằng # và toàn số, hoặc toàn số ngắn -> khả năng là Booking ID
+                            const digitsOnly = extraVal.replace(/[^\d]/g, '');
+                            if (digitsOnly.length > 0 && digitsOnly.length < 10 && /^[#\d]+$/.test(extraVal.trim())) {
+                                bookingId = parseInt(digitsOnly, 10);
+                            } else if (digitsOnly.length > 0) {
+                                fare = parseFloat(digitsOnly); // Nếu dài hoặc có chữ, tách số ra coi như tiền cước
+                            }
+                        }
+
+                        // Xây dựng JSON Request
+                        const payload = {
+                            type: type,
+                            fullName: fullName,
+                            email: email,
+                            phone: phone,
+                            content: content,
+                            fromLocation: document.getElementById('cpFrom').value.trim(),
+                            toLocation: document.getElementById('cpTo').value.trim()
+                        };
+
+                        if (boardingTime) payload.boardingTime = boardingTime;
+                        if (bookingId) payload.bookingId = bookingId;
+                        if (fare) payload.fare = fare;
+
+                        // UX Loading
+                        const originalText = btnSubmit.innerHTML;
+                        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
+                        btnSubmit.disabled = true;
+
+                        try {
+                            // API Backend URL (Dùng API_BASE nếu api.js có khai báo sẵn, hoặc fallback)
+                            const API_URL = typeof API_BASE !== 'undefined' ? `${API_BASE}/complaints` : 'http://localhost:8080/FleetFlow/api/v1/complaints';
+
+                            const response = await fetch(API_URL, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payload)
+                            });
+
+                            const data = await response.json();
+
+                            if (response.ok) {
+                                showModalAlert("Cảm ơn bạn đã gửi ý kiến! Đội ngũ CSKH sẽ liên hệ lại với bạn trong thời gian sớm nhất.", "Gửi thành công", "success");
+
+                                // Reset sạch sẽ form
+                                document.getElementById('cpFullName').value = '';
+                                document.getElementById('cpEmail').value = '';
+                                document.getElementById('cpPhone').value = '';
+                                document.getElementById('cpTime').value = '';
+                                document.getElementById('cpDate').value = '';
+                                document.getElementById('cpFrom').value = '';
+                                document.getElementById('cpTo').value = '';
+                                document.getElementById('cpExtra').value = '';
+                                document.getElementById('cpContent').value = '';
+                            } else {
+                                showModalAlert(data.message || "Đã xảy ra lỗi hệ thống khi xử lý. Vui lòng thử lại!", "Thất bại", "error");
+                            }
+                        } catch (error) {
+                            console.error("Lỗi gửi góp ý:", error);
+                            showModalAlert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền mạng!", "Mất kết nối", "error");
+                        } finally {
+                            btnSubmit.innerHTML = originalText;
+                            btnSubmit.disabled = false;
+                        }
+                    } else {
+                        // Không phải Customer -> Kích hoạt loginModal yêu cầu khách đăng nhập
+                        const loginModal = document.getElementById('loginModal');
+                        if (loginModal) {
+                            loginModal.classList.add('active');
+                            document.body.style.overflow = 'hidden';
+                        }
+                        // Hiển thị toast nhắc đăng nhập
+                        const toastEl = document.getElementById('loginRequireToast');
+                        if (toastEl && typeof bootstrap !== 'undefined') {
+                            const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500 });
+                            toast.show();
+                        }
                     }
                 });
             }
         });
+
+        function handleLogout(e) {
+            e.preventDefault();
+            localStorage.removeItem('fullName');
+            localStorage.removeItem('userRole');
+            localStorage.removeItem('accountId');
+            localStorage.removeItem('token');
+            window.location.href = '../index.html';
+        }
     </script>
 </body>
 

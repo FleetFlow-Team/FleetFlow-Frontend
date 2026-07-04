@@ -383,7 +383,7 @@ async function loadNotifications() {
 
                 // LOGIC GIAO DIỆN UX: Giống giao diện Driver/Dispatcher
                 const isUnread = !isRead;
-                const readStatusHtml = isUnread 
+                const readStatusHtml = isUnread
                     ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
                     : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
 
@@ -391,7 +391,7 @@ async function loadNotifications() {
                 let typeText = 'Hệ Thống';
                 let typeIconColor = 'text-info';
                 let iconClass = 'fa-bell';
-                
+
                 const titleLower = title.toLowerCase();
                 if (titleLower.includes('hủy') || titleLower.includes('từ chối')) {
                     typeBadgeClass = 'bg-danger';
@@ -527,7 +527,7 @@ async function markAsRead(notifId, bookingId, element, isAlreadyRead) {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}` }
         });
-        
+
         // Sau khi báo đã đọc thành công, điều hướng nếu có bookingId
         if (bookingId && bookingId !== 'null') {
             window.location.href = getTripHistoryUrl(bookingId);
@@ -605,17 +605,17 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
     </div>
     `;
-    
+
     // Chèn HTML modal vào cuối body
     document.body.insertAdjacentHTML('beforeend', modalHtml);
 });
 
 // Hàm gọi Alert Modal
-window.showModalAlert = function(message, title = 'Thông báo', type = 'info') {
+window.showModalAlert = function (message, title = 'Thông báo', type = 'info') {
     let iconHtml = '<i class="fa-solid fa-circle-info text-info"></i>';
-    if(type === 'success') iconHtml = '<i class="fa-solid fa-circle-check text-success"></i>';
-    else if(type === 'error') iconHtml = '<i class="fa-solid fa-circle-xmark text-danger"></i>';
-    else if(type === 'warning') iconHtml = '<i class="fa-solid fa-triangle-exclamation text-warning"></i>';
+    if (type === 'success') iconHtml = '<i class="fa-solid fa-circle-check text-success"></i>';
+    else if (type === 'error') iconHtml = '<i class="fa-solid fa-circle-xmark text-danger"></i>';
+    else if (type === 'warning') iconHtml = '<i class="fa-solid fa-triangle-exclamation text-warning"></i>';
 
     document.getElementById('globalAlertIcon').innerHTML = iconHtml;
     document.getElementById('globalAlertTitle').innerText = title;
@@ -629,34 +629,34 @@ window.showModalAlert = function(message, title = 'Thông báo', type = 'info') 
 };
 
 // Hàm gọi Confirm Modal (Trả về Promise)
-window.showModalConfirm = function(message, title = 'Xác nhận', type = 'warning') {
+window.showModalConfirm = function (message, title = 'Xác nhận', type = 'warning') {
     return new Promise((resolve) => {
         let iconHtml = '<i class="fa-solid fa-circle-question text-warning"></i>';
-        if(type === 'danger') iconHtml = '<i class="fa-solid fa-triangle-exclamation text-danger"></i>';
-        
+        if (type === 'danger') iconHtml = '<i class="fa-solid fa-triangle-exclamation text-danger"></i>';
+
         document.getElementById('globalConfirmIcon').innerHTML = iconHtml;
         document.getElementById('globalConfirmTitle').innerText = title;
         document.getElementById('globalConfirmMessage').innerText = message;
 
         const confirmModalEl = document.getElementById('globalConfirmModal');
         const confirmModal = bootstrap.Modal.getOrCreateInstance(confirmModalEl);
-        
+
         const btnOk = document.getElementById('btnGlobalConfirmOk');
         const btnCancel = document.getElementById('btnGlobalConfirmCancel');
-        
+
         // Cập nhật giao diện nút Ok nếu là dạng Danger
         if (type === 'danger') {
             btnOk.className = 'btn btn-danger w-50 fw-bold';
         } else {
             btnOk.className = 'btn btn-primary w-50 fw-bold';
         }
-        
+
         // Remove old event listeners by cloning
         const newBtnOk = btnOk.cloneNode(true);
         const newBtnCancel = btnCancel.cloneNode(true);
         btnOk.parentNode.replaceChild(newBtnOk, btnOk);
         btnCancel.parentNode.replaceChild(newBtnCancel, btnCancel);
-        
+
         let isResolved = false;
 
         newBtnOk.addEventListener('click', () => {
@@ -666,7 +666,7 @@ window.showModalConfirm = function(message, title = 'Xác nhận', type = 'warni
                 resolve(true);
             }
         });
-        
+
         newBtnCancel.addEventListener('click', () => {
             if (!isResolved) {
                 isResolved = true;
@@ -686,4 +686,4 @@ window.showModalConfirm = function(message, title = 'Xác nhận', type = 'warni
 
         confirmModal.show();
     });
-};
+};

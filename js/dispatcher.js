@@ -803,8 +803,8 @@ window.loadComplaints = async function () {
                     ${c.bookingId ? `<div class="fw-bold small mt-1" style="color: var(--text-color); font-size: 0.78rem;"><i class="fa-solid fa-receipt me-1"></i>Đơn #${c.bookingId}</div>` : ''}
                 `;
 
-                // Cột 3: Khu vực
-                const provinceHtml = `<span class="glass-badge" style=" font-size: 0.82rem;"><i class="fa-solid fa-location-dot me-1"></i>${province}</span>`;
+                // // Cột 3: Khu vực
+                // const provinceHtml = `<span class="glass-badge" style=" font-size: 0.82rem;"><i class="fa-solid fa-location-dot me-1"></i>${province}</span>`;
 
                 // Cột 4: Vấn đề
                 let typeBadge = '';
@@ -850,7 +850,6 @@ window.loadComplaints = async function () {
                 tr.innerHTML = `
                     <td class="fw-bold">#${id}</td>
                     <td>${customerHtml}</td>
-                    <td>${provinceHtml}</td>
                     <td style="font-size: 0.85rem; max-width: 320px;">${problemHtml}</td>
                     <td>${statusHtml}</td>
                     <td class="text-center">${actionHtml}</td>

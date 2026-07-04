@@ -926,6 +926,7 @@
                     <a href="../findCar.html" class="nav-link-center">Đặt xe</a>
                     <a href="tripHistory.html" class="nav-link-center active">Chuyến đi</a>
                     <a href="../policy.html" class="nav-link-center">Chính sách</a>
+                    <a href="../support.html" class="nav-link-center">Trợ giúp</a>
                 </div>
 
                 <div class="nav-right-actions d-flex align-items-center gap-3">
@@ -1137,21 +1138,28 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-premium">
                 <div class="modal-header border-0 pb-0 justify-content-between align-items-center">
-                    <h5 class="modal-title fw-bold fs-4 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> Gửi khiếu nại</h5>
+                    <h5 class="modal-title fw-bold fs-4 text-danger"><i
+                            class="fa-solid fa-triangle-exclamation me-2"></i> Gửi khiếu nại</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body pb-0 text-center">
-                    <p class="text-muted mb-4 fs-6">Chúng tôi rất tiếc về trải nghiệm không tốt của bạn. Vui lòng cho chúng tôi biết chi tiết vấn đề.</p>
+                    <p class="text-muted mb-4 fs-6">Chúng tôi rất tiếc về trải nghiệm không tốt của bạn. Vui lòng cho
+                        chúng tôi biết chi tiết vấn đề.</p>
                     <select class="form-select premium-input mb-3 fw-medium" id="complaintType">
                         <option value="SERVICE_FEEDBACK" selected>Chất lượng dịch vụ / Thái độ tài xế</option>
                         <option value="LOST_LUGGAGE">Thất lạc hành lý / Đồ đạc</option>
                         <option value="OTHER">Lý do khác</option>
                     </select>
-                    <textarea class="form-control premium-input mt-3" id="complaintContent" rows="4" placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, thái độ không tốt...)" style="resize: none;" maxlength="1000"></textarea>
+                    <textarea class="form-control premium-input mt-3" id="complaintContent" rows="4"
+                        placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, thái độ không tốt...)"
+                        style="resize: none;" maxlength="1000"></textarea>
                 </div>
                 <div class="modal-footer border-0 d-flex flex-column gap-2 pt-4">
-                    <button type="button" class="btn btn-control-action w-100 m-0 text-white" style="background-color: #dc3545;" id="btnSubmitComplaint" onclick="submitComplaint()">GỬI KHIẾU NẠI</button>
-                    <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">HỦY</button>
+                    <button type="button" class="btn btn-control-action w-100 m-0 text-white"
+                        style="background-color: #dc3545;" id="btnSubmitComplaint" onclick="submitComplaint()">GỬI KHIẾU
+                        NẠI</button>
+                    <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0"
+                        data-bs-dismiss="modal">HỦY</button>
                 </div>
             </div>
         </div>

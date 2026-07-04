@@ -15,6 +15,9 @@
   padding: 8px 16px;
   transition: all 0.4s var(--liquid-easing);
   border-radius: 50px;
+  width: 130px;
+  justify-content: center;
+  align-items: center;
 }
 
 .nav-link-center-1:hover {
@@ -41,9 +44,9 @@
   align-items: center;
   overflow: hidden;
   background-image: url(../assets/img/Backgroud-mainpage.png);
-  background-size: cover; 
+  background-size: cover;
   background-repeat: no-repeat;
-  
+
 }
 
 .hero-video {
@@ -88,17 +91,18 @@
 }
 
 .ai-index-page {
-  width: 30rem; 
+  width: 30rem;
   height: auto;
-  max-width: 100%; /* Đảm bảo responsive không bị vỡ trên màn hình nhỏ */
-  
+  max-width: 100%;
+  /* Đảm bảo responsive không bị vỡ trên màn hình nhỏ */
+
   /* Tạo hiệu ứng mượt mà khi hover */
-  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
-              filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-  
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Hiệu ứng bồng bềnh tự động (Animation bay nhẹ như robot đang lơ lửng) */
   animation: floatBot 2s ease-in-out infinite;
-  
+
   /* Đổ bóng nhẹ nhàng cho hợp với vibe phát sáng của ảnh */
   filter: drop-shadow(0 5px 10px rgba(80, 230, 82, 0.588));
 }
@@ -106,8 +110,8 @@
 /* Khi di chuột vào */
 .ai-index-page:hover {
   /* Tăng kích thước nhẹ và đẩy robot lên một chút */
-  transform: scale(1.2) translateY(-10px); 
-  
+  transform: scale(1.2) translateY(-10px);
+
   /* Thêm hiệu ứng phát sáng nhẹ màu xanh lục bảo bảo hòa với background */
   filter: drop-shadow(0 15px 30px rgba(46, 213, 116, 0.804));
 }
@@ -117,9 +121,12 @@
   0% {
     transform: translateY(0px);
   }
+
   50% {
-    transform: translateY(-12px); /* Nhấc lên nhẹ 12px */
+    transform: translateY(-12px);
+    /* Nhấc lên nhẹ 12px */
   }
+
   100% {
     transform: translateY(0px);
   }
@@ -131,16 +138,12 @@
 .features-section {
   padding: 100px 0;
   background:
-    radial-gradient(
-      circle at 30% 30%,
+    radial-gradient(circle at 30% 30%,
       rgba(0, 177, 79, 0.12) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 70% 70%,
+      transparent 50%),
+    radial-gradient(circle at 70% 70%,
       rgba(255, 222, 89, 0.15) 0%,
-      transparent 50%
-    ),
+      transparent 50%),
     var(--color-bg);
   position: relative;
   overflow: hidden;
@@ -185,11 +188,9 @@
   left: 20%;
   width: 400px;
   height: 400px;
-  background: radial-gradient(
-    circle,
-    rgba(0, 177, 79, 0.15) 0%,
-    transparent 70%
-  );
+  background: radial-gradient(circle,
+      rgba(0, 177, 79, 0.15) 0%,
+      transparent 70%);
   border-radius: 50%;
 }
 
@@ -305,6 +306,7 @@
   opacity: 0;
   pointer-events: none;
 }
+
 .car-flow-card.hidden-left {
   left: -20%;
   transform: translate(-50%, -50%) scale(0.5);
@@ -384,9 +386,11 @@
     opacity: 0;
     color: #ccc;
   }
+
   50% {
     transform: scale(1.3);
   }
+
   100% {
     transform: scale(1);
     color: #ffc107;
@@ -478,12 +482,10 @@
   z-index: 2;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.15),
-    transparent 40%,
-    rgba(255, 255, 255, 0.03)
-  );
+  background: linear-gradient(135deg,
+      rgba(255, 255, 255, 0.15),
+      transparent 40%,
+      rgba(255, 255, 255, 0.03));
   box-shadow: inset 1px 1px 2px rgba(255, 255, 255, 0.2);
 }
 
@@ -590,7 +592,7 @@
   background: linear-gradient(135deg, #ffffff, #ffde59);
 }
 
-.form-floating > .form-control:focus ~ label {
+.form-floating>.form-control:focus~label {
   color: var(--color-3) !important;
   border-radius: 50px !important;
 }
@@ -669,6 +671,7 @@
     opacity: 0;
     transform: translateY(20px) scale(0.98);
   }
+
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -684,103 +687,187 @@
 
 /* --- Mobile nhỏ (Dưới 576px) --- */
 @media (max-width: 575.98px) {
-  .hero-section { min-height: 100svh !important; padding-top: 80px !important; }
-  .header-slogan { font-size: 2.2rem !important; }
-  .description-text { font-size: 1rem !important; }
-  
-  .features-section, 
-  .car-showcase-section, 
-  .process-section, 
+  .hero-section {
+    min-height: 100svh !important;
+    padding-top: 80px !important;
+  }
+
+  .header-slogan {
+    font-size: 2.2rem !important;
+  }
+
+  .description-text {
+    font-size: 1rem !important;
+  }
+
+  .features-section,
+  .car-showcase-section,
+  .process-section,
   .cta-section,
-  #premium-register, 
-  #join-us-section { padding: 60px 0 !important; }
-  
-  .section-title { font-size: 1.8rem !important; }
-  
-  .carousel-container { height: 380px !important; }
-  .car-flow-card { width: 85% !important; height: 350px !important; padding: 15px !important; }
-  .car-info-box h3 { font-size: 1.2rem !important; }
-  
-  .luxury-title { font-size: 1.8rem !important; }
-  .luxury-register-card { padding: 20px !important; border-radius: 20px !important; }
-  .luxury-register-card::after { clip-path: inset(8px round 20px) !important; }
-  .sphere-1, .sphere-2 { width: 250px !important; height: 250px !important; }
+  #premium-register,
+  #join-us-section {
+    padding: 60px 0 !important;
+  }
+
+  .section-title {
+    font-size: 1.8rem !important;
+  }
+
+  .carousel-container {
+    height: 380px !important;
+  }
+
+  .car-flow-card {
+    width: 85% !important;
+    height: 350px !important;
+    padding: 15px !important;
+  }
+
+  .car-info-box h3 {
+    font-size: 1.2rem !important;
+  }
+
+  .luxury-title {
+    font-size: 1.8rem !important;
+  }
+
+  .luxury-register-card {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .luxury-register-card::after {
+    clip-path: inset(8px round 20px) !important;
+  }
+
+  .sphere-1,
+  .sphere-2 {
+    width: 250px !important;
+    height: 250px !important;
+  }
 }
 
 /* --- Mobile lớn / Tablet nhỏ (Từ 576px đến 767px) --- */
 @media (min-width: 576px) and (max-width: 767.98px) {
-  .hero-section { min-height: 100svh !important; }
-  .header-slogan { font-size: 2.8rem !important; }
-  .section-title { font-size: 2rem !important; }
-  
-  .carousel-container { height: 450px !important; }
-  .car-flow-card { width: 75% !important; height: 400px !important; }
-  
-  .luxury-title { font-size: 2.2rem !important; }
-  .luxury-register-card { padding: 30px !important; }
+  .hero-section {
+    min-height: 100svh !important;
+  }
+
+  .header-slogan {
+    font-size: 2.8rem !important;
+  }
+
+  .section-title {
+    font-size: 2rem !important;
+  }
+
+  .carousel-container {
+    height: 450px !important;
+  }
+
+  .car-flow-card {
+    width: 75% !important;
+    height: 400px !important;
+  }
+
+  .luxury-title {
+    font-size: 2.2rem !important;
+  }
+
+  .luxury-register-card {
+    padding: 30px !important;
+  }
 }
 
 /* --- Tablet lớn (Từ 768px đến 991px) --- */
 @media (min-width: 768px) and (max-width: 991.98px) {
-  .header-slogan { font-size: 3.2rem !important; }
-  .carousel-container { height: 500px !important; }
-  .car-flow-card { width: 65% !important; height: 450px !important; }
-  .luxury-title { font-size: 2.5rem !important; }
-  .stagger-up { transform: translateY(-30px) !important; }
+  .header-slogan {
+    font-size: 3.2rem !important;
+  }
+
+  .carousel-container {
+    height: 500px !important;
+  }
+
+  .car-flow-card {
+    width: 65% !important;
+    height: 450px !important;
+  }
+
+  .luxury-title {
+    font-size: 2.5rem !important;
+  }
+
+  .stagger-up {
+    transform: translateY(-30px) !important;
+  }
 }
 
 /* --- Laptop / Desktop nhỏ (Từ 992px đến 1199px) --- */
 @media (min-width: 992px) and (max-width: 1199.98px) {
-  .car-flow-card { width: 65% !important; max-width: 450px !important; }
+  .car-flow-card {
+    width: 65% !important;
+    max-width: 450px !important;
+  }
 }
 
 /* --- Desktop lớn (Từ 1200px trở lên) --- */
 @media (min-width: 1200px) {
-  .luxury-register-card { padding: 60px !important; }
-  .car-showcase-section::before { width: 400px !important; height: 400px !important; }
+  .luxury-register-card {
+    padding: 60px !important;
+  }
+
+  .car-showcase-section::before {
+    width: 400px !important;
+    height: 400px !important;
+  }
 }
 
 /* ==========================================================================
    10. NAVBAR RESPONSIVE COLLAPSE (Chuyên biệt dưới 992px theo Bootstrap)
    ========================================================================== */
 @media (max-width: 991.98px) {
-  .custom-navbar .navbar-collapse { 
-      background: rgba(11, 15, 23, 0.95) !important; 
-      backdrop-filter: blur(20px) !important; 
-      -webkit-backdrop-filter: blur(20px) !important; 
-      border-radius: 20px !important; 
-      padding: 25px 20px !important; 
-      margin-top: 15px !important; 
-      border: 1px solid rgba(255, 255, 255, 0.1) !important; 
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important; 
+  .custom-navbar .navbar-collapse {
+    background: rgba(11, 15, 23, 0.95) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-radius: 20px !important;
+    padding: 25px 20px !important;
+    margin-top: 15px !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
   }
-  .custom-navbar .navbar-center-links-1.d-none { 
-      display: flex !important; 
-      justify-content: center !important; 
-      width: 100% !important; 
+
+  .custom-navbar .navbar-center-links-1.d-none {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
   }
-  .custom-navbar .navbar-nav { 
-      width: 100% !important; 
-      align-items: stretch !important; 
-      gap: 15px !important; 
+
+  .custom-navbar .navbar-nav {
+    width: 100% !important;
+    align-items: stretch !important;
+    gap: 15px !important;
   }
-  .custom-navbar .nav-item { 
-      width: 100% !important; 
-      display: flex !important; 
-      justify-content: center !important; 
+
+  .custom-navbar .nav-item {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
   }
-  .custom-navbar .nav-link-center-1 { 
-      width: 100% !important; 
-      justify-content: center !important; 
-      padding: 12px !important; 
-      background: rgba(255, 255, 255, 0.05) !important; 
+
+  .custom-navbar .nav-link-center-1 {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
   }
-  .custom-navbar .btn-login { 
-      width: 100% !important; 
-      justify-content: center !important; 
-      padding: 12px !important; 
-      margin-top: 10px !important; 
-      border-radius: 50px !important; 
+
+  .custom-navbar .btn-login {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 12px !important;
+    margin-top: 10px !important;
+    border-radius: 50px !important;
   }
 }
-
