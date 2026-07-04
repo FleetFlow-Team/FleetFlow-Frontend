@@ -1118,6 +1118,10 @@ async function loadDriverNotifications() {
                                     errorIcon.className = "fa-solid fa-circle-xmark fs-3 text-white";
                                     toastEl.classList.add('bg-danger', 'text-white');
                                     shouldRefreshTrips = true;
+                                } else if (n.type === 'DISPATCH_ASSIGNED') {
+                                    errorIcon.className = "fa-solid fa-user-tie fs-3 text-white";
+                                    toastEl.classList.add('bg-primary', 'text-white');
+                                    shouldRefreshTrips = true;
                                 } else {
                                     errorIcon.className = "fa-solid fa-bell fs-3 text-white";
                                     toastEl.classList.add('bg-info', 'text-white');
@@ -1235,6 +1239,11 @@ function renderDriverNotifications() {
             typeText = 'Tài xế Nhận';
             typeIconColor = 'text-warning'; // as per screenshot yellow check
             iconClass = 'fa-check';
+        } else if (n.type === 'DISPATCH_ASSIGNED') {
+            typeBadgeClass = 'bg-primary';
+            typeText = 'Dispatcher Gán';
+            typeIconColor = 'text-primary';
+            iconClass = 'fa-user-tie';
         }
 
         const readStatusHtml = isUnread
