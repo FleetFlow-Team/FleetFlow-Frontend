@@ -1141,7 +1141,6 @@ async function loadDriverNotifications() {
             }
 
             renderDriverNotifications();
-
         } else {
             console.error("Lỗi lấy thông báo:", result);
         }
@@ -1185,17 +1184,82 @@ function renderDriverNotifications() {
             timeStr = isNaN(d) ? n.createdAt : d.toLocaleString('vi-VN');
         } catch (e) { }
 
-        const bgClass = index < window.driverUnreadCount ? 'bg-success bg-opacity-25' : '';
-        const iconHtml = n.type === 'BOOKING_CANCELLED' ? '<i class="fa-solid fa-circle-xmark text-danger"></i>' : '<i class="fa-solid fa-bell text-info"></i>';
+        const isUnread = index < window.driverUnreadCount;
+        
+        // Define colors based on type
+        let typeBadgeClass = 'bg-success';
+        let typeText = 'Thông báo';
+        let typeIconColor = 'text-success';
+        let iconClass = 'fa-check';
+        
+        if (n.type === 'BOOKING_CANCELLED') {
+            typeBadgeClass = 'bg-danger';
+            typeText = 'Khách Hủy';
+            typeIconColor = 'text-danger';
+            iconClass = 'fa-xmark';
+            
+            // Xử lý lại giao diện chuỗi thông báo từ Backend 
+            // Vd backend: "Khách hàng đã hủy booking #81. Lý do: [Khách: Huy Nguyễn] đặt nhầm ngày."
+            let msg = n.message || '';
+            let bIdMatch = msg.match(/booking #(\d+)/i);
+            let bId = bIdMatch ? bIdMatch[1] : '';
+            
+            let reason = '';
+            let cName = 'Khách hàng';
+            
+            if (msg.includes('Lý do:')) {
+                let rPart = msg.split('Lý do:')[1].trim(); 
+                let cMatch = rPart.match(/\[Khách: (.*?)\]/);
+                if (cMatch) {
+                    cName = cMatch[1];
+                    reason = rPart.replace(cMatch[0], '').trim();
+                    if (reason.endsWith('.')) reason = reason.slice(0, -1);
+                } else {
+                    reason = rPart;
+                    if (reason.endsWith('.')) reason = reason.slice(0, -1);
+                }
+            }
+            
+            if (bId) {
+                n.title = 'Khách Hủy Chuyến!';
+                n.message = `Khách: ${cName} | Chuyến: #${bId}` + (reason ? ` | Lý do hủy: ${reason}` : '');
+            }
+            
+        } else if (n.type === 'NEW_BOOKING') {
+            typeBadgeClass = 'bg-info';
+            typeText = 'Chuyến Mới';
+            typeIconColor = 'text-info';
+            iconClass = 'fa-car';
+        } else if (n.type === 'DRIVER_ACCEPTED') {
+            typeBadgeClass = 'bg-success';
+            typeText = 'Tài xế Nhận';
+            typeIconColor = 'text-warning'; // as per screenshot yellow check
+            iconClass = 'fa-check';
+        }
+
+        const readStatusHtml = isUnread 
+            ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
+            : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
+            
+        // Use text-dark if unread (light background), else text-white if read (dark background)
+        const textClass = isUnread ? 'text-dark' : 'text-white';
+        const mutedClass = isUnread ? 'text-muted' : 'text-white-50';
 
         li.innerHTML = `
-            <div class="dropdown-item-custom border-bottom border-secondary p-3 ${bgClass}" style="cursor:pointer;">
-                <div class="d-flex justify-content-between align-items-start mb-1">
-                    <strong class="text-white d-flex align-items-center gap-2">${iconHtml} ${n.title || 'Thông báo'}</strong>
-                    <small class="text-info" style="font-size: 0.75rem">${timeStr}</small>
+            <div class="notification-item ${isUnread ? 'unread' : ''}">
+                <div class="notification-icon-wrapper ${typeIconColor}">
+                    <i class="fa-solid ${iconClass}"></i>
                 </div>
-                <div class="text-white-50 small" style="white-space: normal;">
-                    ${n.message || ''}
+                <div class="notification-content" style="flex-grow: 1;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="badge ${typeBadgeClass} bg-opacity-25 ${isUnread ? 'text-dark' : 'text-white'} border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
+                        ${readStatusHtml}
+                    </div>
+                    <h6 class="fw-bold ${textClass} mt-2 mb-1">${n.title || 'Thông báo'}</h6>
+                    <p class="${mutedClass} mb-2">${n.message || ''}</p>
+                    <div class="d-flex align-items-center ${mutedClass}" style="font-size: 0.75rem;">
+                        <i class="fa-regular fa-clock me-1"></i> ${timeStr}
+                    </div>
                 </div>
             </div>
         `;
@@ -1239,11 +1303,22 @@ async function fetchDriverHistory(statusFilter = '') {
             trips.forEach(trip => {
                 const badge = trip.bookingStatus === 'COMPLETED' ? '<span class="badge bg-success">Hoàn thành</span>' : '<span class="badge bg-danger">Đã hủy</span>';
                 const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
+                
+                let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
+                let directionText = '';
+                if (trip.bookingType === 'DISTANCE') {
+                    directionText = trip.tripDirection === 'TWO_WAY' ? '<span class="badge bg-warning text-dark ms-1">Hai chiều</span>' : '<span class="badge bg-light text-dark ms-1">Một chiều</span>';
+                }
+
                 html += `
                     <div class="col-md-6 mb-3">
                         <div class="glass-panel p-3 border border-secondary rounded-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="fw-bold text-white fs-6">#BK-${trip.bookingId}</span>
+                                <div>
+                                    <span class="fw-bold text-white fs-6">#BK-${trip.bookingId}</span>
+                                    ${typeBadge}
+                                    ${directionText}
+                                </div>
                                 ${badge}
                             </div>
                             <div class="text-white-50 small mb-2"><i class="fa-regular fa-clock me-1"></i> ${trip.departureTime || trip.acceptedAt || 'N/A'}</div>
@@ -1254,7 +1329,9 @@ async function fetchDriverHistory(statusFilter = '') {
                                 <i class="fa-solid fa-location-dot text-danger me-2"></i> ${trip.dropoffAddress || 'N/A'}
                             </div>
                             <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2">
-                                <span class="text-white-50 small">Cước phí</span>
+                                <span class="text-white-50 small">
+                                    <i class="fa-solid fa-road me-1"></i> Quãng đường: <strong class="text-white">${trip.distanceKm ? trip.distanceKm + ' km' : 'N/A'}</strong>
+                                </span>
                                 <span class="fw-bold text-success">${moneyStr}</span>
                             </div>
                         </div>

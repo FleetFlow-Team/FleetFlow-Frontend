@@ -377,26 +377,70 @@ async function loadNotifications() {
 
                 if (!isRead) unreadCount++;
 
-                // LOGIC GIAO DIỆN UX: Chưa đọc -> Nền trắng, chữ Đậm, có chấm đỏ
-                const bgClass = isRead ? "bg-light" : "bg-white";
-                const textClass = isRead ? "text-muted" : "fw-bold text-dark";
-                const dotClass = isRead ? "d-none" : "";
+                // LOGIC GIAO DIỆN UX: Giống giao diện Driver/Dispatcher
+                const isUnread = !isRead;
+                const readStatusHtml = isUnread 
+                    ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
+                    : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
 
-                // Format ngày giờ thân thiện (Ví dụ: 14:30 - 25/06)
+                let typeBadgeClass = 'bg-info';
+                let typeText = 'Hệ Thống';
+                let typeIconColor = 'text-info';
+                let iconClass = 'fa-bell';
+                
+                const titleLower = title.toLowerCase();
+                if (titleLower.includes('hủy') || titleLower.includes('từ chối')) {
+                    typeBadgeClass = 'bg-danger';
+                    typeText = 'Đã Hủy';
+                    typeIconColor = 'text-danger';
+                    iconClass = 'fa-xmark-circle';
+                } else if (titleLower.includes('hoàn thành')) {
+                    typeBadgeClass = 'bg-success';
+                    typeText = 'Hoàn Thành';
+                    typeIconColor = 'text-success';
+                    iconClass = 'fa-check-circle';
+                } else if (titleLower.includes('tìm thấy') || titleLower.includes('đã nhận')) {
+                    typeBadgeClass = 'bg-success';
+                    typeText = 'Có Tài Xế';
+                    typeIconColor = 'text-warning';
+                    iconClass = 'fa-car';
+                } else if (titleLower.includes('duyệt')) {
+                    typeBadgeClass = 'bg-primary';
+                    typeText = 'Đã Duyệt';
+                    typeIconColor = 'text-primary';
+                    iconClass = 'fa-clipboard-check';
+                }
+
+                const textClass = isUnread ? 'text-dark' : 'text-secondary';
+                const mutedClass = isUnread ? 'text-secondary' : 'text-muted';
+                const bgWrap = isUnread ? 'bg-white' : 'bg-light';
+                const borderLeft = isUnread ? 'border-start border-4 border-danger' : 'border-start border-4 border-transparent';
+
+                // Format ngày giờ thân thiện
                 const d = new Date(n.CreatedAt);
                 const timeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} - ${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
 
                 htmlContent += `
-                    <li class="p-3 border-bottom ${bgClass} notification-item" 
-                        style="cursor: pointer; transition: background 0.2s;" 
+                    <li class="border-bottom p-0" style="cursor: pointer; transition: background 0.2s;" 
                         onclick="markAsRead('${notifId}', '${n.BookingID || ''}', this, ${isRead})">
-                        
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <span class="title-text ${textClass}" style="font-size: 0.95rem;">${title}</span>
-                            <span class="bg-danger rounded-circle unread-dot mt-2 ms-2 ${dotClass}" style="width: 8px; height: 8px; min-width: 8px; flex-shrink: 0;"></span>
+                        <div class="notification-item p-3 ${bgWrap} ${borderLeft}">
+                            <div class="d-flex w-100">
+                                <div class="me-3 d-flex align-items-center justify-content-center ${typeBadgeClass} bg-opacity-10 rounded-circle ${typeIconColor}" style="width: 42px; height: 42px; flex-shrink: 0;">
+                                    <i class="fa-solid ${iconClass} fs-5"></i>
+                                </div>
+                                <div class="notification-content" style="flex-grow: 1; min-width: 0;">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="badge ${typeBadgeClass} bg-opacity-10 text-dark border ${typeBadgeClass} border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
+                                        ${readStatusHtml}
+                                    </div>
+                                    <h6 class="fw-bold ${textClass} mt-2 mb-1" style="font-size: 0.95rem; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">${title}</h6>
+                                    <p class="${mutedClass} mb-2 small" style="line-height: 1.4;">${message}</p>
+                                    <div class="d-flex align-items-center ${mutedClass}" style="font-size: 0.75rem;">
+                                        <i class="fa-regular fa-clock me-1"></i> ${timeStr}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="content-text small ${isRead ? 'text-muted' : 'text-secondary'} mb-1">${message}</div>
-                        <div class="small text-muted" style="font-size: 0.75rem;"><i class="fa-regular fa-clock me-1"></i> ${timeStr}</div>
                     </li>
                 `;
             });

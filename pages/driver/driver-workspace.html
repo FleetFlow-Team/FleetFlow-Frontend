@@ -14,9 +14,51 @@
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png" />
 
     <link rel="stylesheet" href="../../style/pages/driver.css" />
+    <style>
+        .notification-item {
+            padding: 15px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 15px;
+        }
 
+        .notification-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
 
+        .notification-item.unread {
+            background: #e8f5e9;
+        }
+        .notification-item.unread:hover {
+            background: #c8e6c9;
+        }
 
+        .notification-icon-wrapper {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.2rem;
+        }
+        
+        .notification-content h6 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .notification-content p {
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -494,34 +536,51 @@
                         từ
                         chối nhiều có thể ảnh hưởng đến thuật toán phân bổ chuyến.</p>
 
+                    <style>
+                        .btn-liquid {
+                            border: 1px solid rgba(255, 255, 255, 0.3);
+                            background: rgba(255, 255, 255, 0.05);
+                            color: #fff;
+                            backdrop-filter: blur(4px);
+                            transition: all 0.3s ease;
+                        }
+                        .btn-check:checked + .btn-liquid {
+                            background: rgba(255, 255, 255, 0.2);
+                            border-color: #fff;
+                            color: #fff;
+                            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+                        }
+                        .btn-liquid:hover {
+                            background: rgba(255, 255, 255, 0.1);
+                            color: #fff;
+                        }
+                    </style>
                     <form id="rejectReasonForm">
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason1"
-                                value="Khoảng cách đón khách quá xa" checked>
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason1">Khoảng cách đón khách
-                                quá
-                                xa</label>
+                                value="Khu vực đón khách kẹt xe/ngập nước" checked>
+                            <label class="btn btn-liquid w-100 text-start" for="reason1">Khu vực đón khách kẹt xe/ngập nước</label>
                         </div>
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason2"
                                 value="Xe đang gặp sự cố / Hỏng hóc">
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason2">Xe đang gặp sự cố /
+                            <label class="btn btn-liquid w-100 text-start" for="reason2">Xe đang gặp sự cố /
                                 Hỏng
                                 hóc</label>
                         </div>
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason3"
                                 value="Đang bận việc cá nhân đột xuất">
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason3">Đang bận việc cá nhân
+                            <label class="btn btn-liquid w-100 text-start" for="reason3">Đang bận việc cá nhân
                                 đột
                                 xuất</label>
                         </div>
                         <div class="mb-3">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason4" value="other">
-                            <label class="btn btn-outline-warning w-100 text-start" for="reason4">Lý do khác...</label>
+                            <label class="btn btn-liquid w-100 text-start" for="reason4">Lý do khác...</label>
                         </div>
                         <div class="mb-3" id="otherReasonContainer" style="display: none;">
-                            <input type="text" class="form-control bg-transparent text-white border-warning"
+                            <input type="text" class="form-control bg-transparent text-white border-light"
                                 id="otherReasonInput" placeholder="Nhập lý do cụ thể của bạn...">
                         </div>
                     </form>
