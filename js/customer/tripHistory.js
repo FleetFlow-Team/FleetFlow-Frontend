@@ -76,8 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
             'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId', 'pendingBookingId'
         ];
         keysToRemove.forEach(k => localStorage.removeItem(k));
-        window.history.replaceState({}, document.title, window.location.pathname);
-        Swal.fire({ icon: 'success', title: 'Thành công', text: 'Thanh toán MoMo thành công!' });
+        Swal.fire({ icon: 'success', title: 'Thành công', text: 'Thanh toán thành công!' });
     }
 
     loadTripHistory();
@@ -406,7 +405,7 @@ async function viewInvoiceModal(bookingId) {
                 const finalRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/payments/final`, {
                     method: 'POST',
                     headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ bookingId: bookingId, paymentMethod: 'MOMO' }) // Truyền tạm để tính tiền
+                    body: JSON.stringify({ bookingId: bookingId, paymentMethod: 'CASH' }) // Truyền tạm để tính tiền
                 });
                 const finalData = await finalRes.json();
                 if (finalData.finalAmount !== undefined) {
@@ -432,7 +431,7 @@ async function viewInvoiceModal(bookingId) {
             const status = invResult.status || 'COMPLETED';
             if ((status === 'UNPAID' || status === 'COMPLETED') && finalAmount > 0) {
                 document.getElementById('invoiceModalFooter').innerHTML = `
-                    <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #a50064;" onclick="payFinal(${bookingId}, 'MOMO')">Thanh toán MoMo (Còn lại)</button>
+                    <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #005A9C;" onclick="payFinal(${bookingId}, 'VNPAY')">Thanh toán VNPay (Còn lại)</button>
                     <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #10b981;" onclick="payFinal(${bookingId}, 'CASH')">Thanh toán Tiền mặt</button>
                     <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>
                 `;
@@ -475,7 +474,9 @@ function filterTrips(status, btnElement) {
             } else if (status === 'active') {
                 return ['ACTIVE', 'IN_PROGRESS', 'ONGOING'].includes(rawStatus);
             } else if (status === 'completed') {
-                return ['COMPLETED', 'CANCELLED', 'UNPAID', 'REJECTED'].includes(rawStatus);
+                return ['COMPLETED', 'UNPAID'].includes(rawStatus);
+            } else if (status === 'cancelled') {
+                return ['CANCELLED', 'REJECTED'].includes(rawStatus);
             }
             return rawStatus === status.toUpperCase();
         });
@@ -685,10 +686,10 @@ async function executeSubmitAction(actionType) {
 }
 
 async function payFinal(bookingId, method) {
-    const isMomo = method === 'MOMO';
-    const confirmMsg = isMomo
-        ? "Thanh toán phần còn lại bằng MoMo?"
-        : "Xác nhận bạn đã thanh toán tiền mặt trực tiếp cho Tài xế?";
+    const isVnpay = method === 'VNPAY';
+    const confirmMsg = isVnpay
+        ? "Thanh toán phần còn lại bằng VNPay?"
+        : "Xác nhận thanh toán bằng Tiền mặt?";
 
     const result = await Swal.fire({
         title: 'Xác nhận thanh toán',
@@ -732,34 +733,30 @@ async function payFinal(bookingId, method) {
             return;
         }
 
-        if (isMomo) {
-            // Đề phòng Backend (do dữ liệu test) trả về finalAmount bị null -> Gson bỏ field này đi -> JS undefined
+        if (isVnpay) {
             let finalAmt = finalData.finalAmount;
             if (finalAmt === undefined || finalAmt === null) {
                 let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
                 finalAmt = parseInt(uiAmountStr.replace(/[^\d]/g, ''), 10) || 59000;
             }
 
-            // BƯỚC 2: Nếu là MoMo, dùng finalAmt vừa tính được từ Backend (hoặc fallback) để gọi tạo Link MoMo
-            const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/momo/create', {
+            const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
                 method: 'POST',
                 headers: headers,
                 body: JSON.stringify({
                     bookingId: bookingId,
-                    amount: Math.round(finalAmt).toString()
+                    amount: Math.round(finalAmt)
                 })
             });
             const data = await res.json();
             
             if (res.ok && data.success && data.paymentUrl) {
-                // Lưu ID để phục vụ hủy chuyến nếu thất bại
                 localStorage.setItem('pendingBookingId', bookingId);
                 window.location.href = data.paymentUrl;
             } else {
-                Swal.fire({ icon: 'error', title: 'Lỗi MoMo', text: data.message || 'Không thể tạo link thanh toán MoMo.' });
+                Swal.fire({ icon: 'error', title: 'Lỗi VNPay', text: data.message || 'Không thể tạo link thanh toán VNPay.' });
             }
         } else {
-            // Thanh toán Tiền mặt (CASH) đã được ghi nhận thành công từ API /final
             let finalAmt = finalData.finalAmount;
             if (finalAmt === undefined || finalAmt === null) {
                 let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
@@ -768,13 +765,14 @@ async function payFinal(bookingId, method) {
             Swal.fire({
                 icon: 'success',
                 title: 'Thành công',
-                text: `Thanh toán Tiền mặt thành công (${new Intl.NumberFormat('vi-VN').format(finalAmt)} ₫)`
+                text: 'Thanh toán bằng Tiền mặt hoàn tất. Cảm ơn bạn!',
+                confirmButtonText: 'Đóng'
             }).then(() => {
-                location.reload();
+                const invoiceModal = bootstrap.Modal.getInstance(document.getElementById('invoiceModal'));
+                if (invoiceModal) invoiceModal.hide();
+                loadTripHistory();
             });
-        }
-
-    } catch (error) {
+        }    } catch (error) {
         console.error("Lỗi giao dịch:", error);
         Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
     }

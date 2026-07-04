@@ -909,28 +909,12 @@
                     <h2 class="section-title"><i class="fa-solid fa-wallet text-success"></i> Phương thức thanh toán
                     </h2>
                     <div class="payment-options mt-3">
-                        <label class="payment-card active" onclick="selectPayment(this)" data-method="momo">
-                            <div class="d-flex align-items-center">
-                                <div class="custom-radio"></div>
-                                <span class="fw-bold fs-5 text-dark">Ví điện tử MoMo</span>
-                            </div>
-                            <img src="../../assets/img/MOMO-Logo-App.png" alt="MoMo" class="pay-logo" />
-                        </label>
-
-                        <label class="payment-card" onclick="selectPayment(this)" data-method="vnpay">
+                        <label class="payment-card active" onclick="selectPayment(this)" data-method="vnpay">
                             <div class="d-flex align-items-center">
                                 <div class="custom-radio"></div>
                                 <span class="fw-bold fs-5 text-dark">Thanh toán VNPay</span>
                             </div>
                             <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Icon-VNPAY-QR.png" alt="VNPay" class="pay-logo" />
-                        </label>
-
-                        <label class="payment-card" onclick="selectPayment(this)" data-method="cash">
-                            <div class="d-flex align-items-center">
-                                <div class="custom-radio"></div>
-                                <span class="fw-bold fs-5 text-dark">Tiền mặt (Giao cho tài xế)</span>
-                            </div>
-                            <i class="fa-solid fa-money-bill-wave text-success fs-3"></i>
                         </label>
                     </div>
                 </div>
@@ -1057,7 +1041,7 @@
                         body: JSON.stringify({
                             bookingId: parseInt(pendingBookingId),
                             // customerId: parseInt(customerId || -1),
-                            reason: "Khách hàng từ chối thanh toán MoMo"
+                            reason: "Khách hàng từ chối thanh toán VNPay"
                         })
                     });
                 } catch (e) {
@@ -1706,37 +1690,7 @@
                     const depositStr = localStorage.getItem('currentDepositAmount') || "0";
                     const depositAmount = parseInt(depositStr.replace(/[^\d]/g, ''), 10);
 
-                    if (paymentMethod === 'momo') {
-                        try {
-                            const momoRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/momo/create', {
-                                method: 'POST',
-                                headers: headers,
-                                body: JSON.stringify({
-                                    bookingId: bookingId,
-                                    paymentType: 'DEPOSIT',
-                                    amount: depositAmount.toString()
-                                })
-                            });
-
-                            const momoResult = await momoRes.json();
-                            if (momoRes.ok && momoResult.success && momoResult.paymentUrl) {
-                                // Lưu ID booking để hủy nếu thanh toán thất bại
-                                localStorage.setItem('pendingBookingId', bookingId);
-                                // Redirect sang MoMo (Không xóa localStorage lúc này)
-                                window.location.href = momoResult.paymentUrl;
-                                return;
-                            } else {
-                                showModalAlert("Tạo Booking thành công nhưng lỗi tạo thanh toán MoMo: " + (momoResult.message || "Unknown error"), "Lỗi thanh toán", "warning");
-                                clearCheckoutStorage();
-                                window.location.replace("tripHistory.html");
-                            }
-                        } catch (err) {
-                            console.error("Lỗi MoMo:", err);
-                            showModalAlert("Tạo Booking thành công nhưng mất kết nối cổng thanh toán MoMo.", "Lỗi mạng", "warning");
-                            clearCheckoutStorage();
-                            window.location.replace("tripHistory.html");
-                        }
-                    } else if (paymentMethod === 'vnpay') {
+                    if (paymentMethod === 'vnpay' || paymentMethod === 'cash') { // Fallback if cash was cached
                         try {
                             const vnpayRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
                                 method: 'POST',
@@ -1765,29 +1719,6 @@
                             clearCheckoutStorage();
                             window.location.replace("tripHistory.html");
                         }
-                    } else {
-                        // Gọi API để ghi nhận hóa đơn Cọc Tiền mặt vào Database
-                        const depositStr = localStorage.getItem('currentDepositAmount') || "0";
-                        const depositAmount = parseInt(depositStr.replace(/[^\d]/g, ''), 10);
-                        try {
-                            await fetch('http://localhost:8080/FleetFlow/api/v1/payments/momo/create', {
-                                method: 'POST',
-                                headers: headers,
-                                body: JSON.stringify({
-                                    bookingId: bookingId,
-                                    paymentType: 'DEPOSIT',
-                                    amount: depositAmount.toString(),
-                                    paymentMethod: 'CASH'
-                                })
-                            });
-                        } catch (e) {
-                            console.error("Lỗi lưu cọc tiền mặt:", e);
-                        }
-
-                        // Thanh toán Tiền mặt (Chỉ đặt xe, không cần sinh link)
-                        showModalAlert(`Đặt xe thành công!\nMã chuyến đi của bạn: #${bookingId}`, "Thành công", "success");
-                        clearCheckoutStorage();
-                        window.location.replace("tripHistory.html");
                     }
                 } else {
                     const errorMsg = result.error || result.message || "Tài khoản của bạn tạm thời bị giới hạn quyền đặt xe.";
