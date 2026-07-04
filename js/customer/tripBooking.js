@@ -183,14 +183,29 @@ function initUserLocationDefault() {
         inputPickup.placeholder = "Đang định vị GPS điểm đón...";
 
         navigator.geolocation.getCurrentPosition(
-            (position) => {
+            async (position) => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
 
                 // Lưu tọa độ gốc vào biến toàn cục và đánh dấu cờ GPS
                 currentGpsPickupCoords = { lat: lat, lng: lng };
                 inputPickup.dataset.isGps = "true";
-                inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+                // Gọi API Reverse Geocode để lấy địa chỉ thực tế thay vì tọa độ số thô
+                try {
+                    const res = await fetch(`${MAPS_API_BASE}/reverse-geocode?lat=${lat}&lng=${lng}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        inputPickup.value = (data.display && data.display !== "Không tìm thấy địa chỉ cho tọa độ này")
+                            ? data.display
+                            : `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    } else {
+                        inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                    }
+                } catch (e) {
+                    console.warn("Lỗi gọi API reverse-geocode:", e);
+                    inputPickup.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                }
                 inputPickup.placeholder = "Nhập điểm đón (Khách sạn, sân bay...)";
 
                 // Di chuyển tâm bản đồ về vị trí khách hàng
@@ -221,6 +236,122 @@ function initUserLocationDefault() {
         );
     }
 }
+
+// Helper: Hiển thị Modal Pop-up Glassmorphism thay thế cho alert() thô của JS
+function showGpsGlassModal(title, text, icon = 'warning') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            confirmButtonText: '<i class="fa-solid fa-check me-2"></i>Đã hiểu',
+            buttonsStyling: false,
+            customClass: {
+                popup: 'swal-glass-popup',
+                title: 'swal-glass-title',
+                htmlContainer: 'swal-glass-text',
+                confirmButton: 'btn-glass-confirm'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown animate__faster'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp animate__faster'
+            }
+        });
+    } else {
+        alert(`${title}\n\n${text}`);
+    }
+}
+
+// Hàm chủ động lấy vị trí GPS hiện tại và gọi Reverse Geocode cho nút trên giao diện
+window.fetchCurrentLocationAndReverseGeocode = function (targetInputId = 'inputPickup') {
+    const inputEl = document.getElementById(targetInputId);
+    const gpsIcon = document.getElementById('gpsIcon');
+    if (!inputEl) return;
+
+    if (!navigator.geolocation) {
+        showGpsGlassModal(
+            'Không hỗ trợ GPS',
+            'Trình duyệt hoặc thiết bị của bạn hiện không hỗ trợ chức năng định vị vị trí!',
+            'error'
+        );
+        return;
+    }
+
+    if (gpsIcon) {
+        gpsIcon.className = "fa-solid fa-spinner fa-spin fs-5 text-info";
+    }
+    const oldPlaceholder = inputEl.placeholder;
+    inputEl.placeholder = "Đang lấy tọa độ GPS và địa chỉ...";
+
+    navigator.geolocation.getCurrentPosition(
+        async (position) => {
+            const lat = position.coords.latitude;
+            const lng = position.coords.longitude;
+
+            if (targetInputId === 'inputPickup') {
+                currentGpsPickupCoords = { lat: lat, lng: lng };
+                inputEl.dataset.isGps = "true";
+
+                // Di chuyển tâm bản đồ và cắm marker điểm đón
+                map.flyTo({
+                    center: [lng, lat],
+                    zoom: 16,
+                    speed: 1.2
+                });
+                if (currentPickupMarker) currentPickupMarker.remove();
+                const elPickup = document.createElement('div');
+                elPickup.className = 'map-marker-pickup';
+                currentPickupMarker = new vietmapgl.Marker({ element: elPickup })
+                    .setLngLat([lng, lat])
+                    .addTo(map);
+            } else {
+                inputEl.dataset.isGps = "true";
+            }
+
+            try {
+                const res = await fetch(`${MAPS_API_BASE}/reverse-geocode?lat=${lat}&lng=${lng}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    inputEl.value = (data.display && data.display !== "Không tìm thấy địa chỉ cho tọa độ này")
+                        ? data.display
+                        : `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                } else {
+                    inputEl.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+                }
+            } catch (e) {
+                console.warn("Lỗi gọi API reverse-geocode:", e);
+                inputEl.value = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            }
+
+            inputEl.placeholder = oldPlaceholder || "Nhập điểm đón (Khách sạn, sân bay...)";
+            if (gpsIcon) {
+                gpsIcon.className = "fa-solid fa-location-crosshairs fs-5 live-pulse";
+            }
+
+            // Kích hoạt tính toán lại lộ trình và giá cước
+            if (typeof window.triggerMapCalculation === 'function') {
+                window.triggerMapCalculation();
+            }
+        },
+        (error) => {
+            console.warn("Khách hàng từ chối quyền GPS hoặc lỗi định vị:", error.message);
+
+            showGpsGlassModal(
+                'Yêu cầu quyền truy cập GPS',
+                'Không thể định vị vị trí hiện tại của bạn. Vui lòng kiểm tra và cho phép quyền truy cập vị trí (Location) trên trình duyệt hoặc cài đặt thiết bị!',
+                'warning'
+            );
+
+            inputEl.placeholder = oldPlaceholder || "Nhập điểm đón (Khách sạn, sân bay...)";
+            if (gpsIcon) {
+                gpsIcon.className = "fa-solid fa-location-crosshairs fs-5 live-pulse";
+            }
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+};
 
 // ==========================================
 // 2. HÀM HỖ TRỢ (UTILITIES)
