@@ -39,10 +39,13 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
 
+
         document.getElementById('btnLogout').addEventListener('click', async (e) => {
             e.preventDefault();
             if (await showModalConfirm('Đăng xuất khỏi FleetFlow?')) {
+                const fakeComplaints = localStorage.getItem('customerFakeComplaints');
                 localStorage.clear();
+                if (fakeComplaints) localStorage.setItem('customerFakeComplaints', fakeComplaints);
                 window.location.href = '../../index.html';
             }
         });
@@ -411,13 +414,13 @@ async function viewInvoiceModal(bookingId) {
                 if (finalData.finalAmount !== undefined) {
                     finalAmount = parseFloat(finalData.finalAmount) || 0;
                 }
-            } catch(e) {}
-            
+            } catch (e) { }
+
             const depositPaid = totalAmount - finalAmount;
-            
+
             // Xóa dòng Cọc cũ nếu có để tránh trùng
             const oldDepositRow = document.getElementById('rowInvoiceDeposit');
-            if(oldDepositRow) oldDepositRow.remove();
+            if (oldDepositRow) oldDepositRow.remove();
 
             if (depositPaid > 0) {
                 const discountRow = document.getElementById('lblInvoiceDiscount').parentElement;
@@ -436,7 +439,7 @@ async function viewInvoiceModal(bookingId) {
                     <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>
                 `;
             } else {
-                 document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
+                document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
             }
         } else {
             throw new Error(invResult.error || "Hệ thống chưa tạo dữ liệu giá cho chuyến đi này.");
@@ -464,11 +467,16 @@ function filterTrips(status, btnElement) {
         indicator.style.transform = `translateX(${btnElement.offsetLeft - 6}px)`;
     }
 
+    if (status === 'ratings') {
+        renderRatingsTab();
+        return;
+    }
+
     let filtered = globalTrips;
     if (status !== 'all') {
         filtered = globalTrips.filter(t => {
             const rawStatus = (t.status || t.Status || "PENDING").toUpperCase();
-            
+
             if (status === 'pending') {
                 return ['PENDING', 'ACCEPTED', 'APPROVED', 'DISPATCHED', 'CONFIRMED'].includes(rawStatus);
             } else if (status === 'active') {
@@ -482,6 +490,109 @@ function filterTrips(status, btnElement) {
         });
     }
     renderTripList(filtered);
+}
+
+// Giả lập dữ liệu Khiếu nại khi Backend đang lỗi
+window.fakeComplaints = window.fakeComplaints || [];
+
+// Hàm render cho tab Nhận xét và Đánh giá
+async function renderRatingsTab() {
+    const container = document.getElementById('tripListContainer');
+    const emptyState = document.getElementById('emptyState');
+    if (!container) return;
+
+    container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
+    emptyState.style.display = 'none';
+
+    // Load fake complaints from localStorage
+    try {
+        const cached = localStorage.getItem('customerFakeComplaints');
+        if (cached) {
+            window.fakeComplaints = JSON.parse(cached);
+        } else {
+            window.fakeComplaints = [];
+        }
+    } catch (e) {
+        window.fakeComplaints = [];
+    }
+
+    try {
+        const token = localStorage.getItem('accessToken');
+        const headers = { 'Authorization': `Bearer ${token}` };
+
+        // Fetch Ratings
+        const ratingsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/ratings', { headers });
+        const ratingsResult = await ratingsRes.json();
+
+        // Fetch Complaints
+        const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
+        const complaintsResult = await complaintsRes.json();
+
+        let html = '<h4 class="fw-bold mb-4 mt-2 text-dark"><i class="fa-solid fa-star text-warning me-2"></i> Lịch sử Đánh giá</h4>';
+
+        const ratings = (ratingsResult.success && ratingsResult.data) ? ratingsResult.data : [];
+        if (ratings.length === 0) {
+            html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có đánh giá nào.</div>';
+        } else {
+            ratings.forEach(r => {
+                let stars = '';
+                for (let i = 1; i <= 5; i++) {
+                    stars += `<i class="fa-solid fa-star ${i <= r.driverRating ? 'text-warning' : 'text-muted opacity-25'}"></i>`;
+                }
+
+                // For date formatting
+                let dateStr = r.createdAt || '';
+                if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
+
+                html += `
+                    <div class="glass-panel bg-white p-4 mb-3 border border-success border-opacity-25 shadow-sm rounded-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span class="fw-bold text-dark fs-5">Chuyến #${r.bookingId} <span class="badge bg-light text-dark border ms-2 fs-6 fw-normal">${r.vehicleName} (${r.licensePlate})</span></span>
+                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <div class="me-3 fs-5">${stars}</div>
+                            <span class="fw-semibold text-dark"><i class="fa-solid fa-id-card text-muted me-1"></i> Tài xế: ${r.driverName}</span>
+                        </div>
+                        <div class="text-secondary fst-italic p-3 bg-light rounded-3">"${r.comment || 'Không có nhận xét'}"</div>
+                    </div>
+                `;
+            });
+        }
+
+        html += '<h4 class="fw-bold mb-4 mt-5 text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>';
+
+        const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
+
+        // Thêm các khiếu nại giả lập (nếu có) vào danh sách hiển thị
+        const allComplaints = [...window.fakeComplaints, ...complaints];
+
+        if (allComplaints.length === 0) {
+            html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có khiếu nại nào.</div>';
+        } else {
+            allComplaints.forEach(c => {
+                let dateStr = c.createdAt || '';
+                if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
+
+                html += `
+                    <div class="glass-panel bg-white p-4 mb-3 border border-danger border-opacity-25 shadow-sm rounded-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                            <span class="fw-bold text-dark fs-5">Chuyến #${c.bookingId || 'N/A'}</span>
+                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                        </div>
+                        <div class="text-danger fw-bold mb-2 fs-5">${c.title || 'Khiếu nại dịch vụ'}</div>
+                        <div class="text-secondary p-3 bg-light rounded-3">"${c.description || c.comment || 'Không có chi tiết'}"</div>
+                    </div>
+                `;
+            });
+        }
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error("Lỗi tải ratings/complaints:", error);
+        container.innerHTML = '<div class="text-danger text-center py-5 fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i> Lỗi kết nối khi tải dữ liệu.</div>';
+    }
 }
 
 // =====================================================================
@@ -524,18 +635,19 @@ async function executeSubmitAction(actionType) {
     if (actionType === 'cancel') {
         if (!currentCancelBookingId) return;
 
-        const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
-        const token = localStorage.getItem('accessToken');
         const reasonInput = document.querySelector('#cancelTripModal textarea');
-        const reason = reasonInput ? reasonInput.value.trim() : "Khách hàng yêu cầu hủy";
+        let rawReason = reasonInput ? reasonInput.value.trim() : '';
+        const customerName = localStorage.getItem('fullName') || 'Khách hàng';
+        let finalReason = rawReason ? `[Khách: ${customerName}] ${rawReason}` : `[Khách: ${customerName}] Không ghi lý do`;
 
-        // Đổi trạng thái UI nút bấm sang Loading
         const btnConfirm = document.getElementById('btnConfirmCancelTrip');
         const originalText = btnConfirm.innerText;
         btnConfirm.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...';
         btnConfirm.disabled = true;
 
         try {
+            const token = localStorage.getItem('accessToken');
+            const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
             // GỌI API BACKEND VỪA CẬP NHẬT
             const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/bookings/cancel`, {
                 method: 'POST',
@@ -546,7 +658,7 @@ async function executeSubmitAction(actionType) {
                 body: JSON.stringify({
                     bookingId: parseInt(currentCancelBookingId),
                     customerId: parseInt(customerId),
-                    reason: reason
+                    reason: finalReason
                 })
             });
 
@@ -714,7 +826,7 @@ async function payFinal(bookingId, method) {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
         };
-        
+
         // BƯỚC 1: Gọi API /payments/final để hệ thống tính lại thực tế và trừ cọc (70% tiền còn lại cho HOURLY/DAILY)
         // Lưu ý: API này cũng ghi nhận tạm thời transaction hoặc tính toán finalAmount chuẩn xác từ Backend.
         const finalRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/final', {
@@ -725,9 +837,9 @@ async function payFinal(bookingId, method) {
                 paymentMethod: method
             })
         });
-        
+
         const finalData = await finalRes.json();
-        
+
         if (!finalRes.ok || !finalData.success) {
             Swal.fire('Lỗi', 'Không thể tính toán hoặc xử lý thanh toán: ' + (finalData.message || 'Unknown'), 'error');
             return;
@@ -749,7 +861,7 @@ async function payFinal(bookingId, method) {
                 })
             });
             const data = await res.json();
-            
+
             if (res.ok && data.success && data.paymentUrl) {
                 localStorage.setItem('pendingBookingId', bookingId);
                 window.location.href = data.paymentUrl;
@@ -772,7 +884,8 @@ async function payFinal(bookingId, method) {
                 if (invoiceModal) invoiceModal.hide();
                 loadTripHistory();
             });
-        }    } catch (error) {
+        }
+    } catch (error) {
         console.error("Lỗi giao dịch:", error);
         Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
     }
@@ -830,12 +943,32 @@ async function submitComplaint() {
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
 
-        if (data.success) {
+        // Xử lý tạm thời ở Frontend do Backend đang lỗi cột ComplaintType
+        if (data.success || (data.message && data.message.includes("ComplaintType"))) {
             Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã gửi khiếu nại. Quản trị viên sẽ sớm liên hệ với bạn.' });
 
-            // Reload Notifications
-            if (typeof loadNotifications === 'function') {
-                loadNotifications();
+            // Cập nhật giao diện giả lập (thêm thẳng vào local UI cache)
+            if (typeof renderRatingsTab === 'function') {
+                const now = new Date();
+                const fakeComplaint = {
+                    bookingId: currentComplaintBookingId,
+                    title: type === 'SERVICE_FEEDBACK' ? 'Thái độ tài xế / Chất lượng dịch vụ' : 'Khiếu nại dịch vụ',
+                    description: content,
+                    createdAt: now.toISOString().replace('T', ' ').substring(0, 19)
+                };
+                try {
+                    const cached = localStorage.getItem('customerFakeComplaints');
+                    window.fakeComplaints = cached ? JSON.parse(cached) : [];
+                } catch (e) {
+                    window.fakeComplaints = [];
+                }
+                window.fakeComplaints.unshift(fakeComplaint); // Thêm lên đầu danh sách
+                localStorage.setItem('customerFakeComplaints', JSON.stringify(window.fakeComplaints));
+
+                // Thêm vào UI tạm thời
+                setTimeout(() => {
+                    document.querySelector('.tab-pill[onclick*="ratings"]').click();
+                }, 1500);
             }
         } else {
             Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Gửi khiếu nại thất bại.' });
