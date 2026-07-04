@@ -531,13 +531,13 @@ async function fetchPendingJobs() {
 /**
  * Xử lý sự kiện bấm nút Tải lại đơn mới tại tab Nhận chuyến
  */
-window.triggerRefreshJobs = async function(btnElement) {
+window.triggerRefreshJobs = async function (btnElement) {
     if (btnElement) {
         btnElement.disabled = true;
         const icon = btnElement.querySelector('.icon-refresh');
         if (icon) icon.classList.add('fa-spin');
     }
-    
+
     await fetchPendingJobs();
 
     if (btnElement) {
@@ -1071,11 +1071,12 @@ window.completeTrip = async function (btnElement, bookingId) {
 
 // 13. LOAD THÔNG BÁO TÀI XẾ
 // ============================================================================
+window.driverNotificationCache = window.driverNotificationCache || [];
+window.driverUnreadCount = window.driverUnreadCount || 0;
+
 async function loadDriverNotifications() {
     const listEl = document.getElementById("notificationList");
     if (!listEl) return;
-
-    listEl.innerHTML = '<li class="text-center py-3"><i class="fa-solid fa-spinner fa-spin text-white"></i></li>';
 
     const token = localStorage.getItem("accessToken");
     if (!token) return;
@@ -1090,101 +1091,124 @@ async function loadDriverNotifications() {
 
         const result = await response.json();
         if (response.ok && result.success) {
-            const notis = result.notifications || [];
-
-            // Tính số lượng thông báo chưa đọc
-            const unreadCount = notis.filter(n => n.isRead === false).length;
-            const badge = document.getElementById("notiCount");
-            if (badge) {
-                if (unreadCount > 0) {
-                    badge.innerText = unreadCount;
-                    badge.classList.remove('d-none');
-                } else {
-                    badge.classList.add('d-none');
-                }
-            }
+            const newNotis = result.notifications || [];
 
             let hasNewNotification = false;
-            notis.forEach(n => {
-                if (!n.isRead && !lastNotifiedIds.has(n.notificationId)) {
-                    hasNewNotification = true;
-                    lastNotifiedIds.add(n.notificationId);
+            let shouldRefreshTrips = false;
 
-                    // Hiện Toast thông báo mới
-                    const errorSpan = document.querySelector("#systemErrorToast .toast-body span");
-                    const errorIcon = document.querySelector("#systemErrorToast .toast-body i");
-                    if (errorSpan && errorIcon) {
-                        errorSpan.innerText = n.title;
-                        errorIcon.className = "fa-solid fa-bell fs-3 text-info"; // Đổi icon thành cái chuông
+            if (newNotis.length > 0) {
+                window.driverNotificationCache = [...newNotis, ...window.driverNotificationCache];
+                window.driverUnreadCount += newNotis.length;
+                hasNewNotification = true;
+
+                newNotis.forEach(n => {
+                    if (!lastNotifiedIds.has(n.notificationId)) {
+                        lastNotifiedIds.add(n.notificationId);
+
+                        const toastEl = document.getElementById("systemErrorToast");
+                        if (toastEl) {
+                            const errorSpan = toastEl.querySelector(".toast-body span");
+                            const errorIcon = toastEl.querySelector(".toast-body i");
+
+                            if (errorSpan && errorIcon) {
+                                errorSpan.innerText = n.title;
+
+                                toastEl.classList.remove('bg-danger', 'bg-info', 'bg-dark');
+                                if (n.type === 'BOOKING_CANCELLED') {
+                                    errorIcon.className = "fa-solid fa-circle-xmark fs-3 text-white";
+                                    toastEl.classList.add('bg-danger', 'text-white');
+                                    shouldRefreshTrips = true;
+                                } else {
+                                    errorIcon.className = "fa-solid fa-bell fs-3 text-white";
+                                    toastEl.classList.add('bg-info', 'text-white');
+                                    shouldRefreshTrips = true;
+                                }
+
+                                if (typeof window.toastError !== 'undefined' && window.toastError) {
+                                    window.toastError.show();
+                                } else {
+                                    const t = new bootstrap.Toast(toastEl, { delay: 5000 });
+                                    t.show();
+                                }
+                            }
+                        }
                     }
-                    if (window.toastError) window.toastError.show();
-                }
-            });
-
-            // Nếu có thông báo mới (ví dụ khách hủy chuyến, hoặc có chuyến mới được auto-dispatch)
-            // Lập tức refresh lại trang nhận chuyến để chuyến đó biến mất (nếu bị hủy) hoặc hiện ra (nếu mới gán)
-            if (hasNewNotification) {
-                if (typeof fetchPendingJobs === "function") {
-                    fetchPendingJobs();
-                }
+                });
             }
 
-            if (notis.length === 0) {
-                listEl.innerHTML = `
-                    <li>
-                        <div class="dropdown-item-custom text-center text-white-50 py-4">
-                            Không có thông báo nào.
-                        </div>
-                    </li>
-                `;
-                return;
+            if (shouldRefreshTrips) {
+                if (typeof fetchPendingJobs === "function") fetchPendingJobs();
             }
 
-            listEl.innerHTML = '';
-            notis.forEach(n => {
-                const li = document.createElement("li");
+            renderDriverNotifications();
 
-                // Định dạng thời gian
-                let timeStr = n.createdAt;
-                try {
-                    const d = new Date(n.createdAt);
-                    timeStr = isNaN(d) ? n.createdAt : d.toLocaleString('vi-VN');
-                } catch (e) { }
-
-                // Hiệu ứng chưa đọc
-                const bgClass = n.isRead ? '' : 'bg-success bg-opacity-25';
-
-                li.innerHTML = `
-                    <div class="dropdown-item-custom border-bottom border-secondary p-3 ${bgClass}">
-                        <div class="d-flex justify-content-between align-items-start mb-1">
-                            <strong class="text-white">${n.title || 'Thông báo'}</strong>
-                            <small class="text-info" style="font-size: 0.75rem">${timeStr}</small>
-                        </div>
-                        <div class="text-white-50 small" style="white-space: normal;">
-                            ${n.message || ''}
-                        </div>
-                    </div>
-                `;
-                listEl.appendChild(li);
-            });
         } else {
-            listEl.innerHTML = `
-                <li>
-                    <div class="dropdown-item-custom text-center text-danger py-4">
-                        Lỗi tải thông báo: ${result.error || 'Unknown Error'}
-                    </div>
-                </li>
-            `;
+            console.error("Lỗi lấy thông báo:", result);
         }
     } catch (error) {
+        console.error("Mất kết nối server khi load thông báo", error);
+    }
+}
+
+function renderDriverNotifications() {
+    const listEl = document.getElementById("notificationList");
+    if (!listEl) return;
+
+    const badge = document.getElementById("notiCount");
+    if (badge) {
+        if (window.driverUnreadCount > 0) {
+            badge.innerText = window.driverUnreadCount > 99 ? '99+' : window.driverUnreadCount;
+            badge.classList.remove('d-none');
+        } else {
+            badge.classList.add('d-none');
+        }
+    }
+
+    if (window.driverNotificationCache.length === 0) {
         listEl.innerHTML = `
             <li>
-                <div class="dropdown-item-custom text-center text-danger py-4">
-                    Mất kết nối server
+                <div class="dropdown-item-custom text-center text-white-50 py-4">
+                    Không có thông báo nào.
                 </div>
             </li>
         `;
+        return;
     }
+
+    listEl.innerHTML = '';
+    window.driverNotificationCache.forEach((n, index) => {
+        const li = document.createElement("li");
+
+        let timeStr = n.createdAt;
+        try {
+            const d = new Date(n.createdAt);
+            timeStr = isNaN(d) ? n.createdAt : d.toLocaleString('vi-VN');
+        } catch (e) { }
+
+        const bgClass = index < window.driverUnreadCount ? 'bg-success bg-opacity-25' : '';
+        const iconHtml = n.type === 'BOOKING_CANCELLED' ? '<i class="fa-solid fa-circle-xmark text-danger"></i>' : '<i class="fa-solid fa-bell text-info"></i>';
+
+        li.innerHTML = `
+            <div class="dropdown-item-custom border-bottom border-secondary p-3 ${bgClass}" style="cursor:pointer;">
+                <div class="d-flex justify-content-between align-items-start mb-1">
+                    <strong class="text-white d-flex align-items-center gap-2">${iconHtml} ${n.title || 'Thông báo'}</strong>
+                    <small class="text-info" style="font-size: 0.75rem">${timeStr}</small>
+                </div>
+                <div class="text-white-50 small" style="white-space: normal;">
+                    ${n.message || ''}
+                </div>
+            </div>
+        `;
+
+        li.addEventListener('click', () => {
+            if (window.driverUnreadCount > 0) {
+                window.driverUnreadCount = 0;
+                renderDriverNotifications();
+            }
+        });
+
+        listEl.appendChild(li);
+    });
 }
 // ============================================================================
 // 14. LỊCH SỬ CHUYẾN ĐI VÀ ĐÁNH GIÁ KHÁCH HÀNG

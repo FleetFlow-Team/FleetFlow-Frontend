@@ -389,7 +389,7 @@ async function loadNotifications() {
                 htmlContent += `
                     <li class="p-3 border-bottom ${bgClass} notification-item" 
                         style="cursor: pointer; transition: background 0.2s;" 
-                        onclick="markAsRead('${notifId}', this, ${isRead})">
+                        onclick="markAsRead('${notifId}', '${n.BookingID || ''}', this, ${isRead})">
                         
                         <div class="d-flex justify-content-between align-items-start mb-1">
                             <span class="title-text ${textClass}" style="font-size: 0.95rem;">${title}</span>
@@ -416,11 +416,31 @@ async function loadNotifications() {
 }
 
 // 2. API 5: GỌI API ĐÁNH DẤU ĐÃ ĐỌC (OPTIMISTIC UI - Đổi UI trước, gọi Server sau)
-async function markAsRead(notifId, element, isAlreadyRead) {
-    // Nếu đã đọc rồi -> Bỏ qua không tốn công gọi API nữa
-    if (isAlreadyRead) return;
-
+async function markAsRead(notifId, bookingId, element, isAlreadyRead) {
     const token = localStorage.getItem("accessToken");
+
+    // Hàm tiện ích xác định đường dẫn đúng tới tripHistory.html
+    const getTripHistoryUrl = (bId) => {
+        let path = window.location.pathname;
+        let url = 'tripHistory.html';
+        if (path.includes('/pages/customer/')) {
+            url = 'tripHistory.html';
+        } else if (path.includes('/pages/')) {
+            url = 'customer/tripHistory.html';
+        } else {
+            url = 'pages/customer/tripHistory.html';
+        }
+        return url + '?bookingId=' + bId;
+    };
+
+    // Nếu ĐÃ ĐỌC RỒI, chỉ việc chuyển trang (nếu có bookingId)
+    if (isAlreadyRead) {
+        if (bookingId && bookingId !== 'null') {
+            window.location.href = getTripHistoryUrl(bookingId);
+        }
+        return;
+    }
+
     if (!token) return;
 
     // ----------------------------------------------------
@@ -446,7 +466,7 @@ async function markAsRead(notifId, element, isAlreadyRead) {
     if (dotEl) dotEl.classList.add('d-none');
 
     // Khóa sự kiện onclick để lần sau nhấn vào không gọi API nữa
-    element.setAttribute("onclick", `markAsRead('${notifId}', this, true)`);
+    element.setAttribute("onclick", `markAsRead('${notifId}', '${bookingId}', this, true)`);
 
     // Giảm số lượng chuông báo trên Navbar ngoài cùng đi 1
     decreaseUnreadBadge();
@@ -459,7 +479,11 @@ async function markAsRead(notifId, element, isAlreadyRead) {
             method: "POST",
             headers: { "Authorization": `Bearer ${token}` }
         });
-        // Không cần care kết quả trả về, vì UI đã lo xong rồi!
+
+        // Sau khi báo đã đọc thành công, điều hướng nếu có bookingId
+        if (bookingId && bookingId !== 'null') {
+            window.location.href = getTripHistoryUrl(bookingId);
+        }
     } catch (error) {
         console.error("Lỗi đồng bộ trạng thái đọc lên Server:", error);
     }
