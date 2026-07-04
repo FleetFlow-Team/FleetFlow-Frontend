@@ -667,6 +667,7 @@ window.showModalConfirm = function (message, title = 'Xác nhận', type = 'warn
             }
         });
 
+
         newBtnCancel.addEventListener('click', () => {
             if (!isResolved) {
                 isResolved = true;

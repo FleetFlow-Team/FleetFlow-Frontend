@@ -1185,30 +1185,30 @@ function renderDriverNotifications() {
         } catch (e) { }
 
         const isUnread = index < window.driverUnreadCount;
-        
+
         // Define colors based on type
         let typeBadgeClass = 'bg-success';
         let typeText = 'Thông báo';
         let typeIconColor = 'text-success';
         let iconClass = 'fa-check';
-        
+
         if (n.type === 'BOOKING_CANCELLED') {
             typeBadgeClass = 'bg-danger';
             typeText = 'Khách Hủy';
             typeIconColor = 'text-danger';
             iconClass = 'fa-xmark';
-            
+
             // Xử lý lại giao diện chuỗi thông báo từ Backend 
             // Vd backend: "Khách hàng đã hủy booking #81. Lý do: [Khách: Huy Nguyễn] đặt nhầm ngày."
             let msg = n.message || '';
             let bIdMatch = msg.match(/booking #(\d+)/i);
             let bId = bIdMatch ? bIdMatch[1] : '';
-            
+
             let reason = '';
             let cName = 'Khách hàng';
-            
+
             if (msg.includes('Lý do:')) {
-                let rPart = msg.split('Lý do:')[1].trim(); 
+                let rPart = msg.split('Lý do:')[1].trim();
                 let cMatch = rPart.match(/\[Khách: (.*?)\]/);
                 if (cMatch) {
                     cName = cMatch[1];
@@ -1219,12 +1219,12 @@ function renderDriverNotifications() {
                     if (reason.endsWith('.')) reason = reason.slice(0, -1);
                 }
             }
-            
+
             if (bId) {
                 n.title = 'Khách Hủy Chuyến!';
                 n.message = `Khách: ${cName} | Chuyến: #${bId}` + (reason ? ` | Lý do hủy: ${reason}` : '');
             }
-            
+
         } else if (n.type === 'NEW_BOOKING') {
             typeBadgeClass = 'bg-info';
             typeText = 'Chuyến Mới';
@@ -1237,10 +1237,10 @@ function renderDriverNotifications() {
             iconClass = 'fa-check';
         }
 
-        const readStatusHtml = isUnread 
+        const readStatusHtml = isUnread
             ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
             : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
-            
+
         // Use text-dark if unread (light background), else text-white if read (dark background)
         const textClass = isUnread ? 'text-dark' : 'text-white';
         const mutedClass = isUnread ? 'text-muted' : 'text-white-50';
@@ -1263,6 +1263,7 @@ function renderDriverNotifications() {
                 </div>
             </div>
         `;
+
 
         li.addEventListener('click', () => {
             if (window.driverUnreadCount > 0) {
@@ -1303,7 +1304,7 @@ async function fetchDriverHistory(statusFilter = '') {
             trips.forEach(trip => {
                 const badge = trip.bookingStatus === 'COMPLETED' ? '<span class="badge bg-success">Hoàn thành</span>' : '<span class="badge bg-danger">Đã hủy</span>';
                 const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
-                
+
                 let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
                 let directionText = '';
                 if (trip.bookingType === 'DISTANCE') {

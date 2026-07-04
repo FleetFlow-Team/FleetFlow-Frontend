@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         `;
 
+
         document.getElementById('btnLogout').addEventListener('click', async (e) => {
             e.preventDefault();
             if (await showModalConfirm('Đăng xuất khỏi FleetFlow?')) {
@@ -413,13 +414,13 @@ async function viewInvoiceModal(bookingId) {
                 if (finalData.finalAmount !== undefined) {
                     finalAmount = parseFloat(finalData.finalAmount) || 0;
                 }
-            } catch(e) {}
-            
+            } catch (e) { }
+
             const depositPaid = totalAmount - finalAmount;
-            
+
             // Xóa dòng Cọc cũ nếu có để tránh trùng
             const oldDepositRow = document.getElementById('rowInvoiceDeposit');
-            if(oldDepositRow) oldDepositRow.remove();
+            if (oldDepositRow) oldDepositRow.remove();
 
             if (depositPaid > 0) {
                 const discountRow = document.getElementById('lblInvoiceDiscount').parentElement;
@@ -438,7 +439,7 @@ async function viewInvoiceModal(bookingId) {
                     <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>
                 `;
             } else {
-                 document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
+                document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
             }
         } else {
             throw new Error(invResult.error || "Hệ thống chưa tạo dữ liệu giá cho chuyến đi này.");
@@ -475,7 +476,7 @@ function filterTrips(status, btnElement) {
     if (status !== 'all') {
         filtered = globalTrips.filter(t => {
             const rawStatus = (t.status || t.Status || "PENDING").toUpperCase();
-            
+
             if (status === 'pending') {
                 return ['PENDING', 'ACCEPTED', 'APPROVED', 'DISPATCHED', 'CONFIRMED'].includes(rawStatus);
             } else if (status === 'active') {
@@ -499,7 +500,7 @@ async function renderRatingsTab() {
     const container = document.getElementById('tripListContainer');
     const emptyState = document.getElementById('emptyState');
     if (!container) return;
-    
+
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
     emptyState.style.display = 'none';
 
@@ -522,27 +523,27 @@ async function renderRatingsTab() {
         // Fetch Ratings
         const ratingsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/ratings', { headers });
         const ratingsResult = await ratingsRes.json();
-        
+
         // Fetch Complaints
         const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
         const complaintsResult = await complaintsRes.json();
-        
+
         let html = '<h4 class="fw-bold mb-4 mt-2 text-dark"><i class="fa-solid fa-star text-warning me-2"></i> Lịch sử Đánh giá</h4>';
-        
+
         const ratings = (ratingsResult.success && ratingsResult.data) ? ratingsResult.data : [];
         if (ratings.length === 0) {
             html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có đánh giá nào.</div>';
         } else {
             ratings.forEach(r => {
                 let stars = '';
-                for(let i = 1; i <= 5; i++) {
+                for (let i = 1; i <= 5; i++) {
                     stars += `<i class="fa-solid fa-star ${i <= r.driverRating ? 'text-warning' : 'text-muted opacity-25'}"></i>`;
                 }
-                
+
                 // For date formatting
                 let dateStr = r.createdAt || '';
                 if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
-                
+
                 html += `
                     <div class="glass-panel bg-white p-4 mb-3 border border-success border-opacity-25 shadow-sm rounded-4">
                         <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
@@ -558,11 +559,11 @@ async function renderRatingsTab() {
                 `;
             });
         }
-        
+
         html += '<h4 class="fw-bold mb-4 mt-5 text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>';
-        
+
         const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
-        
+
         // Thêm các khiếu nại giả lập (nếu có) vào danh sách hiển thị
         const allComplaints = [...window.fakeComplaints, ...complaints];
 
@@ -572,7 +573,7 @@ async function renderRatingsTab() {
             allComplaints.forEach(c => {
                 let dateStr = c.createdAt || '';
                 if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
-                
+
                 html += `
                     <div class="glass-panel bg-white p-4 mb-3 border border-danger border-opacity-25 shadow-sm rounded-4">
                         <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
@@ -585,9 +586,9 @@ async function renderRatingsTab() {
                 `;
             });
         }
-        
+
         container.innerHTML = html;
-        
+
     } catch (error) {
         console.error("Lỗi tải ratings/complaints:", error);
         container.innerHTML = '<div class="text-danger text-center py-5 fw-bold"><i class="fa-solid fa-circle-exclamation me-2"></i> Lỗi kết nối khi tải dữ liệu.</div>';
@@ -825,7 +826,7 @@ async function payFinal(bookingId, method) {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"
         };
-        
+
         // BƯỚC 1: Gọi API /payments/final để hệ thống tính lại thực tế và trừ cọc (70% tiền còn lại cho HOURLY/DAILY)
         // Lưu ý: API này cũng ghi nhận tạm thời transaction hoặc tính toán finalAmount chuẩn xác từ Backend.
         const finalRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/final', {
@@ -836,9 +837,9 @@ async function payFinal(bookingId, method) {
                 paymentMethod: method
             })
         });
-        
+
         const finalData = await finalRes.json();
-        
+
         if (!finalRes.ok || !finalData.success) {
             Swal.fire('Lỗi', 'Không thể tính toán hoặc xử lý thanh toán: ' + (finalData.message || 'Unknown'), 'error');
             return;
@@ -860,7 +861,7 @@ async function payFinal(bookingId, method) {
                 })
             });
             const data = await res.json();
-            
+
             if (res.ok && data.success && data.paymentUrl) {
                 localStorage.setItem('pendingBookingId', bookingId);
                 window.location.href = data.paymentUrl;
@@ -883,7 +884,8 @@ async function payFinal(bookingId, method) {
                 if (invoiceModal) invoiceModal.hide();
                 loadTripHistory();
             });
-        }    } catch (error) {
+        }
+    } catch (error) {
         console.error("Lỗi giao dịch:", error);
         Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
     }
@@ -944,7 +946,7 @@ async function submitComplaint() {
         // Xử lý tạm thời ở Frontend do Backend đang lỗi cột ComplaintType
         if (data.success || (data.message && data.message.includes("ComplaintType"))) {
             Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã gửi khiếu nại. Quản trị viên sẽ sớm liên hệ với bạn.' });
-            
+
             // Cập nhật giao diện giả lập (thêm thẳng vào local UI cache)
             if (typeof renderRatingsTab === 'function') {
                 const now = new Date();
@@ -957,7 +959,7 @@ async function submitComplaint() {
                 try {
                     const cached = localStorage.getItem('customerFakeComplaints');
                     window.fakeComplaints = cached ? JSON.parse(cached) : [];
-                } catch(e) {
+                } catch (e) {
                     window.fakeComplaints = [];
                 }
                 window.fakeComplaints.unshift(fakeComplaint); // Thêm lên đầu danh sách

@@ -38,6 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             `;
 
+
             // Kích hoạt sự kiện Đăng xuất
             document.getElementById('btnLogout').addEventListener('click', async function (e) {
                 e.preventDefault();

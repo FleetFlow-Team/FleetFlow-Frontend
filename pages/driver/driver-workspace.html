@@ -32,9 +32,11 @@
         .notification-item.unread {
             background: #e8f5e9;
         }
+
         .notification-item.unread:hover {
             background: #c8e6c9;
         }
+
 
         .notification-icon-wrapper {
             width: 45px;
@@ -48,7 +50,7 @@
             flex-shrink: 0;
             font-size: 1.2rem;
         }
-        
+
         .notification-content h6 {
             font-size: 0.95rem;
             margin-bottom: 4px;
@@ -97,18 +99,18 @@
                 </div>
 
                 <div class="d-flex align-items-center gap-4 ms-auto">
-                    
+
 
                     <!-- Notifications Dropdown -->
                     <div class="dropdown me-3" id="notificationDropdownContainer">
-                        <div class="notification-glass position-relative" title="Thông báo" 
-                             data-bs-toggle="dropdown" aria-expanded="false" 
-                             onclick="loadDriverNotifications()" style="cursor: pointer;">
+                        <div class="notification-glass position-relative" title="Thông báo" data-bs-toggle="dropdown"
+                            aria-expanded="false" onclick="loadDriverNotifications()" style="cursor: pointer;">
                             <i class="fa-regular fa-bell text-white fs-5"></i>
                             <span class="notification-badge d-none" id="notiCount">0</span>
                         </div>
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg border border-secondary mt-2 p-0"
-                            style="width: 350px; max-height: 400px; overflow-y: auto; background-color: #1a1c1a;" id="notificationList">
+                            style="width: 350px; max-height: 400px; overflow-y: auto; background-color: #1a1c1a;"
+                            id="notificationList">
                         </ul>
                     </div>
 
@@ -184,8 +186,9 @@
                         <div class="d-flex justify-content-between align-items-center mb-4">
                             <h4 class="fw-bold m-0 text-white"><i
                                     class="fa-solid fa-satellite-dish text-info me-2"></i>Trạm phát sóng đơn hàng</h4>
-                            <button type="button" class="btn btn-glass-refresh d-flex align-items-center gap-2 px-3 py-2" 
-                                    onclick="triggerRefreshJobs(this)" title="Đồng bộ đơn mới từ trạm điều phối">
+                            <button type="button"
+                                class="btn btn-glass-refresh d-flex align-items-center gap-2 px-3 py-2"
+                                onclick="triggerRefreshJobs(this)" title="Đồng bộ đơn mới từ trạm điều phối">
                                 <i class="fa-solid fa-rotate-right icon-refresh"></i>
                                 <span class="fw-bold small">Tải lại</span>
                             </button>
@@ -544,12 +547,14 @@
                             backdrop-filter: blur(4px);
                             transition: all 0.3s ease;
                         }
-                        .btn-check:checked + .btn-liquid {
+
+                        .btn-check:checked+.btn-liquid {
                             background: rgba(255, 255, 255, 0.2);
                             border-color: #fff;
                             color: #fff;
                             box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
                         }
+
                         .btn-liquid:hover {
                             background: rgba(255, 255, 255, 0.1);
                             color: #fff;
@@ -559,7 +564,8 @@
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason1"
                                 value="Khu vực đón khách kẹt xe/ngập nước" checked>
-                            <label class="btn btn-liquid w-100 text-start" for="reason1">Khu vực đón khách kẹt xe/ngập nước</label>
+                            <label class="btn btn-liquid w-100 text-start" for="reason1">Khu vực đón khách kẹt xe/ngập
+                                nước</label>
                         </div>
                         <div class="mb-2">
                             <input type="radio" class="btn-check" name="rejectReason" id="reason2"
@@ -621,22 +627,33 @@
         <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
             <div class="modal-content glass-modal-content border-0">
                 <div class="modal-body text-center p-5">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 border border-warning border-opacity-50 mb-4" style="width: 84px; height: 84px; box-shadow: 0 0 30px rgba(251, 191, 36, 0.25);">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10 border border-warning border-opacity-50 mb-4"
+                        style="width: 84px; height: 84px; box-shadow: 0 0 30px rgba(251, 191, 36, 0.25);">
                         <i class="fa-solid fa-gem text-warning fs-1"></i>
                     </div>
                     <h4 class="fw-bold text-white mb-2 fs-3">Đánh giá Khách hàng</h4>
-                    <p class="text-white-50 mb-4 fw-medium" style="font-size: 0.95rem;">Trải nghiệm của bạn về vị khách trong chuyến đi vừa rồi như thế nào?</p>
-                    <div class="star-rating-engine mb-4 d-flex justify-content-center" style="flex-direction: row-reverse;">
-                        <input type="radio" id="dcr5" name="driverRateStars" value="5" /><label for="dcr5" class="rating-star" title="Tuyệt vời"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="dcr4" name="driverRateStars" value="4" /><label for="dcr4" class="rating-star" title="Rất tốt"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="dcr3" name="driverRateStars" value="3" /><label for="dcr3" class="rating-star" title="Bình thường"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="dcr2" name="driverRateStars" value="2" /><label for="dcr2" class="rating-star" title="Không hài lòng"><i class="fa-solid fa-star"></i></label>
-                        <input type="radio" id="dcr1" name="driverRateStars" value="1" /><label for="dcr1" class="rating-star" title="Tệ"><i class="fa-solid fa-star"></i></label>
+                    <p class="text-white-50 mb-4 fw-medium" style="font-size: 0.95rem;">Trải nghiệm của bạn về vị khách
+                        trong chuyến đi vừa rồi như thế nào?</p>
+                    <div class="star-rating-engine mb-4 d-flex justify-content-center"
+                        style="flex-direction: row-reverse;">
+                        <input type="radio" id="dcr5" name="driverRateStars" value="5" /><label for="dcr5"
+                            class="rating-star" title="Tuyệt vời"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="dcr4" name="driverRateStars" value="4" /><label for="dcr4"
+                            class="rating-star" title="Rất tốt"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="dcr3" name="driverRateStars" value="3" /><label for="dcr3"
+                            class="rating-star" title="Bình thường"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="dcr2" name="driverRateStars" value="2" /><label for="dcr2"
+                            class="rating-star" title="Không hài lòng"><i class="fa-solid fa-star"></i></label>
+                        <input type="radio" id="dcr1" name="driverRateStars" value="1" /><label for="dcr1"
+                            class="rating-star" title="Tệ"><i class="fa-solid fa-star"></i></label>
                     </div>
-                    <textarea id="driverRatingComment" class="form-control driver-rating-textarea mb-4" rows="3" placeholder="Chia sẻ nhận xét của bạn (ví dụ: Khách đúng giờ, lịch sự...)..."></textarea>
+                    <textarea id="driverRatingComment" class="form-control driver-rating-textarea mb-4" rows="3"
+                        placeholder="Chia sẻ nhận xét của bạn (ví dụ: Khách đúng giờ, lịch sự...)..."></textarea>
                     <div class="d-flex gap-3">
-                        <button type="button" class="btn btn-glass-modal btn-glass-cancel w-50 py-3" onclick="skipDriverRating()">Bỏ qua</button>
-                        <button type="button" class="btn btn-glass-modal btn-glass-submit w-50 py-3" id="btnSubmitDriverRating" onclick="submitDriverRating()">Gửi đánh giá</button>
+                        <button type="button" class="btn btn-glass-modal btn-glass-cancel w-50 py-3"
+                            onclick="skipDriverRating()">Bỏ qua</button>
+                        <button type="button" class="btn btn-glass-modal btn-glass-submit w-50 py-3"
+                            id="btnSubmitDriverRating" onclick="submitDriverRating()">Gửi đánh giá</button>
                     </div>
                 </div>
             </div>
