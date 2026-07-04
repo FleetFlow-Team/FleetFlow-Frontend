@@ -42,7 +42,9 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('btnLogout').addEventListener('click', async (e) => {
             e.preventDefault();
             if (await showModalConfirm('Đăng xuất khỏi FleetFlow?')) {
+                const fakeComplaints = localStorage.getItem('customerFakeComplaints');
                 localStorage.clear();
+                if (fakeComplaints) localStorage.setItem('customerFakeComplaints', fakeComplaints);
                 window.location.href = '../../index.html';
             }
         });

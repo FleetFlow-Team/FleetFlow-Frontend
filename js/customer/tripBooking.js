@@ -42,7 +42,9 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById('btnLogout').addEventListener('click', async function (e) {
                 e.preventDefault();
                 if (await showModalConfirm('Bạn có chắc chắn muốn đăng xuất khỏi FleetFlow?')) {
+                    const fakeComplaints = localStorage.getItem('customerFakeComplaints');
                     localStorage.clear(); // Xóa token
+                    if (fakeComplaints) localStorage.setItem('customerFakeComplaints', fakeComplaints);
                     window.location.reload(); // Tải lại trang (sẽ tự quay về trạng thái chưa đăng nhập)
                 }
             });

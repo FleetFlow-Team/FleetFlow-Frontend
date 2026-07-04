@@ -219,7 +219,9 @@ function initUserProfile() {
                 logoutBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    const fakeComplaints = localStorage.getItem('customerFakeComplaints');
                     localStorage.clear();
+                    if (fakeComplaints) localStorage.setItem('customerFakeComplaints', fakeComplaints);
                     window.location.href = indexUrl;
                 });
             }
@@ -300,7 +302,9 @@ async function handleLogin(event) {
                 case 'DISPATCHER': window.location.href = '../pages/dispatcher/dispatcher-workspace.html'; break;
                 default:
                     alert('Lỗi: Vai trò của bạn không hợp lệ hoặc chưa được phân quyền trong hệ thống.');
+                    const fakeComplaints = localStorage.getItem('customerFakeComplaints');
                     localStorage.clear();
+                    if (fakeComplaints) localStorage.setItem('customerFakeComplaints', fakeComplaints);
                     break;
             }
         } else {
