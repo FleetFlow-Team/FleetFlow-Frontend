@@ -393,26 +393,33 @@ async function loadNotifications() {
                 let iconClass = 'fa-bell';
 
                 const titleLower = title.toLowerCase();
-                if (titleLower.includes('hủy') || titleLower.includes('từ chối')) {
+                const notifType = n.Type || n.type || '';
+                
+                if (titleLower.includes('hủy') || titleLower.includes('từ chối') || notifType === 'BOOKING_CANCELLED') {
                     typeBadgeClass = 'bg-danger';
                     typeText = 'Đã Hủy';
                     typeIconColor = 'text-danger';
                     iconClass = 'fa-xmark-circle';
-                } else if (titleLower.includes('hoàn thành')) {
+                } else if (titleLower.includes('hoàn thành') || notifType === 'BOOKING_COMPLETED') {
                     typeBadgeClass = 'bg-success';
                     typeText = 'Hoàn Thành';
                     typeIconColor = 'text-success';
                     iconClass = 'fa-check-circle';
-                } else if (titleLower.includes('tìm thấy') || titleLower.includes('đã nhận')) {
+                } else if (titleLower.includes('tìm thấy') || titleLower.includes('đã nhận') || titleLower.includes('tìm được') || notifType === 'BOOKING_DRIVER_ASSIGNED') {
                     typeBadgeClass = 'bg-success';
                     typeText = 'Có Tài Xế';
                     typeIconColor = 'text-warning';
                     iconClass = 'fa-car';
-                } else if (titleLower.includes('duyệt')) {
+                } else if (titleLower.includes('duyệt') || notifType === 'BOOKING_APPROVED') {
                     typeBadgeClass = 'bg-primary';
                     typeText = 'Đã Duyệt';
                     typeIconColor = 'text-primary';
                     iconClass = 'fa-clipboard-check';
+                } else if (notifType === 'BOOKING_UNASSIGNED' || titleLower.includes('đang tìm')) {
+                    typeBadgeClass = 'bg-warning';
+                    typeText = 'Đang Tìm';
+                    typeIconColor = 'text-warning';
+                    iconClass = 'fa-magnifying-glass';
                 }
 
                 const textClass = isUnread ? 'text-dark' : 'text-secondary';
