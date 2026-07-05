@@ -1251,8 +1251,8 @@ function renderDriverNotifications() {
             : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
 
         // Use text-dark if unread (light background), else text-white if read (dark background)
-        const textClass = isUnread ? 'text-dark' : 'text-white';
-        const mutedClass = isUnread ? 'text-muted' : 'text-white-50';
+        const textClass = 'text-white';
+        const mutedClass = 'text-white-50';
 
         li.innerHTML = `
             <div class="notification-item ${isUnread ? 'unread' : ''}">
@@ -1261,7 +1261,7 @@ function renderDriverNotifications() {
                 </div>
                 <div class="notification-content" style="flex-grow: 1;">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="badge ${typeBadgeClass} bg-opacity-25 ${isUnread ? 'text-dark' : 'text-white'} border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
+                        <span class="badge ${typeBadgeClass} bg-opacity-25 ${isUnread ? 'text-white' : 'text-white'} border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
                         ${readStatusHtml}
                     </div>
                     <h6 class="fw-bold ${textClass} mt-2 mb-1">${n.title || 'Thông báo'}</h6>

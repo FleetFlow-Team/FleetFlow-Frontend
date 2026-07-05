@@ -1176,12 +1176,12 @@ function renderNotifications(notifications) {
                 </div>
                 <div class="notification-content" style="flex-grow: 1;">
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="badge ${typeBadgeClass} bg-opacity-25 text-dark border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
+                        <span class="badge ${typeBadgeClass} bg-opacity-25 text-white border border-opacity-25 rounded-pill px-2 py-1" style="font-size: 0.65rem; font-weight: 600;">${typeText}</span>
                         ${readStatusHtml}
                     </div>
-                    <h6 class="fw-bold text-dark mt-2 mb-1" style="font-size: 0.95rem;">${noti.Title}</h6>
-                    <p class="text-muted mb-2" style="font-size: 0.85rem; line-height: 1.4;">${noti.Message}</p>
-                    <div class="d-flex align-items-center text-muted" style="font-size: 0.75rem;">
+                    <h6 class="fw-bold text-white mt-2 mb-1" style="font-size: 0.95rem;">${noti.Title}</h6>
+                    <p class="text-white-50 mb-2" style="font-size: 0.85rem; line-height: 1.4;">${noti.Message}</p>
+                    <div class="d-flex align-items-center text-white-50" style="font-size: 0.75rem;">
                         <i class="fa-regular fa-clock me-1"></i> ${formattedTime}
                     </div>
                 </div>
