@@ -677,21 +677,15 @@
                             </div>
                             <div class="filter-section mb-4">
                                 <h6 class="filter-title text-uppercase fw-bold mb-3 text-secondary">Số chỗ ngồi</h6>
-                                <label class="liquid-checkbox-wrapper">
-                                    <input type="checkbox" class="filter-seat" value="4" checked />
-                                    <span class="checkmark"></span>
-                                    <span class="label-text">4-5 chỗ (Sedan/Hatchback)</span>
-                                </label>
-                                <label class="liquid-checkbox-wrapper">
-                                    <input type="checkbox" class="filter-seat" value="7" checked />
-                                    <span class="checkmark"></span>
-                                    <span class="label-text">7 chỗ (SUV/MPV)</span>
-                                </label>
-                                <label class="liquid-checkbox-wrapper">
-                                    <input type="checkbox" class="filter-seat" value="16" />
-                                    <span class="checkmark"></span>
-                                    <span class="label-text">16 chỗ (Xe du lịch)</span>
-                                </label>
+                                <select id="filterSeat" class="form-select glass-select">
+                                    <option value="ALL" selected>Tất cả số chỗ</option>
+                                    <option value="4">4-5 chỗ (Sedan/Hatchback)</option>
+                                    <option value="7">7-8 chỗ (SUV/MPV)</option>
+                                    <option value="9">9 chỗ (Limousine)</option>
+                                    <option value="16">16 chỗ (Minivan du lịch)</option>
+                                    <option value="29">29 chỗ (Xe khách cỡ trung)</option>
+                                    <option value="45">45 chỗ (Xe khách cỡ lớn)</option>
+                                </select>
                             </div>
 
                             <div class="filter-section mb-4">

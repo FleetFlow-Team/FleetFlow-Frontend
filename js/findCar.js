@@ -191,9 +191,9 @@ function initVehicleFeature() {
     // Tải danh sách xe ban đầu
     fetchVehicles();
 
-    // 1. Lắng nghe sự kiện thay đổi checkbox số chỗ ngồi
-    const seatCheckboxes = document.querySelectorAll('.filter-seat');
-    seatCheckboxes.forEach(cb => cb.addEventListener('change', applyFiltersAndSort));
+    // 1. Lắng nghe sự kiện thay đổi select số chỗ ngồi
+    const seatSelect = document.getElementById('filterSeat');
+    if (seatSelect) seatSelect.addEventListener('change', applyFiltersAndSort);
 
     // 2. Lắng nghe sự kiện thay đổi hãng xe
     const brandSelect = document.getElementById('filterBrand');
@@ -294,8 +294,9 @@ async function fetchVehicles() {
  * Áp dụng tất cả các bộ lọc hiện tại và sort dữ liệu
  */
 window.applyFiltersAndSort = function () {
-    // 1. Lấy trạng thái của các check-box số chỗ ngồi
-    const checkedSeats = Array.from(document.querySelectorAll('.filter-seat:checked')).map(el => parseInt(el.value));
+    // 1. Lấy trạng thái của select số chỗ ngồi
+    const filterSeat = document.getElementById('filterSeat');
+    const seatVal = filterSeat ? filterSeat.value : 'ALL';
 
     // 2. Lấy hãng xe được chọn
     const filterBrand = document.getElementById('filterBrand');
@@ -315,15 +316,14 @@ window.applyFiltersAndSort = function () {
     // Tiến hành lọc mảng gốc
     filteredVehicles = globalVehicles.filter(v => {
         // A. Lọc theo số chỗ ngồi
-        if (checkedSeats.length > 0) {
-            let seatMatch = false;
-            if (checkedSeats.includes(4) && v.seatCount <= 5) seatMatch = true;
-            if (checkedSeats.includes(7) && v.seatCount >= 6 && v.seatCount <= 8) seatMatch = true;
-            if (checkedSeats.includes(16) && v.seatCount >= 9) seatMatch = true;
-            if (!seatMatch) return false;
-        } else {
-            // Không chọn checkbox nào trong nhóm chỗ ngồi -> không hiển thị xe nào
-            return false;
+        if (seatVal !== 'ALL') {
+            const val = parseInt(seatVal);
+            if (val === 4 && v.seatCount > 5) return false;
+            if (val === 7 && (v.seatCount < 6 || v.seatCount > 8)) return false;
+            if (val === 9 && v.seatCount !== 9) return false;
+            if (val === 16 && (v.seatCount < 10 || v.seatCount > 16)) return false;
+            if (val === 29 && (v.seatCount < 17 || v.seatCount > 29)) return false;
+            if (val === 45 && v.seatCount < 30) return false;
         }
 
         // B. Lọc theo hãng xe
@@ -398,15 +398,9 @@ window.applyFiltersAndSort = function () {
  * Đưa các bộ lọc về mặc định ban đầu
  */
 function resetAllFilters() {
-    // Số chỗ ngồi mặc định: 4, 7 chỗ được check, 16 chỗ uncheck
-    const seatCheckboxes = document.querySelectorAll('.filter-seat');
-    seatCheckboxes.forEach(cb => {
-        if (cb.value === '4' || cb.value === '7') {
-            cb.checked = true;
-        } else {
-            cb.checked = false;
-        }
-    });
+    // Số chỗ ngồi mặc định: Tất cả
+    const seatSelect = document.getElementById('filterSeat');
+    if (seatSelect) seatSelect.value = 'ALL';
 
     // Hãng xe mặc định
     const brandSelect = document.getElementById('filterBrand');

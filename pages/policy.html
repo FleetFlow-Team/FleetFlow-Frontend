@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="vi">
 
 <head>
@@ -567,6 +567,48 @@
             style="width: 45px; height: 45px; padding: 0; border-radius: 50%;">
             <i class="fa-regular fa-user-circle fs-4" style="margin: 0;"></i>
           </button>
+
+          <!-- Dropdown User -->
+          <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
+            <div class="dropdown me-3" id="notificationDropdownContainer">
+              <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown"
+                aria-expanded="false" style="cursor: pointer;" onclick="loadNotifications()">
+                <i class="fa-regular fa-bell fs-5"></i>
+                <span id="unreadBadge"
+                  class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
+                  data-count="0"></span>
+              </div>
+              <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0"
+                style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList">
+                <li class="text-center p-4 text-muted"><i
+                    class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo
+                  nào</li>
+              </ul>
+            </div>
+
+            <div class="user-profile-btn position-relative dropdown" style="cursor: pointer;">
+              <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
+                  <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);"
+                    id="navDesktopName"></span>
+                  <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;"
+                    id="navDesktopRole">Customer</span>
+                </div>
+                <img id="navDesktopAvatar" src=""
+                  style="width: 34px; height: 34px; border-radius: 50%;">
+              </div>
+              <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
+                <a href="customer/customer-profile.html" class="dropdown-item-custom"><i
+                    class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
+                    class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
+                <hr style="margin: 5px 0; opacity: 0.1;">
+                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"
+                  onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                  Đăng xuất</a>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -975,6 +1017,20 @@
         if (document.getElementById('navDesktopName')) document.getElementById('navDesktopName').innerText = fullName;
         if (document.getElementById('navDesktopRole')) document.getElementById('navDesktopRole').innerText = userRole;
 
+        // Ẩn Nút Login
+        const loginBtns = document.querySelectorAll('#btnLogin, #btnLoginMobile');
+        loginBtns.forEach(btn => {
+          btn.classList.add('d-none');
+          btn.classList.remove('d-lg-flex', 'd-flex');
+        });
+
+        // Hiển thị User Dropdown
+        const userDropdown = document.getElementById('userProfileDropdown');
+        if (userDropdown) {
+          userDropdown.classList.remove('d-none');
+          userDropdown.classList.add('d-flex');
+        }
+
         // 2. Cập nhật Navbar Mobile (Đã sửa lại đúng ID navMobileAvatar)
         if (document.getElementById('navMobileAvatar')) document.getElementById('navMobileAvatar').src = avatarUrl;
 
@@ -1090,7 +1146,15 @@
       }
     }
 
-
+    function handleLogout(e) {
+      e.preventDefault();
+      localStorage.removeItem('fullName');
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('accountId');
+      localStorage.removeItem('token');
+      localStorage.removeItem('accessToken');
+      window.location.href = '../index.html';
+    }
   </script>
 
 
