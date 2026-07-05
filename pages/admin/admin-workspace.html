@@ -13,6 +13,89 @@
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="../../style/pages/admin.css" />
+    <style>
+        /* --- NOTIFICATION DROPDOWN STYLES (CLEAN DARK MODE) --- */
+        .notification-dropdown-custom {
+            width: 380px !important;
+            border-radius: 12px !important;
+            padding: 0 !important;
+            background: #181a1b !important;
+            border: 1px solid #2d3235 !important;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6) !important;
+            z-index: 1050 !important;
+            overflow: hidden;
+        }
+
+        .notification-list {
+            max-height: 380px;
+            overflow-y: auto;
+        }
+
+        .notification-list::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .notification-list::-webkit-scrollbar-thumb {
+            background: #3a3f44;
+            border-radius: 10px;
+        }
+
+        .notification-item {
+            padding: 14px 18px;
+            border-bottom: 1px solid #24282b;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            background: #181a1b;
+        }
+
+        .notification-item:hover {
+            background: #222628;
+        }
+
+        .notification-item.unread {
+            background: #1c2521;
+            border-left: 3px solid #00B14F;
+        }
+
+        .notification-item.unread:hover {
+            background: #23302a;
+        }
+
+        .notification-icon-wrapper {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #24282b;
+            border: 1px solid #33383c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+
+        .notification-content h6 {
+            font-size: 0.9rem !important;
+            font-weight: 600 !important;
+            margin-bottom: 4px;
+            color: #ffffff !important;
+        }
+
+        .notification-content p {
+            font-size: 0.8rem !important;
+            margin-bottom: 4px;
+            color: #d1d5db !important;
+            line-height: 1.4;
+        }
+
+        .notification-time {
+            font-size: 0.72rem !important;
+            color: #9ca3af !important;
+        }
+    </style>
 
 
 </head>
@@ -50,9 +133,22 @@
 
                 <div class="d-flex align-items-center gap-4 ms-auto">
 
-                    <div class="notification-glass position-relative" title="Thông báo">
-                        <i class="fa-regular fa-bell text-white fs-5"></i>
-                        <span class="notification-badge" id="notiCount">3</span>
+                    <div class="dropdown me-3">
+                        <div class="notification-glass position-relative" title="Thông báo" data-bs-toggle="dropdown"
+                            aria-expanded="false" style="cursor: pointer;">
+                            <i class="fa-regular fa-bell text-white fs-5"></i>
+                            <span class="notification-badge" id="notiCount">3</span>
+                        </div>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg notification-dropdown-custom">
+                            <div class="p-3 border-bottom d-flex justify-content-between align-items-center"
+                                style="background: #202325; border-color: #2d3235 !important;">
+                                <h6 class="m-0 fw-bold text-white"><i
+                                        class="fa-solid fa-bell text-warning me-2"></i>Thông báo quản trị</h6>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <div class="text-center p-4 text-muted">Không có thông báo mới</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="user-profile-dropdown">
