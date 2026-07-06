@@ -292,26 +292,31 @@ async function processRejectBooking() {
 }
 
 // ==========================================
-// 13. TẢI DANH SÁCH ĐƠN ĐẶT XE (TÍCH HỢP API GET)
+// 13. TẢI DANH SÁCH ĐƠN ĐẶT XE (TÍCH HỢP API GET & SILENT POLLING)
 // ==========================================
+let currentActiveTabStatus = 'PENDING';
+let lastRenderedBookingsJson = '';
 
 // Hàm gọi API lấy dữ liệu
-async function loadBookings(status, tbodyId) {
+async function loadBookings(status, tbodyId, silent = false) {
+    currentActiveTabStatus = status;
     const tbody = document.getElementById(tbodyId);
     if (!tbody) return;
 
-    // Tự động cập nhật class active cho các tab button
-    document.querySelectorAll('.btn-glass-tab').forEach(btn => {
-        const onclickAttr = btn.getAttribute('onclick') || '';
-        if (onclickAttr.includes(`'${status}'`)) {
-            btn.classList.add('active');
-        } else {
-            btn.classList.remove('active');
-        }
-    });
+    // Tự động cập nhật class active cho các tab button (Chỉ làm khi không phải tải ngầm)
+    if (!silent) {
+        document.querySelectorAll('.btn-glass-tab').forEach(btn => {
+            const onclickAttr = btn.getAttribute('onclick') || '';
+            if (onclickAttr.includes(`'${status}'`)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
 
-    // Hiển thị trạng thái đang tải
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin fs-4 text-secondary"></i><p class="mt-2 text-muted fw-medium">Đang tải dữ liệu hệ thống...</p></td></tr>';
+        // Hiển thị trạng thái đang tải (Chỉ làm khi không phải tải ngầm)
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa-solid fa-circle-notch fa-spin fs-4 text-secondary"></i><p class="mt-2 text-muted fw-medium">Đang tải dữ liệu hệ thống...</p></td></tr>';
+    }
 
     try {
         let url = `${DISPATCHER_API_BASE}/dispatcher/bookings`;
@@ -330,17 +335,29 @@ async function loadBookings(status, tbodyId) {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            renderBookingTable(result.data, tbody, status);
+            // Nếu tải ngầm (silent = true), chỉ kiểm tra vẽ lại bảng khi người dùng vẫn đang mở đúng tab đó
+            if (!silent || currentActiveTabStatus === status) {
+                const currentDataJson = JSON.stringify(result.data || []);
+                // Tối ưu: Nếu không silent (bấm tab thủ công) HƯỢC dữ liệu thực sự có thay đổi mới vẽ lại bảng
+                if (!silent || currentDataJson !== lastRenderedBookingsJson) {
+                    lastRenderedBookingsJson = currentDataJson;
+                    renderBookingTable(result.data, tbody, status);
+                }
+            }
 
-            // Tự động cập nhật con số thống kê trên thẻ Tab (Nếu bạn có làm ID đếm số)
+            // Tự động cập nhật con số thống kê trên thẻ Tab (Nếu có ID đếm số)
             const countBadge = document.getElementById(`count-${status.toLowerCase()}`);
             if (countBadge) countBadge.innerText = result.count;
         } else {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Lỗi: ${result.error || 'Không thể tải dữ liệu'}</td></tr>`;
+            if (!silent) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center text-danger py-3">Lỗi: ${result.error || 'Không thể tải dữ liệu'}</td></tr>`;
+            }
         }
     } catch (error) {
         console.error("Lỗi:", error);
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Mất kết nối đến máy chủ Backend!</td></tr>';
+        if (!silent) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Mất kết nối đến máy chủ Backend!</td></tr>';
+        }
     }
 }
 
@@ -402,9 +419,12 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
 
             // Thay thế class cũ bằng btn-glass-dispatch
             actionButtons = `
-                <button class="btn-glass-action btn-glass-dispatch fw-bold w-100" 
+                <button class="btn-glass-action btn-glass-dispatch fw-bold w-100 mb-2" 
                         onclick="openDispatchModal(${b.bookingId}, ${safeVehicleId})">
                     <i class="fa-solid fa-user-plus me-1"></i> Phân tài thủ công
+                </button>
+                <button class="btn-glass-action btn-glass-reject fw-bold w-100" onclick="rejectBooking(${b.bookingId}, this)">
+                    <i class="fa-solid fa-xmark me-1"></i> Từ chối
                 </button>
             `;
         } else if (b.status === 'REJECTED') {
@@ -440,9 +460,19 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
     });
 }
 
-// 5. TỰ ĐỘNG TẢI DỮ LIỆU KHI VỪA MỞ TRANG (Mặc định tải PENDING)
+// 5. TỰ ĐỘNG TẢI DỮ LIỆU KHI VỪA MỞ TRANG & SILENT BACKGROUND POLLING
 document.addEventListener("DOMContentLoaded", () => {
-    loadBookings('PENDING', 'tbody-main');
+    // Tải dữ liệu lần đầu (hiển thị loading bình thường)
+    loadBookings('PENDING', 'tbody-main', false);
+
+    // Vòng lặp tối ưu mỗi 2 giây (Silent Polling - Tải ngầm âm thầm)
+    setInterval(() => {
+        // Kiểm tra: Chỉ tự động làm mới ngầm khi Dispatcher đang đứng ở tab PENDING và không mở Modal nào
+        const isAnyModalOpen = document.querySelector('.modal.show');
+        if (currentActiveTabStatus === 'PENDING' && !isAnyModalOpen) {
+            loadBookings('PENDING', 'tbody-main', true); // silent = true -> Không bị nháy màn hình!
+        }
+    }, 2000);
 });
 
 // ==========================================
