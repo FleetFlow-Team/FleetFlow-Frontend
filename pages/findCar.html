@@ -553,13 +553,13 @@
                     <a href="support.html" class="nav-link-center-1">Trợ giúp</a>
                 </div>
 
-                <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
+                <button class="navbar-toggler mobile-menu-btn d-none border-0" type="button" id="mobileToggleBtn">
                     <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
                 </button>
 
                 <!-- Menu Desktop: Guest (Mặc định) -->
-                <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
-                    <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
+                <div class="desktop-menu d-flex align-items-center gap-3">
+                    <div id="guestDesktopMenu" class="d-none d-lg-flex align-items-center gap-4">
                         <a href="support.html" class="nav-link-center-2">Trung tâm hỗ trợ</a>
                         <a href="policy.html" class="nav-link-center-2">Về chính sách</a>
                     </div>
@@ -573,7 +573,8 @@
                     <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
                         <div class="dropdown me-3" id="notificationDropdownContainer">
                             <div id="notificationBtn" class="notification-btn position-relative"
-                                data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;" onclick="loadNotifications()">
+                                data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;"
+                                onclick="loadNotifications()">
                                 <i class="fa-regular fa-bell fs-5"></i>
                                 <span id="unreadBadge"
                                     class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
@@ -613,7 +614,7 @@
                 </div>
             </div>
 
-            <div class="mobile-glass-dropdown" id="mobileDropdown">
+            <div class="mobile-glass-dropdown d-none" id="mobileDropdown">
                 <div class="dropdown-inner-content d-flex flex-column gap-3">
                     <!-- Mobile: Guest -->
                     <div id="guestMobileMenu" class="d-flex flex-column gap-3">
@@ -645,6 +646,29 @@
             </div>
         </nav>
     </header>
+
+    <!-- =========================================================
+         LIQUID GLASS NAVBAR BOTTOM DOCK (MOBILE / TABLET ONLY)
+         ========================================================= -->
+    <nav class="liquid-nav-dock d-none" id="mobileLiquidNav">
+        <div class="indicator" id="indicatorMobile"></div>
+
+        <div class="nav-item" data-index="0" data-href="../index.html" title="Trang chủ">
+            <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="nav-item active" data-index="1" data-href="findCar.html" title="Đặt xe">
+            <i class="fa-solid fa-car"></i>
+        </div>
+        <div class="nav-item" data-index="2" data-href="customer/tripHistory.html" title="Chuyến đi">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="nav-item" data-index="3" data-href="policy.html" title="Chính sách">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="nav-item" data-index="4" data-href="support.html" title="Trợ giúp">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+    </nav>
 
     <main class="py-5 bg-light-main" style="margin-top: 40px;">
         <svg style="width: 0; height: 0; position: absolute;" aria-hidden="true" focusable="false">
@@ -1345,11 +1369,34 @@
                 if (nameSpan) nameSpan.innerText = fullName;
                 if (roleSpan) roleSpan.innerText = userRole;
 
-                // Chuyển đổi Navbar Menu
+                // Chuyển đổi Navbar Menu cho Desktop & Mobile
                 const guestDesktopMenu = document.getElementById('guestDesktopMenu');
                 const customerDesktopMenu = document.getElementById('customerDesktopMenu');
-                if (guestDesktopMenu) { guestDesktopMenu.classList.remove('d-flex'); guestDesktopMenu.classList.add('d-none'); }
-                if (customerDesktopMenu) { customerDesktopMenu.classList.remove('d-none'); customerDesktopMenu.classList.add('d-none', 'd-lg-flex'); } // Fix cho responsive lg
+                const mobileLiquidNav = document.getElementById('mobileLiquidNav');
+
+                // 🚀 SỬA LỖI: Xóa hẳn d-lg-flex và ép ẩn tuyệt đối menu của Guest (Trung tâm hỗ trợ, Về chính sách)
+                if (guestDesktopMenu) {
+                    guestDesktopMenu.classList.remove('d-flex', 'd-lg-flex');
+                    guestDesktopMenu.classList.add('d-none');
+                    guestDesktopMenu.style.setProperty('display', 'none', 'important');
+                }
+
+                // 🚀 SỬA LOGIC: Chỉ hiển thị menu chuyển trang khi là Customer (Khách hàng)
+                const isCustomer = userRole.toUpperCase() === 'KHÁCH HÀNG' ||
+                    userRole.toUpperCase() === 'CUSTOMER' ||
+                    (!userRole.toUpperCase().includes('DRIVER') &&
+                        !userRole.toUpperCase().includes('TÀI XẾ') &&
+                        !userRole.toUpperCase().includes('ADMIN') &&
+                        !userRole.toUpperCase().includes('DISPATCHER'));
+
+                if (isCustomer) {
+                    if (customerDesktopMenu) {
+                        customerDesktopMenu.classList.add('d-none', 'd-lg-flex');
+                    }
+                    if (mobileLiquidNav) {
+                        mobileLiquidNav.classList.remove('d-none');
+                    }
+                }
 
                 const guestMobileMenu = document.getElementById('guestMobileMenu');
                 const customerMobileMenu = document.getElementById('customerMobileMenu');
@@ -1372,6 +1419,11 @@
                     userDropdown.classList.remove('d-none');
                     userDropdown.classList.add('d-flex');
                 }
+            }
+
+            // Khởi tạo Liquid Glass Bottom Dock cho Mobile/Tablet
+            if (typeof initLiquidNavbar === 'function') {
+                initLiquidNavbar('mobileLiquidNav');
             }
         });
 

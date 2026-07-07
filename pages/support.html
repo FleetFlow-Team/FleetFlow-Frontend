@@ -435,33 +435,30 @@
 <body>
 
     <header>
-        <nav class="navbar custom-navbar sticky-top" id="mainNavbar">
-            <div class="container-base position-relative h-100 d-flex align-items-center justify-content-between">
-
+        <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+            <div class="container-base position-relative h-100">
                 <a class="navbar-brand brand-overflow" href="../index.html">
                     <img src="../assets/img/FleetFlow_-_Logo-removebg-preview.png" alt="FleetFlow Logo"
                         class="logo-img" />
                 </a>
 
-                <!-- Menu Desktop: Khách hàng (Ẩn mặc định) -->
-                <div id="customerDesktopMenu" class="navbar-center-links d-none"
-                    style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); gap: 1rem;">
-                    <a href="../index.html" class="nav-link-center-1">Trang chủ</a>
-                    <a href="findCar.html" class="nav-link-center-1">Đặt xe</a>
-                    <a href="customer/tripHistory.html" class="nav-link-center-1">Chuyến đi</a>
-                    <a href="policy.html" class="nav-link-center-1">Chính sách</a>
-                    <a href="support.html" class="nav-link-center-1 active">Trợ giúp</a>
-                </div>
-
-                <button class="navbar-toggler mobile-menu-btn d-lg-none border-0" type="button" id="mobileToggleBtn">
+                <!-- Nút Hamburger (Ẩn trên mobile theo đúng chuẩn mới) -->
+                <button class="navbar-toggler mobile-menu-btn d-none border-0" type="button" id="mobileToggleBtn">
                     <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
                 </button>
 
-                <!-- Menu Desktop: Guest (Mặc định) -->
-                <div class="desktop-menu d-none d-lg-flex align-items-center gap-4">
-                    <div id="guestDesktopMenu" class="d-flex align-items-center gap-4">
-                        <a href="support.html" class="nav-link-center-2">Trung tâm hỗ trợ</a>
+                <div class="desktop-menu d-flex align-items-center gap-3">
+                    <div id="guestDesktopMenu" class="d-none d-lg-flex align-items-center gap-4">
+                        <a href="support.html" class="nav-link-center-2 active">Trung tâm hỗ trợ</a>
                         <a href="policy.html" class="nav-link-center-2">Về chính sách</a>
+                    </div>
+
+                    <div id="customerDesktopMenu" class="d-none align-items-center gap-4">
+                        <a href="../index.html" class="nav-link-center">Trang chủ</a>
+                        <a href="findCar.html" class="nav-link-center">Đặt xe</a>
+                        <a href="customer/tripHistory.html" class="nav-link-center">Chuyến đi</a>
+                        <a href="policy.html" class="nav-link-center">Chính sách</a>
+                        <a href="support.html" class="nav-link-center active">Trợ giúp</a>
                     </div>
 
                     <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
@@ -505,7 +502,7 @@
                                 <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
                                         class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                                 <hr style="margin: 5px 0; opacity: 0.1;">
-                                <a href="" id="btnLogout" class="dropdown-item-custom text-danger"
+                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"
                                     onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i>
                                     Đăng xuất</a>
                             </div>
@@ -514,41 +511,30 @@
                 </div>
             </div>
 
-            <div class="mobile-glass-dropdown" id="mobileDropdown">
-                <div class="dropdown-inner-content d-flex flex-column gap-3">
-                    <!-- Mobile: Guest -->
-                    <div id="guestMobileMenu" class="d-flex flex-column gap-3">
-                        <a href="support.html" class="mobile-nav-item active"><i class="fa-solid fa-id-card"></i> Trung
-                            tâm hỗ
-                            trợ</a>
-                        <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i> Về
-                            chính sách</a>
-                    </div>
-
-                    <!-- Mobile: Customer -->
-                    <div id="customerMobileMenu" class="d-none flex-column gap-3">
-                        <a href="../index.html" class="mobile-nav-item"><i class="fa-solid fa-house"></i> Trang
-                            chủ</a>
-                        <a href="findCar.html" class="mobile-nav-item"><i class="fa-solid fa-car"></i> Đặt xe</a>
-                        <a href="customer/tripHistory.html" class="mobile-nav-item"><i
-                                class="fa-solid fa-clock-rotate-left"></i> Chuyến đi</a>
-                        <a href="policy.html" class="mobile-nav-item"><i class="fa-solid fa-shield-halved"></i>
-                            Chính sách</a>
-                        <a href="support.html" class="mobile-nav-item active"><i class="fa-solid fa-id-card"></i> Trợ
-                            giúp</a>
-                    </div>
-
-                    <div class="divider-glass my-2"></div>
-
-                    <button class="btn-login w-100 d-flex justify-content-center align-items-center gap-2"
-                        id="btnLoginMobile" onclick="document.getElementById('btnLogin').click()">
-                        <span class="fw-bold">Đăng nhập ngay</span>
-                        <i class="fa-regular fa-user-circle fs-5"></i>
-                    </button>
-                </div>
-            </div>
+            <div class="mobile-glass-dropdown d-none" id="mobileDropdown"></div>
         </nav>
     </header>
+
+    <!-- LIQUID GLASS NAVBAR BOTTOM DOCK (MOBILE / TABLET ONLY) -->
+    <nav class="liquid-nav-dock d-none" id="mobileLiquidNav">
+        <div class="indicator" id="indicatorMobile"></div>
+
+        <div class="nav-item" data-index="0" data-href="../index.html" title="Trang chủ">
+            <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="nav-item" data-index="1" data-href="findCar.html" title="Đặt xe">
+            <i class="fa-solid fa-car"></i>
+        </div>
+        <div class="nav-item" data-index="2" data-href="customer/tripHistory.html" title="Chuyến đi">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="nav-item" data-index="3" data-href="policy.html" title="Chính sách">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="nav-item active" data-index="4" data-href="support.html" title="Trợ giúp">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+    </nav>
 
     <section class="support-hero">
         <div class="container">
@@ -729,31 +715,11 @@
         </a>
     </aside>
 
-    <div class="mobile-bottom-nav d-lg-none">
-        <a href="../index.html" class="nav-link-center">
-            <i class="fa-solid fa-house"></i>
-            <span class="nav-text">Trang chủ</span>
-        </a>
-        <a href="findCar.html" class="nav-link-center">
-            <i class="fa-solid fa-car"></i>
-            <span class="nav-text">Đặt xe</span>
-        </a>
-        <a href="customer/tripHistory.html" class="nav-link-center">
-            <i class="fa-solid fa-clock-rotate-left"></i>
-            <span class="nav-text">Chuyến đi</span>
-        </a>
-        <a href="policy.html" class="nav-link-center">
-            <i class="fa-solid fa-shield-halved"></i>
-            <span class="nav-text">Chính sách</span>
-        </a>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/api.js"></script>
     <script src="../js/base.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Đồng bộ giao diện Navbar khi đã đăng nhập
             const fullName = localStorage.getItem('fullName');
             const userRole = localStorage.getItem('userRole') || 'Khách hàng';
 
@@ -767,16 +733,32 @@
                 if (nameSpan) nameSpan.innerText = fullName;
                 if (roleSpan) roleSpan.innerText = userRole;
 
-                // Chuyển đổi Navbar Menu
+                // Chuyển đổi Navbar Menu cho Desktop & Mobile khi đã đăng nhập
                 const guestDesktopMenu = document.getElementById('guestDesktopMenu');
                 const customerDesktopMenu = document.getElementById('customerDesktopMenu');
-                if (guestDesktopMenu) { guestDesktopMenu.classList.remove('d-flex'); guestDesktopMenu.classList.add('d-none'); }
-                if (customerDesktopMenu) { customerDesktopMenu.classList.remove('d-none'); customerDesktopMenu.classList.add('d-none', 'd-lg-flex'); }
+                const mobileLiquidNav = document.getElementById('mobileLiquidNav');
 
-                const guestMobileMenu = document.getElementById('guestMobileMenu');
-                const customerMobileMenu = document.getElementById('customerMobileMenu');
-                if (guestMobileMenu) { guestMobileMenu.classList.remove('d-flex'); guestMobileMenu.classList.add('d-none'); }
-                if (customerMobileMenu) { customerMobileMenu.classList.remove('d-none'); customerMobileMenu.classList.add('d-flex'); }
+                if (guestDesktopMenu) {
+                    guestDesktopMenu.classList.remove('d-flex', 'd-lg-flex');
+                    guestDesktopMenu.classList.add('d-none');
+                    guestDesktopMenu.style.setProperty('display', 'none', 'important');
+                }
+
+                const isCustomer = userRole.toUpperCase() === 'KHÁCH HÀNG' ||
+                    userRole.toUpperCase() === 'CUSTOMER' ||
+                    (!userRole.toUpperCase().includes('DRIVER') &&
+                        !userRole.toUpperCase().includes('TÀI XẾ') &&
+                        !userRole.toUpperCase().includes('ADMIN') &&
+                        !userRole.toUpperCase().includes('DISPATCHER'));
+
+                if (isCustomer) {
+                    if (customerDesktopMenu) {
+                        customerDesktopMenu.classList.add('d-none', 'd-lg-flex');
+                    }
+                    if (mobileLiquidNav) {
+                        mobileLiquidNav.classList.remove('d-none');
+                    }
+                }
 
                 // Ẩn Nút Login
                 const loginBtns = document.querySelectorAll('#btnLogin, #btnLoginMobile');
@@ -989,6 +971,10 @@
                         }
                     }
                 });
+            }
+
+            if (typeof initLiquidNavbar === 'function') {
+                initLiquidNavbar('mobileLiquidNav');
             }
         });
 

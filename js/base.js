@@ -394,7 +394,7 @@ async function loadNotifications() {
 
                 const titleLower = title.toLowerCase();
                 const notifType = n.Type || n.type || '';
-                
+
                 if (titleLower.includes('hủy') || titleLower.includes('từ chối') || notifType === 'BOOKING_CANCELLED') {
                     typeBadgeClass = 'bg-danger';
                     typeText = 'Đã Hủy';
@@ -695,3 +695,64 @@ window.showModalConfirm = function (message, title = 'Xác nhận', type = 'warn
         confirmModal.show();
     });
 };
+
+// ==========================================
+// 12. HỆ THỐNG LIQUID GLASS NAVBAR (REUSABLE COMPONENT)
+// ==========================================
+window.initLiquidNavbar = function (navId) {
+    const nav = document.getElementById(navId);
+    if (!nav) return;
+
+    const navItems = nav.querySelectorAll(".nav-item");
+    const indicator = nav.querySelector(".indicator");
+    if (!indicator || navItems.length === 0) return;
+
+    // Hàm di chuyển indicator đến icon được chọn
+    function moveIndicator(item) {
+        const navRect = nav.getBoundingClientRect();
+        const itemRect = item.getBoundingClientRect();
+
+        // Tự động lấy đúng width của indicator (hoặc kích thước thật từ CSS)
+        const indicatorWidth = indicator.offsetWidth || 90;
+
+        // Công thức vá lỗi chuẩn xác từ thực nghiệm: trừ đi lớp padding (- 10px) của thanh Nav
+        const offsetLeft = (itemRect.left - navRect.left) + (itemRect.width - indicatorWidth) / 2;
+
+        // Sử dụng transform translateX để tối ưu FPS (Hardware Acceleration 60 FPS)
+        indicator.style.transform = `translateX(${offsetLeft}px)`;
+    }
+
+    // Khởi tạo vị trí ban đầu cho item active
+    const activeItem = nav.querySelector(".nav-item.active");
+    if (activeItem) {
+        requestAnimationFrame(() => moveIndicator(activeItem));
+    }
+
+    // Lắng nghe sự kiện Click trên từng Nav Item
+    navItems.forEach(item => {
+        item.addEventListener("click", () => {
+            const currentActive = nav.querySelector(".nav-item.active");
+            if (currentActive) currentActive.classList.remove("active");
+
+            item.classList.add("active");
+            moveIndicator(item);
+
+            // Chuyển hướng trang sau khi animation viên nang nảy qua (400ms)
+            const targetUrl = item.getAttribute("data-href");
+            if (targetUrl && targetUrl !== "#" && targetUrl !== "" && !window.location.href.includes(targetUrl)) {
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 400);
+            }
+        });
+    });
+
+    // Tự động căn chỉnh lại khi xoay màn hình hoặc resize
+    window.addEventListener("resize", () => {
+        const currentActive = nav.querySelector(".nav-item.active");
+        if (currentActive) {
+            requestAnimationFrame(() => moveIndicator(currentActive));
+        }
+    });
+};
+

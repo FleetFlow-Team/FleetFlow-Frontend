@@ -921,37 +921,100 @@
                         class="logo-img" />
                 </a>
 
-                <div class="navbar-center-links d-none d-lg-flex">
-                    <a href="../../index.html" class="nav-link-center">Trang chủ</a>
-                    <a href="../findCar.html" class="nav-link-center">Đặt xe</a>
-                    <a href="tripHistory.html" class="nav-link-center active">Chuyến đi</a>
-                    <a href="../policy.html" class="nav-link-center">Chính sách</a>
-                    <a href="../support.html" class="nav-link-center">Trợ giúp</a>
-                </div>
+                <button class="navbar-toggler mobile-menu-btn d-none border-0" type="button" id="mobileToggleBtn">
+                    <i class="fa-solid fa-bars-staggered fs-3 text-white"></i>
+                </button>
 
-                <div class="nav-right-actions d-flex align-items-center gap-3">
-                    <div class="dropdown me-3" id="notificationDropdownContainer">
-                        <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown"
-                            aria-expanded="false" onclick="loadNotifications()" style="cursor: pointer;">
-                            <i class="fa-regular fa-bell fs-5"></i>
-                            <span id="unreadBadge"
-                                class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"></span>
-                        </div>
-
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0"
-                            style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList">
-                        </ul>
+                <div class="desktop-menu d-flex align-items-center gap-3">
+                    <div id="guestDesktopMenu" class="d-none d-lg-flex align-items-center gap-4">
+                        <a href="../support.html" class="nav-link-center-2">Trung tâm hỗ trợ</a>
+                        <a href="../policy.html" class="nav-link-center-2">Về chính sách</a>
                     </div>
 
-                    <div id="btnLogin" class="user-profile-btn d-flex align-items-center gap-2"
-                        style="cursor: pointer;">
-                        <a href="../../index.html" class="btn btn-outline-success fw-bold px-4"
-                            style="border-radius: 50px;">Đăng nhập</a>
+                    <div id="customerDesktopMenu" class="d-none align-items-center gap-4">
+                        <a href="../../index.html" class="nav-link-center">Trang chủ</a>
+                        <a href="../findCar.html" class="nav-link-center">Đặt xe</a>
+                        <a href="tripHistory.html" class="nav-link-center active">Chuyến đi</a>
+                        <a href="../policy.html" class="nav-link-center">Chính sách</a>
+                        <a href="../support.html" class="nav-link-center">Trợ giúp</a>
+                    </div>
+
+                    <button class="btn-login d-flex align-items-center gap-2" id="btnLogin">
+                        <span>Đăng nhập</span>
+                        <i class="fa-regular fa-user-circle fs-5"></i>
+                    </button>
+
+                    <!-- Dropdown User -->
+                    <div class="nav-right-actions d-none align-items-center gap-3" id="userProfileDropdown">
+                        <div class="dropdown me-3" id="notificationDropdownContainer">
+                            <div id="notificationBtn" class="notification-btn position-relative"
+                                data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;"
+                                onclick="loadNotifications()">
+                                <i class="fa-regular fa-bell fs-5"></i>
+                                <span id="unreadBadge"
+                                    class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
+                                    data-count="0"></span>
+                            </div>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0"
+                                style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList">
+                                <li class="text-center p-4 text-muted"><i
+                                        class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo
+                                    nào</li>
+                            </ul>
+                        </div>
+
+                        <div class="user-profile-btn position-relative dropdown" style="cursor: pointer;">
+                            <div class="d-flex align-items-center gap-2" data-bs-toggle="dropdown">
+                                <div class="d-flex flex-column align-items-end text-end" style="line-height: 1.2;">
+                                    <span class="fw-bold" style="font-size: 0.95rem; color: var(--color-dark);"
+                                        id="navDesktopName"></span>
+                                    <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;"
+                                        id="navDesktopRole">Customer</span>
+                                </div>
+                                <img id="navDesktopAvatar" src=""
+                                    style="width: 34px; height: 34px; border-radius: 50%;">
+                            </div>
+                            <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
+                                <a href="customer-profile.html" class="dropdown-item-custom"><i
+                                        class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                                <a href="tripHistory.html" class="dropdown-item-custom"><i
+                                        class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
+                                <hr style="margin: 5px 0; opacity: 0.1;">
+                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"
+                                    onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                    Đăng xuất</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="mobile-glass-dropdown d-none" id="mobileDropdown"></div>
         </nav>
     </header>
+
+    <!-- =========================================================
+         LIQUID GLASS NAVBAR BOTTOM DOCK (MOBILE / TABLET ONLY)
+         ========================================================= -->
+    <nav class="liquid-nav-dock d-none" id="mobileLiquidNav">
+        <div class="indicator" id="indicatorMobile"></div>
+
+        <div class="nav-item" data-index="0" data-href="../../index.html" title="Trang chủ">
+            <i class="fa-solid fa-house"></i>
+        </div>
+        <div class="nav-item" data-index="1" data-href="../findCar.html" title="Đặt xe">
+            <i class="fa-solid fa-car"></i>
+        </div>
+        <div class="nav-item active" data-index="2" data-href="tripHistory.html" title="Chuyến đi">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+        </div>
+        <div class="nav-item" data-index="3" data-href="../policy.html" title="Chính sách">
+            <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div class="nav-item" data-index="4" data-href="../support.html" title="Trợ giúp">
+            <i class="fa-solid fa-headset"></i>
+        </div>
+    </nav>
 
     <main class="main-dashboard">
         <div class="container-base">
@@ -1221,35 +1284,70 @@
         </div>
     </div>
 
-    <div class="mobile-bottom-nav d-lg-none">
-        <a href="../../index.html" class="nav-link-center">
-            <i class="fa-solid fa-house mobile-icon"></i>
-            <span class="nav-text">Trang chủ</span>
-        </a>
-        <a href="../findCar.html" class="nav-link-center">
-            <i class="fa-solid fa-car mobile-icon"></i>
-            <span class="nav-text">Đặt xe</span>
-        </a>
-        <a href="tripHistory.html" class="nav-link-center active">
-            <i class="fa-solid fa-clock-rotate-left mobile-icon"></i>
-            <span class="nav-text">Chuyến đi</span>
-        </a>
-        <a href="../policy.html" class="nav-link-center">
-            <i class="fa-solid fa-shield-halved mobile-icon"></i>
-            <span class="nav-text">Chính sách</span>
-        </a>
-        <a href="login.html" id="btnLoginMobile" class="nav-link-center">
-            <i class="fa-solid fa-user mobile-icon"></i>
-            <span class="nav-text">Tài khoản</span>
-        </a>
-    </div>
-
     <!-- JS Logic giữ nguyên bản gốc -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="../../js/base.js"></script>
     <script src="../../js/customer/tripHistory.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fullName = localStorage.getItem('fullName');
+            const userRole = localStorage.getItem('userRole') || 'Khách hàng';
+
+            if (fullName) {
+                const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=00B14F&color=fff`;
+                const avatarImg = document.getElementById('navDesktopAvatar');
+                const nameSpan = document.getElementById('navDesktopName');
+                const roleSpan = document.getElementById('navDesktopRole');
+                if (avatarImg) avatarImg.src = avatarUrl;
+                if (nameSpan) nameSpan.innerText = fullName;
+                if (roleSpan) roleSpan.innerText = userRole;
+
+                const guestDesktopMenu = document.getElementById('guestDesktopMenu');
+                const customerDesktopMenu = document.getElementById('customerDesktopMenu');
+                const mobileLiquidNav = document.getElementById('mobileLiquidNav');
+
+                if (guestDesktopMenu) {
+                    guestDesktopMenu.classList.remove('d-flex', 'd-lg-flex');
+                    guestDesktopMenu.classList.add('d-none');
+                    guestDesktopMenu.style.setProperty('display', 'none', 'important');
+                }
+
+                const isCustomer = userRole.toUpperCase() === 'KHÁCH HÀNG' ||
+                    userRole.toUpperCase() === 'CUSTOMER' ||
+                    (!userRole.toUpperCase().includes('DRIVER') &&
+                        !userRole.toUpperCase().includes('TÀI XẾ') &&
+                        !userRole.toUpperCase().includes('ADMIN') &&
+                        !userRole.toUpperCase().includes('DISPATCHER'));
+
+                if (isCustomer) {
+                    if (customerDesktopMenu) {
+                        customerDesktopMenu.classList.add('d-none', 'd-lg-flex');
+                    }
+                    if (mobileLiquidNav) {
+                        mobileLiquidNav.classList.remove('d-none');
+                    }
+                }
+
+                const loginBtns = document.querySelectorAll('#btnLogin');
+                loginBtns.forEach(btn => {
+                    btn.classList.add('d-none');
+                    btn.classList.remove('d-lg-flex', 'd-flex');
+                });
+
+                const userDropdown = document.getElementById('userProfileDropdown');
+                if (userDropdown) {
+                    userDropdown.classList.remove('d-none');
+                    userDropdown.classList.add('d-flex');
+                }
+            }
+
+            if (typeof initLiquidNavbar === 'function') {
+                initLiquidNavbar('mobileLiquidNav');
+            }
+        });
+    </script>
 </body>
 
 </html>
