@@ -575,17 +575,23 @@ function renderPaginationInfo(totalItems, currentPage) {
 }
 
 /**
+ * Cuộn giao diện lên đầu danh sách xe sau khi render
+ */
+function scrollToVehicleList() {
+    const containerEl = document.getElementById('vehicleListContainer');
+    if (!containerEl) return;
+
+    const listTop = containerEl.getBoundingClientRect().top + window.scrollY - 100;
+    window.scrollTo({ top: listTop, behavior: 'smooth' });
+}
+
+/**
  * Chuyển trang và cuộn giao diện lên đầu danh sách
  */
 window.changePage = function (pageNumber) {
     currentPage = pageNumber;
     renderVehiclesByPage(currentPage);
-
-    const containerEl = document.getElementById('vehicleListContainer');
-    if (containerEl) {
-        const listTop = containerEl.offsetTop - 100;
-        window.scrollTo({ top: listTop, behavior: 'smooth' });
-    }
+    requestAnimationFrame(() => scrollToVehicleList());
 };
 
 /**
@@ -926,19 +932,16 @@ async function sendMessage() {
                     document.body.classList.remove('filter-open');
                 }
                 
-                // Override mảng data và render
-                window.filteredVehicles = result.data;
-                window.currentPage = 1;
+                // Override mảng data và render bằng trạng thái nội bộ thực sự
+                filteredVehicles = Array.isArray(result.data) ? result.data : [];
+                currentPage = 1;
                 renderVehiclesByPage(1);
                 if (typeof renderPaginationInfo === 'function') {
-                    renderPaginationInfo(window.filteredVehicles.length, 1);
+                    renderPaginationInfo(filteredVehicles.length, 1);
                 }
                 
-                // Cuộn xuống
-                const listContainer = document.getElementById('vehicleListContainer');
-                if (listContainer) {
-                    listContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                // Cuộn xuống danh sách xe sau khi render xong
+                requestAnimationFrame(() => scrollToVehicleList());
             }
         } else {
             msgList.innerHTML += `
