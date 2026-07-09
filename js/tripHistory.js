@@ -390,22 +390,77 @@ async function executeCancelTrip() {
             cModalInstance.hide();
             navigateBackToHistory(); // Đẩy về danh sách
 
-            // Xử lý thông báo trừ tiền cọc
-            let msg = 'Chuyến đi của bạn đã được hủy thành công.';
-            if (data.penaltyAmount > 0) {
-                msg = `Hủy thành công. Do bạn hủy sát giờ khởi hành, hệ thống áp dụng mức phạt ${data.penaltyPercent}%: ${data.penaltyAmount.toLocaleString('vi-VN')} đ (Đã trừ vào tiền cọc).`;
+            const fVND = (v) => Number(v || 0).toLocaleString('vi-VN') + ' đ';
+            const isForfeit = data.forfeitDeposit;
+            const pAmount = parseFloat(data.penaltyAmount) || 0;
+            const rAmount = parseFloat(data.refundedAmount) || 0;
+
+            let msgHtml = `<div class="mb-2 text-muted" style="font-size: 0.95rem;">Chuyến đi <b>#${data.bookingId || selectedTripId}</b> đã được hủy thành công!</div>`;
+
+            if (isForfeit && pAmount > 0) {
+                msgHtml += `
+                    <div style="background: rgba(254, 242, 242, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(239, 68, 68, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); display: flex; align-items: center; justify-content: center; color: #dc2626;">
+                                <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                            </div>
+                            <div class="fw-bold" style="color: #991b1b; font-size: 0.95rem;">MẤT TIỀN CỌC HỦY MUỘN</div>
+                        </div>
+                        <div class="fs-4 fw-bold" style="color: #dc2626; letter-spacing: -0.5px;">-${fVND(pAmount)}</div>
+                        <div class="small mt-2" style="color: #7f1d1d; line-height: 1.4;">Khoản tiền cọc đã đặt không được hoàn lại do bạn hủy chuyến trong vòng <b>12 giờ</b> trước khi khởi hành.</div>
+                    </div>
+                `;
+            } else if (rAmount > 0) {
+                msgHtml += `
+                    <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                                <i class="fa-solid fa-shield-check fs-5"></i>
+                            </div>
+                            <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">HỦY MIỄN PHÍ & HOÀN CỌC</div>
+                        </div>
+                        <div class="fs-4 fw-bold" style="color: #16a34a; letter-spacing: -0.5px;">+${fVND(rAmount)}</div>
+                        <div class="small mt-2" style="color: #14532d; line-height: 1.4;">Bạn hủy trước <b>12 giờ</b>. Toàn bộ tiền cọc đã được tự động hoàn lại vào ví tài khoản của bạn.</div>
+                    </div>
+                `;
+            } else {
+                msgHtml += `
+                    <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 18px; margin-top: 15px; text-align: left;">
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                                <i class="fa-solid fa-circle-check fs-5"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">HỦY CHUYẾN MIỄN PHÍ</div>
+                                <div class="small mt-1" style="color: #166534;">Bạn không bị tính bất kỳ chi phí phạt nào cho lần hủy này.</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
 
             Swal.fire({
-                icon: data.penaltyAmount > 0 ? 'warning' : 'success',
-                title: 'Đã hủy chuyến',
-                text: msg,
-                confirmButtonColor: '#00B14F'
+                icon: isForfeit && pAmount > 0 ? 'warning' : 'success',
+                title: 'Đã hủy chuyến đi',
+                html: msgHtml,
+                confirmButtonColor: '#00B14F',
+                confirmButtonText: 'Đóng',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg border border-white border-opacity-75'
+                }
             });
 
             fetchTripHistory(); // Reload lại API lấy data mới
         } else {
-            Swal.fire({ icon: 'error', title: 'Hủy thất bại', text: data.error || 'Có lỗi xảy ra, vui lòng liên hệ tổng đài.' });
+            Swal.fire({
+                icon: 'error',
+                title: 'Không thể hủy chuyến',
+                text: data.error || 'Có lỗi xảy ra, vui lòng liên hệ tổng đài.',
+                confirmButtonColor: '#d33',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg border border-white border-opacity-75'
+                }
+            });
         }
     } catch (e) {
         Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Mất kết nối máy chủ, vui lòng thử lại sau.' });

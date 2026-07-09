@@ -1360,8 +1360,20 @@
                         localStorage.removeItem('currentDepositAmount');
                         localStorage.removeItem('selectedVehicleId'); 
                         
-                        // Điều hướng sang trang thanh toán VNPay
-                        window.location.href = result.paymentUrl;
+                        // Điều hướng sang trang thanh toán VNPay (Mô hình 1 - Cửa sổ con Popup)
+                        window.isVnPayCompleted = false;
+                        const vnpPopup = window.open(result.paymentUrl, "VNPayPayment", "width=850,height=700,top=100,left=300");
+                        const popupMonitor = setInterval(() => {
+                            if (vnpPopup && vnpPopup.closed) {
+                                clearInterval(popupMonitor);
+                                elBtnSubmit.disabled = false;
+                                elBtnSubmit.innerHTML = originalText;
+                                if (!window.isVnPayCompleted) {
+                                    sessionStorage.setItem('showPaymentCancelPopup', 'true');
+                                    window.location.replace("tripHistory.html?paymentStatus=cancelled");
+                                }
+                            }
+                        }, 800);
                     } else {
                         showModalAlert("Không thể khởi tạo giao dịch VNPay. Vui lòng thử lại!", "Lỗi Thanh Toán", "error");
                         elBtnSubmit.disabled = false;
@@ -1677,7 +1689,6 @@
                 try {
                     result = await response.json();
                 } catch (jsonErr) {
-                    // Nếu server không trả về JSON (lỗi 500 HTML hoặc 403)
                     result = {
                         success: false,
                         error: `Máy chủ từ chối yêu cầu (Mã lỗi HTTP: ${response.status}). Vui lòng kiểm tra lại quyền đặt xe hoặc đăng nhập lại!`
@@ -1696,7 +1707,7 @@
                     const depositStr = localStorage.getItem('currentDepositAmount') || "0";
                     const depositAmount = parseInt(depositStr.replace(/[^\d]/g, ''), 10);
 
-                    if (paymentMethod === 'vnpay' || paymentMethod === 'cash') { // Fallback if cash was cached
+                    if (paymentMethod === 'vnpay') { 
                         try {
                             const vnpayRes = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
                                 method: 'POST',
@@ -1711,8 +1722,21 @@
                             if (vnpayRes.ok && vnpayResult.success && vnpayResult.paymentUrl) {
                                 // Lưu ID booking để hủy nếu thanh toán thất bại
                                 localStorage.setItem('pendingBookingId', bookingId);
-                                // Redirect sang VNPay
-                                window.location.href = vnpayResult.paymentUrl;
+                                // Redirect sang VNPay (Mô hình 1 - Cửa sổ con Popup)
+                                window.isVnPayCompleted = false;
+                                const vnpPopup = window.open(vnpayResult.paymentUrl, "VNPayPayment", "width=850,height=700,top=100,left=300");
+                                const popupMonitor = setInterval(() => {
+                                    if (vnpPopup && vnpPopup.closed) {
+                                        clearInterval(popupMonitor);
+                                        elBtnSubmit.disabled = false;
+                                        elBtnSubmit.innerHTML = originalText;
+                                        clearCheckoutStorage();
+                                        if (!window.isVnPayCompleted) {
+                                            sessionStorage.setItem('showPaymentCancelPopup', 'true');
+                                            window.location.replace("tripHistory.html?paymentStatus=cancelled");
+                                        }
+                                    }
+                                }, 800);
                                 return;
                             } else {
                                 showModalAlert("Tạo Booking thành công nhưng lỗi tạo thanh toán VNPay: " + (vnpayResult.message || "Unknown error"), "Lỗi thanh toán", "warning");
@@ -1767,6 +1791,54 @@
                 elBtnSubmit.innerText = originalText;
             }
         }
+
+        // LẮNG NGHE KẾT QUẢ THANH TOÁN TỪ CỬA SỔ POPUP VNPAY (MÔ HÌNH 1)
+        window.addEventListener("message", (event) => {
+            if (event.data && event.data.type === "VNPAY_RESULT") {
+                clearCheckoutStorage();
+                if (event.data.success) {
+                    window.isVnPayCompleted = true;
+                    sessionStorage.setItem('showPaymentSuccessPopup', 'true');
+                    const amountFormatted = (parseInt(event.data.amount || 0)).toLocaleString('vi-VN') + " đ";
+                    Swal.fire({
+                        icon: "success",
+                        title: "Thanh Toán Thành Công!",
+                        html: `
+                            <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                                        <i class="fa-solid fa-circle-check fs-5"></i>
+                                    </div>
+                                    <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">XÁC NHẬN ĐẶT CỌC THÀNH CÔNG</div>
+                                </div>
+                                <div class="fs-4 fw-bold" style="color: #16a34a;">+${amountFormatted}</div>
+                                <div class="small mt-2" style="color: #14532d;">Chuyến đi của bạn đã được xác nhận và ghi nhận thanh toán.</div>
+                            </div>
+                        `,
+                        confirmButtonColor: "#00B14F",
+                        confirmButtonText: "Xem chuyến đi",
+                        customClass: {
+                            popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+                        }
+                    }).then(() => {
+                        window.location.replace("tripHistory.html");
+                    });
+                } else {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Thanh Toán Thất Bại",
+                        text: event.data.message || "Giao dịch qua VNPay chưa thành công hoặc đã bị hủy",
+                        confirmButtonColor: "#d33",
+                        confirmButtonText: "Đến Lịch sử chuyến đi",
+                        customClass: {
+                            popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+                        }
+                    }).then(() => {
+                        window.location.replace("tripHistory.html");
+                    });
+                }
+            }
+        });
 
         function clearCheckoutStorage() {
             const keysToRemove = [

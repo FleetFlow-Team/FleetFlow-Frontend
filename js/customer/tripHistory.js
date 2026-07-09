@@ -69,7 +69,17 @@ let globalTrips = [];
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('paymentStatus') === 'success') {
+    const isPaymentSuccess = urlParams.get('paymentStatus') === 'success' || 
+                             urlParams.get('vnpay_status') === 'success' || 
+                             sessionStorage.getItem('showPaymentSuccessPopup') === 'true';
+
+    if (isPaymentSuccess) {
+        sessionStorage.removeItem('showPaymentSuccessPopup');
+        // Làm sạch URL trên thanh địa chỉ để reload không bị hiện lại popup
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
         const keysToRemove = [
             'bookingType', 'tripDirection', 'pickupAddress', 'dropoffAddress',
             'pickupLat', 'pickupLng', 'dropoffLat', 'dropoffLng',
@@ -79,7 +89,62 @@ document.addEventListener("DOMContentLoaded", function () {
             'mapEstimatedTotal', 'currentDepositAmount', 'appliedVoucherId', 'selectedVehicleId', 'pendingBookingId'
         ];
         keysToRemove.forEach(k => localStorage.removeItem(k));
-        Swal.fire({ icon: 'success', title: 'Thành công', text: 'Thanh toán thành công!' });
+
+        // HIỂN THỊ POPUP LIQUID GLASSMORPHISM SANG TRỌNG KHI VỪA CHUYỂN TRANG
+        Swal.fire({
+            icon: "success",
+            title: "Thanh Toán Thành Công!",
+            html: `
+                <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                            <i class="fa-solid fa-circle-check fs-5"></i>
+                        </div>
+                        <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">XÁC NHẬN THANH TOÁN THÀNH CÔNG</div>
+                    </div>
+                    <div class="fs-5 fw-bold" style="color: #16a34a;">Giao dịch VNPay đã hoàn tất</div>
+                    <div class="small mt-2" style="color: #14532d;">Chuyến đi của bạn đã được xác nhận và ghi nhận thanh toán vào hệ thống FleetFlow.</div>
+                </div>
+            `,
+            confirmButtonColor: "#00B14F",
+            confirmButtonText: "Tuyệt vời!",
+            customClass: {
+                popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+            }
+        });
+    }
+
+    const isPaymentCancelled = urlParams.get('paymentStatus') === 'cancelled' ||
+                               urlParams.get('vnpay_status') === 'failed' ||
+                               sessionStorage.getItem('showPaymentCancelPopup') === 'true';
+
+    if (isPaymentCancelled && !isPaymentSuccess) {
+        sessionStorage.removeItem('showPaymentCancelPopup');
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
+        Swal.fire({
+            icon: "warning",
+            title: "Chưa Hoàn Tất Thanh Toán",
+            html: `
+                <div style="background: rgba(255, 247, 237, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(249, 115, 22, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(249, 115, 22, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(249, 115, 22, 0.15); display: flex; align-items: center; justify-content: center; color: #ea580c;">
+                            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                        </div>
+                        <div class="fw-bold" style="color: #9a3412; font-size: 0.95rem;">THÔNG BÁO GIAO DỊCH CHƯA HOÀN TẤT</div>
+                    </div>
+                    <div class="fs-5 fw-bold" style="color: #ea580c;">Khách hàng chưa thanh toán thành công</div>
+                    <div class="small mt-2" style="color: #7c2d12;">Đơn hàng của bạn đã được khởi tạo và lưu ở trạng thái <b>Chờ thanh toán</b>. Bạn có thể tiếp tục thanh toán lại bất kỳ lúc nào tại danh sách Lịch sử chuyến đi.</div>
+                </div>
+            `,
+            confirmButtonColor: "#f97316",
+            confirmButtonText: "Đã hiểu",
+            customClass: {
+                popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+            }
+        });
     }
 
     loadTripHistory();
@@ -184,7 +249,7 @@ function renderTripList(trips) {
         const rawStatus = (trip.status || trip.Status || "PENDING").toUpperCase();
         let statusClass = "status-pending-card";
         let badgeClass = "badge-pending";
-        let statusText = "Đang chờ";
+        let statusText = (rawStatus === "PENDING" || rawStatus === "WAITING_PAYMENT") ? "Chờ thanh toán" : "Đang chờ";
 
         if (rawStatus === "COMPLETED" || rawStatus === "UNPAID") {
             statusClass = "status-completed-card"; badgeClass = "badge-completed"; statusText = "Hoàn thành";
@@ -330,7 +395,16 @@ async function viewTripDetail(bookingId) {
         const statusCheck = (rawStatus || '').toUpperCase();
 
         let actionHtml = '';
-        if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
+        if (['PENDING', 'UNPAID', 'WAITING_PAYMENT', 'CHỜ THANH TOÁN'].includes(statusCheck)) {
+            const payAmt = trip.depositAmount || trip.DepositAmount || trip.totalAmount || trip.TotalAmount || trip.price || (summaryTrip ? summaryTrip.price : 300000) || 300000;
+            actionHtml = `
+                <button type="button" class="btn btn-control-action m-0" style="flex:1.6; background: linear-gradient(135deg, #00B14F, #059669); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(0, 177, 79, 0.35); transition: all 0.3s ease;" onclick="payPendingBooking(${bookingId}, ${payAmt})">
+                    <i class="fa-solid fa-credit-card me-2"></i>Thanh toán VNPay
+                </button>
+                <button type="button" class="btn btn-control-action btn-cancel-action m-0" style="flex:0.9" onclick="openCancelModal(${bookingId})">Hủy chuyến</button>
+            `;
+            if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
+        } else if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
             actionHtml = `<button type="button" class="btn btn-control-action btn-cancel-action m-0" style="flex:1" onclick="openCancelModal(${bookingId})">Hủy chuyến</button>`;
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
         } else if (statusCheck === 'COMPLETED') {
@@ -673,36 +747,66 @@ async function executeSubmitAction(actionType) {
             if (response.ok && result.success) {
                 const fVND = (v) => Number(v || 0).toLocaleString('vi-VN') + ' đ';
 
-                // Trích xuất 2 trường Backend trả về: forfeitDeposit và penaltyAmount
+                // Trích xuất các trường Backend trả về
                 const isForfeit = result.forfeitDeposit;
                 const pAmount = parseFloat(result.penaltyAmount) || 0;
+                const rAmount = parseFloat(result.refundedAmount) || 0;
 
-                let msgHtml = `Chuyến đi <b>#${result.bookingId}</b> đã được hủy thành công!`;
+                let msgHtml = `<div class="mb-2 text-muted" style="font-size: 0.95rem;">Chuyến đi <b>#${result.bookingId}</b> đã được hủy thành công!</div>`;
 
-                // LOGIC HIỂN THỊ DỰA TRÊN PENALTY AMOUNT VÀ FORFEIT
+                // LOGIC HIỂN THỊ DỰA TRÊN PENALTY VÀ REFUND (LIQUID GLASSMORPHISM UI)
                 if (isForfeit && pAmount > 0) {
                     msgHtml += `
-                        <div class="mt-3 p-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 rounded-3 text-start">
-                            <div class="text-danger fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-1"></i> Phí phạt hủy chuyến (Mất cọc):</div>
-                            <div class="fs-4 fw-bold text-danger">${fVND(pAmount)}</div>
-                            <div class="small text-muted mt-1">Khoản phí này đã được ghi nhận vào công nợ tài khoản của bạn theo chính sách hệ thống.</div>
+                        <div style="background: rgba(254, 242, 242, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(239, 68, 68, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(239, 68, 68, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(239, 68, 68, 0.15); display: flex; align-items: center; justify-content: center; color: #dc2626;">
+                                    <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                                </div>
+                                <div class="fw-bold" style="color: #991b1b; font-size: 0.95rem;">MẤT TIỀN CỌC HỦY MUỘN</div>
+                            </div>
+                            <div class="fs-4 fw-bold" style="color: #dc2626; letter-spacing: -0.5px;">-${fVND(pAmount)}</div>
+                            <div class="small mt-2" style="color: #7f1d1d; line-height: 1.4;">Khoản tiền cọc đã đặt không được hoàn lại do bạn hủy chuyến trong vòng <b>12 giờ</b> trước khi khởi hành.</div>
+                        </div>
+                    `;
+                } else if (rAmount > 0) {
+                    msgHtml += `
+                        <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                                    <i class="fa-solid fa-shield-check fs-5"></i>
+                                </div>
+                                <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">HỦY MIỄN PHÍ & HOÀN CỌC</div>
+                            </div>
+                            <div class="fs-4 fw-bold" style="color: #16a34a; letter-spacing: -0.5px;">+${fVND(rAmount)}</div>
+                            <div class="small mt-2" style="color: #14532d; line-height: 1.4;">Bạn hủy trước <b>12 giờ</b>. Toàn bộ tiền cọc đã được tự động hoàn lại vào ví tài khoản của bạn.</div>
                         </div>
                     `;
                 } else {
                     msgHtml += `
-                        <div class="mt-3 p-3 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-3">
-                            <span class="text-success fw-bold"><i class="fa-solid fa-shield-check me-1"></i> Bạn không bị tính phí phạt cho lần hủy này.</span>
+                        <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 18px; margin-top: 15px; text-align: left;">
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                                    <i class="fa-solid fa-circle-check fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">HỦY CHUYẾN MIỄN PHÍ</div>
+                                    <div class="small mt-1" style="color: #166534;">Bạn không bị tính bất kỳ chi phí phạt nào cho lần hủy này.</div>
+                                </div>
+                            </div>
                         </div>
                     `;
                 }
 
-                // Hiển thị thông báo bằng SweetAlert2
+                // Hiển thị thông báo bằng SweetAlert2 với Glassmorphism UI
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Đã hủy chuyến',
+                    icon: isForfeit && pAmount > 0 ? 'warning' : 'success',
+                    title: 'Đã hủy chuyến đi',
                     html: msgHtml,
                     confirmButtonColor: '#00B14F',
-                    confirmButtonText: 'Đóng'
+                    confirmButtonText: 'Đóng',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg border border-white border-opacity-75'
+                    }
                 }).then(() => {
                     // Tải lại danh sách chuyến đi sau khi tắt thông báo
                     window.location.reload();
@@ -713,7 +817,11 @@ async function executeSubmitAction(actionType) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Không thể hủy chuyến',
-                    text: result.error || 'Vui lòng liên hệ tổng đài để được hỗ trợ.'
+                    text: result.error || 'Vui lòng liên hệ tổng đài để được hỗ trợ.',
+                    confirmButtonColor: '#d33',
+                    customClass: {
+                        popup: 'rounded-4 shadow-lg border border-white border-opacity-75'
+                    }
                 });
             }
         } catch (error) {
@@ -797,6 +905,80 @@ async function executeSubmitAction(actionType) {
     }
 }
 
+async function payPendingBooking(bookingId, amount) {
+    const confirm = await Swal.fire({
+        title: 'Thanh toán đơn hàng #' + bookingId,
+        text: 'Tiếp tục thanh toán cọc/đơn hàng qua cổng VNPay?',
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#00B14F',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: '<i class="fa-solid fa-credit-card me-1"></i> Thanh toán VNPay',
+        cancelButtonText: 'Đóng'
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    Swal.showLoading();
+    try {
+        const token = localStorage.getItem("accessToken");
+        const headers = {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        };
+
+        const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
+            method: 'POST',
+            headers: headers,
+            body: JSON.stringify({
+                bookingId: bookingId,
+                amount: Math.round(amount || 300000)
+            })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success && data.paymentUrl) {
+            localStorage.setItem('pendingBookingId', bookingId);
+            window.isVnPayCompleted = false;
+            const vnpPopup = window.open(data.paymentUrl, "VNPayPayment", "width=850,height=700,top=100,left=300");
+            const popupMonitor = setInterval(() => {
+                if (vnpPopup && vnpPopup.closed) {
+                    clearInterval(popupMonitor);
+                    if (!window.isVnPayCompleted) {
+                        Swal.fire({
+                            icon: "warning",
+                            title: "Chưa Hoàn Tất Thanh Toán",
+                            html: `
+                                <div style="background: rgba(255, 247, 237, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(249, 115, 22, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(249, 115, 22, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(249, 115, 22, 0.15); display: flex; align-items: center; justify-content: center; color: #ea580c;">
+                                            <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                                        </div>
+                                        <div class="fw-bold" style="color: #9a3412; font-size: 0.95rem;">THÔNG BÁO GIAO DỊCH CHƯA HOÀN TẤT</div>
+                                    </div>
+                                    <div class="fs-5 fw-bold" style="color: #ea580c;">Khách hàng chưa thanh toán thành công</div>
+                                    <div class="small mt-2" style="color: #7c2d12;">Đơn hàng #${bookingId} vẫn đang ở trạng thái <b>Chờ thanh toán</b>. Bạn có thể tiếp tục thanh toán lại bất kỳ lúc nào.</div>
+                                </div>
+                            `,
+                            confirmButtonColor: "#f97316",
+                            confirmButtonText: "Đã hiểu",
+                            customClass: {
+                                popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+                            }
+                        });
+                    }
+                    loadTripHistory();
+                }
+            }, 800);
+        } else {
+            Swal.fire({ icon: 'error', title: 'Lỗi VNPay', text: data.message || 'Không thể tạo link thanh toán VNPay.' });
+        }
+    } catch (error) {
+        console.error("Lỗi tạo thanh toán VNPay:", error);
+        Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+    }
+}
+
 async function payFinal(bookingId, method) {
     const isVnpay = method === 'VNPAY';
     const confirmMsg = isVnpay
@@ -864,7 +1046,37 @@ async function payFinal(bookingId, method) {
 
             if (res.ok && data.success && data.paymentUrl) {
                 localStorage.setItem('pendingBookingId', bookingId);
-                window.location.href = data.paymentUrl;
+                window.isVnPayCompleted = false;
+                const vnpPopup = window.open(data.paymentUrl, "VNPayPayment", "width=850,height=700,top=100,left=300");
+                const popupMonitor = setInterval(() => {
+                    if (vnpPopup && vnpPopup.closed) {
+                        clearInterval(popupMonitor);
+                        if (!window.isVnPayCompleted) {
+                            Swal.fire({
+                                icon: "warning",
+                                title: "Chưa Hoàn Tất Thanh Toán",
+                                html: `
+                                    <div style="background: rgba(255, 247, 237, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(249, 115, 22, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(249, 115, 22, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(249, 115, 22, 0.15); display: flex; align-items: center; justify-content: center; color: #ea580c;">
+                                                <i class="fa-solid fa-triangle-exclamation fs-5"></i>
+                                            </div>
+                                            <div class="fw-bold" style="color: #9a3412; font-size: 0.95rem;">THÔNG BÁO GIAO DỊCH CHƯA HOÀN TẤT</div>
+                                        </div>
+                                        <div class="fs-5 fw-bold" style="color: #ea580c;">Khách hàng chưa thanh toán thành công</div>
+                                        <div class="small mt-2" style="color: #7c2d12;">Đơn hàng của bạn vẫn đang ở trạng thái <b>Chờ thanh toán</b>. Bạn có thể tiếp tục thanh toán lại bất kỳ lúc nào tại danh sách bên dưới.</div>
+                                    </div>
+                                `,
+                                confirmButtonColor: "#f97316",
+                                confirmButtonText: "Đã hiểu",
+                                customClass: {
+                                    popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+                                }
+                            });
+                        }
+                        loadTripHistory();
+                    }
+                }, 800);
             } else {
                 Swal.fire({ icon: 'error', title: 'Lỗi VNPay', text: data.message || 'Không thể tạo link thanh toán VNPay.' });
             }
@@ -981,3 +1193,52 @@ async function submitComplaint() {
         btn.disabled = false;
     }
 }
+
+// LẮNG NGHE KẾT QUẢ THANH TOÁN TỪ CỬA SỔ POPUP VNPAY (MÔ HÌNH 1 - SIÊU MƯỢT)
+window.addEventListener("message", (event) => {
+    if (event.data && event.data.type === "VNPAY_RESULT") {
+        if (event.data.success) {
+            window.isVnPayCompleted = true;
+            const amountFormatted = (parseInt(event.data.amount || 0)).toLocaleString('vi-VN') + " đ";
+            Swal.fire({
+                icon: "success",
+                title: "Thanh Toán Thành Công!",
+                html: `
+                    <div style="background: rgba(240, 253, 244, 0.75); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(34, 197, 94, 0.35); border-radius: 20px; box-shadow: 0 8px 32px rgba(34, 197, 94, 0.12); padding: 20px; margin-top: 15px; text-align: left;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <div style="width: 36px; height: 36px; border-radius: 12px; background: rgba(34, 197, 94, 0.15); display: flex; align-items: center; justify-content: center; color: #16a34a;">
+                                <i class="fa-solid fa-circle-check fs-5"></i>
+                            </div>
+                            <div class="fw-bold" style="color: #14532d; font-size: 0.95rem;">GIAO DỊCH #${event.data.paymentId || ""} ĐÃ HOÀN TẤT</div>
+                        </div>
+                        <div class="fs-4 fw-bold" style="color: #16a34a;">+${amountFormatted}</div>
+                        <div class="small mt-2" style="color: #14532d;">Đã cập nhật trạng thái thanh toán chuyến đi thành công.</div>
+                    </div>
+                `,
+                confirmButtonColor: "#00B14F",
+                confirmButtonText: "Đóng",
+                customClass: {
+                    popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+                }
+            }).then(() => {
+                // Tự động làm mới danh sách chuyến đi mà không cần load lại cả trang
+                if (typeof loadTripHistory === "function") {
+                    loadTripHistory();
+                } else {
+                    window.location.reload();
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Thanh Toán Thất Bại",
+                text: event.data.message || "Giao dịch qua VNPay chưa thành công hoặc đã bị hủy",
+                confirmButtonColor: "#d33",
+                confirmButtonText: "Đóng",
+                customClass: {
+                    popup: "rounded-4 shadow-lg border border-white border-opacity-75"
+                }
+            });
+        }
+    }
+});
