@@ -487,34 +487,28 @@
 
                     <div id="driver-status" class="dashboard-section">
                         <div class="glass-panel">
-                            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-id-card text-info me-2"></i> Danh
-                                sách trạng thái tài xế</h4>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-id-card text-info me-2"></i> Danh sách trạng thái tài xế</h4>
+                                <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-2" onclick="loadDriverStatusList()">
+                                    <i class="fa-solid fa-rotate-right"></i> Làm Mới
+                                </button>
+                            </div>
                             <div class="table-glass-wrapper">
-                                <table class="table-glass w-100">
+                                <table class="table-glass w-100 align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Tài Xế</th>
-                                            <th>Phương Tiện</th>
-                                            <th>Đánh Giá</th>
-                                            <th>Hoạt Động</th>
+                                            <th width="10%">Mã TX</th>
+                                            <th width="28%">Họ Tên Tài Xế</th>
+                                            <th width="20%">Số Điện Thoại</th>
+                                            <th width="15%">Đánh Giá</th>
+                                            <th width="12%" class="text-center">Số Chuyến Nhận</th>
+                                            <th width="15%" class="text-center">Trạng Thái</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="driverStatusTbody">
                                         <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center gap-3">
-                                                    <div class="avatar-glass" style="width: 40px; height: 40px;"><img
-                                                            src="../../assets/img/user-avatar.png" alt="TX"></div>
-                                                    <span class="fw-bold">Lê Văn C</span>
-                                                </div>
-                                            </td>
-                                            <td>Sedan Hạng D (51G-123.45)</td>
-                                            <td><i class="fa-solid fa-star text-warning"></i> 4.9</td>
-                                            <td>
-                                                <label class="switch-glass">
-                                                    <input type="checkbox" checked>
-                                                    <span class="slider-glass"></span>
-                                                </label>
+                                            <td colspan="6" class="text-center py-4 text-white-50">
+                                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải danh sách tài xế...
                                             </td>
                                         </tr>
                                     </tbody>
@@ -866,6 +860,10 @@
                         if (targetId === 'map-management') {
                             if (typeof window.initDispatcherMap === 'function') {
                                 window.initDispatcherMap();
+                            }
+                        } else if (targetId === 'driver-status') {
+                            if (typeof window.loadDriverStatusList === 'function') {
+                                window.loadDriverStatusList();
                             }
                         } else {
                             // Nếu sang tab khác, tạm dừng quét API để nhẹ máy

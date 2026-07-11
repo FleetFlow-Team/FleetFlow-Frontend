@@ -1277,3 +1277,110 @@ document.querySelectorAll('.btn-glass-tab').forEach(btn => {
         btn.classList.remove('active');
     }
 });
+
+// ==========================================
+// TÍCH HỢP QUẢN LÝ TÀI XÉ CHO DISPATCHER (XEM DANH SÁCH & TRẠNG THÁI)
+// ==========================================
+async function loadDriverStatusList() {
+    const tbody = document.getElementById("driverStatusTbody");
+    if (!tbody) return;
+
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="6" class="text-center py-4 text-white-50">
+                <i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải danh sách tài xế từ máy chủ...
+            </td>
+        </tr>
+    `;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/drivers`, {
+            method: 'GET',
+            headers: getAuthHeader()
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.message || "Không thể tải danh sách tài xế.");
+        }
+
+        const drivers = result.data || [];
+
+        if (drivers.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center py-4 text-white-50">
+                        <i class="fa-solid fa-folder-open me-2"></i> Hiện chưa có tài xế nào trong hệ thống.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        tbody.innerHTML = drivers.map(driver => {
+            const driverId = driver.driverId || driver.accountId || '--';
+            const fullName = driver.fullName || 'Tài xế ẩn danh';
+            const phone = driver.phoneNumber || 'Chưa cập nhật';
+            const rating = driver.averageRating ? parseFloat(driver.averageRating).toFixed(1) : '5.0';
+            const trips = driver.acceptedTripCount || 0;
+            const availability = driver.availabilityStatus || 'Offline';
+
+            let badgeClass = 'bg-secondary';
+            let badgeText = 'Ngoại Tuyến';
+            let statusIcon = 'fa-circle-pause';
+
+            if (availability.toLowerCase() === 'available') {
+                badgeClass = 'bg-success';
+                badgeText = 'Sẵn Sàng';
+                statusIcon = 'fa-circle-check';
+            } else if (availability.toLowerCase() === 'busy') {
+                badgeClass = 'bg-warning text-dark';
+                badgeText = 'Đang Bận';
+                statusIcon = 'fa-clock';
+            }
+
+            return `
+                <tr>
+                    <td>
+                        <span class="badge bg-info text-dark fw-bold px-2 py-1">#${driverId}</span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="avatar-glass d-flex align-items-center justify-content-center rounded-circle" style="width: 38px; height: 38px; background: rgba(0, 177, 79, 0.2); border: 1px solid #00b14f;">
+                                <i class="fa-solid fa-user text-success"></i>
+                            </div>
+                            <span class="fw-bold text-muted">${fullName}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="text-muted-50"><i class="fa-solid fa-phone me-1 text-info"></i> ${phone}</span>
+                    </td>
+                    <td>
+                        <span class="fw-bold text-warning"><i class="fa-solid fa-star me-1"></i>${rating}</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge bg-primary rounded-pill px-3 py-2">${trips} chuyến</span>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge ${badgeClass} px-3 py-2 d-inline-flex align-items-center gap-1 shadow-sm">
+                            <i class="fa-solid ${statusIcon}"></i> ${badgeText}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error("Lỗi tải danh sách tài xế:", error);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center py-4 text-danger">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> Lỗi tải dữ liệu: ${error.message}
+                </td>
+            </tr>
+        `;
+    }
+}
+
+window.loadDriverStatusList = loadDriverStatusList;

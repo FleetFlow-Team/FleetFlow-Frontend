@@ -308,13 +308,24 @@ async function handleLogin(event) {
                     break;
             }
         } else {
-            // NẾU ĐĂNG NHẬP SAI:
+            // NẾU ĐĂNG NHẬP SAI HOẶC BỊ KHÓA:
             const pwdInput = document.getElementById('loginPassword');
-            pwdInput.value = '';
-            pwdInput.focus();
+            if (pwdInput) {
+                pwdInput.value = '';
+                pwdInput.focus();
+            }
 
             const errorHelper = document.getElementById('errorHelperText');
-            if (errorHelper) errorHelper.classList.remove('d-none');
+            if (errorHelper) {
+                errorHelper.classList.remove('d-none');
+            }
+
+            // Phân loại lỗi để hiển thị Toast Popup phù hợp:
+            if (response.status === 403 || (data.message && data.message.toLowerCase().includes('khóa'))) {
+                showAccountLockedToast(data.message);
+            } else {
+                showLoginErrorToast(data.message || 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!');
+            }
         }
 
     } catch (error) {
@@ -322,6 +333,71 @@ async function handleLogin(event) {
         alert('Không thể kết nối tới máy chủ. Vui lòng kiểm tra Server NetBeans đã được bật chưa.');
     }
 }
+
+// Hàm hiển thị Toast Popup khi tài khoản bị khóa / chặn
+function showAccountLockedToast(message) {
+    let toastEl = document.getElementById('accountLockedToast');
+    if (!toastEl) {
+        toastEl = document.createElement('div');
+        toastEl.id = 'accountLockedToast';
+        toastEl.style.cssText = `
+            position: fixed; top: 25px; right: 25px; z-index: 999999;
+            background: rgba(220, 53, 69, 0.95); backdrop-filter: blur(14px);
+            color: #fff; padding: 18px 24px; border-radius: 14px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; gap: 14px; max-width: 440px;
+            font-family: 'Inter', sans-serif;
+        `;
+        document.body.appendChild(toastEl);
+    }
+    toastEl.innerHTML = `
+        <i class="fa-solid fa-user-lock fs-2 text-warning"></i>
+        <div>
+            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">TÀI KHOẢN ĐÃ BỊ CHẶN / KHÓA</div>
+            <div style="font-size: 0.9rem; opacity: 0.95; line-height: 1.4;">
+                ${message || 'Tài khoản Điều phối viên / Tài xế của bạn đã bị Admin tạm khóa. Vui lòng liên hệ Admin để được hỗ trợ!'}
+            </div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#fff; font-size:1.4rem; margin-left:auto; cursor:pointer;">&times;</button>
+    `;
+
+    setTimeout(() => {
+        if (toastEl && toastEl.parentElement) toastEl.remove();
+    }, 6000);
+}
+
+// Hàm hiển thị Toast Popup khi đăng nhập sai email hoặc mật khẩu
+function showLoginErrorToast(message) {
+    let toastEl = document.getElementById('loginErrorToast');
+    if (!toastEl) {
+        toastEl = document.createElement('div');
+        toastEl.id = 'loginErrorToast';
+        toastEl.style.cssText = `
+            position: fixed; top: 25px; right: 25px; z-index: 999999;
+            background: rgba(235, 94, 40, 0.95); backdrop-filter: blur(14px);
+            color: #fff; padding: 18px 24px; border-radius: 14px;
+            box-shadow: 0 10px 35px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; gap: 14px; max-width: 440px;
+            font-family: 'Inter', sans-serif;
+        `;
+        document.body.appendChild(toastEl);
+    }
+    toastEl.innerHTML = `
+        <i class="fa-solid fa-circle-exclamation fs-2 text-warning"></i>
+        <div>
+            <div style="font-weight: 700; font-size: 1.05rem; margin-bottom: 4px;">ĐĂNG NHẬP KHÔNG THÀNH CÔNG</div>
+            <div style="font-size: 0.9rem; opacity: 0.95; line-height: 1.4;">
+                ${message || 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!'}
+            </div>
+        </div>
+        <button onclick="this.parentElement.remove()" style="background:none; border:none; color:#fff; font-size:1.4rem; margin-left:auto; cursor:pointer;">&times;</button>
+    `;
+
+    setTimeout(() => {
+        if (toastEl && toastEl.parentElement) toastEl.remove();
+    }, 5000);
+}
+
 
 
 // Warning cho tài xế đã bị gỡ bỏ
@@ -394,7 +470,7 @@ async function loadNotifications() {
 
                 const titleLower = title.toLowerCase();
                 const notifType = n.Type || n.type || '';
-                
+
                 if (titleLower.includes('hủy') || titleLower.includes('từ chối') || notifType === 'BOOKING_CANCELLED') {
                     typeBadgeClass = 'bg-danger';
                     typeText = 'Đã Hủy';
