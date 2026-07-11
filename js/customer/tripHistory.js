@@ -932,7 +932,8 @@ async function payPendingBooking(bookingId, amount) {
             headers: headers,
             body: JSON.stringify({
                 bookingId: bookingId,
-                amount: Math.round(amount || 300000)
+                amount: Math.round(amount || 300000),
+                paymentType: "DEPOSIT"
             })
         });
         const data = await res.json();
@@ -1039,7 +1040,8 @@ async function payFinal(bookingId, method) {
                 headers: headers,
                 body: JSON.stringify({
                     bookingId: bookingId,
-                    amount: Math.round(finalAmt)
+                    amount: Math.round(finalAmt),
+                    paymentType: "FINAL"
                 })
             });
             const data = await res.json();
