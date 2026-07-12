@@ -407,11 +407,20 @@ async function viewTripDetail(bookingId) {
         } else if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
             actionHtml = `<button type="button" class="btn btn-control-action btn-cancel-action m-0" style="flex:1" onclick="openCancelModal(${bookingId})">Hủy chuyến</button>`;
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
-        } else if (statusCheck === 'COMPLETED') {
+        } else if (statusCheck === 'COMPLETED' || statusCheck === 'UNPAID') {
             actionHtml = `
-                <button type="button" class="btn btn-control-action border-primary text-primary m-0" style="flex:1; background: rgba(59, 130, 246, 0.1);" onclick="viewInvoiceModal(${bookingId})">Xem hóa đơn</button>
-                <button type="button" class="btn btn-control-action btn-rate-action m-0" style="flex:1" onclick="openRatingModal(${bookingId})">Đánh giá</button>
-                <button type="button" class="btn btn-control-action border-danger text-danger m-0" style="flex:1; background: rgba(220, 53, 69, 0.1);" onclick="openComplaintModal(${bookingId})">Khiếu nại</button>
+                <button type="button" class="btn btn-control-action m-0 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" 
+                        style="flex: 2; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 8px;" 
+                        onclick="viewInvoiceModal(${bookingId})">
+                    <i class="fa-solid fa-wallet fs-5"></i>
+                    <span>Thanh toán 70% Final</span>
+                </button>
+                <button type="button" class="btn btn-control-action btn-rate-action m-0" style="flex: 1;" onclick="openRatingModal(${bookingId})">
+                    <i class="fa-solid fa-star me-1"></i>Đánh giá
+                </button>
+                <button type="button" class="btn btn-control-action border-danger text-danger m-0" style="flex: 0.8; background: rgba(220, 53, 69, 0.1);" onclick="openComplaintModal(${bookingId})">
+                    Khiếu nại
+                </button>
             `;
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'none';
         } else {
@@ -1033,6 +1042,17 @@ async function payFinal(bookingId, method) {
             if (finalAmt === undefined || finalAmt === null) {
                 let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
                 finalAmt = parseInt(uiAmountStr.replace(/[^\d]/g, ''), 10) || 59000;
+            }
+
+            if (finalAmt < 5000) {
+                Swal.fire(
+                    'Thông báo',
+                    finalAmt <= 0 
+                        ? 'Chuyến đi này đã được thanh toán hoàn tất cước phí!' 
+                        : 'Số tiền thanh toán (' + Number(finalAmt).toLocaleString('vi-VN') + ' đ) nhỏ hơn mức tối thiểu 5,000 đ của VNPay.',
+                    'warning'
+                );
+                return;
             }
 
             const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
