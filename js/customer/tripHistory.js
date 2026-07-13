@@ -69,9 +69,9 @@ let globalTrips = [];
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
-    const isPaymentSuccess = urlParams.get('paymentStatus') === 'success' || 
-                             urlParams.get('vnpay_status') === 'success' || 
-                             sessionStorage.getItem('showPaymentSuccessPopup') === 'true';
+    const isPaymentSuccess = urlParams.get('paymentStatus') === 'success' ||
+        urlParams.get('vnpay_status') === 'success' ||
+        sessionStorage.getItem('showPaymentSuccessPopup') === 'true';
 
     if (isPaymentSuccess) {
         sessionStorage.removeItem('showPaymentSuccessPopup');
@@ -115,8 +115,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const isPaymentCancelled = urlParams.get('paymentStatus') === 'cancelled' ||
-                               urlParams.get('vnpay_status') === 'failed' ||
-                               sessionStorage.getItem('showPaymentCancelPopup') === 'true';
+        urlParams.get('vnpay_status') === 'failed' ||
+        sessionStorage.getItem('showPaymentCancelPopup') === 'true';
 
     if (isPaymentCancelled && !isPaymentSuccess) {
         sessionStorage.removeItem('showPaymentCancelPopup');
@@ -257,7 +257,11 @@ function renderTripList(trips) {
             statusClass = "status-active-card"; badgeClass = "badge-active"; statusText = "Đang chạy";
         } else if (rawStatus === "CANCELLED" || rawStatus === "REJECTED") {
             statusClass = "status-cancelled-card"; badgeClass = "badge-cancelled"; statusText = "Đã hủy";
-        } else if (rawStatus === "ACCEPTED" || rawStatus === "CONFIRMED") {
+        } else if (rawStatus === "CONFIRMED") {
+            const depositPaid = trip.depositPaid === true;
+            statusClass = "status-pending-card"; badgeClass = "badge-pending";
+            statusText = depositPaid ? "Đã cọc - Chờ tài xế" : "Chờ thanh toán cọc";
+        } else if (rawStatus === "ACCEPTED") {
             statusClass = "status-pending-card"; badgeClass = "badge-pending"; statusText = "Đã nhận";
         }
 
@@ -394,33 +398,79 @@ async function viewTripDetail(bookingId) {
         const rawStatus = summaryTrip ? (summaryTrip.status || summaryTrip.Status) : (trip.status || trip.Status || "PENDING");
         const statusCheck = (rawStatus || '').toUpperCase();
 
+        // 8b. Badge trạng thái đơn ngay trên trang chi tiết (giống badge ở danh sách)
+        const detailBadgeContainer = document.getElementById('detailBadgeContainer');
+        if (detailBadgeContainer) {
+            let badgeBg = '#f59e0b', badgeText = 'Đang chờ';
+            if (statusCheck === 'COMPLETED' || statusCheck === 'UNPAID') {
+                badgeBg = '#00B14F'; badgeText = 'Hoàn thành';
+            } else if (statusCheck === 'ACTIVE' || statusCheck === 'IN_PROGRESS' || statusCheck === 'ONGOING') {
+                badgeBg = '#0077cc'; badgeText = 'Đang di chuyển';
+            } else if (statusCheck === 'CANCELLED' || statusCheck === 'REJECTED') {
+                badgeBg = '#dc3545'; badgeText = 'Đã hủy';
+            } else if (statusCheck === 'CONFIRMED') {
+                const depositPaidBadge = summaryTrip ? summaryTrip.depositPaid === true : trip.depositPaid === true;
+                badgeText = depositPaidBadge ? 'Đã cọc - Chờ khởi hành' : 'Chờ thanh toán cọc';
+            } else if (statusCheck === 'ACCEPTED') {
+                badgeText = 'Đã nhận';
+            } else if (statusCheck === 'PENDING' || statusCheck === 'WAITING_PAYMENT') {
+                badgeText = 'Chờ thanh toán';
+            }
+            detailBadgeContainer.innerHTML = `<span class="badge" style="background:${badgeBg}; font-size:0.8rem; padding:6px 12px; border-radius:20px;">${badgeText}</span>`;
+        }
+        const depositAlreadyPaid = summaryTrip ? summaryTrip.depositPaid === true : trip.depositPaid === true;
+        const needsDepositPayment = ['PENDING', 'UNPAID', 'WAITING_PAYMENT', 'CHỜ THANH TOÁN'].includes(statusCheck)
+            || (statusCheck === 'CONFIRMED' && !depositAlreadyPaid);
+
         let actionHtml = '';
-        if (['PENDING', 'UNPAID', 'WAITING_PAYMENT', 'CHỜ THANH TOÁN'].includes(statusCheck)) {
-            const payAmt = trip.depositAmount || trip.DepositAmount || trip.totalAmount || trip.TotalAmount || trip.price || (summaryTrip ? summaryTrip.price : 300000) || 300000;
+        if (needsDepositPayment) {
             actionHtml = `
-                <button type="button" class="btn btn-control-action m-0" style="flex:1.6; background: linear-gradient(135deg, #00B14F, #059669); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(0, 177, 79, 0.35); transition: all 0.3s ease;" onclick="payPendingBooking(${bookingId}, ${payAmt})">
-                    <i class="fa-solid fa-credit-card me-2"></i>Thanh toán VNPay
+                <button type="button" class="btn btn-control-action m-0" style="flex:1.3; background: linear-gradient(135deg, #00B14F, #059669); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 15px rgba(0, 177, 79, 0.35); transition: all 0.3s ease;" onclick="payPendingBooking(${bookingId})">
+                    <i class="fa-solid fa-credit-card me-2"></i>VNPay
                 </button>
+                <!-- <button type="button" class="btn btn-control-action m-0" style="flex:1.3; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; font-weight: 600; border: none;" onclick="payViaSePay(${bookingId})">
+                    <i class="fa-solid fa-qrcode me-2"></i>SePay QR
+                </button> -->
                 <button type="button" class="btn btn-control-action btn-cancel-action m-0" style="flex:0.9" onclick="openCancelModal(${bookingId})">Hủy chuyến</button>
             `;
+            if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
+        } else if (statusCheck === 'ONGOING') {
+            // Cho phép trả 70% còn lại ngay khi chuyến đang chạy — không cần đợi tài xế
+            // bấm hoàn thành (backend giờ chặn hoàn thành nếu khách chưa trả xong, nên
+            // khách phải trả được TRƯỚC COMPLETED, ngay trong lúc ONGOING).
+            const remainingOngoing = summaryTrip ? (summaryTrip.remainingAmount || 0) : (trip.remainingAmount || 0);
+            const pendingCash = summaryTrip ? summaryTrip.pendingCashFinal === true : trip.pendingCashFinal === true;
+            if (remainingOngoing <= 0) {
+                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>`;
+            } else if (pendingCash) {
+                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>`;
+            } else {
+                actionHtml = `
+                <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
+                    <i class="fa-solid fa-credit-card me-2"></i>VNPay
+                </button>
+                <!-- <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; font-weight: 600; border: none;" onclick="payViaSePay(${bookingId})">
+                    <i class="fa-solid fa-qrcode me-2"></i>SePay QR
+                </button> -->
+                <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'CASH')">
+                    <i class="fa-solid fa-money-bill-wave me-2"></i>Tiền mặt
+                </button>`;
+            }
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
         } else if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
             actionHtml = `<button type="button" class="btn btn-control-action btn-cancel-action m-0" style="flex:1" onclick="openCancelModal(${bookingId})">Hủy chuyến</button>`;
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
-        } else if (statusCheck === 'COMPLETED' || statusCheck === 'UNPAID') {
+        } else if (statusCheck === 'COMPLETED') {
+            const remainingAmount = summaryTrip ? (summaryTrip.remainingAmount || 0) : (trip.remainingAmount || 0);
+            const payButtonHtml = remainingAmount > 0 ? `
+                <button type="button" class="btn btn-control-action m-0" style="flex:1.6; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
+                    <i class="fa-solid fa-credit-card me-2"></i>Thanh toán còn lại
+                </button>` : '';
             actionHtml = `
-                <button type="button" class="btn btn-control-action m-0 fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2" 
-                        style="flex: 2; background: linear-gradient(135deg, #2563eb, #1d4ed8); color: #fff; border: none; border-radius: 8px;" 
-                        onclick="viewInvoiceModal(${bookingId})">
-                    <i class="fa-solid fa-wallet fs-5"></i>
-                    <span>Thanh toán 70% Final</span>
-                </button>
-                <button type="button" class="btn btn-control-action btn-rate-action m-0" style="flex: 1;" onclick="openRatingModal(${bookingId})">
-                    <i class="fa-solid fa-star me-1"></i>Đánh giá
-                </button>
-                <button type="button" class="btn btn-control-action border-danger text-danger m-0" style="flex: 0.8; background: rgba(220, 53, 69, 0.1);" onclick="openComplaintModal(${bookingId})">
-                    Khiếu nại
-                </button>
+                ${payButtonHtml}
+                <button type="button" class="btn btn-control-action border-primary text-primary m-0" style="flex:1; background: rgba(59, 130, 246, 0.1);" onclick="viewInvoiceModal(${bookingId})">Xem hóa đơn</button>
+                <button type="button" class="btn btn-control-action btn-rate-action m-0" style="flex:1" onclick="openRatingModal(${bookingId})">Đánh giá</button>
+                <button type="button" class="btn btn-control-action border-danger text-danger m-0" style="flex:1; background: rgba(220, 53, 69, 0.1);" onclick="openComplaintModal(${bookingId})">Khiếu nại</button>
             `;
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'none';
         } else {
@@ -485,45 +535,16 @@ async function viewInvoiceModal(bookingId) {
             document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
             document.getElementById('lblInvoiceDiscount').innerText = `- ${fVND(discountAmount)}`;
 
-            // Gọi API kiểm tra số tiền CÒN LẠI cần thanh toán
-            let finalAmount = totalAmount;
-            try {
-                const finalRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/payments/final`, {
-                    method: 'POST',
-                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ bookingId: bookingId, paymentMethod: 'CASH' }) // Truyền tạm để tính tiền
-                });
-                const finalData = await finalRes.json();
-                if (finalData.finalAmount !== undefined) {
-                    finalAmount = parseFloat(finalData.finalAmount) || 0;
-                }
-            } catch (e) { }
+            // KHÔNG được gọi POST /payments/final ở đây để "xem trước" số tiền:
+            // BE mới ghi nhận thanh toán CASH ngay khi endpoint này được gọi, nên gọi trước
+            // khi khách xác nhận sẽ vô tình tất toán đơn bằng tiền mặt mà khách không hề bấm nút nào.
+            // finalAmount thật sự chỉ được biết khi khách bấm nút thanh toán (payFinal).
+            document.getElementById('lblInvoiceTotalAmount').innerText = fVND(totalAmount);
 
-            const depositPaid = totalAmount - finalAmount;
-
-            // Xóa dòng Cọc cũ nếu có để tránh trùng
-            const oldDepositRow = document.getElementById('rowInvoiceDeposit');
-            if (oldDepositRow) oldDepositRow.remove();
-
-            if (depositPaid > 0) {
-                const discountRow = document.getElementById('lblInvoiceDiscount').parentElement;
-                const depositHtml = `<div class="billing-row text-primary fw-semibold" id="rowInvoiceDeposit"><span>Đã thanh toán (Cọc/Trước)</span><span>- ${fVND(depositPaid)}</span></div>`;
-                discountRow.insertAdjacentHTML('afterend', depositHtml);
-            }
-
-            document.getElementById('lblInvoiceTotalAmount').innerText = fVND(finalAmount);
-
-            // Kiểm tra trạng thái chuyến đi để hiển thị nút thanh toán
-            const status = invResult.status || 'COMPLETED';
-            if ((status === 'UNPAID' || status === 'COMPLETED') && finalAmount > 0) {
-                document.getElementById('invoiceModalFooter').innerHTML = `
-                    <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #005A9C;" onclick="payFinal(${bookingId}, 'VNPAY')">Thanh toán VNPay (Còn lại)</button>
-                    <button type="button" class="btn btn-control-action m-0 text-white w-100 mb-2" style="background-color: #10b981;" onclick="payFinal(${bookingId}, 'CASH')">Thanh toán Tiền mặt</button>
-                    <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>
-                `;
-            } else {
-                document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
-            }
+            // Modal hóa đơn CHỈ để xem lại — không đặt nút thanh toán ở đây nữa để tránh
+            // trùng lặp với nút "Thanh toán còn lại" đã hiện trực tiếp ngoài danh sách khi
+            // remainingAmount > 0. Thanh toán làm ở ngoài, ở đây chỉ xem.
+            document.getElementById('invoiceModalFooter').innerHTML = `<button type="button" class="btn btn-control-action btn-rate-action w-100 m-0" data-bs-dismiss="modal">Đóng</button>`;
         } else {
             throw new Error(invResult.error || "Hệ thống chưa tạo dữ liệu giá cho chuyến đi này.");
         }
@@ -914,7 +935,7 @@ async function executeSubmitAction(actionType) {
     }
 }
 
-async function payPendingBooking(bookingId, amount) {
+async function payPendingBooking(bookingId) {
     const confirm = await Swal.fire({
         title: 'Thanh toán đơn hàng #' + bookingId,
         text: 'Tiếp tục thanh toán cọc/đơn hàng qua cổng VNPay?',
@@ -939,11 +960,7 @@ async function payPendingBooking(bookingId, amount) {
         const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
             method: 'POST',
             headers: headers,
-            body: JSON.stringify({
-                bookingId: bookingId,
-                amount: Math.round(amount || 300000),
-                paymentType: "DEPOSIT"
-            })
+            body: JSON.stringify({ bookingId: bookingId })
         });
         const data = await res.json();
 
@@ -951,7 +968,7 @@ async function payPendingBooking(bookingId, amount) {
             localStorage.setItem('pendingBookingId', bookingId);
             window.isVnPayCompleted = false;
             const vnpPopup = window.open(data.paymentUrl, "VNPayPayment", "width=850,height=700,top=100,left=300");
-            const popupMonitor = setInterval(() => {
+            const popupMonitor = setInterval(async () => {
                 if (vnpPopup && vnpPopup.closed) {
                     clearInterval(popupMonitor);
                     if (!window.isVnPayCompleted) {
@@ -977,7 +994,8 @@ async function payPendingBooking(bookingId, amount) {
                             }
                         });
                     }
-                    loadTripHistory();
+                    await loadTripHistory();
+                    await viewTripDetail(bookingId);
                 }
             }, 800);
         } else {
@@ -1038,31 +1056,10 @@ async function payFinal(bookingId, method) {
         }
 
         if (isVnpay) {
-            let finalAmt = finalData.finalAmount;
-            if (finalAmt === undefined || finalAmt === null) {
-                let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
-                finalAmt = parseInt(uiAmountStr.replace(/[^\d]/g, ''), 10) || 59000;
-            }
-
-            if (finalAmt < 5000) {
-                Swal.fire(
-                    'Thông báo',
-                    finalAmt <= 0 
-                        ? 'Chuyến đi này đã được thanh toán hoàn tất cước phí!' 
-                        : 'Số tiền thanh toán (' + Number(finalAmt).toLocaleString('vi-VN') + ' đ) nhỏ hơn mức tối thiểu 5,000 đ của VNPay.',
-                    'warning'
-                );
-                return;
-            }
-
             const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/vnpay/create', {
                 method: 'POST',
                 headers: headers,
-                body: JSON.stringify({
-                    bookingId: bookingId,
-                    amount: Math.round(finalAmt),
-                    paymentType: "FINAL"
-                })
+                body: JSON.stringify({ bookingId: bookingId })
             });
             const data = await res.json();
 
@@ -1070,7 +1067,7 @@ async function payFinal(bookingId, method) {
                 localStorage.setItem('pendingBookingId', bookingId);
                 window.isVnPayCompleted = false;
                 const vnpPopup = window.open(data.paymentUrl, "VNPayPayment", "width=850,height=700,top=100,left=300");
-                const popupMonitor = setInterval(() => {
+                const popupMonitor = setInterval(async () => {
                     if (vnpPopup && vnpPopup.closed) {
                         clearInterval(popupMonitor);
                         if (!window.isVnPayCompleted) {
@@ -1096,31 +1093,105 @@ async function payFinal(bookingId, method) {
                                 }
                             });
                         }
-                        loadTripHistory();
+                        await loadTripHistory();
+                        await viewTripDetail(bookingId);
                     }
                 }, 800);
             } else {
                 Swal.fire({ icon: 'error', title: 'Lỗi VNPay', text: data.message || 'Không thể tạo link thanh toán VNPay.' });
             }
         } else {
-            let finalAmt = finalData.finalAmount;
-            if (finalAmt === undefined || finalAmt === null) {
-                let uiAmountStr = document.getElementById('lblInvoiceTotalAmount') ? document.getElementById('lblInvoiceTotalAmount').innerText : "0";
-                finalAmt = parseInt(uiAmountStr.replace(/[^\d]/g, ''), 10) || 59000;
-            }
+            // CASH giờ chỉ là ghi nhận Ý ĐỊNH — tài xế mới là người xác nhận đã thực
+            // nhận tiền (chống khách tự khai khống). finalData.message đã có sẵn câu
+            // đúng ý nghĩa từ backend ("Đã ghi nhận... tài xế sẽ xác nhận...").
             Swal.fire({
-                icon: 'success',
-                title: 'Thành công',
-                text: 'Thanh toán bằng Tiền mặt hoàn tất. Cảm ơn bạn!',
+                icon: 'info',
+                title: 'Đã ghi nhận',
+                text: finalData.message || 'Đã ghi nhận yêu cầu thanh toán tiền mặt — tài xế sẽ xác nhận khi nhận đủ tiền.',
                 confirmButtonText: 'Đóng'
-            }).then(() => {
+            }).then(async () => {
                 const invoiceModal = bootstrap.Modal.getInstance(document.getElementById('invoiceModal'));
                 if (invoiceModal) invoiceModal.hide();
-                loadTripHistory();
+                await loadTripHistory();
+                await viewTripDetail(bookingId);
             });
         }
     } catch (error) {
         console.error("Lỗi giao dịch:", error);
+        Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
+    }
+}
+
+let sepayPollInterval = null;
+
+// Thanh toán qua SePay (QR chuyển khoản) — server tự quyết DEPOSIT hay FINAL,
+// giống VNPay/CASH. BE không đẩy tin báo khi thanh toán xong (không có
+// webhook/WebSocket) — FE tự short-poll /status/{paymentId} mỗi 3s trong lúc
+// modal QR đang mở để phát hiện lúc cron đối soát xong.
+async function payViaSePay(bookingId) {
+    const token = localStorage.getItem("accessToken");
+    try {
+        const res = await fetch('http://localhost:8080/FleetFlow/api/v1/payments/sepay/create', {
+            method: 'POST',
+            headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ bookingId: bookingId })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) {
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Không thể tạo mã QR SePay lúc này.' });
+            return;
+        }
+
+        document.getElementById('sepayQrImage').src = data.qrImageUrl;
+        document.getElementById('sepayQrAmount').innerText = Number(data.amount || 0).toLocaleString('vi-VN') + ' đ';
+        document.getElementById('sepayQrContent').innerText = data.transactionCode;
+        document.getElementById('sepayQrStatusText').innerText = 'Đang chờ thanh toán...';
+
+        const modalEl = document.getElementById('sepayQrModal');
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+
+        const stopPolling = () => {
+            if (sepayPollInterval) {
+                clearInterval(sepayPollInterval);
+                sepayPollInterval = null;
+            }
+        };
+        document.getElementById('btnCloseSepayModal').onclick = stopPolling;
+        document.getElementById('btnCancelSepayModal').onclick = () => { stopPolling(); modal.hide(); };
+        modalEl.addEventListener('hidden.bs.modal', stopPolling, { once: true });
+
+        stopPolling();
+        sepayPollInterval = setInterval(async () => {
+            try {
+                const statusRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/payments/sepay/status/${data.paymentId}`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                const statusData = await statusRes.json();
+                if (!statusData.success) return;
+
+                if (statusData.status === 'COMPLETED') {
+                    stopPolling();
+                    modal.hide();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thanh toán thành công!',
+                        text: `Đã nhận ${Number(statusData.amount || 0).toLocaleString('vi-VN')} đ qua SePay.`,
+                        confirmButtonText: 'Đóng'
+                    }).then(async () => {
+                        await loadTripHistory();
+                        await viewTripDetail(bookingId);
+                    });
+                } else if (statusData.status === 'FAILED') {
+                    stopPolling();
+                    document.getElementById('sepayQrStatusText').innerText = 'Giao dịch đã bị hủy.';
+                }
+            } catch (pollErr) {
+                console.error("Lỗi poll trạng thái SePay:", pollErr);
+            }
+        }, 3000);
+    } catch (error) {
+        console.error("Lỗi tạo thanh toán SePay:", error);
         Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow.' });
     }
 }
@@ -1242,10 +1313,12 @@ window.addEventListener("message", (event) => {
                 customClass: {
                     popup: "rounded-4 shadow-lg border border-white border-opacity-75"
                 }
-            }).then(() => {
+            }).then(async () => {
                 // Tự động làm mới danh sách chuyến đi mà không cần load lại cả trang
                 if (typeof loadTripHistory === "function") {
-                    loadTripHistory();
+                    await loadTripHistory();
+                    const pendingId = localStorage.getItem('pendingBookingId');
+                    if (pendingId) await viewTripDetail(pendingId);
                 } else {
                     window.location.reload();
                 }

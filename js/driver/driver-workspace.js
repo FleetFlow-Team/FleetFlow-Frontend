@@ -161,7 +161,7 @@ window.switchTab = function (tabId, element) {
 
     if (tabId === 'tab-history') {
         if (typeof fetchDriverHistory === 'function') {
-            fetchDriverHistory();
+            fetchDriverHistory('COMPLETED_AND_CANCELLED'); // Cờ đặc biệt xử lý trong hàm
         }
     }
 };
@@ -228,22 +228,19 @@ window.acceptJob = async function (btnElement, broadcastId, explicitBookingId) {
 
         // 4. Xử lý phản hồi từ Backend
         if (response.ok && result.success) {
-            let bookingId = explicitBookingId;
-            if (!bookingId) {
-                const cardEl = document.getElementById(`job-card-${broadcastId}`);
-                if (cardEl) bookingId = cardEl.querySelector('.fw-bold.fs-5').innerText.replace('#BK-', '').trim();
-            }
-
-            if (bookingId) {
-                // Thay vì chuyển trang, ta gọi hàm startTrip để bắt đầu chuyến và đổi UI ngay tại đây
-                const actionButtons = document.getElementById(`action-buttons-${bookingId}`);
-                if (actionButtons) {
-                    btnElement = actionButtons; // Trick để startTrip ẩn toàn bộ khung 2 nút Từ chối/Bắt đầu
-                }
-
-                // Gọi luồng startTrip (gọi /start, bật GPS, đổi nút sang Hoàn thành chuyến đi)
-                window.startTrip(btnElement, bookingId);
-            }
+            // KHÔNG tự gọi startTrip() ở đây nữa — luồng thanh toán mới yêu cầu khách
+            // phải đóng cọc 30% SAU khi tài xế nhận chuyến (Booking=CONFIRMED) rồi mới
+            // được phép bắt đầu chuyến. Gọi start ngay ở bước accept này chắc chắn bị
+            // backend từ chối "Khách hàng chưa đóng cọc 30%". Driver giờ bắt đầu chuyến
+            // từ tab "Chuyến đi cũ" (nút "Bắt đầu chuyến đi" hiện khi trạng thái CONFIRMED),
+            // sau khi khách đã thanh toán cọc.
+            showModalAlert(
+                "Nhận chuyến thành công! Bạn có thể quản lý và bắt đầu chuyến đi ngay tại tab này.",
+                "Nhận chuyến thành công", "success"
+            );
+            // Cập nhật lại UI sau khi nhận thành công
+            if (typeof fetchPendingJobs === "function") fetchPendingJobs();
+            window.switchTab('tab-jobs', document.getElementById('nav-jobs')); // Vẫn ở lại tab Chuyến mới để xem chuyến đang chạy
         } else {
             // [THẤT BẠI] - Trả lại nút bấm như cũ
             btnElement.disabled = false;
@@ -501,9 +498,23 @@ async function fetchPendingJobs() {
 
         // 4. Kiểm tra thành công và render View
         if (response.ok && result.success) {
-            if (result.data && result.data.length > 0) {
+            let pendingJobs = result.data || [];
+            
+            // Gọi thêm API lịch sử để lấy các chuyến đang chạy (CONFIRMED, ONGOING)
+            let activeJobs = [];
+            try {
+                const req1 = await fetch(`${API_DISPATCH_BASE}/history?status=CONFIRMED`, { headers: { "Authorization": `Bearer ${token}` } });
+                const res1 = await req1.json();
+                if (res1.success) activeJobs = activeJobs.concat(res1.data || []);
+                
+                const req2 = await fetch(`${API_DISPATCH_BASE}/history?status=ONGOING`, { headers: { "Authorization": `Bearer ${token}` } });
+                const res2 = await req2.json();
+                if (res2.success) activeJobs = activeJobs.concat(res2.data || []);
+            } catch(e) { console.error("Lỗi lấy chuyến đang chạy", e); }
+
+            if (pendingJobs.length > 0 || activeJobs.length > 0) {
                 // Nếu có cuốc xe -> Render ra thẻ HTML
-                renderPendingJobs(result.data);
+                renderPendingJobs(pendingJobs, activeJobs);
 
                 // Hiển thị số lượng lên dấu chấm đỏ (Badge)
                 if (jobBadge) {
@@ -553,7 +564,7 @@ window.triggerRefreshJobs = async function (btnElement) {
  * Hàm biến đổi JSON Data thành cấu trúc HTML Card
  * @param {Array} jobs Mảng chứa các lệnh broadcast 
  */
-function renderPendingJobs(jobs) {
+function renderPendingJobs(pendingJobs, activeJobs = []) {
     const jobListContainer = document.getElementById("jobList");
 
     // Khởi tạo HTML với trạng thái EmptyState bị ẩn (để tái sử dụng khi xóa hết card)
@@ -564,8 +575,55 @@ function renderPendingJobs(jobs) {
         </div>
     `;
 
-    // Lặp qua từng chuyến xe
-    jobs.forEach(job => {
+    // Lặp qua từng chuyến xe ĐANG CHẠY (CONFIRMED/ONGOING)
+    activeJobs.forEach(trip => {
+        const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
+        let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
+        
+        let statusBadge = '';
+        if (trip.bookingStatus === 'CONFIRMED') statusBadge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
+        if (trip.bookingStatus === 'ONGOING') statusBadge = '<span class="badge bg-primary">Đang di chuyển</span>';
+
+        html += `
+            <div class="col-xl-6 broadcast-card-item">
+                <div class="glass-panel h-100 p-3 border border-warning rounded-3" style="box-shadow: 0 0 15px rgba(245,158,11,0.2);">
+                    <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
+                        <div>
+                            <span class="fw-bold text-white fs-5">#BK-${trip.bookingId}</span>
+                            ${typeBadge}
+                        </div>
+                        ${statusBadge}
+                    </div>
+                    <div class="text-white-50 small mb-2"><i class="fa-regular fa-clock me-1"></i> ${trip.departureTime || trip.acceptedAt || 'N/A'}</div>
+                    <div class="text-white mb-2">
+                        <i class="fa-solid fa-location-dot text-primary me-2"></i> ${trip.pickupAddress || 'N/A'}
+                    </div>
+                    <div class="text-white mb-3">
+                        <i class="fa-solid fa-location-dot text-danger me-2"></i> ${trip.dropoffAddress || 'N/A'}
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2 mb-3">
+                        <span class="text-white-50 small">
+                            <i class="fa-solid fa-road me-1"></i> Quãng đường: <strong class="text-white">${trip.distanceKm ? trip.distanceKm + ' km' : 'N/A'}</strong>
+                        </span>
+                        <span class="fw-bold text-success">${moneyStr}</span>
+                    </div>
+                    ${trip.bookingStatus === 'CONFIRMED' ? `
+                    <button type="button" class="btn btn-success w-100 fw-bold py-2 mb-2"
+                        onclick="(async()=>{await window.startTrip(this, ${trip.bookingId}); fetchPendingJobs();})()">
+                        <i class="fa-solid fa-play me-2"></i> Bắt đầu chuyến đi
+                    </button>` : ''}
+                    ${trip.bookingStatus === 'ONGOING' ? `
+                    <button type="button" class="btn btn-primary w-100 fw-bold py-2"
+                        onclick="(async()=>{await window.completeTrip(this, ${trip.bookingId}, ${trip.pendingCashFinal === true}); fetchPendingJobs();})()">
+                        <i class="fa-solid fa-flag-checkered me-2"></i> Hoàn thành chuyến đi
+                    </button>` : ''}
+                </div>
+            </div>
+        `;
+    });
+
+    // Lặp qua từng chuyến xe CHỜ NHẬN (PENDING)
+    pendingJobs.forEach(job => {
         // Format thời gian từ chuỗi ISO
         const dateObj = new Date(job.dispatchedAt);
         const timeFormatted = dateObj.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
@@ -645,7 +703,7 @@ function renderPendingJobs(jobs) {
                             <div class="col-6">
                                 <button class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6 fw-bold" 
                                         onclick="acceptJob(this, ${job.broadcastId}, ${job.bookingId})">
-                                    Bắt đầu chuyến đi
+                                    Nhận chuyến
                                 </button>
                             </div>
                         </div>
@@ -976,18 +1034,28 @@ let lastNotifiedIds = new Set();
  * Xử lý khi tài xế bấm "Hoàn thành chuyến"
  * Đổi trạng thái dưới DB, tắt GPS, xóa thẻ xe khỏi UI và dọn dẹp bộ nhớ máy
  */
-window.completeTrip = async function (btnElement, bookingId) {
+window.completeTrip = async function (btnElement, bookingId, isCashTrip = false) {
+    window.currentTripIsCash = isCashTrip;
     const originalText = btnElement.innerHTML;
 
     // 1. Chặn UI tránh việc tài xế bấm đúp nhiều lần gây lỗi trùng gửi lệnh
     btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xử lý...';
     btnElement.disabled = true;
 
-    // Lấy Token xác thực từ LocalStorage
     const token = localStorage.getItem("accessToken");
     if (!token) return;
 
     try {
+        if (isCashTrip) {
+            await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/trips/${bookingId}/confirm-cash`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+        }
+
         // 2. Gọi API Hoàn thành chuyến xe về Server Backend
         const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/trips/${bookingId}/complete`, {
             method: "POST",
@@ -1063,6 +1131,44 @@ window.completeTrip = async function (btnElement, bookingId) {
     } catch (error) {
         // [LỖI MẤT KẾT NỐI]
         console.error("Lỗi kết nối API Complete Trip:", error);
+        showModalAlert("Mất tín hiệu đường truyền máy chủ! Vui lòng kiểm tra lại mạng.", "Lỗi mạng", "error");
+        btnElement.innerHTML = originalText;
+        btnElement.disabled = false;
+    }
+}
+
+/**
+ * Xử lý khi tài xế bấm "Xác nhận đã nhận tiền mặt" — khách đã chọn trả FINAL
+ * bằng tiền mặt (pendingCashFinal=true), tài xế xác nhận sau khi thực nhận tiền.
+ * Sau khi xác nhận, nút "Hoàn thành chuyến đi" mới thực sự dùng được.
+ */
+window.confirmCashPayment = async function (btnElement, bookingId) {
+    const originalText = btnElement.innerHTML;
+    btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Đang xác nhận...';
+    btnElement.disabled = true;
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    try {
+        const response = await fetch(`${API_TRIPS_BASE}/${bookingId}/confirm-cash`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            showModalAlert(result.message || "Đã xác nhận nhận tiền mặt!", "Thành công", "success");
+        } else {
+            showModalAlert(result.error || "Không thể xác nhận lúc này!", "Lỗi", "error");
+            btnElement.innerHTML = originalText;
+            btnElement.disabled = false;
+        }
+    } catch (error) {
+        console.error("Lỗi API Confirm Cash:", error);
         showModalAlert("Mất tín hiệu đường truyền máy chủ! Vui lòng kiểm tra lại mạng.", "Lỗi mạng", "error");
         btnElement.innerHTML = originalText;
         btnElement.disabled = false;
@@ -1296,22 +1402,54 @@ async function fetchDriverHistory(statusFilter = '') {
     if (!token) return;
 
     try {
-        let url = `${API_DISPATCH_BASE}/history`;
-        if (statusFilter) url += `?status=${statusFilter}`;
+        let trips = [];
+        if (statusFilter === 'COMPLETED_AND_CANCELLED') {
+            // Backend không hỗ trợ query IN () nên ta gọi 2 lần
+            const [req1, req2] = await Promise.all([
+                fetch(`${API_DISPATCH_BASE}/history?status=COMPLETED`, { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch(`${API_DISPATCH_BASE}/history?status=CANCELLED`, { headers: { 'Authorization': `Bearer ${token}` } })
+            ]);
+            const res1 = await req1.json();
+            const res2 = await req2.json();
+            if (res1.success) trips = trips.concat(res1.data || []);
+            if (res2.success) trips = trips.concat(res2.data || []);
+            
+            // Sắp xếp lại theo thời gian mới nhất (RespondedAt)
+            trips.sort((a, b) => new Date(b.respondedAt || 0) - new Date(a.respondedAt || 0));
+        } else {
+            let url = `${API_DISPATCH_BASE}/history`;
+            if (statusFilter) url += `?status=${statusFilter}`;
+            const response = await fetch(url, { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } });
+            const result = await response.json();
+            if (response.ok && result.success) {
+                trips = result.data || [];
+            }
+        }
 
-        const response = await fetch(url, { method: 'GET', headers: { 'Authorization': `Bearer ${token}` } });
-        const result = await response.json();
-
-        if (response.ok && result.success) {
-            const trips = result.data || [];
-            if (trips.length === 0) {
+        if (trips.length === 0) {
                 historyListContainer.innerHTML = '<div class="text-center py-5 text-white-50">Chưa có chuyến đi nào.</div>';
                 return;
             }
 
             let html = '';
             trips.forEach(trip => {
-                const badge = trip.bookingStatus === 'COMPLETED' ? '<span class="badge bg-success">Hoàn thành</span>' : '<span class="badge bg-danger">Đã hủy</span>';
+                let badge;
+                switch (trip.bookingStatus) {
+                    case 'COMPLETED':
+                        badge = '<span class="badge bg-success">Hoàn thành</span>';
+                        break;
+                    case 'ONGOING':
+                        badge = '<span class="badge bg-primary">Đang di chuyển</span>';
+                        break;
+                    case 'CONFIRMED':
+                        badge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
+                        break;
+                    case 'CANCELLED':
+                        badge = '<span class="badge bg-danger">Đã hủy</span>';
+                        break;
+                    default:
+                        badge = `<span class="badge bg-secondary">${trip.bookingStatus || 'Không xác định'}</span>`;
+                }
                 const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
 
                 let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
@@ -1338,7 +1476,7 @@ async function fetchDriverHistory(statusFilter = '') {
                             <div class="text-white mb-3">
                                 <i class="fa-solid fa-location-dot text-danger me-2"></i> ${trip.dropoffAddress || 'N/A'}
                             </div>
-                            <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2">
+                            <div class="d-flex justify-content-between align-items-center border-top border-secondary pt-2 mb-2">
                                 <span class="text-white-50 small">
                                     <i class="fa-solid fa-road me-1"></i> Quãng đường: <strong class="text-white">${trip.distanceKm ? trip.distanceKm + ' km' : 'N/A'}</strong>
                                 </span>
@@ -1349,9 +1487,6 @@ async function fetchDriverHistory(statusFilter = '') {
                 `;
             });
             historyListContainer.innerHTML = html;
-        } else {
-            historyListContainer.innerHTML = `<div class="text-center py-4 text-danger">${result.error || 'Lỗi tải lịch sử.'}</div>`;
-        }
     } catch (e) {
         historyListContainer.innerHTML = '<div class="text-center py-4 text-danger">Lỗi kết nối.</div>';
     }
@@ -1387,6 +1522,9 @@ window.skipDriverRating = function () {
     const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
     if (modal) modal.hide();
 
+    const cashMsg = document.getElementById("cashCollectMessage");
+    if (cashMsg) cashMsg.style.display = window.currentTripIsCash ? "block" : "none";
+
     const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
     completeModal.show();
 }
@@ -1416,6 +1554,9 @@ window.submitDriverRating = async function () {
         const data = await res.json();
         const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
         if (modal) modal.hide();
+
+        const cashMsg = document.getElementById("cashCollectMessage");
+        if (cashMsg) cashMsg.style.display = window.currentTripIsCash ? "block" : "none";
 
         const completeModal = new bootstrap.Modal(document.getElementById("completeTripModal"));
         completeModal.show();
