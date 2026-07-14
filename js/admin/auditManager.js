@@ -201,14 +201,223 @@ function openAuditDiff(index) {
     if (index < 0 || index >= currentAuditLogs.length) return;
     const log = currentAuditLogs[index];
 
+    // 1. Điền thông tin vào 4 thẻ Ngữ cảnh (Context Cards)
+    const elUser = document.getElementById('auditDetailUser');
+    const elUserSub = document.getElementById('auditDetailUserSub');
+    const elAction = document.getElementById('auditDetailAction');
+    const elEntity = document.getElementById('auditDetailEntity');
+    const elEntityId = document.getElementById('auditDetailEntityId');
+    const elTime = document.getElementById('auditDetailTime');
+    const elIp = document.getElementById('auditDetailIp');
+
+    if (elUser) elUser.innerText = log.fullName || 'Quản trị viên / Hệ thống';
+    if (elUserSub) elUserSub.innerText = `ID: ACC-${log.accountId || '--'} | ${log.email || 'Không rõ email'}`;
+    
+    if (elAction) {
+        const badgeClass = getActionBadgeClass(log.action);
+        const viAction = getVietnameseAction(log.action);
+        elAction.innerHTML = `<span class="${badgeClass} fs-6">${viAction}</span> <div class="text-white-50 small mt-1 font-monospace" style="font-size: 0.75rem;">(${log.action || '--'})</div>`;
+    }
+
+    if (elEntity) elEntity.innerText = log.entityName || 'Hệ thống chung';
+    if (elEntityId) elEntityId.innerText = `ID Bản ghi: ${log.entityId ? '#' + log.entityId : 'N/A'}`;
+
+    if (elTime) elTime.innerText = log.createdAt || '--';
+    if (elIp) elIp.innerText = `IP: ${log.ipAddress || '127.0.0.1'}`;
+
+    // 2. Chuyển về chế độ xem Trực quan mặc định
+    switchAuditViewMode('visual');
+
+    // 3. Render chế độ Bảng so sánh trực quan (Visual Diff)
+    renderVisualDiff(log.oldValue, log.newValue);
+
+    // 4. Render chế độ Mã nguồn (Raw JSON View)
     const oldCode = document.getElementById('auditOldValueCode');
     const newCode = document.getElementById('auditNewValueCode');
+    if (oldCode) oldCode.innerHTML = formatJsonOrText(log.oldValue);
+    if (newCode) newCode.innerHTML = formatJsonOrText(log.newValue);
 
-    oldCode.innerHTML = formatJsonOrText(log.oldValue);
-    newCode.innerHTML = formatJsonOrText(log.newValue);
+    // 5. Hiển thị Modal
+    const modalEl = document.getElementById('auditDiffModal');
+    if (modalEl) {
+        const modal = new bootstrap.Modal(modalEl);
+        modal.show();
+    }
+}
 
-    const modal = new bootstrap.Modal(document.getElementById('auditDiffModal'));
-    modal.show();
+function switchAuditViewMode(mode) {
+    const btnVisual = document.getElementById('btnViewVisual');
+    const btnRaw = document.getElementById('btnViewRaw');
+    const containerVisual = document.getElementById('auditVisualDiffContainer');
+    const containerRaw = document.getElementById('auditRawJsonContainer');
+
+    if (!btnVisual || !btnRaw || !containerVisual || !containerRaw) return;
+
+    if (mode === 'visual') {
+        btnVisual.className = 'btn btn-sm bg-primary text-white px-3 rounded-pill fw-bold active shadow-sm';
+        btnRaw.className = 'btn btn-sm text-white-50 px-3 rounded-pill fw-bold bg-transparent';
+        containerVisual.classList.remove('d-none');
+        containerRaw.classList.add('d-none');
+    } else {
+        btnVisual.className = 'btn btn-sm text-white-50 px-3 rounded-pill fw-bold bg-transparent';
+        btnRaw.className = 'btn btn-sm bg-primary text-white px-3 rounded-pill fw-bold active shadow-sm';
+        containerVisual.classList.add('d-none');
+        containerRaw.classList.remove('d-none');
+    }
+}
+
+function renderVisualDiff(oldStr, newStr) {
+    const container = document.getElementById('auditVisualDiffContent');
+    if (!container) return;
+
+    let oldObj = null;
+    let newObj = null;
+    let isBothJson = false;
+
+    try {
+        if (oldStr && oldStr.trim() !== 'null' && oldStr.trim() !== '') {
+            oldObj = JSON.parse(oldStr);
+        }
+        if (newStr && newStr.trim() !== 'null' && newStr.trim() !== '') {
+            newObj = JSON.parse(newStr);
+        }
+        if (typeof oldObj === 'object' || typeof newObj === 'object') {
+            isBothJson = true;
+        }
+    } catch (e) {
+        isBothJson = false;
+    }
+
+    // Nếu không thể parse thành Object JSON (chỉ là chuỗi thường hoặc null thuần)
+    if (!isBothJson || (oldObj === null && newObj === null)) {
+        const displayOld = (!oldStr || oldStr.trim() === 'null') ? '(Không có dữ liệu / null)' : escapeHtml(oldStr);
+        const displayNew = (!newStr || newStr.trim() === 'null') ? '(Không có dữ liệu / null)' : escapeHtml(newStr);
+        
+        container.innerHTML = `
+            <div class="diff-row-card diff-changed">
+                <div class="fw-bold text-white mb-2"><i class="fa-solid fa-align-left me-2 text-primary"></i>Thay Đổi Dữ Liệu Văn Bản</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="text-white-50 small mb-1">Giá trị cũ:</div>
+                        <div class="diff-old-box font-monospace">${displayOld}</div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="text-white-50 small mb-1">Giá trị mới:</div>
+                        <div class="diff-new-box font-monospace">${displayNew}</div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    // Nếu parse thành công JSON Object, so sánh từng Key
+    const o = oldObj || {};
+    const n = newObj || {};
+    const allKeys = Array.from(new Set([...Object.keys(o), ...Object.keys(n)])).sort();
+
+    if (allKeys.length === 0) {
+        container.innerHTML = `<div class="text-center text-white-50 py-4"><i class="fa-solid fa-circle-info me-2"></i>Không có thuộc tính nào để so sánh.</div>`;
+        return;
+    }
+
+    let html = '';
+    let changedCount = 0;
+
+    allKeys.forEach(key => {
+        const oldVal = o[key];
+        const newVal = n[key];
+        const isOldExists = Object.prototype.hasOwnProperty.call(o, key);
+        const isNewExists = Object.prototype.hasOwnProperty.call(n, key);
+
+        const strOld = formatValueDisplay(oldVal);
+        const strNew = formatValueDisplay(newVal);
+
+        // Trường hợp 1: Thêm mới trường dữ liệu
+        if (!isOldExists && isNewExists) {
+            changedCount++;
+            html += `
+                <div class="diff-row-card diff-added">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold text-success font-monospace fs-6"><i class="fa-solid fa-plus-circle me-2"></i>${key}</span>
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50">Thêm Mới</span>
+                    </div>
+                    <div class="diff-new-box font-monospace">${strNew}</div>
+                </div>
+            `;
+        }
+        // Trường hợp 2: Xóa trường dữ liệu
+        else if (isOldExists && !isNewExists) {
+            changedCount++;
+            html += `
+                <div class="diff-row-card diff-deleted">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold text-danger font-monospace fs-6"><i class="fa-solid fa-minus-circle me-2"></i>${key}</span>
+                        <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50">Đã Xóa</span>
+                    </div>
+                    <div class="diff-old-box font-monospace">${strOld}</div>
+                </div>
+            `;
+        }
+        // Trường hợp 3: Thay đổi giá trị
+        else if (JSON.stringify(oldVal) !== JSON.stringify(newVal)) {
+            changedCount++;
+            html += `
+                <div class="diff-row-card diff-changed">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="fw-bold text-warning font-monospace fs-6"><i class="fa-solid fa-pen-to-square me-2"></i>${key}</span>
+                        <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-50">Đã Thay Đổi</span>
+                    </div>
+                    <div class="row g-2 align-items-center">
+                        <div class="col-md-5">
+                            <div class="diff-old-box font-monospace">${strOld}</div>
+                        </div>
+                        <div class="col-md-2 text-center text-white-50">
+                            <i class="fa-solid fa-arrow-right d-none d-md-inline"></i>
+                            <i class="fa-solid fa-arrow-down d-inline d-md-none"></i>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="diff-new-box font-monospace">${strNew}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        // Trường hợp 4: Không thay đổi
+        else {
+            html += `
+                <div class="diff-row-card opacity-50">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="fw-bold text-white-50 font-monospace">${key}</span>
+                        <span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary border-opacity-50">Giữ Nguyên</span>
+                    </div>
+                    <div class="diff-same-box font-monospace mt-2">${strOld}</div>
+                </div>
+            `;
+        }
+    });
+
+    if (changedCount === 0) {
+        html = `<div class="alert alert-info bg-info bg-opacity-10 border border-info text-info rounded-4 py-3"><i class="fa-solid fa-check-circle me-2"></i>Tất cả các trường dữ liệu đều giống nhau hoàn toàn giữa Giá trị cũ và Giá trị mới.</div>` + html;
+    }
+
+    container.innerHTML = html;
+}
+
+function formatValueDisplay(val) {
+    if (val === null || val === undefined) return '<i class="opacity-50">null / trống</i>';
+    if (typeof val === 'object') return escapeHtml(JSON.stringify(val));
+    if (typeof val === 'boolean') return val ? 'true (đúng)' : 'false (sai)';
+    return escapeHtml(String(val));
+}
+
+function escapeHtml(str) {
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 function formatJsonOrText(str) {
@@ -217,10 +426,8 @@ function formatJsonOrText(str) {
     }
     try {
         const obj = JSON.parse(str);
-        // Trả về JSON string được format đẹp
         return JSON.stringify(obj, null, 2).replace(/</g, "&lt;").replace(/>/g, "&gt;");
     } catch (e) {
-        // Không phải JSON, escape HTML và in text
-        return str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return escapeHtml(str);
     }
 }

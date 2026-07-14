@@ -21,9 +21,13 @@ const API = (function () {
         }
 
         if (response.status === 401) {
-            alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
-            localStorage.clear();
-            window.location.href = rootPrefix + 'index.html';
+            if (typeof window.showSessionExpiredModal === 'function') {
+                window.showSessionExpiredModal();
+            } else {
+                alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+                localStorage.clear();
+                window.location.href = rootPrefix + 'index.html';
+            }
             throw new Error("Unauthorized");
         }
         if (response.status === 403) {
