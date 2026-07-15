@@ -92,6 +92,7 @@ async function openVoucherModal(id = null) {
                 document.getElementById('vDiscountValue').value = data.DiscountValue || '';
                 document.getElementById('vMaxDiscount').value = data.MaxDiscountAmount || '';
                 document.getElementById('vMinBooking').value = data.MinBookingValue || '';
+                document.getElementById('vMaxUsage').value = data.MaxUsagePerUser || '';
                 document.getElementById('vVehicleTypeId').value = data.ApplicableVehicleTypeID || 1;
                 // Backend trả về YYYY-MM-DDTHH:mm:ss, input type="datetime-local" cần YYYY-MM-DDTHH:mm
                 document.getElementById('vValidFrom').value = data.ValidFrom ? data.ValidFrom.substring(0, 16) : '';
@@ -139,6 +140,7 @@ async function viewVoucherDetail(id) {
 
             document.getElementById('detailVMaxDiscount').innerText = data.MaxDiscountAmount ? `${data.MaxDiscountAmount.toLocaleString()} đ` : 'Không giới hạn';
             document.getElementById('detailVMinBooking').innerText = data.MinBookingValue ? `${data.MinBookingValue.toLocaleString()} đ` : 'Không giới hạn';
+            document.getElementById('detailVMaxUsage').innerText = data.MaxUsagePerUser ? `${data.MaxUsagePerUser} lượt / khách` : 'Không giới hạn';
 
             const vehicleTypes = {
                 1: 'Sedan 4 chỗ', 2: 'SUV/MPV 7 chỗ', 3: 'Limousine 9 chỗ',
@@ -176,6 +178,7 @@ async function saveVoucher() {
         discountValue: parseFloat(document.getElementById('vDiscountValue').value) || 0,
         maxDiscountAmount: parseFloat(document.getElementById('vMaxDiscount').value) || null,
         minBookingValue: parseFloat(document.getElementById('vMinBooking').value) || null,
+        maxUsagePerUser: parseInt(document.getElementById('vMaxUsage').value) || null,
         applicableVehicleTypeId: parseInt(document.getElementById('vVehicleTypeId').value) || null,
         validFrom: document.getElementById('vValidFrom').value ? document.getElementById('vValidFrom').value + ':00' : null,
         validTo: document.getElementById('vValidTo').value ? document.getElementById('vValidTo').value + ':00' : null

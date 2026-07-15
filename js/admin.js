@@ -202,6 +202,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (targetId === 'tab-vehicle-tags' && typeof loadVehicleTagsList === 'function') {
                         loadVehicleTagsList();
                     }
+                    if (targetId === 'tab-landmarks' && typeof fetchLandmarks === 'function') {
+                        fetchLandmarks();
+                    }
                 }
             }
         });
