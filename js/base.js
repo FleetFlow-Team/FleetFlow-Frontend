@@ -99,8 +99,32 @@ if (btnLogins.length > 0 && loginModal && closeLoginModal) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    // Luôn gọi hàm khởi tạo trạng thái tài khoản khi tải trang
+document.addEventListener("DOMContentLoaded", async function () {
+    // 1. Nếu thiếu accessToken nhưng có refreshToken, thử khôi phục trước khi khởi tạo UI
+    const accessToken = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!accessToken && refreshToken) {
+        try {
+            const res = await fetch('http://localhost:8080/FleetFlow/api/v1/auth/refresh', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ refreshToken })
+            });
+            const data = await res.json();
+            if (res.ok && data.success && data.accessToken) {
+                localStorage.setItem('accessToken', data.accessToken);
+                if (data.refreshToken) {
+                    localStorage.setItem('refreshToken', data.refreshToken);
+                }
+            } else {
+                localStorage.removeItem('refreshToken');
+            }
+        } catch (e) {
+            console.error('Lỗi khôi phục phiên đăng nhập:', e);
+        }
+    }
+
+    // 2. Luôn gọi hàm khởi tạo trạng thái tài khoản khi tải trang
     initUserProfile();
 });
 

@@ -99,23 +99,105 @@ const API = (function () {
 
     // ==========================================
     // GLOBAL FETCH INTERCEPTOR FOR RAW FETCH
-    // Bắt lỗi 401 cho các lệnh fetch() gọi trực tiếp
     // ==========================================
+    let isRefreshing = false;
+    let refreshSubscribers = [];
+
+    const onRefreshed = (accessToken) => {
+        refreshSubscribers.map(cb => cb(accessToken));
+        refreshSubscribers = [];
+    };
+
+    const addRefreshSubscriber = (cb) => {
+        refreshSubscribers.push(cb);
+    };
+
     const originalFetch = window.fetch;
     window.fetch = async function (...args) {
-        const response = await originalFetch.apply(this, args);
-        if (response.status === 401) {
+        // Nếu args[1] không có Authorization header mà trong localStorage CÓ token, 
+        // ta có thể inject vào đây, nhưng tạm thời để nguyên thiết kế của bạn.
+        
+        let response = await originalFetch.apply(this, args);
+
+        const urlString = args[0] ? args[0].toString() : '';
+        if (response.status === 401 && !urlString.includes('/auth/refresh') && !urlString.includes('/auth/login')) {
+            const refreshToken = localStorage.getItem('refreshToken');
             const path = window.location.pathname;
-            let rootPrefix = '';
-            if (path.includes('/pages/admin/') || path.includes('/pages/driver/') || path.includes('/pages/customer/') || path.includes('/pages/dispatcher/')) {
-                rootPrefix = '../../';
-            } else if (path.includes('/pages/')) {
-                rootPrefix = '../';
+            let rootPrefix = (path.includes('/pages/admin/') || path.includes('/pages/driver/') || path.includes('/pages/customer/') || path.includes('/pages/dispatcher/')) ? '../../' : (path.includes('/pages/') ? '../' : '');
+            
+            if (!refreshToken) {
+                if (!window.isSessionExpired) {
+                    window.isSessionExpired = true;
+                    showSessionExpiredModal(rootPrefix);
+                }
+                return response;
             }
-            if (!window.isSessionExpired) {
-                window.isSessionExpired = true;
-                showSessionExpiredModal(rootPrefix);
+
+            if (!isRefreshing) {
+                isRefreshing = true;
+                try {
+                    const res = await originalFetch(`${API_BASE_URL}/auth/refresh`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ refreshToken })
+                    });
+                    const data = await res.json();
+                    
+                    if (res.ok && data.success && data.accessToken) {
+                        localStorage.setItem('accessToken', data.accessToken);
+                        if (data.refreshToken) {
+                            localStorage.setItem('refreshToken', data.refreshToken);
+                        }
+                        isRefreshing = false;
+                        onRefreshed(data.accessToken);
+                        
+                        // Retry original request with new token
+                        const newArgs = [...args];
+                        if (newArgs[1] && newArgs[1].headers) {
+                            if (newArgs[1].headers instanceof Headers) {
+                                newArgs[1].headers.set('Authorization', `Bearer ${data.accessToken}`);
+                            } else {
+                                newArgs[1].headers['Authorization'] = `Bearer ${data.accessToken}`;
+                            }
+                        } else {
+                            newArgs[1] = newArgs[1] || {};
+                            newArgs[1].headers = { 'Authorization': `Bearer ${data.accessToken}` };
+                        }
+                        return await originalFetch.apply(this, newArgs);
+                    } else {
+                        throw new Error("Refresh failed");
+                    }
+                } catch (refreshError) {
+                    isRefreshing = false;
+                    onRefreshed(null);
+                    if (!window.isSessionExpired) {
+                        window.isSessionExpired = true;
+                        showSessionExpiredModal(rootPrefix);
+                    }
+                    return response;
+                }
             }
+
+            return new Promise((resolve) => {
+                addRefreshSubscriber(async (newToken) => {
+                    if (newToken) {
+                        const newArgs = [...args];
+                        if (newArgs[1] && newArgs[1].headers) {
+                            if (newArgs[1].headers instanceof Headers) {
+                                newArgs[1].headers.set('Authorization', `Bearer ${newToken}`);
+                            } else {
+                                newArgs[1].headers['Authorization'] = `Bearer ${newToken}`;
+                            }
+                        } else {
+                            newArgs[1] = newArgs[1] || {};
+                            newArgs[1].headers = { 'Authorization': `Bearer ${newToken}` };
+                        }
+                        resolve(await originalFetch.apply(this, newArgs));
+                    } else {
+                        resolve(response);
+                    }
+                });
+            });
         }
         return response;
     };
@@ -147,6 +229,18 @@ const API = (function () {
             const res = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
                 method: 'DELETE',
                 headers: getAuthHeaders()
+            });
+            return handleResponse(res);
+        },
+        upload: async (endpoint, formData) => {
+            const token = localStorage.getItem('accessToken');
+            const headers = {};
+            if (token) headers['Authorization'] = `Bearer ${token}`;
+            
+            const res = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+                method: 'POST',
+                headers: headers,
+                body: formData
             });
             return handleResponse(res);
         }
