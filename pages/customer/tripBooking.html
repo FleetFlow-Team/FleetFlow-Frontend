@@ -796,8 +796,9 @@
                 <div class="nav-right-actions">
                     <div class="nav-right-actions d-flex align-items-center gap-3">
                         <div class="dropdown me-3" id="notificationDropdownContainer">
-                            <div id="notificationBtn" class="notification-btn position-relative" data-bs-toggle="dropdown"
-                                aria-expanded="false" onclick="loadNotifications()" style="cursor: pointer; display: none;">
+                            <div id="notificationBtn" class="notification-btn position-relative"
+                                data-bs-toggle="dropdown" aria-expanded="false" onclick="loadNotifications()"
+                                style="cursor: pointer; display: none;">
                                 <i class="fa-regular fa-bell fs-5"></i>
                                 <span id="unreadBadge"
                                     class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle d-none"
@@ -851,8 +852,9 @@
 
                     <div class="form-floating mb-3 position-relative">
                         <input type="text" class="form-control" id="inputPickup" placeholder="Điểm đón" value=""
-                            oninput="showMockAutocomplete('pickupDropdown')" onchange="triggerMapCalculation()"
-                            maxlength="200" style="padding-right: 48px;">
+                            oninput="onInputLocationSearch('inputPickup', 'pickupDropdown')"
+                            onfocus="onInputLocationSearch('inputPickup', 'pickupDropdown')"
+                            onchange="triggerMapCalculation()" maxlength="200" style="padding-right: 48px;">
                         <label for="inputPickup">Đón tại</label>
                         <button type="button"
                             class="btn btn-link position-absolute end-0 top-50 translate-middle-y me-2 p-2 text-primary"
@@ -860,50 +862,23 @@
                             title="Lấy vị trí hiện tại của bạn" style="z-index: 10; text-decoration: none;">
                             <i class="fa-solid fa-location-crosshairs fs-5 live-pulse" id="gpsIcon"></i>
                         </button>
-                        <div class="autocomplete-dropdown" id="pickupDropdown">
-                            <div class="autocomplete-item"
-                                onclick="selectLocation('inputPickup', 'Công viên Ánh Sáng Vinhomes Grand Park', 'pickupDropdown')">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">Vinhomes Grand Park</span><span
-                                        class="autocomplete-sub-text">512 Nguyễn Xiển phường Long Bình TPHCM</span>
-                                </div>
-                            </div>
-                            <div class="autocomplete-item"
-                                onclick="selectLocation('inputPickup', 'Vườn Quốc Gia Tràm Chim', 'pickupDropdown')">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">Vườn Quốc Gia Tràm Chim</span><span
-                                        class="autocomplete-sub-text">Ấp 4, xã Tràm Chim, tỉnh Đồng Tháp</span>
-                                </div>
-                            </div>
+                        <div class="autocomplete-dropdown" id="pickupDropdown" style="display: none;">
+                            <!-- Dynamic Landmarks rendered from JS -->
                         </div>
                     </div>
 
-                    <div class="form-floating">
+                    <div class="form-floating mb-2">
                         <input type="text" class="form-control" id="inputDropoff" placeholder="Điểm trả"
-                            oninput="showMockAutocomplete('dropoffDropdown')" onchange="triggerMapCalculation()"
-                            maxlength="200">
+                            oninput="onInputLocationSearch('inputDropoff', 'dropoffDropdown')"
+                            onfocus="onInputLocationSearch('inputDropoff', 'dropoffDropdown')"
+                            onchange="triggerMapCalculation()" maxlength="200">
                         <label for="inputDropoff">Đến đâu?</label>
-                        <div class="autocomplete-dropdown" id="dropoffDropdown">
-                            <div class="autocomplete-item"
-                                onclick="selectLocation('inputDropoff', 'Bãi Sau Vũng Tàu', 'dropoffDropdown')">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">Bãi Sau Vũng Tàu</span><span
-                                        class="autocomplete-sub-text">Đường Thùy Vân, TP. Vũng Tàu</span></div>
-                            </div>
-                            <div class="autocomplete-item"
-                                onclick="selectLocation('inputDropoff', 'BV Nhi Đồng 1', 'dropoffDropdown')">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">Bệnh viện Nhi Đồng 1</span><span
-                                        class="autocomplete-sub-text">Đường Lý Thái Tổ, Quận 10, HCM</span></div>
-                            </div>
-                            <div class="autocomplete-item"
-                                onclick="selectLocation('inputDropoff', 'Cảng Hàng Không Q.Tế Tân Sơn Nhất', 'dropoffDropdown')">
-                                <i class="fa-solid fa-location-dot"></i>
-                                <div><span class="autocomplete-main-text">Sân bay Q.Tế Tân Sơn Nhất</span><span
-                                        class="autocomplete-sub-text">Đường Trường Sơn, Tân Bình, HCM</span></div>
-                            </div>
+                        <div class="autocomplete-dropdown" id="dropoffDropdown" style="display: none;">
+                            <!-- Dynamic Landmarks rendered from JS -->
                         </div>
                     </div>
+
+
                 </div>
 
                 <div class="distance-badge w-100 text-center mb-4" id="lblDistanceDisplay">
