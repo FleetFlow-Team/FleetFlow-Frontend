@@ -674,7 +674,7 @@ window.onInputLocationSearch = function (inputId, dropdownId) {
         return;
     }
 
-    dropdownEl.innerHTML = matches.slice(0, 6).map(l => {
+    dropdownEl.innerHTML = matches.slice(0, 30).map(l => {
         let icon = 'fa-location-dot text-primary';
         if (l.category === 'AIRPORT') icon = 'fa-plane-departure text-info';
         else if (l.category === 'BUS_STATION') icon = 'fa-bus text-warning';
