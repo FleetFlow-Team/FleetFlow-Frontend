@@ -6,31 +6,6 @@ const CUSTOMER_API_URL = 'http://localhost:8080/FleetFlow/api/v1/admin/customers
 
 let allCustomersList = [];
 
-// Biến mock data (Trong tương lai khi Backend có API GET /customers, ta sẽ xóa biến này và dùng data từ API)
-let mockCustomers = [
-    {
-        CustomerID: 1,
-        FullName: "Nguyễn Văn A",
-        Phone: "0901234567",
-        CurrentDebt: 0,
-        Status: "ACTIVE"
-    },
-    {
-        CustomerID: 2,
-        FullName: "Trần Thị B",
-        Phone: "0987654321",
-        CurrentDebt: -1500000,
-        Status: "LOCKED" // Giả định KH này đang bị khóa do nợ quá giới hạn (-1tr)
-    },
-    {
-        CustomerID: 3,
-        FullName: "Lê Hoàng C",
-        Phone: "0912345678",
-        CurrentDebt: -500000,
-        Status: "ACTIVE" // Nợ chưa tới 1tr nên vẫn Active
-    }
-];
-
 // Khởi chạy khi tải trang
 document.addEventListener("DOMContentLoaded", () => {
     // Khởi tạo render lần đầu nếu người dùng click vào tab customers
@@ -121,7 +96,7 @@ function renderCustomers(customers) {
             : `<span class="fw-bold text-success">0 ₫</span>`;
 
         // Hiển thị trạng thái
-        let statusBadge = c.status === 'ACTIVE'
+        let statusBadge = c.status.toUpperCase() === 'ACTIVE'
             ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> Đang hoạt động</span>'
             : '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger"><i class="fa-solid fa-lock me-1"></i> Ngừng hoạt động</span>';
 
@@ -130,7 +105,7 @@ function renderCustomers(customers) {
 
         // Nút hành động (dùng fullName để hiển thị trong câu hỏi xác nhận)
         let actionBtn = '';
-        if (c.status === 'ACTIVE') {
+        if (c.status.toUpperCase() === 'ACTIVE') {
             actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="lockCustomerAccount(${c.customerId}, '${displayName}')" title="Khóa tài khoản">
                             <i class="fa-solid fa-lock me-1"></i> Khóa
                          </button>`;
