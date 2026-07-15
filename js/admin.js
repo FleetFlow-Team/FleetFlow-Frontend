@@ -96,6 +96,52 @@ window.showGlassConfirm = function (message, onConfirmCallback, options = {}) {
     bsModal.show();
 };
 
+// =========================================================================
+// HÀM HIỆN MODAL HẾT HẠN TOKEN & ĐẾM NGƯỢC 5 GIÂY (APPLE GLASSMORPHISM)
+// =========================================================================
+let expiredInterval = null;
+
+window.showSessionExpiredModal = function () {
+    const modalEl = document.getElementById('tokenExpiredModal');
+    if (!modalEl) {
+        alert("Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.");
+        localStorage.clear();
+        window.location.replace('../../index.html');
+        return;
+    }
+
+    // Xóa session storage/local storage ngay lập tức vì token đã hết hiệu lực
+    localStorage.clear();
+    sessionStorage.clear();
+
+    const bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+
+    let timeLeft = 5;
+    const timerSpan = document.getElementById('countdownTimer');
+    const progressBar = document.getElementById('countdownProgress');
+
+    if (expiredInterval) clearInterval(expiredInterval);
+
+    expiredInterval = setInterval(() => {
+        timeLeft--;
+        if (timerSpan) timerSpan.textContent = timeLeft;
+        if (progressBar) progressBar.style.width = `${(timeLeft / 5) * 100}%`;
+
+        if (timeLeft <= 0) {
+            clearInterval(expiredInterval);
+            window.forceRedirectHome();
+        }
+    }, 1000);
+};
+
+window.forceRedirectHome = function () {
+    if (expiredInterval) clearInterval(expiredInterval);
+    localStorage.clear();
+    sessionStorage.clear();
+    window.location.replace('../../index.html');
+};
+
 document.addEventListener("DOMContentLoaded", function () {
     // 🚀 BẬT CHỐT CHẶN VÀ ĐỒNG BỘ NAVBAR ĐẦU TIÊN
     if (!initAdminSession()) return;
@@ -155,6 +201,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     // Nạp dữ liệu tự động nếu vào tab cấu hình Tags
                     if (targetId === 'tab-vehicle-tags' && typeof loadVehicleTagsList === 'function') {
                         loadVehicleTagsList();
+                    }
+                    if (targetId === 'tab-landmarks' && typeof fetchLandmarks === 'function') {
+                        fetchLandmarks();
                     }
                 }
             }
@@ -348,6 +397,17 @@ document.addEventListener("DOMContentLoaded", function () {
 // =========================================================================
 
 function initAdminSession() {
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        if (typeof window.showSessionExpiredModal === 'function') {
+            window.showSessionExpiredModal();
+        } else {
+            localStorage.clear();
+            window.location.replace('../../index.html');
+        }
+        return false;
+    }
+
     const userRole = localStorage.getItem('userRole') || '';
     const fullName = localStorage.getItem('fullName') || 'Administrator';
     const email = localStorage.getItem('email') || 'admin@fleetflow.vn';

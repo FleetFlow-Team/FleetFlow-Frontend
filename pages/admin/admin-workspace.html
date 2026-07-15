@@ -232,6 +232,11 @@
                                     Quản lý Ngày Lễ</a>
                             </li>
                             <li>
+                                <a href="#tab-landmarks" class="toc-link"><i
+                                        class="fa-solid fa-map-location-dot me-2"></i>
+                                    Quản lý Điểm đến</a>
+                            </li>
+                            <li>
                                 <a href="#tab-marketing-email" class="toc-link"><i
                                         class="fa-solid fa-envelope-open-text me-2"></i> Chiến dịch
                                     Marketing</a>
@@ -724,6 +729,63 @@
                         </div>
                     </section>
 
+                    <!-- TAB LANDMARKS (QUẢN LÝ ĐIỂM ĐẾN CỐ ĐỊNH) -->
+                    <section id="tab-landmarks" class="dashboard-section" style="display: none;">
+                        <div class="glass-panel">
+                            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                                <div>
+                                    <h4 class="fw-bold mb-1 text-white"><i
+                                            class="fa-solid fa-map-location-dot text-info me-2"></i>Quản lý Điểm đến
+                                        (Landmarks)
+                                    </h4>
+                                    <p class="text-white-50 small m-0">Danh sách các điểm đến cố định (Sân bay, Bến
+                                        xe...) giúp khách hàng chọn nhanh khi đặt xe.</p>
+                                </div>
+                                <div class="d-flex gap-2 align-items-center flex-wrap">
+                                    <div class="position-relative">
+                                        <input type="text" id="landmarkSearchInput"
+                                            class="form-control modern-input ps-4"
+                                            style="width: 220px; font-size: 0.85rem;" placeholder="Tìm tên, địa chỉ..."
+                                            onkeyup="filterAndRenderLandmarks()">
+                                    </div>
+                                    <select id="landmarkCategoryFilter" class="form-select modern-select"
+                                        style="width: 150px; font-size: 0.85rem;" onchange="filterAndRenderLandmarks()">
+                                        <option value="">Tất cả danh mục</option>
+                                        <option value="AIRPORT">Sân bay</option>
+                                        <option value="BUS_STATION">Bến xe</option>
+                                        <option value="OTHER">Khác</option>
+                                    </select>
+                                    <button class="btn-glass-action bg-info text-white border-info"
+                                        onclick="openLandmarkModal()">
+                                        <i class="fa-solid fa-plus me-1"></i> Thêm Điểm Đến
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="table-glass-wrapper overflow-auto" style="max-height: 520px;">
+                                <table class="table-glass w-100 mb-0 align-middle">
+                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                        <tr>
+                                            <th style="width: 60px;">ID</th>
+                                            <th style="width: 220px;">Tên Điểm Đến</th>
+                                            <th style="width: 140px;">Phân Loại</th>
+                                            <th>Địa chỉ & Tọa độ</th>
+                                            <th style="width: 160px;">Trạng thái</th>
+                                            <th style="width: 140px;" class="text-center">Thao tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="landmarkListBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-white-50 py-4"><i
+                                                    class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải dữ liệu...
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+
                     <section id="tab-marketing-email" class="dashboard-section" style="display: none;">
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-end mb-4">
@@ -819,7 +881,8 @@
                             <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-3">
                                 <div>
                                     <h4 class="fw-bold mb-1 text-white">
-                                        <i class="fa-solid fa-users-gear text-primary me-2"></i>Quản lý Tài khoản & Phân quyền (RBAC)
+                                        <i class="fa-solid fa-users-gear text-primary me-2"></i>Quản lý Tài khoản & Phân
+                                        quyền (RBAC)
                                     </h4>
                                     <p class="text-white-50 small m-0">
                                         Kiểm soát truy cập và thao tác Khóa / Mở khóa tài khoản Điều phối viên & Tài xế.
@@ -854,7 +917,8 @@
                                     <tbody id="rbacUserTableBody">
                                         <tr>
                                             <td colspan="6" class="text-center text-white-50 py-4">
-                                                <i class="fa-solid fa-circle-notch fa-spin text-info me-2"></i>Đang tải dữ liệu tài khoản...
+                                                <i class="fa-solid fa-circle-notch fa-spin text-info me-2"></i>Đang tải
+                                                dữ liệu tài khoản...
                                             </td>
                                         </tr>
                                     </tbody>
@@ -1261,6 +1325,12 @@
                                             <option value="6">Xe khách 45 chỗ</option>
                                         </select>
                                     </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Lượt tối đa /
+                                            Khách</label>
+                                        <input type="number" id="vMaxUsage" class="form-control glass-input text-white"
+                                            placeholder="Để trống = Không giới hạn" min="1">
+                                    </div>
 
                                     <div class="col-md-6">
                                         <label class="form-label text-white-50 fw-bold small">Từ ngày</label>
@@ -1322,6 +1392,11 @@
                                             class="fa-solid fa-cart-shopping me-1"></i>Đơn tối thiểu</div>
                                     <div class="fw-bold" id="detailVMinBooking">--</div>
                                 </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-user-check me-1"></i>Lượt tối đa / Khách</div>
+                                    <div class="fw-bold text-warning" id="detailVMaxUsage">--</div>
+                                </div>
                                 <div class="col-12 border-top border-secondary pt-3 mt-3">
                                     <div class="text-white-50 small mb-1"><i class="fa-solid fa-car me-1"></i>Loại xe áp
                                         dụng</div>
@@ -1347,36 +1422,136 @@
                 </div>
             </div>
 
-            <!-- MODAL XEM CHI TIẾT AUDIT DIFF -->
+            <!-- MODAL XEM CHI TIẾT AUDIT DIFF (APPLE DESIGN GLASSMORPHISM) -->
             <div class="modal fade" id="auditDiffModal" tabindex="-1" data-bs-backdrop="static">
-                <div class="modal-dialog modal-lg modal-dialog-centered">
-                    <div class="modal-content modern-modal-content">
-                        <div class="modal-header border-0 px-4 pt-4 pb-0">
-                            <h4 class="fw-bold text-white m-0 d-flex align-items-center">
-                                <div class="bg-white bg-opacity-10 text-white p-2 rounded-3 me-3 d-flex align-items-center justify-content-center"
-                                    style="width: 45px; height: 45px;">
-                                    <i class="fa-solid fa-code-compare"></i>
+                <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content modern-modal-content border-0">
+                        <!-- HEADER -->
+                        <div
+                            class="modal-header border-0 px-4 px-md-5 pt-4 pt-md-5 pb-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-primary bg-opacity-25 text-primary p-3 rounded-4 d-flex align-items-center justify-content-center shadow-sm"
+                                    style="width: 54px; height: 54px; border: 1px solid rgba(59, 130, 246, 0.3);">
+                                    <i class="fa-solid fa-file-shield fs-4"></i>
                                 </div>
-                                Chi tiết Thay đổi
-                            </h4>
+                                <div>
+                                    <h4 class="fw-bold text-white m-0" style="letter-spacing: -0.5px;">Chi Tiết Kiểm
+                                        Toán Hệ Thống</h4>
+                                    <p class="text-white-50 small m-0 mt-1" id="auditDetailSubTitle">Xác thực thay đổi
+                                        dữ liệu & dấu vết hành vi (Audit Trail)</p>
+                                </div>
+                            </div>
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                 aria-label="Close"></button>
                         </div>
-                        <div class="modal-body p-4">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <h6 class="fw-bold text-white-50 mb-2">Giá trị Cũ</h6>
-                                    <div class="glass-panel p-3 h-100" style="overflow-x: auto;">
-                                        <pre><code id="auditOldValueCode" class="text-white diff-old m-0" style="font-size: 0.85rem;"></code></pre>
+
+                        <!-- BODY -->
+                        <div class="modal-body px-4 px-md-5 py-4">
+                            <!-- 4 THẺ THÔNG TIN NGỮ CẢNH (CONTEXT CARDS) -->
+                            <div class="row g-3 mb-4">
+                                <div class="col-md-3 col-6">
+                                    <div class="audit-context-card p-3 rounded-4 h-100">
+                                        <div class="text-white-50 small mb-1 d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-user-shield text-info"></i> Người thực hiện
+                                        </div>
+                                        <div class="fw-bold text-white fs-6 text-truncate" id="auditDetailUser">--</div>
+                                        <div class="text-white-50 small text-truncate" id="auditDetailUserSub">--</div>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <h6 class="fw-bold text-white-50 mb-2">Giá trị Mới</h6>
-                                    <div class="glass-panel p-3 h-100" style="overflow-x: auto;">
-                                        <pre><code id="auditNewValueCode" class="text-white diff-new m-0" style="font-size: 0.85rem;"></code></pre>
+                                <div class="col-md-3 col-6">
+                                    <div class="audit-context-card p-3 rounded-4 h-100">
+                                        <div class="text-white-50 small mb-1 d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-bolt text-warning"></i> Hành động
+                                        </div>
+                                        <div class="mt-1" id="auditDetailAction">--</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="audit-context-card p-3 rounded-4 h-100">
+                                        <div class="text-white-50 small mb-1 d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-bullseye text-success"></i> Đối tượng tác động
+                                        </div>
+                                        <div class="fw-bold text-white fs-6 text-truncate" id="auditDetailEntity">--
+                                        </div>
+                                        <div class="text-white-50 small text-truncate" id="auditDetailEntityId">--</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-6">
+                                    <div class="audit-context-card p-3 rounded-4 h-100">
+                                        <div class="text-white-50 small mb-1 d-flex align-items-center gap-2">
+                                            <i class="fa-solid fa-clock text-primary"></i> Thời gian & IP
+                                        </div>
+                                        <div class="fw-bold text-white fs-6 text-truncate" id="auditDetailTime">--</div>
+                                        <div class="text-white-50 small font-monospace text-truncate"
+                                            id="auditDetailIp">--</div>
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- THANH CÔNG CỤ CHUYỂN ĐỔI CHẾ ĐỘ XEM -->
+                            <div
+                                class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-white border-opacity-10">
+                                <h6 class="fw-bold text-white m-0 d-flex align-items-center gap-2">
+                                    <i class="fa-solid fa-code-compare text-primary"></i> So sánh Thay đổi (Before ➔
+                                    After)
+                                </h6>
+                                <div class="btn-group btn-group-sm rounded-pill p-1"
+                                    style="background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                    <button type="button" id="btnViewVisual"
+                                        class="btn btn-sm text-white px-3 rounded-pill fw-bold active"
+                                        onclick="switchAuditViewMode('visual')" style="transition: all 0.2s ease;">
+                                        <i class="fa-solid fa-table me-1"></i> Trực quan
+                                    </button>
+                                    <button type="button" id="btnViewRaw"
+                                        class="btn btn-sm text-white-50 px-3 rounded-pill fw-bold"
+                                        onclick="switchAuditViewMode('raw')" style="transition: all 0.2s ease;">
+                                        <i class="fa-solid fa-code me-1"></i> Raw JSON
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- KHU VỰC 1: BẢNG SO SÁNH TRỰC QUAN (VISUAL DIFF CARDS) -->
+                            <div id="auditVisualDiffContainer">
+                                <div id="auditVisualDiffContent" class="d-flex flex-column gap-2"></div>
+                            </div>
+
+                            <!-- KHU VỰC 2: RAW JSON CODE VIEW (MẶC ĐỊNH ẨN) -->
+                            <div id="auditRawJsonContainer" class="d-none">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span
+                                                class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-50 px-3 py-2 rounded-pill fw-bold small">
+                                                <i class="fa-solid fa-minus-circle me-1"></i> Giá trị Cũ (Old Value)
+                                            </span>
+                                        </div>
+                                        <div class="glass-panel p-3 rounded-4 m-0"
+                                            style="max-height: 400px; overflow: auto; background: rgba(0, 0, 0, 0.35) !important;">
+                                            <pre
+                                                class="m-0"><code id="auditOldValueCode" class="text-white font-monospace" style="font-size: 0.85rem; line-height: 1.5;"></code></pre>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <span
+                                                class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-50 px-3 py-2 rounded-pill fw-bold small">
+                                                <i class="fa-solid fa-plus-circle me-1"></i> Giá trị Mới (New Value)
+                                            </span>
+                                        </div>
+                                        <div class="glass-panel p-3 rounded-4 m-0"
+                                            style="max-height: 400px; overflow: auto; background: rgba(0, 0, 0, 0.35) !important;">
+                                            <pre
+                                                class="m-0"><code id="auditNewValueCode" class="text-white font-monospace" style="font-size: 0.85rem; line-height: 1.5;"></code></pre>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FOOTER -->
+                        <div class="modal-footer border-0 px-4 px-md-5 pb-4 pt-2 d-flex justify-content-end">
+                            <button type="button" class="btn modern-btn-cancel px-4 py-2 rounded-pill fw-bold"
+                                data-bs-dismiss="modal">Đóng cửa sổ</button>
                         </div>
                     </div>
                 </div>
@@ -1409,6 +1584,7 @@
             <script src="../../js/admin/marketingManager.js"></script>
             <script src="../../js/admin/auditManager.js"></script>
             <script src="../../js/admin/rbacManager.js"></script>
+            <script src="../../js/admin/landmarkManager.js"></script>
             <!-- MODAL CHỈNH SỬA CẤU HÌNH GIÁ -->
             <div class="login-modal-overlay" id="editPricingRuleModal">
                 <div class="glass-login-container text-white" style="max-width: 500px;">
@@ -1537,6 +1713,69 @@
                 </div>
             </div>
 
+            <!-- MODAL THÊM / SỬA LANDMARK -->
+            <div class="modal fade glass-modal-blur" id="landmarkModal" tabindex="-1" aria-hidden="true"
+                style="z-index: 1055;">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content modern-modal-content border-0 p-4"
+                        style="background: rgba(18, 24, 36, 0.9); backdrop-filter: blur(30px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.15) !important;">
+                        <div
+                            class="d-flex justify-content-between align-items-center pb-3 mb-3 border-bottom border-secondary">
+                            <h5 class="fw-bold text-white m-0" id="landmarkModalTitle"><i
+                                    class="fa-solid fa-map-location-dot text-info me-2"></i>Tạo Điểm Đến Mới</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form id="landmarkForm" onsubmit="event.preventDefault(); saveLandmark();">
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small mb-1">Tên Điểm Đến <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="lName" class="form-control modern-input text-white"
+                                    placeholder="VD: Sân bay Tân Sơn Nhất" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small mb-1">Phân loại danh mục <span
+                                        class="text-danger">*</span></label>
+                                <select id="lCategory" class="form-select modern-select text-white" required>
+                                    <option value="AIRPORT">Sân bay (AIRPORT)</option>
+                                    <option value="BUS_STATION">Bến xe (BUS_STATION)</option>
+                                    <option value="OTHER">Khác (OTHER)</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small mb-1">Địa chỉ chi tiết <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" id="lAddress" class="form-control modern-input text-white"
+                                    placeholder="VD: Sân bay Tân Sơn Nhất, Trường Sơn, Tân Bình, TP.HCM" required>
+                            </div>
+                            <div class="row g-3 mb-4">
+                                <div class="col-6">
+                                    <label class="form-label text-white-50 small mb-1">Vĩ độ (Latitude) <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" step="any" id="lLat"
+                                        class="form-control modern-input text-white font-monospace"
+                                        placeholder="VD: 10.818000" required>
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label text-white-50 small mb-1">Kinh độ (Longitude) <span
+                                            class="text-danger">*</span></label>
+                                    <input type="number" step="any" id="lLng"
+                                        class="form-control modern-input text-white font-monospace"
+                                        placeholder="VD: 106.652000" required>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-end gap-2">
+                                <button type="button" class="btn btn-outline-light rounded-pill px-4"
+                                    data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit"
+                                    class="btn btn-info text-white fw-bold rounded-pill px-4 shadow-sm"
+                                    style="background: linear-gradient(135deg, #06b6d4, #0891b2); border: none;">Lưu
+                                    Điểm Đến</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
             <!-- MODAL THÔNG BÁO GLASSMORPHISM CHUNG CHO ADMIN -->
             <div class="modal fade" id="glassAlertModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
                 <div class="modal-dialog modal-dialog-centered modal-sm">
@@ -1576,6 +1815,49 @@
                                 style="border-radius: 50px; border: none; font-size: 0.95rem; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">Xác
                                 nhận</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL APPLE GLASSMORPHISM: THÔNG BÁO HẾT HẠN TOKEN -->
+            <div class="modal fade" id="tokenExpiredModal" data-bs-backdrop="static" data-bs-keyboard="false"
+                tabindex="-1" aria-hidden="true" style="z-index: 1070;">
+                <div class="modal-dialog modal-dialog-centered" style="max-width: 420px;">
+                    <div class="modal-content border-0 text-center p-4 p-md-5"
+                        style="background: rgba(24, 26, 27, 0.85); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border-radius: 28px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 1px rgba(255, 255, 255, 0.18) !important;">
+
+                        <!-- Icon phát sáng phong cách Apple Security -->
+                        <div class="mb-4 d-flex justify-content-center">
+                            <div
+                                style="width: 80px; height: 80px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.4));">
+                                <i class="fa-solid fa-lock text-danger" style="font-size: 2.2rem;"></i>
+                            </div>
+                        </div>
+
+                        <!-- Tiêu đề & Nội dung -->
+                        <h4 class="fw-bold text-white mb-2"
+                            style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; letter-spacing: -0.5px;">
+                            Phiên đăng nhập hết hạn
+                        </h4>
+                        <p class="text-white-50 mb-4" style="font-size: 0.95rem; line-height: 1.6;">
+                            Khóa bảo mật của bạn đã hết thời gian hiệu lực. Hệ thống sẽ tự động an toàn đăng xuất về
+                            trang chính sau <strong id="countdownTimer" class="text-warning fw-bold fs-5">5</strong>
+                            giây...
+                        </p>
+
+                        <!-- Thanh Progress Bar đếm ngược mượt mà -->
+                        <div class="progress mb-4"
+                            style="height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 10px; overflow: hidden;">
+                            <div id="countdownProgress" class="progress-bar bg-danger" role="progressbar"
+                                style="width: 100%; transition: width 1s linear;"></div>
+                        </div>
+
+                        <!-- Nút hành động ngay lập tức -->
+                        <button type="button" class="btn w-100 py-3 fw-bold text-white shadow-sm"
+                            onclick="forceRedirectHome()"
+                            style="border-radius: 50px; border: 1px solid rgba(255, 255, 255, 0.2); background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(185, 28, 28, 0.9)); font-size: 0.98rem; letter-spacing: 0.3px; transition: transform 0.2s ease, box-shadow 0.2s ease;">
+                            <i class="fa-solid fa-arrow-right-from-bracket me-2"></i> Đăng nhập lại ngay
+                        </button>
                     </div>
                 </div>
             </div>
