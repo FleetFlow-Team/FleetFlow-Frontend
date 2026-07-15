@@ -4,6 +4,8 @@
 
 const CUSTOMER_API_URL = 'http://localhost:8080/FleetFlow/api/v1/admin/customers';
 
+let allCustomersList = [];
+
 // Biến mock data (Trong tương lai khi Backend có API GET /customers, ta sẽ xóa biến này và dùng data từ API)
 let mockCustomers = [
     {
@@ -56,7 +58,8 @@ async function fetchAndRenderCustomers() {
         if (response.ok) {
             // BE trả về trực tiếp mảng JSON
             const customers = Array.isArray(result) ? result : [];
-            renderCustomers(customers);
+            allCustomersList = customers;
+            renderCustomers(allCustomersList);
         } else {
             console.error("Lỗi từ server:", result);
             throw new Error(result.error || "Không thể tải danh sách khách hàng");
@@ -66,6 +69,33 @@ async function fetchAndRenderCustomers() {
         console.error("Lỗi khi tải danh sách khách hàng:", error);
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation fs-3 mb-2 d-block"></i>Lỗi kết nối máy chủ.</td></tr>`;
     }
+}
+
+/**
+ * Lọc danh sách Khách hàng theo từ khóa (Tên, Số điện thoại, Email)
+ */
+function filterCustomers() {
+    const searchInput = document.getElementById('customerSearchInput');
+    if (!searchInput) return;
+
+    const keyword = searchInput.value.trim().toLowerCase();
+
+    // Nếu ô tìm kiếm trống, hiển thị lại toàn bộ danh sách
+    if (!keyword) {
+        renderCustomers(allCustomersList);
+        return;
+    }
+
+    // Lọc theo tên, số điện thoại hoặc email
+    const filteredList = allCustomersList.filter(c => {
+        const name = (c.fullName || '').toLowerCase();
+        const phone = (c.phoneNumber || '').toLowerCase();
+        const email = (c.email || '').toLowerCase();
+
+        return name.includes(keyword) || phone.includes(keyword) || email.includes(keyword);
+    });
+
+    renderCustomers(filteredList);
 }
 
 /**

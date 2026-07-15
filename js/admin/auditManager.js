@@ -62,6 +62,41 @@ async function loadAuditLogs(page = 1) {
     }
 }
 
+/**
+ * Lọc Nhật ký kiểm toán theo Mã, Người dùng, Email hoặc Đối tượng
+ */
+function filterAuditLogs() {
+    const searchInput = document.getElementById('auditSearchInput');
+    if (!searchInput) return;
+
+    const keyword = searchInput.value.trim().toLowerCase();
+
+    // Nếu từ khóa trống, render lại toàn bộ danh sách hiện tại
+    if (!keyword) {
+        renderAuditLogs(currentAuditLogs);
+        return;
+    }
+
+    // Lọc theo Mã tài khoản (VD: acc-1, 1), Tên, Email hoặc Đối tượng
+    const filtered = currentAuditLogs.filter(log => {
+        const accCode = (`acc-${log.accountId || ''}`).toLowerCase();
+        const accId = String(log.accountId || '');
+        const name = (log.fullName || '').toLowerCase();
+        const email = (log.email || '').toLowerCase();
+        const entityName = (log.entityName || '').toLowerCase();
+        const entityId = String(log.entityId || '');
+
+        return accCode.includes(keyword) || 
+               accId.includes(keyword) || 
+               name.includes(keyword) || 
+               email.includes(keyword) || 
+               entityName.includes(keyword) ||
+               entityId.includes(keyword);
+    });
+
+    renderAuditLogs(filtered);
+}
+
 function renderAuditLogs(logs) {
     const listBody = document.getElementById('auditLogListBody');
     if (logs.length === 0) {

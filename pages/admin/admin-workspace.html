@@ -840,8 +840,9 @@
                                 </div>
                                 <div class="d-flex gap-2 align-items-center">
                                     <div class="search-box position-relative">
-                                        <input type="text" class="form-control form-control-sm glass-input ps-5"
-                                            placeholder="Tìm tên, SĐT...">
+                                        <input type="text" id="customerSearchInput"
+                                            class="form-control form-control-sm glass-input ps-5"
+                                            placeholder="Tìm tên, SĐT, Email..." onkeyup="filterCustomers()">
                                     </div>
                                     <button class="btn btn-sm btn-outline-info text-white"
                                         onclick="fetchAndRenderCustomers()">
@@ -978,10 +979,9 @@
                                         biến, chỉ đọc.</p>
                                 </div>
                                 <div class="input-group w-auto shadow-sm">
-                                    <span class="input-group-text glass-input-addon border-end-0"><i
-                                            class="fa-solid fa-magnifying-glass text-white-50"></i></span>
-                                    <input type="text" class="form-control glass-input border-start-0"
-                                        placeholder="Tìm kiếm mã, người dùng...">
+                                    <input type="text" id="auditSearchInput"
+                                        class="form-control glass-input border-start-0"
+                                        placeholder="Tìm kiếm mã, người dùng..." onkeyup="filterAuditLogs()">
                                 </div>
                             </div>
 
