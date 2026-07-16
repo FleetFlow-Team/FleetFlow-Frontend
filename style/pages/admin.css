@@ -968,6 +968,12 @@ img.rounded-circle.border-white {
     outline: none !important;
 }
 
+.modern-select option {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    padding: 10px !important;
+}
+
 .modern-btn-cancel {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);

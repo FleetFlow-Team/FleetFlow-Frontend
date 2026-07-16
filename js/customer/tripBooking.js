@@ -119,6 +119,7 @@ let currentVoucherId = null; // Lưu ID voucher nếu áp dụng thành công
 let currentBaseFare = 0;
 let currentWeekendSurcharge = 0;
 let currentGpsPickupCoords = null; // Lưu tọa độ GPS chính xác gốc
+let globalLandmarks = []; // Lưu danh sách Điểm đến định sẵn từ Backend
 
 
 
@@ -169,11 +170,14 @@ map.on('load', () => {
     // 🚀 TỰ ĐỘNG ĐỊNH VỊ GPS HIỆN TẠI LÀM ĐIỂM ĐÓN MẶC ĐỊNH
     initUserLocationDefault();
 
-    // Lắng nghe sự kiện gõ tay để tắt cờ GPS nếu khách tự nhập địa chỉ khác
+    // Tải danh sách Landmark từ API Backend
+    fetchActiveLandmarks();
+
+    // Lắng nghe sự kiện gõ tay để tắt cờ GPS và Landmark nếu khách tự nhập địa chỉ khác
     const inputPickupEl = document.getElementById('inputPickup');
     const inputDropoffEl = document.getElementById('inputDropoff');
-    if (inputPickupEl) inputPickupEl.addEventListener('input', function () { this.dataset.isGps = "false"; });
-    if (inputDropoffEl) inputDropoffEl.addEventListener('input', function () { this.dataset.isGps = "false"; });
+    if (inputPickupEl) inputPickupEl.addEventListener('input', function () { this.dataset.isGps = "false"; this.dataset.isLandmark = "false"; });
+    if (inputDropoffEl) inputDropoffEl.addEventListener('input', function () { this.dataset.isGps = "false"; this.dataset.isLandmark = "false"; });
 });
 
 // Hàm định vị GPS và tự động điền Điểm đón
@@ -432,19 +436,23 @@ window.triggerMapCalculation = async function () {
         distBadge.classList.remove('active-route');
         btnSubmitBooking.disabled = true;
 
-        // B1: Geocode (Sử dụng tọa độ GPS trực tiếp nếu ô input đang giữ vị trí GPS, tránh bị Backend đẩy về Cà Mau)
+        // B1: Geocode (Ưu tiên tọa độ Landmark > GPS > gọi API Geocoding)
         const inputPickupEl = document.getElementById('inputPickup');
         const inputDropoffEl = document.getElementById('inputDropoff');
 
         let pickupData;
-        if (currentGpsPickupCoords && (inputPickupEl.dataset.isGps === "true" || pickupAddress === `${currentGpsPickupCoords.lat.toFixed(6)}, ${currentGpsPickupCoords.lng.toFixed(6)}`)) {
+        if (inputPickupEl.dataset.isLandmark === "true" && inputPickupEl.dataset.lat && inputPickupEl.dataset.lng) {
+            pickupData = { lat: parseFloat(inputPickupEl.dataset.lat), lng: parseFloat(inputPickupEl.dataset.lng) };
+        } else if (currentGpsPickupCoords && (inputPickupEl.dataset.isGps === "true" || pickupAddress === `${currentGpsPickupCoords.lat.toFixed(6)}, ${currentGpsPickupCoords.lng.toFixed(6)}`)) {
             pickupData = { lat: currentGpsPickupCoords.lat, lng: currentGpsPickupCoords.lng };
         } else {
             pickupData = await fetchGeocode(pickupAddress);
         }
 
         let dropoffData;
-        if (currentGpsPickupCoords && (inputDropoffEl.dataset.isGps === "true" || dropoffAddress === `${currentGpsPickupCoords.lat.toFixed(6)}, ${currentGpsPickupCoords.lng.toFixed(6)}`)) {
+        if (inputDropoffEl.dataset.isLandmark === "true" && inputDropoffEl.dataset.lat && inputDropoffEl.dataset.lng) {
+            dropoffData = { lat: parseFloat(inputDropoffEl.dataset.lat), lng: parseFloat(inputDropoffEl.dataset.lng) };
+        } else if (currentGpsPickupCoords && (inputDropoffEl.dataset.isGps === "true" || dropoffAddress === `${currentGpsPickupCoords.lat.toFixed(6)}, ${currentGpsPickupCoords.lng.toFixed(6)}`)) {
             dropoffData = { lat: currentGpsPickupCoords.lat, lng: currentGpsPickupCoords.lng };
         } else {
             dropoffData = await fetchGeocode(dropoffAddress);
@@ -578,24 +586,134 @@ window.swapLocations = function () {
     pickupInput.dataset.isGps = dropoffInput.dataset.isGps || "";
     dropoffInput.dataset.isGps = tempGps || "";
 
+    // Đảo cờ và tọa độ Landmark
+    let tempLandmark = pickupInput.dataset.isLandmark;
+    pickupInput.dataset.isLandmark = dropoffInput.dataset.isLandmark || "";
+    dropoffInput.dataset.isLandmark = tempLandmark || "";
+
+    let tempLat = pickupInput.dataset.lat;
+    pickupInput.dataset.lat = dropoffInput.dataset.lat || "";
+    dropoffInput.dataset.lat = tempLat || "";
+
+    let tempLng = pickupInput.dataset.lng;
+    pickupInput.dataset.lng = dropoffInput.dataset.lng || "";
+    dropoffInput.dataset.lng = tempLng || "";
+
     triggerMapCalculation();
 };
 
-// Hiển thị dropdown gợi ý địa điểm (Mockup)
-window.showMockAutocomplete = function (dropdownId) {
-    // Ẩn tất cả dropdown trước
-    document.querySelectorAll('.autocomplete-dropdown').forEach(el => el.style.display = 'none');
+// Tải danh sách Landmark từ Backend API
+async function fetchActiveLandmarks() {
+    try {
+        const res = await fetch(`${CORE_API_BASE}/landmarks`);
+        if (res.ok) {
+            const result = await res.json();
+            if (result && result.data && Array.isArray(result.data)) {
+                globalLandmarks = result.data.filter(l => !l.isDeleted);
+                renderQuickLandmarkChips();
+            }
+        }
+    } catch (e) {
+        console.warn("Không thể tải danh sách Landmark:", e);
+    }
+}
 
-    const dropdown = document.getElementById(dropdownId);
-    if (dropdown) dropdown.style.display = 'block';
+// Render dải nút chọn nhanh Landmark (Quick Chips)
+function renderQuickLandmarkChips() {
+    const container = document.getElementById('quickLandmarkChips');
+    if (!container || globalLandmarks.length === 0) return;
+
+    const chipsHTML = globalLandmarks.slice(0, 6).map(l => {
+        let icon = 'fa-location-dot text-primary';
+        if (l.category === 'AIRPORT') icon = 'fa-plane-departure text-info';
+        else if (l.category === 'BUS_STATION') icon = 'fa-bus text-warning';
+
+        return `
+            <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill d-flex align-items-center gap-1 py-1 px-2"
+                onclick="selectQuickLandmark(${l.id})" style="font-size: 0.8rem; background: rgba(255,255,255,0.75); border-color: rgba(0,0,0,0.15); transition: all 0.2s;">
+                <i class="fa-solid ${icon}"></i> <span class="fw-medium">${l.name}</span>
+            </button>
+        `;
+    }).join('');
+
+    container.innerHTML = `
+        <span class="text-secondary small fw-bold"><i class="fa-solid fa-map-pin me-1 text-primary"></i>Điểm đến cố định:</span>
+        ${chipsHTML}
+    `;
+}
+
+// Click nút chọn nhanh Landmark
+window.selectQuickLandmark = function(landmarkId) {
+    const landmark = globalLandmarks.find(l => l.id === landmarkId);
+    if (!landmark) return;
+    selectLandmarkLocation('inputDropoff', landmark, 'dropoffDropdown');
 };
 
-// Chọn địa điểm từ dropdown
-window.selectLocation = function (inputId, text, dropdownId) {
+// Lọc và hiển thị dropdown Landmark khi gõ hoặc nhấp vào ô nhập
+window.onInputLocationSearch = function (inputId, dropdownId) {
     const inputEl = document.getElementById(inputId);
-    inputEl.value = text;
-    inputEl.dataset.isGps = "false"; // Chọn từ dropdown thì tắt cờ GPS
-    document.getElementById(dropdownId).style.display = 'none';
+    const dropdownEl = document.getElementById(dropdownId);
+    if (!inputEl || !dropdownEl) return;
+
+    const query = inputEl.value.trim().toLowerCase();
+
+    document.querySelectorAll('.autocomplete-dropdown').forEach(el => {
+        if (el.id !== dropdownId) el.style.display = 'none';
+    });
+
+    let matches = globalLandmarks;
+    if (query.length > 0) {
+        matches = globalLandmarks.filter(l =>
+            (l.name && l.name.toLowerCase().includes(query)) ||
+            (l.address && l.address.toLowerCase().includes(query))
+        );
+    }
+
+    if (matches.length === 0) {
+        dropdownEl.style.display = 'none';
+        return;
+    }
+
+    dropdownEl.innerHTML = matches.slice(0, 30).map(l => {
+        let icon = 'fa-location-dot text-primary';
+        if (l.category === 'AIRPORT') icon = 'fa-plane-departure text-info';
+        else if (l.category === 'BUS_STATION') icon = 'fa-bus text-warning';
+
+        return `
+            <div class="autocomplete-item" onclick="selectLandmarkById('${inputId}', ${l.id}, '${dropdownId}')">
+                <i class="fa-solid ${icon}"></i>
+                <div>
+                    <span class="autocomplete-main-text">${l.name}</span>
+                    <span class="autocomplete-sub-text">${l.address}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    dropdownEl.style.display = 'block';
+};
+
+// Chọn Landmark theo ID từ Autocomplete Dropdown
+window.selectLandmarkById = function (inputId, landmarkId, dropdownId) {
+    const landmark = globalLandmarks.find(l => l.id === landmarkId);
+    if (landmark) {
+        selectLandmarkLocation(inputId, landmark, dropdownId);
+    }
+};
+
+// Điền thông tin Landmark vào ô input và thiết lập tọa độ chính xác
+window.selectLandmarkLocation = function (inputId, landmark, dropdownId) {
+    const inputEl = document.getElementById(inputId);
+    const dropdownEl = document.getElementById(dropdownId);
+    if (!inputEl) return;
+
+    inputEl.value = `${landmark.name} - ${landmark.address}`;
+    inputEl.dataset.isGps = "false";
+    inputEl.dataset.isLandmark = "true";
+    inputEl.dataset.lat = landmark.lat;
+    inputEl.dataset.lng = landmark.lng;
+
+    if (dropdownEl) dropdownEl.style.display = 'none';
     triggerMapCalculation();
 };
 

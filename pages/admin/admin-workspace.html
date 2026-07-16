@@ -840,8 +840,9 @@
                                 </div>
                                 <div class="d-flex gap-2 align-items-center">
                                     <div class="search-box position-relative">
-                                        <input type="text" class="form-control form-control-sm glass-input ps-5"
-                                            placeholder="Tìm tên, SĐT...">
+                                        <input type="text" id="customerSearchInput"
+                                            class="form-control form-control-sm glass-input ps-5"
+                                            placeholder="Tìm tên, SĐT, Email..." onkeyup="filterCustomers()">
                                     </div>
                                     <button class="btn btn-sm btn-outline-info text-white"
                                         onclick="fetchAndRenderCustomers()">
@@ -928,41 +929,184 @@
                     </section>
 
                     <section id="tab-reports" class="dashboard-section">
-                        <div class="glass-panel">
-                            <div class="d-flex justify-content-between align-items-end mb-4">
+                        <div class="glass-panel d-flex flex-column gap-4">
+                            <!-- Header & Chuyển đổi chế độ (4 Màu: Slate, Gold, White, Red - Tối giản Icon) -->
+                            <div
+                                class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 pb-3 border-bottom border-light border-opacity-10">
                                 <div>
-                                    <h4 class="fw-bold mb-1 text-white"><i
-                                            class="fa-solid fa-chart-area text-warning me-2"></i>Đo lường Chất lượng
-                                        Dịch vụ</h4>
-                                    <p class="text-white-50 small m-0">Phân tích chuyên sâu về trải nghiệm khách hàng và
-                                        sức khỏe vận hành.</p>
+                                    <h4 class="fw-bold mb-1 d-flex align-items-center" style="color: #ffffff;">
+                                        <span style="color: #ffde59; font-weight: 800; margin-right: 12px;">★</span>
+                                        Kiểm soát Đánh giá & Chất lượng
+                                    </h4>
+                                    <p class="small m-0" style="color: rgba(255, 255, 255, 0.6);">Giám sát trải nghiệm
+                                        khách hàng & kỷ luật tài xế</p>
                                 </div>
-                                <button class="glass-liquid-btn fw-bold" onclick="simulateSaveConfig(this)">
-                                    <i class="fa-solid fa-file-export text-success me-2"></i> Xuất PDF
-                                </button>
+
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="btn-group p-1 rounded-pill"
+                                        style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15);"
+                                        role="group">
+                                        <button type="button" id="btnTypeCustomer"
+                                            class="btn btn-sm fw-bold rounded-pill px-3 py-2 active"
+                                            style="background: #ffde59; color: #1a1e29;"
+                                            onclick="switchRatingType('customer')">
+                                            Khách đánh giá Tài xế
+                                        </button>
+                                        <button type="button" id="btnTypeDriver"
+                                            class="btn btn-sm rounded-pill px-3 py-2 border-0"
+                                            style="background: transparent; color: rgba(255, 255, 255, 0.7);"
+                                            onclick="switchRatingType('driver')">
+                                            Tài xế đánh giá Khách
+                                        </button>
+                                    </div>
+                                    <button type="button"
+                                        class="btn btn-sm rounded-circle p-2 d-flex align-items-center justify-content-center"
+                                        style="width: 38px; height: 38px; background: rgba(255, 255, 255, 0.08); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.15);"
+                                        onclick="fetchAdminRatings()" title="Làm mới">
+                                        ↻
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="row g-4">
-                                <div class="col-lg-5">
-                                    <div class="glass-panel p-4 h-100 d-flex flex-column">
-                                        <h6 class="fw-bold mb-4 text-center text-white"><i
-                                                class="fa-solid fa-satellite-dish me-2 text-info"></i> Phổ Điểm Đánh Giá
-                                            Tài Xế</h6>
-                                        <div
-                                            style="flex-grow: 1; display: flex; justify-content: center; align-items: center; min-height: 300px;">
-                                            <canvas id="qualityRadarChart"></canvas>
-                                        </div>
+                            <!-- Thẻ Thống Kê KPI (Summary Cards) -->
+                            <div class="row g-3" id="ratingSummaryKPIs">
+                                <div class="col-12 text-center py-4">
+                                    <div style="color: rgba(255, 255, 255, 0.6);">Đang đồng bộ chỉ số chất lượng...
                                     </div>
                                 </div>
-                                <div class="col-lg-7">
-                                    <div class="glass-panel p-4 h-100 d-flex flex-column">
-                                        <h6 class="fw-bold mb-4 text-white"><i
-                                                class="fa-solid fa-chart-column me-2 text-danger"></i> Phân tích Lý do
-                                            Hủy chuyến</h6>
-                                        <div style="flex-grow: 1; min-height: 300px;">
-                                            <canvas id="cancelReasonChart"></canvas>
-                                        </div>
+                            </div>
+
+                            <!-- Mục Biểu Đồ Phân bổ Điểm số (Dedicated Chart Section) -->
+                            <div class="glass-panel p-4"
+                                style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12);"
+                                id="ratingChartSection">
+                                <div
+                                    class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3">
+                                    <div>
+                                        <h6 class="fw-bold m-0" style="color: #ffffff;">Phân bổ Điểm Đánh giá & Tỷ lệ
+                                            Hài lòng</h6>
+                                        <span class="small" style="color: rgba(255, 255, 255, 0.5);">Thống kê trực quan
+                                            số lượng phản hồi theo từng mức điểm từ 1★ đến 5★</span>
                                     </div>
+                                    <span class="badge px-3 py-1 rounded-pill mt-2 mt-md-0 font-monospace"
+                                        style="background: rgba(255, 222, 89, 0.15); color: #ffde59; border: 1px solid rgba(255, 222, 89, 0.3);">
+                                        Realtime Chart
+                                    </span>
+                                </div>
+                                <div style="position: relative; height: 260px; width: 100%;">
+                                    <canvas id="ratingDistributionChart"></canvas>
+                                </div>
+                            </div>
+
+                            <!-- Bảng Xếp Hạng Cảnh Báo Tài Xế (Driver Quality Leaderboard) -->
+                            <div class="glass-panel p-4" id="driverQualityLeaderboardSection"
+                                style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12);">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div>
+                                        <h6 class="fw-bold m-0" style="color: #ffffff;">
+                                            Bảng Xếp Hạng Cảnh Báo Phong Độ Tài Xế
+                                        </h6>
+                                        <span class="small" style="color: rgba(255, 255, 255, 0.5);">Sắp xếp ưu tiên tài
+                                            xế có điểm trung bình thấp nhất lên đầu</span>
+                                    </div>
+                                    <span class="badge px-3 py-1 rounded-pill"
+                                        style="background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.4);">
+                                        Cảnh báo: ≤ 3.5★ hoặc ≤ 2★
+                                    </span>
+                                </div>
+
+                                <div class="table-glass-wrapper overflow-auto" style="max-height: 320px;">
+                                    <table class="table-glass mb-0 w-100">
+                                        <thead
+                                            style="position: sticky; top: 0; z-index: 5; background: rgba(26, 30, 41, 0.75); backdrop-filter: blur(12px); color: #ffffff;">
+                                            <tr>
+                                                <th class="text-center" width="6%">#</th>
+                                                <th width="26%">Tài xế</th>
+                                                <th class="text-center" width="16%">Điểm Phục vụ</th>
+                                                <th class="text-center" width="16%">Điểm Xe</th>
+                                                <th class="text-center" width="12%">Tổng lượt</th>
+                                                <th class="text-center" width="12%">≤ 2★</th>
+                                                <th class="text-center" width="12%">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="driverQualityLeaderboardBody">
+                                            <tr>
+                                                <td colspan="7" class="text-center py-4"
+                                                    style="color: rgba(255, 255, 255, 0.5);">
+                                                    Đang tải bảng xếp hạng tài xế...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- Bộ Lọc Nâng Cao & Bảng Chi Tiết Phản Hồi (Tối giản: Ẩn Nhận xét & Thời gian) -->
+                            <div class="glass-panel p-4"
+                                style="background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.12);">
+                                <div
+                                    class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                                    <h6 class="fw-bold m-0" style="color: #ffffff;" id="ratingTableHeaderTitle">
+                                        Khách hàng Đánh giá Tài xế & Xe
+                                    </h6>
+
+                                    <!-- Bộ lọc date range & lowOnly -->
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        <div class="form-check form-switch px-3 py-1 rounded-pill d-flex align-items-center m-0 me-1"
+                                            style="min-height: 36px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);">
+                                            <input class="form-check-input ms-0 me-2" type="checkbox" role="switch"
+                                                id="checkLowOnly" onchange="toggleLowOnlyFilter(this)"
+                                                style="cursor: pointer;">
+                                            <label class="form-check-label fw-bold small m-0" for="checkLowOnly"
+                                                style="color: #ef4444; cursor: pointer;">Chỉ hiện ≤ 2★</label>
+                                        </div>
+
+                                        <div class="input-group input-group-sm w-auto">
+                                            <input type="date" id="ratingFromDate"
+                                                class="form-control form-control-sm glass-input text-white"
+                                                style="max-width: 135px;" title="Từ ngày"
+                                                onchange="fetchAdminRatings()">
+                                            <span
+                                                class="input-group-text bg-white bg-opacity-10 border-white border-opacity-10 text-white-50">-</span>
+                                            <input type="date" id="ratingToDate"
+                                                class="form-control form-control-sm glass-input text-white"
+                                                style="max-width: 135px;" title="Đến ngày"
+                                                onchange="fetchAdminRatings()">
+                                        </div>
+
+                                        <button type="button" class="btn btn-sm px-3 rounded-pill"
+                                            style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.15);"
+                                            onclick="resetRatingFilters()" title="Đặt lại bộ lọc">
+                                            Đặt lại
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Thông báo lọc riêng tài xế -->
+                                <div id="activeDriverFilterNotice" class="mb-3" style="display: none;"></div>
+
+                                <!-- Bảng chi tiết đánh giá -->
+                                <div class="table-glass-wrapper overflow-auto" style="max-height: 480px;">
+                                    <table class="table-glass mb-0 w-100">
+                                        <thead
+                                            style="position: sticky; top: 0; z-index: 5; background: rgba(26, 30, 41, 0.75); backdrop-filter: blur(12px); color: #ffffff;">
+                                            <tr>
+                                                <th class="text-center" width="12%">Chuyến</th>
+                                                <th width="28%">Khách hàng</th>
+                                                <th width="28%">Đối tượng đánh giá</th>
+                                                <th class="text-center" width="17%">Điểm số</th>
+                                                <th class="text-center" width="15%">Thao tác</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ratingsDetailTableBody">
+                                            <tr>
+                                                <td colspan="5" class="text-center py-5"
+                                                    style="color: rgba(255, 255, 255, 0.5);">
+                                                    Đang tải chi tiết phản hồi...
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -978,10 +1122,9 @@
                                         biến, chỉ đọc.</p>
                                 </div>
                                 <div class="input-group w-auto shadow-sm">
-                                    <span class="input-group-text glass-input-addon border-end-0"><i
-                                            class="fa-solid fa-magnifying-glass text-white-50"></i></span>
-                                    <input type="text" class="form-control glass-input border-start-0"
-                                        placeholder="Tìm kiếm mã, người dùng...">
+                                    <input type="text" id="auditSearchInput"
+                                        class="form-control glass-input border-start-0"
+                                        placeholder="Tìm kiếm mã, người dùng..." onkeyup="filterAuditLogs()">
                                 </div>
                             </div>
 
@@ -1571,6 +1714,92 @@
                 </div>
             </div>
 
+            <!-- MODAL XEM CHI TIẾT ĐÁNH GIÁ (APPLE DESIGN GLASSMORPHISM - 4 COLORS) -->
+            <div class="modal fade" id="ratingDetailModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content border-0 rounded-4"
+                        style="background: rgba(26, 30, 41, 0.92); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255, 255, 255, 0.18) !important; color: #ffffff; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);">
+                        <!-- HEADER -->
+                        <div class="modal-header border-bottom border-light border-opacity-10 px-4 py-3 d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <div id="modalHeaderIconBox" class="p-2 rounded-4 d-flex align-items-center justify-content-center"
+                                    style="background: rgba(255, 222, 89, 0.15); color: #ffde59; width: 48px; height: 48px; border: 1px solid rgba(255, 222, 89, 0.3);">
+                                    <span style="font-size: 1.5rem; font-weight: 800;">★</span>
+                                </div>
+                                <div>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h5 class="fw-bold m-0" style="color: #ffffff;" id="modalRatingTitle">Chi Tiết Đánh Giá #---</h5>
+                                        <span id="modalBookingTypeBadge" class="badge rounded-pill font-monospace" style="background: rgba(255, 255, 255, 0.12); color: #ffffff; font-size: 0.75rem;">--</span>
+                                    </div>
+                                    <span class="small" style="color: rgba(255, 255, 255, 0.6);" id="modalRatingTime">--</span>
+                                </div>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+
+                        <!-- BODY -->
+                        <div class="modal-body p-4 d-flex flex-column gap-4">
+                            <!-- Khối 1: Người đánh giá & Đối tượng nhận đánh giá (Glass Cards trực quan) -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 h-100 d-flex flex-column justify-content-between"
+                                        style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12);">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span id="modalReviewerIcon" class="fs-5">👤</span>
+                                            <span class="small fw-bold text-uppercase" style="color: rgba(255, 255, 255, 0.6); letter-spacing: 0.5px;">NGƯỜI ĐÁNH GIÁ</span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-5 mb-1" style="color: #ffffff;" id="modalReviewerName">--</div>
+                                            <div class="small font-monospace p-1 rounded px-2 d-inline-block" style="background: rgba(255, 255, 255, 0.08); color: #ffde59;" id="modalReviewerRole">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 h-100 d-flex flex-column justify-content-between"
+                                        style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12);">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span id="modalTargetIcon" class="fs-5">🚖</span>
+                                            <span class="small fw-bold text-uppercase" style="color: rgba(255, 255, 255, 0.6); letter-spacing: 0.5px;">ĐỐI TƯỢNG NHẬN ĐÁNH GIÁ</span>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold fs-5 mb-1" style="color: #ffffff;" id="modalTargetName">--</div>
+                                            <div class="small font-monospace p-1 rounded px-2 d-inline-block" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8);" id="modalTargetDetail">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Khối 2: Chi tiết bảng Điểm số trực quan (Stars + Status Badge) -->
+                            <div class="d-flex flex-column gap-2">
+                                <div class="fw-bold small text-uppercase" style="color: rgba(255, 255, 255, 0.7); letter-spacing: 0.5px;">TỔNG HỢP ĐIỂM SỐ CHẤT LƯỢNG</div>
+                                <div class="p-3 rounded-4 d-flex flex-column gap-3"
+                                    style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 222, 89, 0.3);"
+                                    id="modalScoresContainer">
+                                    <!-- Rendered dynamically by JS -->
+                                </div>
+                            </div>
+
+                            <!-- Khối 3: Nội dung Góp ý / Nhận xét -->
+                            <div class="d-flex flex-column gap-2">
+                                <div class="fw-bold small text-uppercase" style="color: rgba(255, 255, 255, 0.7); letter-spacing: 0.5px;">NỘI DUNG NHẬN XÉT & GÓP Ý</div>
+                                <div class="p-3 rounded-4 font-monospace position-relative"
+                                    style="background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12); min-height: 90px; font-size: 0.95rem; line-height: 1.6;"
+                                    id="modalRatingCommentBox">
+                                    <div id="modalRatingComment" style="white-space: pre-wrap; word-break: break-word;">--</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FOOTER -->
+                        <div class="modal-footer border-top border-light border-opacity-10 px-4 py-3 d-flex justify-content-between align-items-center">
+                            <span class="small font-monospace" style="color: rgba(255, 255, 255, 0.4);" id="modalRatingIdFoot">Rating ID: #---</span>
+                            <button type="button" class="btn px-4 py-2 rounded-pill fw-bold"
+                                style="background: #ffffff; color: #1a1e29; border: 1px solid #ffffff; transition: all 0.2s;" data-bs-dismiss="modal">Đóng cửa sổ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
             <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -1585,6 +1814,7 @@
             <script src="../../js/admin/auditManager.js"></script>
             <script src="../../js/admin/rbacManager.js"></script>
             <script src="../../js/admin/landmarkManager.js"></script>
+            <script src="../../js/admin/ratingManager.js"></script>
             <!-- MODAL CHỈNH SỬA CẤU HÌNH GIÁ -->
             <div class="login-modal-overlay" id="editPricingRuleModal">
                 <div class="glass-login-container text-white" style="max-width: 500px;">

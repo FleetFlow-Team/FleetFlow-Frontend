@@ -513,6 +513,12 @@ function renderVehiclesByPage(page) {
                             </span>
                         </div>
 
+                        ${v.reason ? `
+                        <div class="ai-reason-pill my-2 p-2 rounded-3 text-start" style="background: rgba(0, 177, 79, 0.08); border: 1px dashed rgba(0, 177, 79, 0.4); font-size: 0.82rem;">
+                            <i class="fa-solid fa-wand-magic-sparkles text-success me-1"></i>
+                            <span class="fw-semibold text-dark">AI Gợi ý:</span> <span class="text-secondary">${v.reason}</span>
+                        </div>` : ''}
+
                         <div class="price-container my-3 text-center">
                             <span class="price-current">${displayPrice.toLocaleString('vi-VN')}<span class="currency">đ</span></span>
                             <span class="text-secondary small">/${serviceLabel}</span>
@@ -905,10 +911,12 @@ async function sendMessage() {
         
         if (response.ok && result.success) {
             let botText = "Tôi đã tìm thấy phương tiện phù hợp với nhu cầu của bạn. Danh sách bên dưới đã được cập nhật!";
-            if (!result.data || result.data.length === 0) {
+            if (result.message) {
+                botText = result.message;
+            } else if (!result.data || result.data.length === 0) {
                 botText = "Xin lỗi, tôi không tìm thấy phương tiện nào hoàn toàn phù hợp với yêu cầu này. Bạn thử điều chỉnh lại nhé!";
             } else if (result.source === 'FALLBACK') {
-                botText = "Hệ thống AI tạm thời gián đoạn. Dưới đây là gợi ý từ hệ thống cơ bản:";
+                botText = "Hệ thống AI tạm thời gián đoạn. Dưới đây là gợi ý xe phù hợp theo từ khóa của bạn:";
             }
             
             // Render text

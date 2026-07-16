@@ -4,30 +4,7 @@
 
 const CUSTOMER_API_URL = 'http://localhost:8080/FleetFlow/api/v1/admin/customers';
 
-// Biến mock data (Trong tương lai khi Backend có API GET /customers, ta sẽ xóa biến này và dùng data từ API)
-let mockCustomers = [
-    {
-        CustomerID: 1,
-        FullName: "Nguyễn Văn A",
-        Phone: "0901234567",
-        CurrentDebt: 0,
-        Status: "ACTIVE"
-    },
-    {
-        CustomerID: 2,
-        FullName: "Trần Thị B",
-        Phone: "0987654321",
-        CurrentDebt: -1500000,
-        Status: "LOCKED" // Giả định KH này đang bị khóa do nợ quá giới hạn (-1tr)
-    },
-    {
-        CustomerID: 3,
-        FullName: "Lê Hoàng C",
-        Phone: "0912345678",
-        CurrentDebt: -500000,
-        Status: "ACTIVE" // Nợ chưa tới 1tr nên vẫn Active
-    }
-];
+let allCustomersList = [];
 
 // Khởi chạy khi tải trang
 document.addEventListener("DOMContentLoaded", () => {
@@ -56,7 +33,8 @@ async function fetchAndRenderCustomers() {
         if (response.ok) {
             // BE trả về trực tiếp mảng JSON
             const customers = Array.isArray(result) ? result : [];
-            renderCustomers(customers);
+            allCustomersList = customers;
+            renderCustomers(allCustomersList);
         } else {
             console.error("Lỗi từ server:", result);
             throw new Error(result.error || "Không thể tải danh sách khách hàng");
@@ -66,6 +44,33 @@ async function fetchAndRenderCustomers() {
         console.error("Lỗi khi tải danh sách khách hàng:", error);
         tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation fs-3 mb-2 d-block"></i>Lỗi kết nối máy chủ.</td></tr>`;
     }
+}
+
+/**
+ * Lọc danh sách Khách hàng theo từ khóa (Tên, Số điện thoại, Email)
+ */
+function filterCustomers() {
+    const searchInput = document.getElementById('customerSearchInput');
+    if (!searchInput) return;
+
+    const keyword = searchInput.value.trim().toLowerCase();
+
+    // Nếu ô tìm kiếm trống, hiển thị lại toàn bộ danh sách
+    if (!keyword) {
+        renderCustomers(allCustomersList);
+        return;
+    }
+
+    // Lọc theo tên, số điện thoại hoặc email
+    const filteredList = allCustomersList.filter(c => {
+        const name = (c.fullName || '').toLowerCase();
+        const phone = (c.phoneNumber || '').toLowerCase();
+        const email = (c.email || '').toLowerCase();
+
+        return name.includes(keyword) || phone.includes(keyword) || email.includes(keyword);
+    });
+
+    renderCustomers(filteredList);
 }
 
 /**
@@ -91,7 +96,7 @@ function renderCustomers(customers) {
             : `<span class="fw-bold text-success">0 ₫</span>`;
 
         // Hiển thị trạng thái
-        let statusBadge = c.status === 'ACTIVE'
+        let statusBadge = c.status.toUpperCase() === 'ACTIVE'
             ? '<span class="badge bg-success bg-opacity-25 text-success border border-success"><i class="fa-solid fa-check-circle me-1"></i> Đang hoạt động</span>'
             : '<span class="badge bg-danger bg-opacity-25 text-danger border border-danger"><i class="fa-solid fa-lock me-1"></i> Ngừng hoạt động</span>';
 
@@ -100,7 +105,7 @@ function renderCustomers(customers) {
 
         // Nút hành động (dùng fullName để hiển thị trong câu hỏi xác nhận)
         let actionBtn = '';
-        if (c.status === 'ACTIVE') {
+        if (c.status.toUpperCase() === 'ACTIVE') {
             actionBtn = `<button class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1 fw-bold shadow-sm" onclick="lockCustomerAccount(${c.customerId}, '${displayName}')" title="Khóa tài khoản">
                             <i class="fa-solid fa-lock me-1"></i> Khóa
                          </button>`;

@@ -205,6 +205,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (targetId === 'tab-landmarks' && typeof fetchLandmarks === 'function') {
                         fetchLandmarks();
                     }
+                    if (targetId === 'tab-reports' && typeof fetchAdminRatings === 'function') {
+                        fetchAdminRatings();
+                    }
                 }
             }
         });

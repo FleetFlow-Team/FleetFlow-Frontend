@@ -228,6 +228,46 @@
       if (userRole) document.getElementById('profileDisplayRole').innerText = userRole;
     });
 
+    /**
+     * Helper: Hiển thị Toast Liquid Glassmorphism (Hỗ trợ cả 'warning', 'success', 'error')
+     */
+    function showLiquidToast(message, type = 'warning', title = null) {
+      const toastEl = document.getElementById('liquidGlassToast');
+      if (!toastEl || typeof bootstrap === 'undefined') {
+        alert(message);
+        return;
+      }
+
+      // Xóa các lớp biến thể cũ và thêm lớp mới
+      toastEl.classList.remove('toast-warning', 'toast-success', 'toast-error');
+      
+      const iconEl = document.getElementById('toastLiquidIcon');
+      const innerIconEl = document.getElementById('toastLiquidInnerIcon');
+      const categoryEl = document.getElementById('toastLiquidCategory');
+      const titleEl = document.getElementById('toastLiquidTitle');
+      const msgEl = document.getElementById('toastLiquidMessage');
+
+      if (type === 'success') {
+        toastEl.classList.add('toast-success');
+        if (iconEl) iconEl.className = 'fa-solid fa-circle-check fs-5 text-success';
+        if (innerIconEl) innerIconEl.className = 'fa-solid fa-shield-check fs-5 text-success';
+        if (categoryEl) { categoryEl.innerText = 'THÀNH CÔNG'; categoryEl.className = 'me-auto font-monospace fw-bold text-success'; }
+        if (titleEl) titleEl.innerText = title || "Cập nhật thành công!";
+      } else {
+        // Warning / Error (lỗi mật khẩu cũ)
+        toastEl.classList.add('toast-warning');
+        if (iconEl) iconEl.className = 'fa-solid fa-triangle-exclamation fs-5 text-warning';
+        if (innerIconEl) innerIconEl.className = 'fa-solid fa-key fs-5 text-warning';
+        if (categoryEl) { categoryEl.innerText = 'CẢNH BÁO BẢO MẬT'; categoryEl.className = 'me-auto font-monospace fw-bold text-dark'; }
+        if (titleEl) titleEl.innerText = title || "Mật khẩu cũ không chính xác!";
+      }
+
+      if (msgEl) msgEl.innerText = message;
+
+      const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: type === 'success' ? 4000 : 4500 });
+      toast.show();
+    }
+
     // LOGIC XỬ LÝ ĐỔI MẬT KHẨU TỪ TAB SECURITY
     document.addEventListener("DOMContentLoaded", function () {
       const cpForm = document.getElementById('changePasswordForm');
@@ -245,15 +285,18 @@
           const email = localStorage.getItem('email');
 
           if (!email) {
-            alert("Phiên đăng nhập đã lỗi. Vui lòng đăng nhập lại!");
-            localStorage.clear();
-            window.location.href = '../index.html';
+            showLiquidToast("Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!", 'warning', "Lỗi phiên làm việc");
+            setTimeout(() => {
+              localStorage.clear();
+              window.location.href = '../index.html';
+            }, 2000);
             return;
           }
 
           // Kiểm tra mật khẩu xác nhận
           if (newPassword !== confirmPassword) {
-            alert("Mật khẩu mới và xác nhận mật khẩu không khớp!");
+            showLiquidToast("Mật khẩu mới và xác nhận mật khẩu không khớp nhau!", 'warning', "Dữ liệu chưa hợp lệ");
+            document.getElementById('confirmPassword').focus();
             return;
           }
 
@@ -280,18 +323,34 @@
             const data = await response.json();
 
             if (data.success) {
-              alert("Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.");
-
-              // Reset form, xóa token và đẩy về trang chủ để đăng nhập lại
+              // 🚀 THAY THẾ ALERT THÀNH CÔNG BẰNG TOAST LIQUID GLASS & CHUYỂN TRANG MƯỢT MÀ SAU 3.5 GIÂY
+              showLiquidToast(
+                "Cập nhật mật khẩu thành công! Hệ thống đã gửi email cảnh báo bảo mật. Vui lòng đăng nhập lại với mật khẩu mới.",
+                'success',
+                "Đổi mật khẩu thành công!"
+              );
               cpForm.reset();
-              localStorage.clear();
-              window.location.href = '../index.html';
+
+              setTimeout(() => {
+                localStorage.clear();
+                window.location.href = '../index.html';
+              }, 3500);
             } else {
-              alert("Thất bại: " + data.message);
+              // 🚀 HIỂN THỊ TOAST CẢNH BÁO KHI SAI MẬT KHẨU CŨ
+              const errMsg = data.message || "Mật khẩu cũ không chính xác!";
+              const errTitle = errMsg.toLowerCase().includes("mật khẩu cũ") ? "Mật khẩu cũ không chính xác!" : "Cập nhật thất bại";
+              showLiquidToast(errMsg, 'warning', errTitle);
+              
+              // Tự động focus và bôi đen ô mật khẩu cũ để khách tiện nhập lại
+              const oldPassInput = document.getElementById('oldPassword');
+              if (oldPassInput) {
+                oldPassInput.focus();
+                oldPassInput.select();
+              }
             }
           } catch (error) {
             console.error("Lỗi gọi API Đổi mật khẩu:", error);
-            alert("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.");
+            showLiquidToast("Mất kết nối đến máy chủ. Vui lòng kiểm tra lại hệ thống Backend.", 'warning', "Lỗi kết nối API");
           } finally {
             // Khôi phục nút bấm nếu có lỗi
             cpBtn.innerHTML = originalText;
@@ -316,17 +375,12 @@
       // ĐIỀU PHỐI (ROUTER): TÁCH LUỒNG KHÁCH HÀNG & TÀI XẾ
       // ========================================================
       if (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG' || userRole === 'ADMIN') {
-        // Khách hàng không cần xác thực CCCD/Bằng lái -> Ẩn tab eKYC đi cho gọn UI
-        const ekycTabBtn = document.querySelector('button[data-bs-target="#content-ekyc"]');
-        if (ekycTabBtn) ekycTabBtn.style.display = 'none';
-
         // Kích hoạt luồng Fetch API Khách hàng
         loadCustomerProfileFromAPI();
       } else {
-        // 🚀 BỔ SUNG: Xóa hoàn toàn tab Thông tin cá nhân, eKYC, Ví cho Đối tác Tài xế
+        // Xóa hoàn toàn tab Thông tin cá nhân và Ví cho Đối tác Tài xế
         const tabsToRemove = [
             '[data-bs-target="#content-profile"]',
-            '[data-bs-target="#content-ekyc"]',
             '[data-bs-target="#content-wallet"]'
         ];
         
@@ -334,7 +388,7 @@
             document.querySelectorAll(selector).forEach(el => el.remove());
         });
 
-        const panesToRemove = ['content-profile', 'content-ekyc', 'content-wallet'];
+        const panesToRemove = ['content-profile', 'content-wallet'];
         panesToRemove.forEach(id => {
             const el = document.getElementById(id);
             if (el) el.remove();
@@ -513,19 +567,6 @@
           let isTermsAccepted = (rawTerms === true || String(rawTerms).toLowerCase() === 'true' || rawTerms === 1 || rawTerms === '1');
           localStorage.setItem('termsAccepted', isTermsAccepted ? 'true' : 'false');
 
-          const storedApproval = localStorage.getItem('approvalStatus');
-          const storedTerms = localStorage.getItem('termsAccepted');
-
-          if (storedApproval !== 'APPROVED') {
-              // Removed eKYC toast logic for drivers
-          }
-
-          if (storedTerms !== 'true') {
-            // terms toast logic removed
-          } else {
-            // terms toast logic removed
-          }
-
         } else {
           localStorage.setItem('termsAccepted', 'false');
           localStorage.setItem('approvalStatus', 'PENDING');
@@ -588,124 +629,6 @@
         await updateCustomerProfile(btn, originalText);
       } else {
         await updateDriverProfile(btn, originalText);
-      }
-    }
-
-    async function fetchEkycApprovalDetails() {
-      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-      
-      if (!accountId) return;
-
-      try {
-        const response = await fetch(`${DRIVER_API_BASE}/approval-status?accountID=${accountId}`);
-        const result = await response.json();
-
-        if (result.success && result.data) {
-          const data = result.data;
-          const status = String(data.approvalStatus).toUpperCase();
-          currentApprovalStatus = status;
-
-          const alertBox = document.getElementById('ekycStatusAlert');
-          const alertTitle = document.getElementById('ekycAlertTitle');
-          const alertMsg = document.getElementById('ekycAlertMessage');
-          const rejectBox = document.getElementById('ekycRejectReasonBox');
-          const rejectText = document.getElementById('ekycRejectReasonText');
-          const alertDivider = document.getElementById('ekycAlertDivider');
-          const btnSubmit = document.getElementById('btnSubmitEkyc');
-          const formInputs = document.querySelectorAll('#ekycProfileForm input[type="file"]');
-
-          alertBox.classList.remove('d-none', 'alert-success', 'alert-warning', 'alert-danger', 'alert-info');
-
-          if (status === 'APPROVED') {
-            alertBox.classList.add('alert-success');
-            alertTitle.innerHTML = '<i class="fa-solid fa-circle-check fs-4 me-2"></i> Hồ sơ đã được duyệt';
-            alertMsg.innerText = 'Giấy tờ của bạn đã hợp lệ. Bạn hiện có thể nhận chuyến đi trên hệ thống FleetFlow.';
-            btnSubmit.style.display = 'none';
-            formInputs.forEach(input => input.disabled = true);
-
-          } else if (status === 'PENDING') {
-            // 🚀 FIX LOGIC: Phân biệt "Mới tạo" và "Đã nộp chờ duyệt"
-            const docs = data.documents || [];
-            if (docs.length === 0) {
-              // TRƯỜNG HỢP 1: Tài xế mới, chưa nộp giấy tờ nào -> HIỆN NÚT SUBMIT
-              alertBox.classList.add('alert-warning');
-              alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Chưa nộp hồ sơ';
-              alertMsg.innerText = 'Vui lòng tải lên ảnh CCCD và Bằng lái xe để hệ thống xét duyệt.';
-              btnSubmit.style.display = 'block';
-              formInputs.forEach(input => input.disabled = false);
-            } else {
-              // TRƯỜNG HỢP 2: Đã nộp giấy tờ, đang chờ Admin duyệt -> ẨN NÚT SUBMIT
-              alertBox.classList.add('alert-info');
-              alertTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left fs-4 me-2"></i> Hồ sơ đang chờ kiểm duyệt';
-              alertMsg.innerText = 'Hệ thống đã ghi nhận giấy tờ của bạn. Admin sẽ tiến hành kiểm duyệt trong thời gian tới.';
-              btnSubmit.style.display = 'none';
-              formInputs.forEach(input => input.disabled = true);
-            }
-
-          } else if (status === 'REJECTED') {
-            alertBox.classList.add('alert-danger');
-            alertTitle.innerHTML = '<i class="fa-solid fa-triangle-exclamation fs-4 me-2"></i> Hồ sơ bị từ chối';
-            alertMsg.innerText = 'Rất tiếc, giấy tờ định danh của bạn không đạt yêu cầu. Vui lòng kiểm tra lý do bên dưới và tải lại TOÀN BỘ giấy tờ.';
-
-            if (data.documents && data.documents.length > 0) {
-              const rejectedDoc = data.documents.find(doc => doc.rejectReason != null && doc.rejectReason !== '');
-              if (rejectedDoc) {
-                alertDivider.classList.remove('d-none');
-                rejectBox.classList.remove('d-none');
-                rejectText.innerText = rejectedDoc.rejectReason;
-              }
-            }
-            btnSubmit.style.display = 'block'; // Kích hoạt lại nút Submit
-            btnSubmit.innerHTML = '<i class="fa-solid fa-rotate-right me-2"></i> Tải lại hồ sơ';
-            btnSubmit.classList.replace('btn-login', 'btn-danger');
-            formInputs.forEach(input => input.disabled = false);
-          }
-        }
-      } catch (error) {
-        console.error("Lỗi lấy chi tiết trạng thái kiểm duyệt (API 7):", error);
-      }
-    }
-
-    async function submitEkycProfile() {
-      const accountId = localStorage.getItem('accountId') || localStorage.getItem('accountID');
-      if (!accountId) return alert("Lỗi: Không tìm thấy ID tài khoản.");
-
-      const idFront = document.getElementById('idFront').files[0];
-      const idBack = document.getElementById('idBack').files[0];
-      const licenseFront = document.getElementById('licenseFront') ? document.getElementById('licenseFront').files[0] : null;
-      const licenseBack = document.getElementById('licenseBack') ? document.getElementById('licenseBack').files[0] : null;
-
-      if (!idFront || !idBack) return alert("Vui lòng tải lên đầy đủ 2 mặt CCCD!");
-
-      const btn = document.getElementById('btnSubmitEkyc');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin me-2"></i> Đang tải lên...';
-      btn.disabled = true;
-
-      const formData = new FormData();
-      formData.append('identityCard', idFront);
-      formData.append('driverLicense', licenseFront);
-
-      const endpoint = (currentApprovalStatus === 'REJECTED') ? 'documents/reupload' : 'documents/submit';
-
-      try {
-        const response = await fetch(`${DRIVER_API_BASE}/${endpoint}?accountID=${accountId}`, {
-          method: 'POST',
-          body: formData
-        });
-        const data = await response.json();
-        if (data.success) {
-          alert(data.message);
-          localStorage.setItem('isEkycComplete', 'true');
-          window.location.reload();
-        } else {
-          alert("Lỗi từ hệ thống: " + data.message);
-        }
-      } catch (error) {
-        alert("Không thể kết nối đến máy chủ.");
-      } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
       }
     }
 
@@ -868,6 +791,31 @@
     <i class="fa-solid fa-shield-halved mobile-icon"></i>
     <span class="nav-text">Chính sách</span>
   </a>
+</div>
+
+<!-- TOAST LIQUID GLASSMORPHISM ĐA NĂNG (GÓC PHẢI BÊN DƯỚI) -->
+<div class="toast-container position-fixed bottom-0 end-0 p-4 toast-liquid-container">
+  <div id="liquidGlassToast" class="toast toast-liquid align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 360px; max-width: 420px;">
+    <div class="toast-header-liquid d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-2">
+        <i id="toastLiquidIcon" class="fa-solid fa-triangle-exclamation fs-5"></i>
+        <strong id="toastLiquidCategory" class="me-auto font-monospace fw-bold" style="letter-spacing: 0.5px; font-size: 0.85rem;">THÔNG BÁO HỆ THỐNG</strong>
+      </div>
+      <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+    <div class="toast-body p-4 d-flex align-items-center gap-3">
+      <div id="toastLiquidIconBox" class="p-2 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+        style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.9);">
+        <i id="toastLiquidInnerIcon" class="fa-solid fa-key fs-5"></i>
+      </div>
+      <div>
+        <div class="fw-bold fs-6 mb-1 text-dark" id="toastLiquidTitle">Tiêu đề thông báo</div>
+        <div class="small text-dark text-opacity-75" style="line-height: 1.45;" id="toastLiquidMessage">
+          Nội dung chi tiết thông báo sẽ hiển thị ở đây.
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 </html>
