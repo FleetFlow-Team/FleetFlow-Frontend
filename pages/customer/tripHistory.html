@@ -17,12 +17,34 @@
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
 
+    <!-- =====================================================================
+       BỘ LỌC BẢO MẬT: CHỈ CHO PHÉP ROLE CUSTOMER TRUY CẬP VÀ THAO TÁC
+    ====================================================================== -->
     <script>
-        // Nếu không tìm thấy Token trong LocalStorage, đá sang trang 403
-        if (!localStorage.getItem('accessToken')) {
-            // Điều chỉnh số lượng '../' sao cho trỏ đúng tới vị trí file 403.html của bạn
-            window.location.replace('../../index.html');
-        }
+        (function () {
+            const token = localStorage.getItem('accessToken');
+            const userRole = localStorage.getItem('userRole') || '';
+            const roleUpper = userRole.trim().toUpperCase();
+
+            // Hàm kiểm tra nhanh JWT có hết hạn hay không
+            function isTokenExpired(jwt) {
+                if (!jwt) return true;
+                try {
+                    const base64Url = jwt.split('.')[1];
+                    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                    const payload = JSON.parse(window.atob(base64));
+                    return payload && payload.exp ? (payload.exp * 1000) < Date.now() : false;
+                } catch (e) {
+                    return true;
+                }
+            }
+
+            // 1. Kiểm tra chưa đăng nhập hoặc token đã hết hạn
+            // 2. Kiểm tra role không phải là CUSTOMER (hoặc KHÁCH HÀNG)
+            if (!token || isTokenExpired(token) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
+                window.location.replace('../../error/403.html');
+            }
+        })();
     </script>
 
     <style>

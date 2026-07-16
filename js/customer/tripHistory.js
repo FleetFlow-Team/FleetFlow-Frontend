@@ -11,7 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => { window.location.href = '../../index.html'; }, 1500);
         return;
     }
-    if (userRole.toUpperCase() !== 'CUSTOMER') {
+    const roleUpper = userRole.trim().toUpperCase();
+    if (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG') {
         window.location.replace('../../error/403.html');
         return;
     }
