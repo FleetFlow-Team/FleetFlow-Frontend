@@ -188,22 +188,27 @@ function renderVtTags() {
     const container = document.getElementById('vtModalTagsContainer');
     container.innerHTML = '';
 
-    if (vtCurrentTags.length === 0) {
+    if (!vtCurrentTags || vtCurrentTags.length === 0) {
         container.innerHTML = `<span class="text-white-50 small fst-italic">Chưa có tag nào</span>`;
         return;
     }
 
     vtCurrentTags.forEach((tagItem, index) => {
-        // TagItem có thể là object { tagName, description }
-        const name = tagItem.tagName || '';
-        const desc = tagItem.description ? ` - ${tagItem.description}` : '';
+        const name = (tagItem.tagName || '').trim();
+        if (!name) return; // Bỏ qua nếu tag rỗng khi render
+
+        const desc = tagItem.description ? ` - ${tagItem.description.trim()}` : '';
 
         const badge = document.createElement('div');
-        // Animation trượt mượt nhẹ (nếu có base css sẵn) và giao diện glass
-        badge.className = 'badge bg-white bg-opacity-10 border border-secondary text-white p-2 d-flex align-items-center gap-2 shadow-sm animate__animated animate__fadeIn';
+        badge.className = 'badge bg-white bg-opacity-10 border border-secondary text-white p-2 d-flex align-items-center justify-content-between gap-2 shadow-sm animate__animated animate__fadeIn';
+        badge.style.cssText = 'max-width: 100%; white-space: normal; word-break: break-word; text-align: left;';
         badge.innerHTML = `
-            <span style="color: #00b14f;"><i class="fa-solid fa-tag me-1"></i> ${name} <small class="text-white-50 fw-normal">${desc}</small></span>
-            <button class="btn-close btn-close-white" style="font-size: 0.6rem;" onclick="vtRemoveTag(${index})" title="Xóa"></button>
+            <span style="color: #00b14f; flex-grow: 1; overflow: hidden;">
+                <i class="fa-solid fa-tag me-1 flex-shrink-0"></i> 
+                <span class="fw-bold">${name}</span> 
+                <small class="text-white-50 fw-normal">${desc}</small>
+            </span>
+            <button class="btn-close btn-close-white flex-shrink-0 ms-2" style="font-size: 0.6rem;" onclick="vtRemoveTag(${index})" title="Xóa"></button>
         `;
         container.appendChild(badge);
     });
@@ -217,26 +222,34 @@ function vtAddTag() {
     const nameInput = document.getElementById('vtNewTagName');
     const descInput = document.getElementById('vtNewTagDesc');
 
-    const tagName = nameInput.value.trim();
-    const description = descInput.value.trim();
+    if (!nameInput) return;
+
+    // Cắt ngắn chuỗi đề phòng trường hợp paste vượt rào
+    const tagName = nameInput.value.trim().slice(0, 30);
+    const description = (descInput ? descInput.value.trim() : '').slice(0, 60);
 
     if (!tagName) {
         if (typeof showSystemToast === 'function') {
-            showSystemToast("Vui lòng nhập Tên Tag!", "error");
+            showSystemToast("Vui lòng nhập Tên Tag AI không được để trống!", "error");
         } else {
-            showGlassAlert("Vui lòng nhập Tên Tag!", "warning");
+            alert("Vui lòng nhập Tên Tag AI không được để trống!");
         }
         return;
     }
 
-    // Push object vào mảng
+    // Kiểm tra trùng lặp tag đã có trong danh sách
+    const isDuplicate = vtCurrentTags.some(t => (t.tagName || '').trim().toLowerCase() === tagName.toLowerCase());
+    if (isDuplicate) {
+        if (typeof showSystemToast === 'function') {
+            showSystemToast(`Tag AI "${tagName}" đã có trong danh sách!`, "error");
+        }
+        return;
+    }
+
     vtCurrentTags.push({ tagName: tagName, description: description });
-
-    // Reset inputs
     nameInput.value = '';
-    descInput.value = '';
+    if (descInput) descInput.value = '';
 
-    // Render lại giao diện tags
     renderVtTags();
 }
 
@@ -255,6 +268,15 @@ function vtRemoveTag(index) {
  */
 async function vtSaveTags() {
     if (!vtCurrentVehicleId) return;
+
+    // Nếu người dùng gõ chữ ở ô nhập mà quên bấm "Thêm", tự động gom vào trước khi lưu
+    const nameInput = document.getElementById('vtNewTagName');
+    if (nameInput && nameInput.value.trim() !== '') {
+        vtAddTag();
+    }
+
+    // Lọc sạch các tag rỗng trước khi gửi lên API
+    vtCurrentTags = (vtCurrentTags || []).filter(t => t && (t.tagName || '').trim() !== '');
 
     try {
         const payload = {

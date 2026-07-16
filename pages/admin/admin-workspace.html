@@ -1199,14 +1199,14 @@
                                 <h6 class="fw-bold text-white mb-2">Thêm Tag mới:</h6>
                                 <div class="row g-2">
                                     <div class="col-md-5">
-                                        <input type="text" id="vtNewTagName"
-                                            class="form-control form-control-sm glass-input" placeholder="Tên Tag">
+                                        <input type="text" id="vtNewTagName" maxlength="30"
+                                            class="form-control form-control-sm glass-input" placeholder="Tên Tag (tối đa 30 ký tự)">
                                     </div>
                                     <div class="col-md-7">
                                         <div class="d-flex gap-2">
-                                            <input type="text" id="vtNewTagDesc"
+                                            <input type="text" id="vtNewTagDesc" maxlength="60"
                                                 class="form-control form-control-sm glass-input"
-                                                placeholder="Mô tả ngắn">
+                                                placeholder="Mô tả ngắn (tối đa 60 ký tự)">
                                             <button
                                                 class="btn btn-sm fw-bold text-nowrap text-white px-4 py-1 shadow-sm"
                                                 onclick="vtAddTag()"
