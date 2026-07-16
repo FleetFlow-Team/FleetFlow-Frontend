@@ -693,20 +693,34 @@ function updateMapMarkers(ongoingTrips) {
             </div>
         `;
 
+        // Phân loại màu xe phát sáng trực quan: Xe chẵn màu vàng (#FFDE59), xe lẻ màu xanh (#00B14F)
+        const colorClass = (bId % 2 === 0) ? 'car-yellow' : 'car-green';
+
         if (activeMarkers[bId]) {
-            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới
+            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới mà không ghi đè mất icon ô tô
             activeMarkers[bId].setLngLat([lng, lat]);
             const markerEl = activeMarkers[bId].getElement();
             if (markerEl) {
-                markerEl.innerHTML = tooltipHtml;
+                markerEl.className = `live-pulse-car ${colorClass}`;
+                const tooltipEl = markerEl.querySelector('.live-marker-tooltip');
+                if (tooltipEl) {
+                    tooltipEl.outerHTML = tooltipHtml;
+                } else {
+                    markerEl.insertAdjacentHTML('beforeend', tooltipHtml);
+                }
             }
         } else {
-            // NẾU LÀ XE MỚI -> Tạo Marker mới (Chấm xanh hiệu ứng)
+            // NẾU LÀ XE MỚI -> Tạo Marker mới (Biểu tượng Xe ô tô phát sáng trực tiếp không nền)
             const el = document.createElement('div');
-            el.className = 'live-pulse-dot';
-            el.innerHTML = tooltipHtml;
+            el.className = `live-pulse-car ${colorClass}`;
+            el.innerHTML = `
+                <div class="car-inner-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                ${tooltipHtml}
+            `;
 
-            const newMarker = new vietmapgl.Marker(el)
+            const newMarker = new vietmapgl.Marker({ element: el })
                 .setLngLat([lng, lat])
                 .addTo(dispatcherMap);
 
