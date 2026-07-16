@@ -165,23 +165,51 @@ async function viewVoucherDetail(id) {
  * Lưu Voucher (Thêm mới hoặc Cập nhật)
  */
 async function saveVoucher() {
-    // Validate form
     const form = document.getElementById('voucherForm');
+
+    // TC_ADM_18: Kiểm tra Tổng lượt phát hành phải >= 1 trước
+    const maxUsageStr = document.getElementById('vMaxUsage').value.trim();
+    if (maxUsageStr !== '' && parseInt(maxUsageStr) <= 0) {
+        showGlassAlert("Tổng lượt phát hành của mã khuyến mãi tối thiểu phải đạt từ 1 lượt.", "warning");
+        return;
+    }
+
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
     }
 
+    const validFromStr = document.getElementById('vValidFrom').value;
+    const validToStr = document.getElementById('vValidTo').value;
+
+    // TC_ADM_16: Kiểm tra chu kỳ thời gian (Từ ngày không được lớn hơn hoặc bằng Đến ngày)
+    if (validFromStr && validToStr) {
+        if (new Date(validFromStr) >= new Date(validToStr)) {
+            showGlassAlert("Ngày kết thúc không được nhỏ hơn ngày bắt đầu hiệu lực.", "warning");
+            return;
+        }
+    }
+
+    const discountType = document.getElementById('vDiscountType').value;
+    const discountValue = parseFloat(document.getElementById('vDiscountValue').value) || 0;
+    const minBookingValue = parseFloat(document.getElementById('vMinBooking').value) || 0;
+
+    // TC_ADM_17: Kiểm tra số tiền giảm không được vượt quá hoặc bằng giá trị đơn hàng tối thiểu
+    if (discountType === 'FIXED_AMOUNT' && minBookingValue > 0 && discountValue >= minBookingValue) {
+        showGlassAlert("Số tiền giảm giá không được vượt quá hoặc bằng giá trị đơn hàng tối thiểu.", "warning");
+        return;
+    }
+
     const payload = {
         code: document.getElementById('vCode').value,
-        discountType: document.getElementById('vDiscountType').value,
-        discountValue: parseFloat(document.getElementById('vDiscountValue').value) || 0,
+        discountType: discountType,
+        discountValue: discountValue,
         maxDiscountAmount: parseFloat(document.getElementById('vMaxDiscount').value) || null,
-        minBookingValue: parseFloat(document.getElementById('vMinBooking').value) || null,
-        maxUsagePerUser: parseInt(document.getElementById('vMaxUsage').value) || null,
+        minBookingValue: minBookingValue > 0 ? minBookingValue : null,
+        maxUsagePerUser: parseInt(maxUsageStr) || null,
         applicableVehicleTypeId: parseInt(document.getElementById('vVehicleTypeId').value) || null,
-        validFrom: document.getElementById('vValidFrom').value ? document.getElementById('vValidFrom').value + ':00' : null,
-        validTo: document.getElementById('vValidTo').value ? document.getElementById('vValidTo').value + ':00' : null
+        validFrom: validFromStr ? validFromStr + ':00' : null,
+        validTo: validToStr ? validToStr + ':00' : null
     };
 
     try {

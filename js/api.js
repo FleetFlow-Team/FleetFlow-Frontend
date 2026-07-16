@@ -76,6 +76,12 @@ const API = (function () {
             window.location.href = rootPrefix + 'error/403.html';
             throw new Error("Forbidden");
         }
+        if (response.status >= 500) {
+            if (!path.includes('/error/500.html')) {
+                window.location.href = rootPrefix + 'error/500.html';
+            }
+            throw new Error(`Internal Server Error (${response.status})`);
+        }
 
         let data = null;
         try { data = await response.json(); } catch (e) { /* server trả về chuỗi text hoặc rỗng */ }
@@ -114,12 +120,35 @@ const API = (function () {
 
     const originalFetch = window.fetch;
     window.fetch = async function (...args) {
-        // Nếu args[1] không có Authorization header mà trong localStorage CÓ token, 
-        // ta có thể inject vào đây, nhưng tạm thời để nguyên thiết kế của bạn.
-        
-        let response = await originalFetch.apply(this, args);
+        const path = window.location.pathname;
+        let rootPrefix = '';
+        if (path.includes('/pages/admin/') || path.includes('/pages/driver/') || path.includes('/pages/customer/') || path.includes('/pages/dispatcher/')) {
+            rootPrefix = '../../';
+        } else if (path.includes('/pages/') || path.includes('/error/')) {
+            rootPrefix = '../';
+        }
 
         const urlString = args[0] ? args[0].toString() : '';
+        const isBackendApi = urlString.includes('localhost:8080') || urlString.includes('/api/');
+
+        let response;
+        try {
+            response = await originalFetch.apply(this, args);
+        } catch (networkError) {
+            if (isBackendApi && !path.includes('/error/500.html')) {
+                console.error("Mất kết nối tới API Gateway/Server:", networkError);
+                window.location.href = rootPrefix + 'error/500.html';
+                return new Response(null, { status: 500, statusText: 'Network Error' });
+            }
+            throw networkError;
+        }
+
+        if (response.status >= 500 && isBackendApi && !path.includes('/error/500.html')) {
+            console.error(`API Server Error ${response.status}:`, urlString);
+            window.location.href = rootPrefix + 'error/500.html';
+            return response;
+        }
+
         if (response.status === 401 && !urlString.includes('/auth/refresh') && !urlString.includes('/auth/login')) {
             const refreshToken = localStorage.getItem('refreshToken');
             const path = window.location.pathname;
