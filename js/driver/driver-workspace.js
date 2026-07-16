@@ -614,6 +614,10 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
                         <i class="fa-solid fa-play me-2"></i> Bắt đầu chuyến đi
                     </button>` : ''}
                     ${trip.bookingStatus === 'ONGOING' ? `
+                    <div class="mb-2">
+                        <label for="completionPhoto-${trip.bookingId}" class="form-label text-white fw-bold small mb-1">Ảnh xác nhận điểm đến <span class="text-danger">*</span></label>
+                        <input type="file" id="completionPhoto-${trip.bookingId}" accept="image/*" class="form-control" />
+                    </div>
                     <button type="button" class="btn btn-primary w-100 fw-bold py-2"
                         onclick="(async()=>{await window.completeTrip(this, ${trip.bookingId}, ${trip.pendingCashFinal === true}); fetchPendingJobs();})()">
                         <i class="fa-solid fa-flag-checkered me-2"></i> Hoàn thành chuyến đi
@@ -709,6 +713,10 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
                             </div>
                         </div>
                         <div class="row g-2" id="btn-complete-${job.bookingId}" style="display:none;">
+                            <div class="col-12 mb-2">
+                                <label for="completionPhoto-${job.bookingId}" class="form-label text-white fw-bold small mb-1">Ảnh xác nhận điểm đến <span class="text-danger">*</span></label>
+                                <input type="file" id="completionPhoto-${job.bookingId}" accept="image/*" class="form-control" />
+                            </div>
                             <div class="col-12">
                                 <button class="btn-glass-action border-success text-white w-100 py-3 fs-6 fw-bold shadow-lg" 
                                         style="background: #10b981;" 
@@ -1037,6 +1045,15 @@ let lastNotifiedIds = new Set();
  */
 window.completeTrip = async function (btnElement, bookingId, isCashTrip = false) {
     window.currentTripIsCash = isCashTrip;
+
+    // Kiểm tra ảnh trước khi xử lý gọi API
+    const fileInput = document.getElementById(`completionPhoto-${bookingId}`);
+    if (!fileInput || fileInput.files.length === 0) {
+        showModalAlert("Vui lòng chọn hoặc chụp ảnh xác nhận điểm đến!", "Thiếu ảnh", "warning");
+        return;
+    }
+    const completionPhoto = fileInput.files[0];
+
     const originalText = btnElement.innerHTML;
 
     // 1. Chặn UI tránh việc tài xế bấm đúp nhiều lần gây lỗi trùng gửi lệnh
@@ -1057,13 +1074,17 @@ window.completeTrip = async function (btnElement, bookingId, isCashTrip = false)
             });
         }
 
+        // Tạo FormData để upload ảnh
+        const formData = new FormData();
+        formData.append("completionPhoto", completionPhoto);
+
         // 2. Gọi API Hoàn thành chuyến xe về Server Backend
         const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/trips/${bookingId}/complete`, {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
+                "Authorization": `Bearer ${token}`
+            },
+            body: formData
         });
 
         const result = await response.json();
