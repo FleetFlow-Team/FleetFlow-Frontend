@@ -240,7 +240,8 @@ window.acceptJob = async function (btnElement, broadcastId, explicitBookingId) {
             );
             // Cập nhật lại UI sau khi nhận thành công
             if (typeof fetchPendingJobs === "function") fetchPendingJobs();
-            window.switchTab('tab-jobs', document.getElementById('nav-jobs')); // Vẫn ở lại tab Chuyến mới để xem chuyến đang chạy
+            const jobTabElement = document.querySelector('a[onclick*="tab-job-board"]');
+            if (jobTabElement) window.switchTab('tab-job-board', jobTabElement);
         } else {
             // [THẤT BẠI] - Trả lại nút bấm như cũ
             btnElement.disabled = false;
@@ -711,7 +712,7 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
                             <div class="col-12">
                                 <button class="btn-glass-action border-success text-white w-100 py-3 fs-6 fw-bold shadow-lg" 
                                         style="background: #10b981;" 
-                                        onclick="completeTrip(this, ${job.bookingId})">
+                                        onclick="completeTrip(this, ${job.bookingId}, ${job.pendingCashFinal === true})">
                                     Hoàn thành chuyến đi <i class="fa-solid fa-flag-checkered ms-2"></i>
                                 </button>
                             </div>
@@ -1554,6 +1555,12 @@ window.submitDriverRating = async function () {
         const data = await res.json();
         const modal = bootstrap.Modal.getInstance(document.getElementById("driverRatingModal"));
         if (modal) modal.hide();
+
+        if (!res.ok || !data.success) {
+            showModalAlert(data.message || "Không thể gửi đánh giá.", "Thất bại", "error");
+            // Vẫn cho phép hiện Modal thanh toán nếu có lỗi đánh giá?
+            // Hoặc có thể return luôn tùy logic, nhưng vì cuốc xe đã complete trên server, nên cứ show completeTripModal
+        }
 
         const cashMsg = document.getElementById("cashCollectMessage");
         if (cashMsg) cashMsg.style.display = window.currentTripIsCash ? "block" : "none";
