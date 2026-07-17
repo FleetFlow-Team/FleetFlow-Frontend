@@ -1341,6 +1341,32 @@ async function loadDriverStatusList() {
 
         const drivers = result.data || [];
 
+        // ==========================================
+        // CẬP NHẬT ĐỘNG KHỐI "TRẠNG THÁI ĐỘI XE TÓM TẮT"
+        // (Đối chiếu theo DriverDAO, BookingWorkflowService, TripTrackingService)
+        // ==========================================
+        let availableCount = 0;
+        let busyCount = 0;
+        let offlineCount = 0;
+
+        drivers.forEach(d => {
+            const statusStr = (d.availabilityStatus || 'OFFLINE').toUpperCase();
+            if (statusStr === 'AVAILABLE' || statusStr === 'ONLINE') {
+                availableCount++;
+            } else if (statusStr === 'BUSY' || statusStr === 'ON_TRIP' || statusStr === 'ONGOING') {
+                busyCount++;
+            } else {
+                offlineCount++;
+            }
+        });
+
+        const summaryOnlineEl = document.getElementById('summaryOnlineDrivers');
+        const summaryBusyEl = document.getElementById('summaryBusyDrivers');
+        const summaryOfflineEl = document.getElementById('summaryOfflineDrivers');
+        if (summaryOnlineEl) summaryOnlineEl.innerText = `${availableCount} xe`;
+        if (summaryBusyEl) summaryBusyEl.innerText = `${busyCount} xe`;
+        if (summaryOfflineEl) summaryOfflineEl.innerText = `${offlineCount} xe`;
+
         if (drivers.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -1358,19 +1384,19 @@ async function loadDriverStatusList() {
             const phone = driver.phoneNumber || 'Chưa cập nhật';
             const rating = driver.averageRating ? parseFloat(driver.averageRating).toFixed(1) : '5.0';
             const trips = driver.acceptedTripCount || 0;
-            const availability = driver.availabilityStatus || 'Offline';
+            const statusStr = (driver.availabilityStatus || 'OFFLINE').toUpperCase();
 
             let badgeClass = 'bg-secondary';
             let badgeText = 'Ngoại Tuyến';
             let statusIcon = 'fa-circle-pause';
 
-            if (availability.toLowerCase() === 'available') {
+            if (statusStr === 'AVAILABLE' || statusStr === 'ONLINE') {
                 badgeClass = 'bg-success';
                 badgeText = 'Sẵn Sàng';
                 statusIcon = 'fa-circle-check';
-            } else if (availability.toLowerCase() === 'busy') {
+            } else if (statusStr === 'BUSY' || statusStr === 'ON_TRIP' || statusStr === 'ONGOING') {
                 badgeClass = 'bg-warning text-dark';
-                badgeText = 'Đang Bận';
+                badgeText = 'Trong Chuyến';
                 statusIcon = 'fa-clock';
             }
 

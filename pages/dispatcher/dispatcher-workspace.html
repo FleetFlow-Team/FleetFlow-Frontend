@@ -456,12 +456,16 @@
                                             class="fa-solid fa-bolt text-warning me-2"></i> Trạng Thái Đội Xe Tóm Tắt
                                     </h5>
                                     <div class="d-flex justify-content-between text-white-50 small mb-2">
-                                        <span>Tài xế đang trực tuyến:</span>
-                                        <strong class="text-success">42 xe</strong>
+                                        <span>Tài xế sẵn sàng (Online):</span>
+                                        <strong class="text-success" id="summaryOnlineDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-white-50 small mb-2">
+                                        <span>Tài xế đang bận chuyến:</span>
+                                        <strong class="text-warning" id="summaryBusyDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                     <div class="d-flex justify-content-between text-white-50 small">
-                                        <span>Tài xế đang bận chuyến:</span>
-                                        <strong class="text-warning">35 xe</strong>
+                                        <span>Tài xế ngoại tuyến (Offline):</span>
+                                        <strong class="text-secondary" id="summaryOfflineDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                 </div>
                             </div>
@@ -932,6 +936,11 @@
             const initialTripTab = document.querySelector('.tab-pill.active');
             if (initialTripTab) {
                 setTimeout(() => moveTripIndicator(initialTripTab), 150);
+            }
+
+            // Tải ngay danh sách tài xế ngầm khi vào trang để cập nhật số liệu cho khối Trạng Thái Đội Xe Tóm Tắt
+            if (typeof window.loadDriverStatusList === 'function') {
+                setTimeout(() => window.loadDriverStatusList(), 200);
             }
 
             // Đảm bảo các khối kính tự động căn chỉnh lại khi người dùng thay đổi kích thước màn hình
