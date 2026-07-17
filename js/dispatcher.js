@@ -170,6 +170,9 @@ async function approveBooking(bookingId, buttonElement) {
                     if (typeof fetchDispatcherNotifications === 'function') {
                         fetchDispatcherNotifications();
                     }
+                    if (typeof window.loadDispatcherDashboardStats === 'function') {
+                        window.loadDispatcherDashboardStats();
+                    }
                 }, 3000);
             }
         } else {
@@ -273,6 +276,9 @@ async function processRejectBooking() {
                     badge.innerHTML = '<i class="fa-solid fa-ban me-1"></i> Đã từ chối';
                 }
                 buttonElement.parentElement.innerHTML = '<span class="text-danger fw-bold"><i class="fa-solid fa-xmark"></i> Hủy bỏ</span>';
+            }
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                window.loadDispatcherDashboardStats();
             }
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.error || "Lỗi khi từ chối đơn", "error");
@@ -432,15 +438,35 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
             actionButtons = `<span class="text-danger fw-bold"><i class="fa-solid fa-xmark"></i> Đã hủy bỏ</span>`;
         } else if (b.status === 'DISPATCHED') {
             badge = `<span class="glass-badge bg-primary text-white"><i class="fa-solid fa-car-side me-1"></i> Đã phân tài</span>`;
+            actionButtons = `
+                <button class="btn-glass-action btn-glass-approve fw-bold w-100 py-1 mb-1" onclick='showBookingDetailModal(${JSON.stringify(b)})'>
+                    <i class="fa-solid fa-circle-info me-1"></i> Xem Chi Tiết
+                </button>
+            `;
             if (b.driverName) {
-                actionButtons = `<div class="text-success fw-bold" style="font-size: 0.9rem;"><i class="fa-solid fa-check-circle me-1"></i> TX: ${b.driverName}</div>
-                                 <div class="small text-muted"><i class="fa-solid fa-phone me-1"></i> ${b.driverPhone || ''}</div>`;
+                actionButtons += `<div class="text-success fw-bold text-center" style="font-size: 0.85rem;"><i class="fa-solid fa-check-circle me-1"></i> TX: ${b.driverName}</div>
+                                  <div class="small text-muted text-center"><i class="fa-solid fa-phone me-1"></i> ${b.driverPhone || ''}</div>`;
             } else {
-                actionButtons = `<span class="text-success fw-bold"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</span>`;
+                actionButtons += `<div class="text-success fw-bold text-center small"><i class="fa-solid fa-check-circle me-1"></i> Chờ TX nhận</div>`;
             }
         } else if (b.status === 'APPROVED') {
             badge = `<span class="glass-badge bg-info text-white"><i class="fa-solid fa-check-double me-1"></i> Đã duyệt</span>`;
             actionButtons = `<span class="text-primary fw-bold"><i class="fa-solid fa-spinner fa-spin me-1"></i> Tự động tìm TX</span>`;
+        } else if (b.status === 'ONGOING') {
+            badge = `<span class="glass-badge bg-info text-white" style="background: linear-gradient(135deg, #0288d1, #26c6da);"><i class="fa-solid fa-route fa-fade me-1"></i> Đang di chuyển</span>`;
+            actionButtons = `
+                <button class="btn-glass-action btn-glass-approve fw-bold w-100 py-1 mb-1" onclick='showBookingDetailModal(${JSON.stringify(b)})'>
+                    <i class="fa-solid fa-circle-info me-1"></i> Xem Chi Tiết
+                </button>
+            `;
+        } else if (b.status === 'COMPLETED') {
+            badge = `<span class="glass-badge bg-success text-white"><i class="fa-solid fa-circle-check me-1"></i> Hoàn thành</span>`;
+            actionButtons = `
+                <button class="btn-glass-action btn-glass-approve fw-bold w-100 py-1" style="border-color: #2e7d32; background: rgba(46, 125, 50, 0.15);" 
+                        onclick='showBookingDetailModal(${JSON.stringify(b)})'>
+                    <i class="fa-solid fa-circle-info me-1"></i> Xem Chi Tiết & Ảnh
+                </button>
+            `;
         }
 
         tr.innerHTML = `
@@ -555,6 +581,9 @@ window.executeDispatch = async function () {
             loadBookings('UNASSIGNED', 'tbody-main');
             if (typeof fetchDispatcherNotifications === 'function') {
                 fetchDispatcherNotifications();
+            }
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                window.loadDispatcherDashboardStats();
             }
         } else {
             showSystemToast(result.error || result.message || "Hệ thống từ chối phân tài!", "error");
@@ -693,20 +722,34 @@ function updateMapMarkers(ongoingTrips) {
             </div>
         `;
 
+        // Phân loại màu xe phát sáng trực quan: Xe chẵn màu vàng (#FFDE59), xe lẻ màu xanh (#00B14F)
+        const colorClass = (bId % 2 === 0) ? 'car-yellow' : 'car-green';
+
         if (activeMarkers[bId]) {
-            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới
+            // NẾU XE ĐÃ CÓ TRÊN BẢN ĐỒ -> Cập nhật tọa độ & tooltip mới mà không ghi đè mất icon ô tô
             activeMarkers[bId].setLngLat([lng, lat]);
             const markerEl = activeMarkers[bId].getElement();
             if (markerEl) {
-                markerEl.innerHTML = tooltipHtml;
+                markerEl.className = `live-pulse-car ${colorClass}`;
+                const tooltipEl = markerEl.querySelector('.live-marker-tooltip');
+                if (tooltipEl) {
+                    tooltipEl.outerHTML = tooltipHtml;
+                } else {
+                    markerEl.insertAdjacentHTML('beforeend', tooltipHtml);
+                }
             }
         } else {
-            // NẾU LÀ XE MỚI -> Tạo Marker mới (Chấm xanh hiệu ứng)
+            // NẾU LÀ XE MỚI -> Tạo Marker mới (Biểu tượng Xe ô tô phát sáng trực tiếp không nền)
             const el = document.createElement('div');
-            el.className = 'live-pulse-dot';
-            el.innerHTML = tooltipHtml;
+            el.className = `live-pulse-car ${colorClass}`;
+            el.innerHTML = `
+                <div class="car-inner-icon">
+                    <i class="fa-solid fa-car-side"></i>
+                </div>
+                ${tooltipHtml}
+            `;
 
-            const newMarker = new vietmapgl.Marker(el)
+            const newMarker = new vietmapgl.Marker({ element: el })
                 .setLngLat([lng, lat])
                 .addTo(dispatcherMap);
 
@@ -939,6 +982,9 @@ window.executeResolveComplaint = async function () {
             if (typeof showSystemToast === 'function') showSystemToast("Đã ghi nhận giải quyết khiếu nại!", "success");
             closeResolveModal();
             loadComplaints(); // reload
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                window.loadDispatcherDashboardStats();
+            }
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.error || "Lỗi xử lý!", "error");
         }
@@ -1307,6 +1353,32 @@ async function loadDriverStatusList() {
 
         const drivers = result.data || [];
 
+        // ==========================================
+        // CẬP NHẬT ĐỘNG KHỐI "TRẠNG THÁI ĐỘI XE TÓM TẮT"
+        // (Đối chiếu theo DriverDAO, BookingWorkflowService, TripTrackingService)
+        // ==========================================
+        let availableCount = 0;
+        let busyCount = 0;
+        let offlineCount = 0;
+
+        drivers.forEach(d => {
+            const statusStr = (d.availabilityStatus || 'OFFLINE').toUpperCase();
+            if (statusStr === 'AVAILABLE' || statusStr === 'ONLINE') {
+                availableCount++;
+            } else if (statusStr === 'BUSY' || statusStr === 'ON_TRIP' || statusStr === 'ONGOING') {
+                busyCount++;
+            } else {
+                offlineCount++;
+            }
+        });
+
+        const summaryOnlineEl = document.getElementById('summaryOnlineDrivers');
+        const summaryBusyEl = document.getElementById('summaryBusyDrivers');
+        const summaryOfflineEl = document.getElementById('summaryOfflineDrivers');
+        if (summaryOnlineEl) summaryOnlineEl.innerText = `${availableCount} xe`;
+        if (summaryBusyEl) summaryBusyEl.innerText = `${busyCount} xe`;
+        if (summaryOfflineEl) summaryOfflineEl.innerText = `${offlineCount} xe`;
+
         if (drivers.length === 0) {
             tbody.innerHTML = `
                 <tr>
@@ -1324,19 +1396,19 @@ async function loadDriverStatusList() {
             const phone = driver.phoneNumber || 'Chưa cập nhật';
             const rating = driver.averageRating ? parseFloat(driver.averageRating).toFixed(1) : '5.0';
             const trips = driver.acceptedTripCount || 0;
-            const availability = driver.availabilityStatus || 'Offline';
+            const statusStr = (driver.availabilityStatus || 'OFFLINE').toUpperCase();
 
             let badgeClass = 'bg-secondary';
             let badgeText = 'Ngoại Tuyến';
             let statusIcon = 'fa-circle-pause';
 
-            if (availability.toLowerCase() === 'available') {
+            if (statusStr === 'AVAILABLE' || statusStr === 'ONLINE') {
                 badgeClass = 'bg-success';
                 badgeText = 'Sẵn Sàng';
                 statusIcon = 'fa-circle-check';
-            } else if (availability.toLowerCase() === 'busy') {
+            } else if (statusStr === 'BUSY' || statusStr === 'ON_TRIP' || statusStr === 'ONGOING') {
                 badgeClass = 'bg-warning text-dark';
-                badgeText = 'Đang Bận';
+                badgeText = 'Trong Chuyến';
                 statusIcon = 'fa-clock';
             }
 
@@ -1384,3 +1456,176 @@ async function loadDriverStatusList() {
 }
 
 window.loadDriverStatusList = loadDriverStatusList;
+
+// ==========================================
+// TÍCH HỢP CHỈ SỐ VẬN HÀNH HÔM NAY & SỰ CỐ HỆ THỐNG (OVERVIEW DASHBOARD)
+// ==========================================
+async function loadDispatcherDashboardStats() {
+    try {
+        const headers = getAuthHeader();
+        const [pendingRes, unassignedRes, completedRes, dispatchedRes, ongoingRes, rejectedRes, complaintsRes] = await Promise.all([
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings/pending`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings/unassigned`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=COMPLETED`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=DISPATCHED`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=ONGOING`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=REJECTED`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints`, { headers }).then(r => r.json()).catch(() => ({ success: false }))
+        ]);
+
+        const pendingCount = pendingRes.success ? (pendingRes.count !== undefined ? pendingRes.count : (pendingRes.data ? pendingRes.data.length : 0)) : 0;
+        const unassignedCount = unassignedRes.success ? (unassignedRes.count !== undefined ? unassignedRes.count : (unassignedRes.data ? unassignedRes.data.length : 0)) : 0;
+        const completedCount = completedRes.success ? (completedRes.count !== undefined ? completedRes.count : (completedRes.data ? completedRes.data.length : 0)) : 0;
+        const dispatchedCount = dispatchedRes.success ? (dispatchedRes.count !== undefined ? dispatchedRes.count : (dispatchedRes.data ? dispatchedRes.data.length : 0)) : 0;
+        const ongoingCount = ongoingRes.success ? (ongoingRes.count !== undefined ? ongoingRes.count : (ongoingRes.data ? ongoingRes.data.length : 0)) : 0;
+        const rejectedCount = rejectedRes.success ? (rejectedRes.count !== undefined ? rejectedRes.count : (rejectedRes.data ? rejectedRes.data.length : 0)) : 0;
+
+        const complaintsList = complaintsRes.success ? (complaintsRes.data || []) : [];
+        const openComplaints = complaintsList.filter(c => (c.status || 'PENDING').toUpperCase() === 'PENDING' || (c.status || 'PENDING').toUpperCase() === 'OPEN');
+        const newComplaintsCount = openComplaints.length;
+
+        // Cập nhật 3 thẻ Chỉ Số Vận Hành Hôm Nay
+        const statCompletedEl = document.getElementById('statCompletedTrips');
+        const statPendingEl = document.getElementById('statPendingBookings');
+        const statComplaintsEl = document.getElementById('statNewComplaints');
+        if (statCompletedEl) statCompletedEl.innerText = completedCount;
+        if (statPendingEl) statPendingEl.innerText = pendingCount + unassignedCount;
+        if (statComplaintsEl) statComplaintsEl.innerText = newComplaintsCount;
+
+        // Cập nhật các con số đếm trên các Tab trong Quản lý chuyến đi
+        const setBadge = (id, count) => { const el = document.getElementById(id); if (el) el.innerText = count; };
+        setBadge('count-pending', pendingCount);
+        setBadge('count-unassigned', unassignedCount);
+        setBadge('count-dispatched', dispatchedCount);
+        setBadge('count-ongoing', ongoingCount);
+        setBadge('count-completed', completedCount);
+        setBadge('count-rejected', rejectedCount);
+
+        // Cập nhật danh sách Sự Cố Hệ Thống Cần Xử Lý động
+        const alertListEl = document.getElementById('systemAlertList');
+        if (alertListEl) {
+            let alertsHtml = '';
+            const unassignedList = unassignedRes.success ? (unassignedRes.data || []) : [];
+            unassignedList.slice(0, 3).forEach(b => {
+                alertsHtml += `
+                    <li class="text-white-50 small mb-2">
+                        <i class="fa-solid fa-circle-exclamation text-warning me-2"></i> Chuyến đi <strong>#BK-${b.bookingId || b.BookingID}</strong> đang cần Phân tài xế cho khách hàng.
+                    </li>
+                `;
+            });
+            openComplaints.slice(0, 3).forEach(c => {
+                alertsHtml += `
+                    <li class="text-white-50 small mb-2">
+                        <i class="fa-solid fa-circle-exclamation text-danger me-2"></i> Khiếu nại từ <strong>${c.fullName || 'Khách hàng'}</strong> ${c.bookingId ? `(đơn #${c.bookingId})` : ''} đang chờ giải quyết.
+                    </li>
+                `;
+            });
+            if (!alertsHtml) {
+                alertsHtml = `<li class="text-success small py-2"><i class="fa-solid fa-check-circle me-2"></i> Hiện không có sự cố hay khiếu nại nào cần xử lý gấp. Hệ thống vận hành ổn định!</li>`;
+            }
+            alertListEl.innerHTML = alertsHtml;
+        }
+    } catch (error) {
+        console.error("Lỗi tải chỉ số vận hành dashboard:", error);
+    }
+}
+
+window.loadDispatcherDashboardStats = loadDispatcherDashboardStats;
+
+// ==========================================
+// HÀM HIỂN THỊ MODAL CHI TIẾT & ẢNH TRẢ KHÁCH
+// ==========================================
+function showBookingDetailModal(bookingObj) {
+    const b = typeof bookingObj === 'string' ? JSON.parse(decodeURIComponent(bookingObj)) : bookingObj;
+
+    // 1. Mã đơn & Huy hiệu trạng thái
+    document.getElementById('modBookingId').innerText = `#BK-${b.bookingId}`;
+    let badgeHtml = '';
+    if (b.status === 'COMPLETED') badgeHtml = '<span class="badge bg-success px-3 py-2"><i class="fa-solid fa-check-circle me-1"></i> Hoàn thành</span>';
+    else if (b.status === 'ONGOING') badgeHtml = '<span class="badge bg-info px-3 py-2"><i class="fa-solid fa-route me-1"></i> Đang di chuyển</span>';
+    else badgeHtml = `<span class="badge bg-secondary px-3 py-2">${b.status}</span>`;
+    document.getElementById('modStatusBadge').innerHTML = badgeHtml;
+
+    // 2. Trục Lộ Trình & Thời Gian
+    let depTimeStr = 'Chưa xác định';
+    if (b.departureTime) {
+        const d = new Date(b.departureTime);
+        if (!isNaN(d.getTime())) {
+            depTimeStr = `${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')} ${d.getDate()}/${(d.getMonth() + 1)}/${d.getFullYear()}`;
+        } else {
+            depTimeStr = b.departureTime;
+        }
+    }
+    document.getElementById('modDepTime').innerText = depTimeStr;
+
+    let createdTimeStr = 'N/A';
+    if (b.createdAt) {
+        const c = new Date(b.createdAt);
+        if (!isNaN(c.getTime())) {
+            createdTimeStr = `${c.getHours().toString().padStart(2, '0')}:${c.getMinutes().toString().padStart(2, '0')} ${c.getDate()}/${(c.getMonth() + 1)}/${c.getFullYear()}`;
+        } else {
+            createdTimeStr = b.createdAt;
+        }
+    }
+    const modCreatedAtEl = document.getElementById('modCreatedAt');
+    if (modCreatedAtEl) modCreatedAtEl.innerText = createdTimeStr;
+
+    document.getElementById('modPickup').innerText = b.pickupAddress || 'N/A';
+    document.getElementById('modDropoff').innerText = b.dropoffAddress || 'Di chuyển tự do theo yêu cầu';
+
+    // 3. Khách & Tài xế & Phương tiện
+    document.getElementById('modCustomerName').innerText = b.customerName || 'N/A';
+    document.getElementById('modCustomerPhone').innerText = b.customerPhone || 'N/A';
+
+    const hasDriver = b.driverName || b.driverId;
+    document.getElementById('modDriverName').innerText = hasDriver ? (b.driverName || 'Tài xế đã nhận') : 'Chưa gán tài xế';
+    const driverDetailsEl = document.getElementById('modDriverDetailsWrapper');
+    if (driverDetailsEl) {
+        if (hasDriver) {
+            driverDetailsEl.style.setProperty('display', 'flex', 'important');
+            const idEl = document.getElementById('modDriverId');
+            if (idEl) idEl.innerText = b.driverId ? `#${b.driverId}` : 'N/A';
+            const phoneEl = document.getElementById('modDriverPhone');
+            if (phoneEl) phoneEl.innerText = b.driverPhone || 'Chưa cập nhật';
+        } else {
+            driverDetailsEl.style.setProperty('display', 'none', 'important');
+        }
+    }
+
+    document.getElementById('modVehicleName').innerText = b.vehicleName || 'Chưa chỉ định xe';
+    document.getElementById('modLicensePlate').innerText = b.licensePlate || 'N/A';
+
+    // 4. Ghi chú
+    document.getElementById('modBookingType').innerText = b.bookingType || 'DISTANCE';
+    document.getElementById('modNote').innerText = b.note ? b.note : 'Không có lời nhắn';
+
+    // 5. Ảnh bằng chứng trả khách
+    const photoBox = document.getElementById('modPhotoContainer');
+    const btnFull = document.getElementById('btnModFullPhoto');
+    const photoStatus = document.getElementById('modPhotoStatus');
+    const photoSrc = (b.completionPhotoUrl && b.completionPhotoUrl.trim() !== '')
+        ? (b.completionPhotoUrl.startsWith('http')
+            ? b.completionPhotoUrl
+            : `${typeof API_BASE_URL !== 'undefined' ? API_BASE_URL.replace(/\/api\/v1\/?$/, '') : 'http://localhost:8080/FleetFlow'}/${b.completionPhotoUrl.replace(/^\//, '')}`)
+        : null;
+
+    if (photoSrc) {
+        photoBox.innerHTML = `<img src="${photoSrc}" class="img-fluid rounded shadow" style="max-height: 320px; object-fit: contain;">`;
+        btnFull.href = photoSrc;
+        btnFull.classList.remove('d-none');
+        photoStatus.innerText = 'Đã có bằng chứng';
+        photoStatus.className = 'badge bg-success bg-opacity-25 border border-success text-white small';
+    } else {
+        photoBox.innerHTML = `<div class="py-4 text-center text-muted"><i class="fa-solid fa-image-slash fs-1 mb-2 opacity-50"></i><br>Chưa có ảnh bằng chứng trả khách cho đơn này.</div>`;
+        btnFull.classList.add('d-none');
+        photoStatus.innerText = 'Chưa có ảnh';
+        photoStatus.className = 'badge bg-secondary bg-opacity-25 border border-secondary text-white small';
+    }
+
+    // Mở Modal
+    const modalEl = document.getElementById('bookingDetailModal');
+    const bsModal = new bootstrap.Modal(modalEl);
+    bsModal.show();
+}
+
+window.showBookingDetailModal = showBookingDetailModal;

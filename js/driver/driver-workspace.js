@@ -46,6 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
         availabilityStatus: status,
         walletBalance: wallet
     });
+    // Gọi API lấy rating tài xế từ server
+    if (typeof fetchDriverRatings === 'function') {
+        fetchDriverRatings();
+    }
     // ======================================================
 
     // 5. Khởi tạo vị trí cục kính ban đầu cho tab đang kích hoạt mặc định

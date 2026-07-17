@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 3. Nếu ĐÃ ĐĂNG NHẬP
     if (accessToken && fullName) {
-        if (userRole.toUpperCase() !== 'CUSTOMER') {
+        const roleUpper = userRole.trim().toUpperCase();
+        if (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG') {
             window.location.replace('../../error/403.html');
             return;
         }
