@@ -164,6 +164,12 @@ window.switchTab = function (tabId, element) {
             fetchDriverHistory('COMPLETED_AND_CANCELLED'); // Cờ đặc biệt xử lý trong hàm
         }
     }
+
+    if (tabId === 'tab-account') {
+        if (typeof loadDriverRatings === 'function') {
+            loadDriverRatings();
+        }
+    }
 };
 
 // ============================================================================
@@ -1594,5 +1600,95 @@ window.submitDriverRating = async function () {
         document.getElementById("btnSubmitDriverRating").disabled = false;
         document.getElementById("btnSubmitDriverRating").innerHTML = 'Gửi đánh giá';
     }
+}
+
+// ============================================================================
+// 10. TÍCH HỢP API: LỊCH SỬ ĐÁNH GIÁ TÀI XẾ (DRIVER RATINGS)
+// ============================================================================
+window.loadDriverRatings = async function () {
+    const listContainer = document.getElementById('driverRatingsContainer');
+    const accRating = document.getElementById('accDriverRating');
+    if (!listContainer) return;
+
+    const token = localStorage.getItem("accessToken");
+    if (!token) {
+        listContainer.innerHTML = `<div class="alert alert-warning">Vui lòng đăng nhập để xem đánh giá.</div>`;
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/driver/ratings`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            // Update Summary (Badge)
+            const avg = result.averageRating != null ? parseFloat(result.averageRating).toFixed(1) : "0.0";
+            const count = result.ratingCount || 0;
+            if (accRating) {
+                accRating.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${avg} (${count} đánh giá)`;
+            }
+
+            // Render List
+            const ratings = result.data || [];
+            if (ratings.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center py-4 rounded-3 border border-secondary bg-white bg-opacity-10">
+                        <i class="fa-regular fa-comment-dots fs-1 text-white-50 mb-3"></i>
+                        <h6 class="text-white-50">Chưa có đánh giá nào từ khách hàng</h6>
+                    </div>`;
+                return;
+            }
+
+            let htmlContent = '';
+            ratings.forEach(rating => {
+                const dateString = rating.createdAt ? String(rating.createdAt).replace(' ', 'T') : new Date().toISOString();
+                const dateObj = new Date(dateString);
+                const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+                
+                const comment = rating.comment ? rating.comment : "<i class='text-white-50'>Không có nhận xét</i>";
+
+                htmlContent += `
+                    <div class="p-3 mb-3 bg-white bg-opacity-10 rounded-3 border border-secondary text-white">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <span class="badge bg-light text-dark border me-2">Chuyến #${rating.bookingId}</span>
+                                <small class="text-white-50"><i class="fa-regular fa-clock me-1"></i> ${formattedDate}</small>
+                            </div>
+                            <div class="text-warning">
+                                ${generateStars(rating.driverRating)}
+                            </div>
+                        </div>
+                        <p class="mb-0 text-white" style="font-size: 0.95rem;">${comment}</p>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = htmlContent;
+        } else {
+            listContainer.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white bg-opacity-10">Lỗi tải dữ liệu: ${result.message || 'Không xác định'}</div>`;
+        }
+    } catch (error) {
+        console.error("Lỗi tải API Đánh giá:", error);
+        listContainer.innerHTML = `<div class="text-danger p-3 border border-danger rounded bg-white bg-opacity-10"><i class="fa-solid fa-triangle-exclamation me-2"></i>Không thể kết nối đến máy chủ.</div>`;
+    }
+};
+
+function generateStars(rating) {
+    let stars = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= rating) {
+            stars += '<i class="fa-solid fa-star"></i>';
+        } else {
+            stars += '<i class="fa-regular fa-star text-secondary"></i>';
+        }
+    }
+    return stars;
 }
 
