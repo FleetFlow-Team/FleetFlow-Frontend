@@ -3,8 +3,9 @@
  * Architecture: Liquid Glass Interactive Controller & Data Visualization
  */
 
-// Khai báo biến toàn cục để API Dashboard có thể cập nhật lại biểu đồ trạng thái
+// Khai báo biến toàn cục để API Dashboard có thể cập nhật lại biểu đồ
 window.globalStatusChart = null;
+window.globalRevenueChart = null;
 
 let currentPendingDrivers = []; // Biến lưu danh sách tài xế chờ duyệt
 let globalAdminVehicles = []; // Biến lưu danh sách xe
@@ -236,10 +237,10 @@ document.addEventListener("DOMContentLoaded", function () {
     Chart.defaults.color = "rgba(255, 255, 255, 0.7)";
     Chart.defaults.scale.grid.color = "rgba(255, 255, 255, 0.08)";
 
-    // 3.1 Biểu đồ doanh thu (Revenue Chart)
+    // 3.1 Biểu đồ doanh thu (Revenue Chart) -> Đã gán vào window.globalRevenueChart
     const ctxRevenue = document.getElementById("revenueChart");
     if (ctxRevenue) {
-        new Chart(ctxRevenue, {
+        window.globalRevenueChart = new Chart(ctxRevenue, {
             type: "line",
             data: {
                 labels: Array.from({ length: 15 }, (_, i) => `Ngày ${i * 2 + 1}`),
@@ -556,8 +557,18 @@ window.fetchDashboardData = async function (status = '', fromDate = '', toDate =
         if (result.success && result.summary) {
             updateDashboardKPIs(result.summary);
 
+            if (window.globalRevenueChart && Array.isArray(result.summary.revenueByDay)) {
+                const revData = result.summary.revenueByDay;
+                window.globalRevenueChart.data.labels = revData.map(item => {
+                    const parts = (item.date || '').split('-');
+                    return parts.length === 3 ? `${parts[2]}/${parts[1]}` : item.date;
+                });
+                window.globalRevenueChart.data.datasets[0].data = revData.map(item => Number(((item.revenue || 0) / 1000000).toFixed(2)));
+                window.globalRevenueChart.update();
+            }
+
             if (window.globalStatusChart) {
-                const byStatus = result.summary.byStatus;
+                const byStatus = result.summary.byStatus || {};
                 window.globalStatusChart.data.datasets[0].data = [
                     byStatus.COMPLETED || 0,
                     byStatus.ONGOING || 0,
@@ -586,7 +597,8 @@ function updateDashboardKPIs(summary) {
         kpiValues[0].innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(summary.totalRevenue || 0);
         const estimatedProfit = (summary.totalRevenue || 0) * 0.25;
         kpiValues[1].innerText = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(estimatedProfit);
-        kpiValues[2].innerText = (summary.byStatus.COMPLETED || 0).toLocaleString('vi-VN');
+        const completedCount = (summary.byStatus && summary.byStatus.COMPLETED) || 0;
+        kpiValues[2].innerText = completedCount.toLocaleString('vi-VN');
         kpiValues[3].innerText = (summary.driverRejectCount || 0) + " Lượt";
     }
 }
