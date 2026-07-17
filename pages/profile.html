@@ -172,15 +172,30 @@
             <form id="changePasswordForm" class="row g-4 mt-2">
               <div class="col-md-12 form-floating-custom">
                 <label class="mb-2 fw-semibold">Mật khẩu hiện tại</label>
-                <input type="password" id="oldPassword" class="form-control custom-input" required maxlength="50" />
+                <div class="position-relative">
+                  <input type="password" id="oldPassword" class="form-control custom-input w-100" required maxlength="50" style="padding-right: 40px;" />
+                  <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning" 
+                     style="cursor: pointer; font-size: 1.1rem; z-index: 10;" 
+                     onclick="const p1=document.getElementById('oldPassword'); if(p1.type==='password'){p1.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p1.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
+                </div>
               </div>
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Mật khẩu mới</label>
-                <input type="password" id="newPassword" class="form-control custom-input" required maxlength="50" />
+                <div class="position-relative">
+                  <input type="password" id="newPassword" class="form-control custom-input w-100" required maxlength="50" style="padding-right: 40px;" />
+                  <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning" 
+                     style="cursor: pointer; font-size: 1.1rem; z-index: 10;" 
+                     onclick="const p2=document.getElementById('newPassword'); if(p2.type==='password'){p2.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p2.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
+                </div>
               </div>
               <div class="col-md-6 form-floating-custom">
                 <label class="mb-2 fw-semibold">Xác nhận mật khẩu mới</label>
-                <input type="password" id="confirmPassword" class="form-control custom-input" required maxlength="50" />
+                <div class="position-relative">
+                  <input type="password" id="confirmPassword" class="form-control custom-input w-100" required maxlength="50" style="padding-right: 40px;" />
+                  <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning" 
+                     style="cursor: pointer; font-size: 1.1rem; z-index: 10;" 
+                     onclick="const p3=document.getElementById('confirmPassword'); if(p3.type==='password'){p3.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p3.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
+                </div>
               </div>
               <div class="col-12 text-end mt-5">
                 <button type="submit" id="btnSubmitChangePass" class="btn-login px-5 py-3 fs-6">
