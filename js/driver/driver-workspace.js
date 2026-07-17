@@ -46,6 +46,10 @@ document.addEventListener("DOMContentLoaded", () => {
         availabilityStatus: status,
         walletBalance: wallet
     });
+    // Gọi API lấy rating tài xế từ server
+    if (typeof fetchDriverRatings === 'function') {
+        fetchDriverRatings();
+    }
     // ======================================================
 
     // 5. Khởi tạo vị trí cục kính ban đầu cho tab đang kích hoạt mặc định
@@ -162,6 +166,11 @@ window.switchTab = function (tabId, element) {
     if (tabId === 'tab-history') {
         if (typeof fetchDriverHistory === 'function') {
             fetchDriverHistory('COMPLETED_AND_CANCELLED'); // Cờ đặc biệt xử lý trong hàm
+        }
+    }
+    if (tabId === 'tab-account') {
+        if (typeof fetchDriverRatings === 'function') {
+            fetchDriverRatings();
         }
     }
 };
@@ -1595,4 +1604,125 @@ window.submitDriverRating = async function () {
         document.getElementById("btnSubmitDriverRating").innerHTML = 'Gửi đánh giá';
     }
 }
+
+/**
+ * Lấy điểm trung bình và danh sách khách hàng đánh giá tài xế (GET /api/v1/driver/ratings)
+ */
+async function fetchDriverRatings() {
+    const tableBody = document.getElementById("driverRatingCards");
+    const accRatingEl = document.getElementById("accDriverRating");
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    if (tableBody) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4"><div class="spinner-border text-warning"></div></td></tr>';
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/FleetFlow/api/v1/driver/ratings", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+            if (accRatingEl) {
+                accRatingEl.innerHTML = `<i class="fa-solid fa-star me-1"></i> ${result.averageRating} (${result.ratingCount || 0} đánh giá)`;
+            }
+            if (result.averageRating) {
+                localStorage.setItem("averageRating", result.averageRating);
+            }
+
+            // Lưu danh sách gốc ra biến global để phục vụ sắp xếp
+            window.rawDriverRatings = result.data || [];
+            sortAndRenderDriverRatings();
+        } else {
+            if (tableBody) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-danger">Không tải được đánh giá (${result.message || 'Lỗi hệ thống'})</td></tr>`;
+            }
+        }
+    } catch (e) {
+        console.error("Lỗi khi tải danh sách đánh giá tài xế:", e);
+        if (tableBody) {
+            tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-danger">Lỗi kết nối máy chủ khi tải đánh giá.</td></tr>';
+        }
+    }
+}
+
+/**
+ * Sắp xếp và hiển thị danh sách đánh giá ra bảng Table
+ */
+function sortAndRenderDriverRatings() {
+    const tableBody = document.getElementById("driverRatingCards");
+    if (!tableBody) return;
+
+    const ratings = [...(window.rawDriverRatings || [])];
+    if (ratings.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-white-50"><i class="fa-regular fa-comment-dots fs-2 mb-2 d-block text-warning opacity-50"></i>Chưa có nhận xét nào từ khách hàng.</td></tr>';
+        return;
+    }
+
+    const sortTypeEl = document.getElementById("driverRatingSort");
+    const sortType = sortTypeEl ? sortTypeEl.value : "NEWEST";
+
+    ratings.sort((a, b) => {
+        const timeA = new Date(a.createdAt || 0).getTime();
+        const timeB = new Date(b.createdAt || 0).getTime();
+        const scoreA = parseInt(a.driverRating) || 0;
+        const scoreB = parseInt(b.driverRating) || 0;
+
+        switch (sortType) {
+            case "OLDEST":
+                return timeA - timeB;
+            case "HIGHEST":
+                return scoreB !== scoreA ? scoreB - scoreA : timeB - timeA;
+            case "LOWEST":
+                return scoreA !== scoreB ? scoreA - scoreB : timeB - timeA;
+            case "NEWEST":
+            default:
+                return timeB - timeA;
+        }
+    });
+
+    let html = '';
+    ratings.forEach(item => {
+        const starsCount = parseInt(item.driverRating) || 5;
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= starsCount) {
+                starsHtml += '<i class="fa-solid fa-star text-warning me-1"></i>';
+            } else {
+                starsHtml += '<i class="fa-regular fa-star text-secondary me-1"></i>';
+            }
+        }
+
+        const dateStr = item.createdAt ? item.createdAt.substring(0, 16) : 'N/A';
+        const commentText = item.comment && item.comment.trim() !== '' ? item.comment : '<span class="text-white-50 fst-italic">Không có nhận xét</span>';
+
+        html += `
+            <tr class="border-bottom border-secondary border-opacity-25">
+                <td class="py-3 px-4">
+                    <span class="badge bg-white bg-opacity-10 text-white border border-secondary font-monospace">#BK-${item.bookingId}</span>
+                </td>
+                <td class="py-3 px-3 text-nowrap">
+                    <div class="d-flex align-items-center">
+                        ${starsHtml}
+                        <span class="ms-1 text-warning small fw-bold">(${starsCount})</span>
+                    </div>
+                </td>
+                <td class="py-3 px-3">
+                    <div class="text-white">${commentText}</div>
+                </td>
+                <td class="py-3 px-4 text-end text-nowrap text-white-50 small">
+                    <i class="fa-regular fa-clock me-1"></i> ${dateStr}
+                </td>
+            </tr>
+        `;
+    });
+    tableBody.innerHTML = html;
+}
+window.sortAndRenderDriverRatings = sortAndRenderDriverRatings;
+
 
