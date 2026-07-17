@@ -488,15 +488,28 @@
                             <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-route text-success me-2"></i> Quản
                                 lý chuyến đi</h4>
 
-                            <div class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2">
+                            <div
+                                class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2 overflow-auto">
                                 <button class="btn btn-glass-tab active"
                                     onclick="loadBookings('PENDING', 'tbody-main')">
                                     Chờ Xử Lý<span class="badge bg-success rounded-pill ms-1"
                                         id="count-pending">0</span>
                                 </button>
                                 <button class="btn btn-glass-tab" onclick="loadBookings('UNASSIGNED', 'tbody-main')">
-                                    Cần Xử Lý Thủ Công <span class="badge bg-warning text-dark rounded-pill ms-1"
+                                    Cần Xử Lý <span class="badge bg-warning text-dark rounded-pill ms-1"
                                         id="count-unassigned">0</span>
+                                </button>
+                                <button class="btn btn-glass-tab" onclick="loadBookings('DISPATCHED', 'tbody-main')">
+                                    Đã Phân Tài <span class="badge bg-primary rounded-pill ms-1"
+                                        id="count-dispatched">0</span>
+                                </button>
+                                <button class="btn btn-glass-tab" onclick="loadBookings('ONGOING', 'tbody-main')">
+                                    Đang Di Chuyển <span class="badge bg-info text-white rounded-pill ms-1"
+                                        id="count-ongoing">0</span>
+                                </button>
+                                <button class="btn btn-glass-tab" onclick="loadBookings('COMPLETED', 'tbody-main')">
+                                    Chuyến Hoàn Thành <span class="badge bg-secondary rounded-pill ms-1"
+                                        id="count-completed">0</span>
                                 </button>
                                 <button class="btn btn-glass-tab" onclick="loadBookings('REJECTED', 'tbody-main')">
                                     Đã từ chối <span class="badge bg-danger rounded-pill ms-1"
@@ -510,8 +523,8 @@
                                         <tr>
                                             <th width="12%">Mã Đơn</th>
                                             <th width="15%">Khách Hàng</th>
-                                            <th width="32%">Lộ Trình & Dịch Vụ</th>
-                                            <th width="18%">Trạng Thái</th>
+                                            <th width="30%">Lộ Trình & Dịch Vụ</th>
+                                            <th width="20%">Trạng Thái</th>
                                             <th width="23%" class="text-center">Thao Tác</th>
                                         </tr>
                                     </thead>
@@ -1029,6 +1042,147 @@
     <script src="../../js/api.js"></script>
     <script src="../../js/base.js"></script>
     <script src="../../js/dispatcher.js"></script>
+    <!-- =================================================== -->
+    <!-- MODAL CHI TIẾT TOÀN DIỆN CHUYẾN ĐI (DISPATCHER)     -->
+    <!-- =================================================== -->
+    <div class="modal fade modal-blur-bg" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-0 text-white p-4"
+                style="background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.18) !important;">
+
+                <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-primary fs-6 py-2 px-3 rounded-pill" id="modBookingId">#BK-0000</span>
+                        <h5 class="modal-title fw-bold m-0"><i class="fa-solid fa-circle-info text-info me-2"></i> Chi
+                            Tiết Toàn Diện Chuyến Đi</h5>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="modStatusBadge"></span>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+
+                <div class="modal-body py-4">
+                    <div class="row g-4">
+                        <!-- CỘT 1: LỘ TRÌNH & THÔNG TIN ĐỐI TÁC -->
+                        <div class="col-md-6">
+                            <!-- Khung lộ trình & thời gian -->
+                            <div class="p-3 rounded-4 mb-3"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <h6 class="fw-bold text-info mb-3 small text-uppercase"><i
+                                        class="fa-solid fa-route me-1"></i> Trục Lộ Trình Di Chuyển</h6>
+                                <div class="mb-3 ps-3 border-start border-3 border-danger">
+                                    <div class="small text-danger fw-bold">ĐIỂM ĐÓN KHÁCH</div>
+                                    <div class="text-white mt-1 fs-6" id="modPickup">--</div>
+                                </div>
+                                <div class="ps-3 border-start border-3 border-success mb-3">
+                                    <div class="small text-success fw-bold">ĐIỂM TRẢ KHÁCH</div>
+                                    <div class="text-white mt-1 fs-6" id="modDropoff">--</div>
+                                </div>
+                                <div
+                                    class="border-top border-secondary border-opacity-25 pt-3 mt-2 d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-between align-items-center small">
+                                        <span class="text-white-50"><i
+                                                class="fa-regular fa-clock text-warning me-1"></i> Giờ khởi hành:</span>
+                                        <span class="fw-bold text-warning" id="modDepTime">--:--</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center small">
+                                        <span class="text-white-50"><i
+                                                class="fa-solid fa-calendar-plus text-info me-1"></i> Thời gian tạo
+                                            đơn:</span>
+                                        <span class="fw-bold text-info" id="modCreatedAt">--:--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Khung đối tác Khách & Tài xế & Phương tiện -->
+                            <div class="p-3 rounded-4 mb-3"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                    <div class="small text-white-50"><i class="fa-solid fa-user text-warning me-1"></i>
+                                        Khách hàng</div>
+                                    <div class="fw-bold text-white fs-6" id="modCustomerName">--</div>
+                                    <div class="small text-info"><i class="fa-solid fa-phone me-1"></i> <span
+                                            id="modCustomerPhone">--</span></div>
+                                </div>
+                                <div>
+                                    <div class="small text-white-50 mb-1"><i
+                                            class="fa-solid fa-id-card text-success me-1"></i> Tài xế phụ trách</div>
+                                    <div class="fw-bold text-white fs-6 mb-1" id="modDriverName">Chưa chỉ định tài xế
+                                    </div>
+                                    <div class="d-flex flex-wrap align-items-center gap-3 small mb-2"
+                                        id="modDriverDetailsWrapper" style="display: none !important;">
+                                        <span><i class="fa-solid fa-hashtag text-warning me-1"></i>ID: <strong
+                                                class="text-warning" id="modDriverId">--</strong></span>
+                                        <span><i class="fa-solid fa-phone text-info me-1"></i><span class="text-info"
+                                                id="modDriverPhone">--</span></span>
+                                    </div>
+                                    <div class="p-2 rounded-3 d-flex justify-content-between align-items-center"
+                                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);">
+                                        <div>
+                                            <div class="small text-white-50"><i
+                                                    class="fa-solid fa-car text-info me-1"></i> Phương tiện:
+                                            </div>
+                                            <div class="fw-bold text-info fs-6" id="modVehicleName">--</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="small text-white-50">Biển số:</div>
+                                            <span class="badge bg-warning text-dark px-2 py-1"
+                                                id="modLicensePlate">N/A</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Khung cước phí & ghi chú -->
+                            <div class="p-3 rounded-4"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span class="text-white-50"><i class="fa-solid fa-tag me-1"></i> Loại chuyến:</span>
+                                    <span class="fw-bold text-info" id="modBookingType">--</span>
+                                </div>
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span class="text-white-50"><i class="fa-solid fa-note-sticky me-1"></i> Ghi
+                                        chú:</span>
+                                    <span class="text-white fst-italic" id="modNote">Không có</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CỘT 2: ẢNH BẰNG CHỨNG TRẢ KHÁCH (FULL HD PREVIEW) -->
+                        <div class="col-md-6 d-flex flex-column">
+                            <div class="p-3 rounded-4 flex-grow-1 d-flex flex-column"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold text-success m-0 small text-uppercase"><i
+                                            class="fa-solid fa-camera-retro me-1"></i> Ảnh Xác Nhận Trả Khách</h6>
+                                    <span class="badge bg-success bg-opacity-25 border border-success text-white small"
+                                        id="modPhotoStatus">Đã có bằng chứng</span>
+                                </div>
+
+                                <div id="modPhotoContainer"
+                                    class="flex-grow-1 rounded-3 overflow-hidden d-flex align-items-center justify-content-center p-2 my-2"
+                                    style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); min-height: 260px;">
+                                    <span class="text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải
+                                        ảnh...</span>
+                                </div>
+
+                                <a href="#" target="_blank" id="btnModFullPhoto"
+                                    class="btn btn-sm btn-outline-info w-100 fw-bold mt-1 d-none">
+                                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Mở Ảnh Gốc Full HD Trong
+                                    Tab Mới
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top border-secondary border-opacity-25 pt-3 justify-content-end">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
