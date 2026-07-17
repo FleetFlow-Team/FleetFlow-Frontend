@@ -170,6 +170,9 @@ async function approveBooking(bookingId, buttonElement) {
                     if (typeof fetchDispatcherNotifications === 'function') {
                         fetchDispatcherNotifications();
                     }
+                    if (typeof window.loadDispatcherDashboardStats === 'function') {
+                        window.loadDispatcherDashboardStats();
+                    }
                 }, 3000);
             }
         } else {
@@ -273,6 +276,9 @@ async function processRejectBooking() {
                     badge.innerHTML = '<i class="fa-solid fa-ban me-1"></i> Đã từ chối';
                 }
                 buttonElement.parentElement.innerHTML = '<span class="text-danger fw-bold"><i class="fa-solid fa-xmark"></i> Hủy bỏ</span>';
+            }
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                window.loadDispatcherDashboardStats();
             }
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.error || "Lỗi khi từ chối đơn", "error");
@@ -575,6 +581,9 @@ window.executeDispatch = async function () {
             loadBookings('UNASSIGNED', 'tbody-main');
             if (typeof fetchDispatcherNotifications === 'function') {
                 fetchDispatcherNotifications();
+            }
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                window.loadDispatcherDashboardStats();
             }
         } else {
             showSystemToast(result.error || result.message || "Hệ thống từ chối phân tài!", "error");
@@ -973,6 +982,9 @@ window.executeResolveComplaint = async function () {
             if (typeof showSystemToast === 'function') showSystemToast("Đã ghi nhận giải quyết khiếu nại!", "success");
             closeResolveModal();
             loadComplaints(); // reload
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                window.loadDispatcherDashboardStats();
+            }
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.error || "Lỗi xử lý!", "error");
         }
@@ -1444,6 +1456,81 @@ async function loadDriverStatusList() {
 }
 
 window.loadDriverStatusList = loadDriverStatusList;
+
+// ==========================================
+// TÍCH HỢP CHỈ SỐ VẬN HÀNH HÔM NAY & SỰ CỐ HỆ THỐNG (OVERVIEW DASHBOARD)
+// ==========================================
+async function loadDispatcherDashboardStats() {
+    try {
+        const headers = getAuthHeader();
+        const [pendingRes, unassignedRes, completedRes, dispatchedRes, ongoingRes, rejectedRes, complaintsRes] = await Promise.all([
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings/pending`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings/unassigned`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=COMPLETED`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=DISPATCHED`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=ONGOING`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/bookings?status=REJECTED`, { headers }).then(r => r.json()).catch(() => ({ success: false })),
+            fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints`, { headers }).then(r => r.json()).catch(() => ({ success: false }))
+        ]);
+
+        const pendingCount = pendingRes.success ? (pendingRes.count !== undefined ? pendingRes.count : (pendingRes.data ? pendingRes.data.length : 0)) : 0;
+        const unassignedCount = unassignedRes.success ? (unassignedRes.count !== undefined ? unassignedRes.count : (unassignedRes.data ? unassignedRes.data.length : 0)) : 0;
+        const completedCount = completedRes.success ? (completedRes.count !== undefined ? completedRes.count : (completedRes.data ? completedRes.data.length : 0)) : 0;
+        const dispatchedCount = dispatchedRes.success ? (dispatchedRes.count !== undefined ? dispatchedRes.count : (dispatchedRes.data ? dispatchedRes.data.length : 0)) : 0;
+        const ongoingCount = ongoingRes.success ? (ongoingRes.count !== undefined ? ongoingRes.count : (ongoingRes.data ? ongoingRes.data.length : 0)) : 0;
+        const rejectedCount = rejectedRes.success ? (rejectedRes.count !== undefined ? rejectedRes.count : (rejectedRes.data ? rejectedRes.data.length : 0)) : 0;
+
+        const complaintsList = complaintsRes.success ? (complaintsRes.data || []) : [];
+        const openComplaints = complaintsList.filter(c => (c.status || 'PENDING').toUpperCase() === 'PENDING' || (c.status || 'PENDING').toUpperCase() === 'OPEN');
+        const newComplaintsCount = openComplaints.length;
+
+        // Cập nhật 3 thẻ Chỉ Số Vận Hành Hôm Nay
+        const statCompletedEl = document.getElementById('statCompletedTrips');
+        const statPendingEl = document.getElementById('statPendingBookings');
+        const statComplaintsEl = document.getElementById('statNewComplaints');
+        if (statCompletedEl) statCompletedEl.innerText = completedCount;
+        if (statPendingEl) statPendingEl.innerText = pendingCount + unassignedCount;
+        if (statComplaintsEl) statComplaintsEl.innerText = newComplaintsCount;
+
+        // Cập nhật các con số đếm trên các Tab trong Quản lý chuyến đi
+        const setBadge = (id, count) => { const el = document.getElementById(id); if (el) el.innerText = count; };
+        setBadge('count-pending', pendingCount);
+        setBadge('count-unassigned', unassignedCount);
+        setBadge('count-dispatched', dispatchedCount);
+        setBadge('count-ongoing', ongoingCount);
+        setBadge('count-completed', completedCount);
+        setBadge('count-rejected', rejectedCount);
+
+        // Cập nhật danh sách Sự Cố Hệ Thống Cần Xử Lý động
+        const alertListEl = document.getElementById('systemAlertList');
+        if (alertListEl) {
+            let alertsHtml = '';
+            const unassignedList = unassignedRes.success ? (unassignedRes.data || []) : [];
+            unassignedList.slice(0, 3).forEach(b => {
+                alertsHtml += `
+                    <li class="text-white-50 small mb-2">
+                        <i class="fa-solid fa-circle-exclamation text-warning me-2"></i> Chuyến đi <strong>#BK-${b.bookingId || b.BookingID}</strong> đang cần Phân tài xế cho khách hàng.
+                    </li>
+                `;
+            });
+            openComplaints.slice(0, 3).forEach(c => {
+                alertsHtml += `
+                    <li class="text-white-50 small mb-2">
+                        <i class="fa-solid fa-circle-exclamation text-danger me-2"></i> Khiếu nại từ <strong>${c.fullName || 'Khách hàng'}</strong> ${c.bookingId ? `(đơn #${c.bookingId})` : ''} đang chờ giải quyết.
+                    </li>
+                `;
+            });
+            if (!alertsHtml) {
+                alertsHtml = `<li class="text-success small py-2"><i class="fa-solid fa-check-circle me-2"></i> Hiện không có sự cố hay khiếu nại nào cần xử lý gấp. Hệ thống vận hành ổn định!</li>`;
+            }
+            alertListEl.innerHTML = alertsHtml;
+        }
+    } catch (error) {
+        console.error("Lỗi tải chỉ số vận hành dashboard:", error);
+    }
+}
+
+window.loadDispatcherDashboardStats = loadDispatcherDashboardStats;
 
 // ==========================================
 // HÀM HIỂN THỊ MODAL CHI TIẾT & ẢNH TRẢ KHÁCH

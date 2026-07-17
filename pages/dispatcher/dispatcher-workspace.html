@@ -410,24 +410,30 @@
 
                     <div id="overview" class="dashboard-section active">
                         <div class="glass-panel mb-4">
-                            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-chart-line text-success me-2"></i>
-                                Chỉ Số Vận Hành Hôm Nay</h4>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-line text-success me-2"></i>
+                                    Chỉ Số Vận Hành Hôm Nay</h4>
+                                <button class="btn btn-sm btn-outline-success d-flex align-items-center gap-2"
+                                    onclick="loadDispatcherDashboardStats()">
+                                    <i class="fa-solid fa-rotate-right"></i> Làm Mới
+                                </button>
+                            </div>
                             <div class="row g-4">
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-success fw-bold mb-1">128</h2>
+                                        <h2 class="text-success fw-bold mb-1" id="statCompletedTrips"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-success fw-medium">Chuyến hoàn thành</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-warning fw-bold mb-1">15</h2>
+                                        <h2 class="text-warning fw-bold mb-1" id="statPendingBookings"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-warning fw-medium">Đang chờ điều phối</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-danger fw-bold mb-1">2</h2>
+                                        <h2 class="text-danger fw-bold mb-1" id="statNewComplaints"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-danger fw-medium">Khiếu nại mới</span>
                                     </div>
                                 </div>
@@ -439,14 +445,10 @@
                                 <div class="glass-panel h-100">
                                     <h5 class="fw-bold text-white mb-3"><i
                                             class="fa-solid fa-bell text-danger me-2"></i> Sự Cố Hệ Thống Cần Xử Lý</h5>
-                                    <ul class="list-unstyled mb-0">
-                                        <li class="text-white-50 small mb-2"><i
-                                                class="fa-solid fa-circle-exclamation text-danger me-2"></i> Chuyến đi
-                                            <strong>#TR-8080</strong> bị đóng băng do tài xế đi muộn.
+                                    <ul class="list-unstyled mb-0" id="systemAlertList">
+                                        <li class="text-white-50 small py-2">
+                                            <i class="fa-solid fa-spinner fa-spin text-info me-2"></i> Đang quét tình trạng vận hành hệ thống...
                                         </li>
-                                        <li class="text-white-50 small"><i
-                                                class="fa-solid fa-circle-exclamation text-warning me-2"></i> Yêu cầu
-                                            Phân tài cho chuyến <strong>#TR-8091</strong> đang quá hạn phản hồi.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -922,6 +924,10 @@
                             if (typeof window.loadDriverStatusList === 'function') {
                                 window.loadDriverStatusList();
                             }
+                        } else if (targetId === 'overview') {
+                            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                                window.loadDispatcherDashboardStats();
+                            }
                         } else {
                             // Nếu sang tab khác, tạm dừng quét API để nhẹ máy
                             if (typeof window.pauseMapTracking === 'function') {
@@ -941,6 +947,10 @@
             // Tải ngay danh sách tài xế ngầm khi vào trang để cập nhật số liệu cho khối Trạng Thái Đội Xe Tóm Tắt
             if (typeof window.loadDriverStatusList === 'function') {
                 setTimeout(() => window.loadDriverStatusList(), 200);
+            }
+            // Tải ngay số liệu vận hành và khiếu nại cho Chỉ Số Vận Hành Hôm Nay & Sự Cố Hệ Thống
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                setTimeout(() => window.loadDispatcherDashboardStats(), 200);
             }
 
             // Đảm bảo các khối kính tự động căn chỉnh lại khi người dùng thay đổi kích thước màn hình
