@@ -113,15 +113,17 @@
           </div>
 
           <div class="nav flex-column nav-pills text-start" id="v-pills-tab" role="tablist">
-            <button class="btn-hero shadow text-dark active" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-profile">
+            <button class="btn-hero shadow text-dark active" style="color: #111111 !important;" data-bs-toggle="pill"
+              data-bs-target="#content-profile">
               <i class="fa-regular fa-user me-2"></i> Thông tin cá nhân
             </button>
 
-            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-security">
+            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill"
+              data-bs-target="#content-security">
               <i class="fa-solid fa-lock me-2"></i> Đổi mật khẩu
             </button>
-            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill" data-bs-target="#content-wallet"
-              onclick="loadWalletHistory()">
+            <button class="btn-hero shadow text-dark" style="color: #111111 !important;" data-bs-toggle="pill"
+              data-bs-target="#content-wallet" onclick="loadWalletHistory()">
               <i class="fa-solid fa-wallet me-2"></i> Ví của tôi
             </button>
           </div>
@@ -240,7 +242,7 @@
 
       // Xóa các lớp biến thể cũ và thêm lớp mới
       toastEl.classList.remove('toast-warning', 'toast-success', 'toast-error');
-      
+
       const iconEl = document.getElementById('toastLiquidIcon');
       const innerIconEl = document.getElementById('toastLiquidInnerIcon');
       const categoryEl = document.getElementById('toastLiquidCategory');
@@ -340,7 +342,7 @@
               const errMsg = data.message || "Mật khẩu cũ không chính xác!";
               const errTitle = errMsg.toLowerCase().includes("mật khẩu cũ") ? "Mật khẩu cũ không chính xác!" : "Cập nhật thất bại";
               showLiquidToast(errMsg, 'warning', errTitle);
-              
+
               // Tự động focus và bôi đen ô mật khẩu cũ để khách tiện nhập lại
               const oldPassInput = document.getElementById('oldPassword');
               if (oldPassInput) {
@@ -380,18 +382,18 @@
       } else {
         // Xóa hoàn toàn tab Thông tin cá nhân và Ví cho Đối tác Tài xế
         const tabsToRemove = [
-            '[data-bs-target="#content-profile"]',
-            '[data-bs-target="#content-wallet"]'
+          '[data-bs-target="#content-profile"]',
+          '[data-bs-target="#content-wallet"]'
         ];
-        
+
         tabsToRemove.forEach(selector => {
-            document.querySelectorAll(selector).forEach(el => el.remove());
+          document.querySelectorAll(selector).forEach(el => el.remove());
         });
 
         const panesToRemove = ['content-profile', 'content-wallet'];
         panesToRemove.forEach(id => {
-            const el = document.getElementById(id);
-            if (el) el.remove();
+          const el = document.getElementById(id);
+          if (el) el.remove();
         });
 
         const securityTabBtn = document.querySelector('button[data-bs-target="#content-security"]');
@@ -686,7 +688,8 @@
             const bookingRef = tx.BookingID ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${tx.BookingID}</span>` : '';
 
             // Xử lý ngày tháng đẹp
-            const dateObj = new Date(tx.CreatedAt);
+            const dateString = tx.CreatedAt ? String(tx.CreatedAt).replace(' ', 'T') : new Date().toISOString();
+            const dateObj = new Date(dateString);
             const formattedDate = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')} - ${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
 
             // Gắn vào thẻ HTML siêu đẹp
@@ -795,16 +798,19 @@
 
 <!-- TOAST LIQUID GLASSMORPHISM ĐA NĂNG (GÓC PHẢI BÊN DƯỚI) -->
 <div class="toast-container position-fixed bottom-0 end-0 p-4 toast-liquid-container">
-  <div id="liquidGlassToast" class="toast toast-liquid align-items-center border-0 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true" style="min-width: 360px; max-width: 420px;">
+  <div id="liquidGlassToast" class="toast toast-liquid align-items-center border-0 shadow-lg" role="alert"
+    aria-live="assertive" aria-atomic="true" style="min-width: 360px; max-width: 420px;">
     <div class="toast-header-liquid d-flex align-items-center justify-content-between">
       <div class="d-flex align-items-center gap-2">
         <i id="toastLiquidIcon" class="fa-solid fa-triangle-exclamation fs-5"></i>
-        <strong id="toastLiquidCategory" class="me-auto font-monospace fw-bold" style="letter-spacing: 0.5px; font-size: 0.85rem;">THÔNG BÁO HỆ THỐNG</strong>
+        <strong id="toastLiquidCategory" class="me-auto font-monospace fw-bold"
+          style="letter-spacing: 0.5px; font-size: 0.85rem;">THÔNG BÁO HỆ THỐNG</strong>
       </div>
       <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
     <div class="toast-body p-4 d-flex align-items-center gap-3">
-      <div id="toastLiquidIconBox" class="p-2 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
+      <div id="toastLiquidIconBox"
+        class="p-2 rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 shadow-sm"
         style="width: 45px; height: 45px; background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(255, 255, 255, 0.9);">
         <i id="toastLiquidInnerIcon" class="fa-solid fa-key fs-5"></i>
       </div>
