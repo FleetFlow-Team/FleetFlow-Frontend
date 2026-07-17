@@ -972,6 +972,12 @@
                             <span class="fw-bold text-dark fs-5" id="summaryBaseFare">0 ₫</span>
                         </div>
 
+                        <!-- CHÈN DÒNG PHỤ PHÍ NGÀY LỄ VÀO ĐÂY (Ẩn mặc định) -->
+                        <div class="breakdown-row" id="holidaySurchargeRow" style="display: none !important;">
+                            <span class="fw-medium text-danger">Phụ phí ngày lễ</span>
+                            <span class="fw-bold text-danger fs-5 text-end" id="summaryHoliday">0 ₫</span>
+                        </div>
+
                         <div class="breakdown-row" id="weekendSurchargeRow" style="display: none !important;">
                             <span class="fw-medium text-warning">Phụ phí cuối tuần (+10%)</span>
                             <span class="fw-bold text-warning fs-5" id="summaryWeekend">0 ₫</span>
@@ -1031,6 +1037,14 @@
 
     <script>
         // =====================================================================
+        // 0. LẤY DANH SÁCH NGÀY LỄ TỪ BACKEND ĐỂ FRONTEND TỰ TÍNH
+        // =====================================================================
+        let globalHolidaysList = [];
+        const holidayPromise = fetch('http://localhost:8080/FleetFlow/api/v1/admin/holidays')
+            .then(res => res.json())
+            .then(data => { if (data.success) globalHolidaysList = data.data; })
+            .catch(e => console.error("Lỗi lấy ngày lễ:", e));
+        // =====================================================================
         // 1. KHỞI TẠO DỮ LIỆU TỪ LOCAL STORAGE VÀ KIỂM TRA LỖI THANH TOÁN
         // =====================================================================
         document.addEventListener("DOMContentLoaded", async () => {
@@ -1080,6 +1094,7 @@
                 const mapTotal = parseFloat(localStorage.getItem('mapEstimatedTotal')) || 0;
                 const mapBaseFare = parseFloat(localStorage.getItem('mapBaseFare')) || mapTotal;
                 const mapWeekendSurcharge = parseFloat(localStorage.getItem('mapWeekendSurcharge')) || 0;
+                const mapHolidaySurcharge = parseFloat(localStorage.getItem('mapHolidaySurcharge')) || 0;
 
                 currentEstimatedTotal = mapTotal;
                 const fmt = new Intl.NumberFormat('vi-VN');
@@ -1094,6 +1109,17 @@
                     document.getElementById('summaryWeekend').innerText = '+' + fmt.format(mapWeekendSurcharge) + ' ₫';
                 } else {
                     weekendRow.style.setProperty('display', 'none', 'important');
+                }
+
+                // 2.5 HIỂN THỊ PHỤ PHÍ NGÀY LỄ (NẾU CÓ)
+                const holidayRow = document.getElementById('holidaySurchargeRow');
+                if (holidayRow) {
+                    if (mapHolidaySurcharge > 0) {
+                        holidayRow.style.setProperty('display', 'flex', 'important');
+                        document.getElementById('summaryHoliday').innerText = '+' + fmt.format(mapHolidaySurcharge) + ' ₫';
+                    } else {
+                        holidayRow.style.setProperty('display', 'none', 'important');
+                    }
                 }
 
                 // 3. HIỂN THỊ VOUCHER (NẾU CÓ)
@@ -1425,6 +1451,9 @@
         async function fetchEstimatedPrice() {
             const CUSTOMER_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/customer';
 
+            // Wait for holidays to load if not already
+            if (typeof holidayPromise !== 'undefined') await holidayPromise;
+
             const vehicleId = localStorage.getItem('selectedVehicleId') || 1;
             const bookingType = localStorage.getItem('bookingType') || 'HOURLY';
             let departureTime = document.getElementById('departureTime').value;
@@ -1463,6 +1492,20 @@
                 if (response.ok && data.success) {
                     const fmt = new Intl.NumberFormat('vi-VN');
 
+                    // FRONTEND TỰ TÍNH PHỤ PHÍ NGÀY LỄ
+                    let currentHolidaySurcharge = 0;
+                    let matchedHolidayName = "Ngày lễ";
+                    if (departureTime) {
+                        const depDateStr = departureTime.split('T')[0];
+                        const matchedHoliday = globalHolidaysList.find(h => h.holidayDate === depDateStr);
+                        if (matchedHoliday) {
+                            currentHolidaySurcharge = Math.round(data.baseFare * 0.2); // 20%
+                            data.estimatedTotal += currentHolidaySurcharge;
+                            data.deposit30Percent = Math.round(data.estimatedTotal * 0.3); // update cọc
+                            matchedHolidayName = matchedHoliday.description || "Ngày lễ";
+                        }
+                    }
+
                     // LƯU LẠI GIÁ TRỊ GỐC ĐỂ DÙNG CHO API VOUCHER TÍNH TOÁN
                     currentEstimatedTotal = data.estimatedTotal;
 
@@ -1482,6 +1525,17 @@
                         document.getElementById('summaryWeekend').innerText = '+' + fmt.format(data.weekendSurcharge) + ' ₫';
                     } else {
                         weekendRow.style.setProperty('display', 'none', 'important');
+                    }
+
+                    const holidayRow = document.getElementById('holidaySurchargeRow');
+                    if (holidayRow) {
+                        if (currentHolidaySurcharge > 0) {
+                            holidayRow.style.setProperty('display', 'flex', 'important');
+                            document.getElementById('summaryHoliday').innerHTML = `+ ${fmt.format(currentHolidaySurcharge)} ₫ 
+                            <small class="d-block text-muted" style="font-size:0.85em;">(${matchedHolidayName})</small>`;
+                        } else {
+                            holidayRow.style.setProperty('display', 'none', 'important');
+                        }
                     }
 
                     const btnSubmit = document.getElementById('btnSubmitCheckout');

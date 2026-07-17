@@ -118,8 +118,15 @@ let tripCoordinates = {}; // Lưu tọa độ Lat/Lng để tạo Booking
 let currentVoucherId = null; // Lưu ID voucher nếu áp dụng thành công
 let currentBaseFare = 0;
 let currentWeekendSurcharge = 0;
+let currentHolidaySurcharge = 0;
 let currentGpsPickupCoords = null; // Lưu tọa độ GPS chính xác gốc
 let globalLandmarks = []; // Lưu danh sách Điểm đến định sẵn từ Backend
+let globalHolidaysList = []; // Danh sách ngày lễ
+
+fetch('http://localhost:8080/FleetFlow/api/v1/admin/holidays')
+    .then(res => res.json())
+    .then(data => { if (data.success) globalHolidaysList = data.data; })
+    .catch(e => console.error("Lỗi fetch ngày lễ:", e));
 
 
 
@@ -643,7 +650,7 @@ function renderQuickLandmarkChips() {
 }
 
 // Click nút chọn nhanh Landmark
-window.selectQuickLandmark = function(landmarkId) {
+window.selectQuickLandmark = function (landmarkId) {
     const landmark = globalLandmarks.find(l => l.id === landmarkId);
     if (!landmark) return;
     selectLandmarkLocation('inputDropoff', landmark, 'dropoffDropdown');
@@ -939,29 +946,58 @@ window.calculateRealPrice = async function () {
             currentBaseFare = data.baseFare;
             currentWeekendSurcharge = data.weekendSurcharge;
 
+            // FRONTEND TỰ TÍNH PHỤ PHÍ NGÀY LỄ (Theo yêu cầu)
+            currentHolidaySurcharge = 0;
+            let matchedHolidayName = "Ngày lễ";
+            const depTimeEl = document.getElementById('inputDepartureTime');
+            if (depTimeEl && depTimeEl.value) {
+                const depDateStr = depTimeEl.value.split('T')[0];
+                const matchedHoliday = globalHolidaysList.find(h => h.holidayDate === depDateStr);
+                if (matchedHoliday) {
+                    currentHolidaySurcharge = Math.round(currentBaseFare * 0.2); // 20% surcharge
+                    currentEstimatedTotal += currentHolidaySurcharge;
+                    matchedHolidayName = matchedHoliday.description || "Ngày lễ";
+                }
+            }
+
             // Reset voucher
             currentVoucherId = null;
             window.appliedVoucherCode = null;       // Thêm dòng này
             window.appliedDiscountAmount = 0;       // Thêm dòng này
-            window.appliedFinalTotal = data.estimatedTotal; // Thêm dòng này
+            window.appliedFinalTotal = currentEstimatedTotal; // Thêm dòng này
             const discountEl = document.getElementById('discountDisplay');
             const voucherInput = document.getElementById('voucherInput');
             if (discountEl) discountEl.innerText = '0 đ';
             if (voucherInput) voucherInput.value = '';
 
             // Render dữ liệu
-            if (baseFareEl) baseFareEl.innerText = fVND(data.baseFare);
-            if (totalFareEl) totalFareEl.innerText = fVND(data.estimatedTotal);
-            if (depositEl) depositEl.innerText = fVND(data.deposit30Percent);
+            if (baseFareEl) baseFareEl.innerText = fVND(currentBaseFare);
+            if (totalFareEl) totalFareEl.innerText = fVND(currentEstimatedTotal);
+            const newDeposit = Math.round(currentEstimatedTotal * 0.3); // cọc 30%
+            if (depositEl) depositEl.innerText = fVND(newDeposit);
 
             // Phụ phí cuối tuần
             const surchargeEl = document.getElementById('weekendSurchargeDisplay');
             if (surchargeEl) {
-                if (data.weekendSurcharge > 0) {
-                    surchargeEl.innerText = `+ ${fVND(data.weekendSurcharge)}`;
+                if (currentWeekendSurcharge > 0) {
+                    surchargeEl.innerText = `+ ${fVND(currentWeekendSurcharge)}`;
                     surchargeEl.parentElement.style.display = 'flex';
                 } else {
                     surchargeEl.parentElement.style.display = 'none';
+                }
+            }
+
+            // Phụ phí ngày lễ
+            const holidaySurchargeEl = document.getElementById('holidaySurchargeDisplay');
+            const holidaySurchargeRow = document.getElementById('holidaySurchargeDisplayRow');
+            const holidaySurchargeLabel = document.getElementById('holidaySurchargeLabel');
+            if (holidaySurchargeEl && holidaySurchargeRow) {
+                if (currentHolidaySurcharge > 0) {
+                    if (holidaySurchargeLabel) holidaySurchargeLabel.innerHTML = `<i class="fa-solid fa-gift text-danger me-2"></i>Phụ phí ${matchedHolidayName} (+20%)`;
+                    holidaySurchargeEl.innerText = `+ ${fVND(currentHolidaySurcharge)}`;
+                    holidaySurchargeRow.style.setProperty('display', 'flex', 'important');
+                } else {
+                    holidaySurchargeRow.style.setProperty('display', 'none', 'important');
                 }
             }
         } else {
@@ -1124,6 +1160,7 @@ window.submitBooking = async function () {
     // BỔ SUNG 2 DÒNG NÀY ĐỂ BƯNG PHỤ PHÍ QUA CHECKOUT:
     localStorage.setItem('mapBaseFare', currentBaseFare);
     localStorage.setItem('mapWeekendSurcharge', currentWeekendSurcharge);
+    localStorage.setItem('mapHolidaySurcharge', currentHolidaySurcharge);
     // if (currentVoucherId) localStorage.setItem('appliedVoucherId', currentVoucherId);
     // NẾU CÓ VOUCHER -> LƯU MANG SANG CHECKOUT
     if (currentVoucherId) {
