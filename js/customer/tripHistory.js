@@ -321,6 +321,7 @@ async function viewTripDetail(bookingId) {
     let carName = "Phương tiện FleetFlow";
     if (summaryTrip) {
         if (summaryTrip.carName) carName = summaryTrip.carName;
+        else if (summaryTrip.vehicleName) carName = summaryTrip.vehicleName;
         else if (summaryTrip.brand && summaryTrip.model) carName = `${summaryTrip.brand} ${summaryTrip.model}`;
         else if (summaryTrip.Brand && summaryTrip.Model) carName = `${summaryTrip.Brand} ${summaryTrip.Model}`;
     }
