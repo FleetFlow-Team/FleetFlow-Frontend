@@ -67,6 +67,13 @@ document.addEventListener("DOMContentLoaded", function () {
 // 3. LOGIC HIỂN THỊ DANH SÁCH CHUYẾN ĐI & HÌNH ẢNH XE
 // =====================================================================
 let globalTrips = [];
+window.globalHolidaysList = [];
+
+// Fetch ngày lễ một lần khi tải trang
+fetch('http://localhost:8080/FleetFlow/api/v1/admin/holidays')
+    .then(res => res.json())
+    .then(data => { if (data.success) window.globalHolidaysList = data.data; })
+    .catch(e => console.error("Lỗi fetch ngày lễ:", e));
 
 document.addEventListener("DOMContentLoaded", function () {
     const urlParams = new URLSearchParams(window.location.search);
@@ -315,6 +322,7 @@ async function viewTripDetail(bookingId) {
     let carName = "Phương tiện FleetFlow";
     if (summaryTrip) {
         if (summaryTrip.carName) carName = summaryTrip.carName;
+        else if (summaryTrip.vehicleName) carName = summaryTrip.vehicleName;
         else if (summaryTrip.brand && summaryTrip.model) carName = `${summaryTrip.brand} ${summaryTrip.model}`;
         else if (summaryTrip.Brand && summaryTrip.Model) carName = `${summaryTrip.Brand} ${summaryTrip.Model}`;
     }
@@ -382,13 +390,44 @@ async function viewTripDetail(bookingId) {
         // Bóc tách dữ liệu BookingPricing lồng trong API GET /bookings/{id}
         const pricing = trip.pricing || trip.BookingPricing || trip.bookingPricing || trip;
         const baseFare = parseFloat(pricing.BaseFare || pricing.baseFare) || 0;
-        const weekendSurcharge = parseFloat(pricing.WeekendSurcharge || pricing.weekendSurcharge) || 0;
+        let weekendSurcharge = parseFloat(pricing.WeekendSurcharge || pricing.weekendSurcharge) || 0;
         const discountAmount = parseFloat(pricing.DiscountAmount || pricing.discountAmount) || 0;
-        const estimatedTotal = parseFloat(pricing.EstimatedTotal || pricing.estimatedTotal || summaryTrip.price) || 0;
+        let estimatedTotal = parseFloat(pricing.EstimatedTotal || pricing.estimatedTotal || summaryTrip.price) || 0;
+
+        // TÍNH PHỤ PHÍ NGÀY LỄ TRÊN FRONTEND (DO BACKEND ĐÃ BỎ)
+        let holidaySurcharge = 0;
+        let matchedHolidayName = "";
+
+        // Lấy departureTime từ trip, summaryTrip hoặc trip.detail
+        let rawDepartureTime = trip.departureTime || trip.DepartureTime || (summaryTrip && summaryTrip.departureTime) || (trip.detail && trip.detail.departureTime);
+        let depDateStr = null;
+        if (rawDepartureTime) {
+            const match = String(rawDepartureTime).match(/(\d{4}-\d{2}-\d{2})/);
+            if (match) depDateStr = match[1];
+        }
+
+        if (depDateStr && window.globalHolidaysList) {
+            const matchedHoliday = window.globalHolidaysList.find(h => h.holidayDate === depDateStr);
+            if (matchedHoliday) {
+                holidaySurcharge = Math.round(baseFare * 0.2); // 20%
+                matchedHolidayName = matchedHoliday.description || "Ngày lễ";
+
+                // Nếu backend chưa cộng vào tổng (thường là chưa, do đã bỏ logic)
+                // Ta cộng thêm vào tổng hiển thị (và tổng thực tế)
+                estimatedTotal += holidaySurcharge;
+            }
+        }
+
+        // Cập nhật lại UI hiển thị
+        const totalSurcharge = weekendSurcharge + holidaySurcharge;
+        let surchargeHtml = `+ ${fVND(totalSurcharge)}`;
+        if (holidaySurcharge > 0) {
+            surchargeHtml += ` <br><small class="text-danger">(${matchedHolidayName})</small>`;
+        }
 
         // Đổ giá trị bóc tách dự kiến ra UI
         document.getElementById('lblBasePrice').innerText = fVND(baseFare);
-        document.getElementById('lblSurcharge').innerText = `+ ${fVND(weekendSurcharge)}`;
+        document.getElementById('lblSurcharge').innerHTML = surchargeHtml;
         document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
         document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
         // =================================================================
@@ -409,11 +448,17 @@ async function viewTripDetail(bookingId) {
                 badgeBg = '#0077cc'; badgeText = 'Đang di chuyển';
             } else if (statusCheck === 'CANCELLED' || statusCheck === 'REJECTED') {
                 badgeBg = '#dc3545'; badgeText = 'Đã hủy';
-            } else if (statusCheck === 'CONFIRMED') {
+            } else if (['CONFIRMED', 'DISPATCHED', 'ACCEPTED', 'UNASSIGNED', 'APPROVED'].includes(statusCheck)) {
                 const depositPaidBadge = summaryTrip ? summaryTrip.depositPaid === true : trip.depositPaid === true;
-                badgeText = depositPaidBadge ? 'Đã cọc - Chờ khởi hành' : 'Chờ thanh toán cọc';
-            } else if (statusCheck === 'ACCEPTED') {
-                badgeText = 'Đã nhận';
+                if (depositPaidBadge) {
+                    if (statusCheck === 'CONFIRMED') badgeText = 'Đã cọc - Chờ khởi hành';
+                    else if (statusCheck === 'DISPATCHED') badgeText = 'Đã điều phối';
+                    else if (statusCheck === 'ACCEPTED') badgeText = 'Đã nhận';
+                    else if (statusCheck === 'UNASSIGNED') badgeText = 'Đang tìm tài xế';
+                    else if (statusCheck === 'APPROVED') badgeText = 'Đã duyệt';
+                } else {
+                    badgeText = 'Chờ thanh toán cọc';
+                }
             } else if (statusCheck === 'PENDING' || statusCheck === 'WAITING_PAYMENT') {
                 badgeText = 'Chờ thanh toán';
             }
@@ -421,7 +466,7 @@ async function viewTripDetail(bookingId) {
         }
         const depositAlreadyPaid = summaryTrip ? summaryTrip.depositPaid === true : trip.depositPaid === true;
         const needsDepositPayment = ['PENDING', 'UNPAID', 'WAITING_PAYMENT', 'CHỜ THANH TOÁN'].includes(statusCheck)
-            || (statusCheck === 'CONFIRMED' && !depositAlreadyPaid);
+            || (['CONFIRMED', 'DISPATCHED', 'ACCEPTED', 'UNASSIGNED', 'APPROVED'].includes(statusCheck) && !depositAlreadyPaid);
 
         let actionHtml = '';
         if (needsDepositPayment) {
