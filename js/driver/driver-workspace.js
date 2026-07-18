@@ -509,18 +509,18 @@ async function fetchPendingJobs() {
         // 4. Kiểm tra thành công và render View
         if (response.ok && result.success) {
             let pendingJobs = result.data || [];
-            
+
             // Gọi thêm API lịch sử để lấy các chuyến đang chạy (CONFIRMED, ONGOING)
             let activeJobs = [];
             try {
                 const req1 = await fetch(`${API_DISPATCH_BASE}/history?status=CONFIRMED`, { headers: { "Authorization": `Bearer ${token}` } });
                 const res1 = await req1.json();
                 if (res1.success) activeJobs = activeJobs.concat(res1.data || []);
-                
+
                 const req2 = await fetch(`${API_DISPATCH_BASE}/history?status=ONGOING`, { headers: { "Authorization": `Bearer ${token}` } });
                 const res2 = await req2.json();
                 if (res2.success) activeJobs = activeJobs.concat(res2.data || []);
-            } catch(e) { console.error("Lỗi lấy chuyến đang chạy", e); }
+            } catch (e) { console.error("Lỗi lấy chuyến đang chạy", e); }
 
             if (pendingJobs.length > 0 || activeJobs.length > 0) {
                 // Nếu có cuốc xe -> Render ra thẻ HTML
@@ -589,7 +589,7 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
     activeJobs.forEach(trip => {
         const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
         let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
-        
+
         let statusBadge = '';
         if (trip.bookingStatus === 'CONFIRMED') statusBadge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
         if (trip.bookingStatus === 'ONGOING') statusBadge = '<span class="badge bg-primary">Đang di chuyển</span>';
@@ -1444,7 +1444,7 @@ async function fetchDriverHistory(statusFilter = '') {
             const res2 = await req2.json();
             if (res1.success) trips = trips.concat(res1.data || []);
             if (res2.success) trips = trips.concat(res2.data || []);
-            
+
             // Sắp xếp lại theo thời gian mới nhất (RespondedAt)
             trips.sort((a, b) => new Date(b.respondedAt || 0) - new Date(a.respondedAt || 0));
         } else {
@@ -1458,38 +1458,38 @@ async function fetchDriverHistory(statusFilter = '') {
         }
 
         if (trips.length === 0) {
-                historyListContainer.innerHTML = '<div class="text-center py-5 text-white-50">Chưa có chuyến đi nào.</div>';
-                return;
+            historyListContainer.innerHTML = '<div class="text-center py-5 text-white-50">Chưa có chuyến đi nào.</div>';
+            return;
+        }
+
+        let html = '';
+        trips.forEach(trip => {
+            let badge;
+            switch (trip.bookingStatus) {
+                case 'COMPLETED':
+                    badge = '<span class="badge bg-success">Hoàn thành</span>';
+                    break;
+                case 'ONGOING':
+                    badge = '<span class="badge bg-primary">Đang di chuyển</span>';
+                    break;
+                case 'CONFIRMED':
+                    badge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
+                    break;
+                case 'CANCELLED':
+                    badge = '<span class="badge bg-danger">Đã hủy</span>';
+                    break;
+                default:
+                    badge = `<span class="badge bg-secondary">${trip.bookingStatus || 'Không xác định'}</span>`;
+            }
+            const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
+
+            let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
+            let directionText = '';
+            if (trip.bookingType === 'DISTANCE') {
+                directionText = trip.tripDirection === 'TWO_WAY' ? '<span class="badge bg-warning text-dark ms-1">Hai chiều</span>' : '<span class="badge bg-light text-dark ms-1">Một chiều</span>';
             }
 
-            let html = '';
-            trips.forEach(trip => {
-                let badge;
-                switch (trip.bookingStatus) {
-                    case 'COMPLETED':
-                        badge = '<span class="badge bg-success">Hoàn thành</span>';
-                        break;
-                    case 'ONGOING':
-                        badge = '<span class="badge bg-primary">Đang di chuyển</span>';
-                        break;
-                    case 'CONFIRMED':
-                        badge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
-                        break;
-                    case 'CANCELLED':
-                        badge = '<span class="badge bg-danger">Đã hủy</span>';
-                        break;
-                    default:
-                        badge = `<span class="badge bg-secondary">${trip.bookingStatus || 'Không xác định'}</span>`;
-                }
-                const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
-
-                let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
-                let directionText = '';
-                if (trip.bookingType === 'DISTANCE') {
-                    directionText = trip.tripDirection === 'TWO_WAY' ? '<span class="badge bg-warning text-dark ms-1">Hai chiều</span>' : '<span class="badge bg-light text-dark ms-1">Một chiều</span>';
-                }
-
-                html += `
+            html += `
                     <div class="col-md-6 mb-3">
                         <div class="glass-panel p-3 border border-secondary rounded-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -1516,8 +1516,8 @@ async function fetchDriverHistory(statusFilter = '') {
                         </div>
                     </div>
                 `;
-            });
-            historyListContainer.innerHTML = html;
+        });
+        historyListContainer.innerHTML = html;
     } catch (e) {
         historyListContainer.innerHTML = '<div class="text-center py-4 text-danger">Lỗi kết nối.</div>';
     }
