@@ -600,7 +600,7 @@
                                 <img id="navDesktopAvatar" src=""
                                     style="width: 34px; height: 34px; border-radius: 50%;">
                             </div>
-                            <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
+                            <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end" id="desktopUserMenuLinks">
                                 <a href="profile.html" class="dropdown-item-custom"><i
                                         class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
                                 <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
@@ -1378,6 +1378,27 @@
                 if (userDropdown) {
                     userDropdown.classList.remove('d-none');
                     userDropdown.classList.add('d-flex');
+
+                    const roleUpper = userRole.trim().toUpperCase();
+                    if (roleUpper === 'ADMIN' || roleUpper === 'QUẢN TRỊ VIÊN') {
+                        const dropdownMenu = userDropdown.querySelector('.dropdown-menu-modern') || document.getElementById('desktopUserMenuLinks');
+                        if (dropdownMenu) {
+                            dropdownMenu.innerHTML = `
+                                <a href="admin/admin-workspace.html" class="dropdown-item-custom"><i class="fa-solid fa-gauge-high"></i> Không gian Quản trị</a>
+                                <hr style="margin: 5px 0; opacity: 0.1;">
+                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+                            `;
+                        }
+                    } else if (roleUpper === 'DISPATCHER' || roleUpper === 'ĐIỀU PHỐI VIÊN') {
+                        const dropdownMenu = userDropdown.querySelector('.dropdown-menu-modern') || document.getElementById('desktopUserMenuLinks');
+                        if (dropdownMenu) {
+                            dropdownMenu.innerHTML = `
+                                <a href="dispatcher/dispatcher-workspace.html" class="dropdown-item-custom"><i class="fa-solid fa-headset"></i> Không gian Điều phối</a>
+                                <hr style="margin: 5px 0; opacity: 0.1;">
+                                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+                            `;
+                        }
+                    }
                 }
             }
         });

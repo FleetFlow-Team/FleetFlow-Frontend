@@ -89,7 +89,7 @@
                 </div>
                 <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
               </div>
-              <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
+              <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end" id="desktopUserMenuLinks">
                 <a href="pages/profile.html" class="dropdown-item-custom"><i
                     class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
                 <a href="pages/customer/tripHistory.html" class="dropdown-item-custom"><i
@@ -963,27 +963,42 @@
         }
 
         // 🚀 BỔ SUNG: Logic phân quyền cho Menu Dropdown
-        const desktopMenuLinks = document.getElementById('desktopUserMenuLinks');
+        const desktopMenuLinks = document.getElementById('desktopUserMenuLinks') || document.querySelector('#userProfileDropdown .dropdown-menu-modern');
         const navDesktopCustomerHistory = document.getElementById('navDesktopCustomerHistory');
 
-        if (desktopMenuLinks && (userRole.toUpperCase() === 'DRIVER' || userRole.toUpperCase() === 'TÀI XẾ' || userRole.toUpperCase() === 'ADMIN')) {
-          // Ẩn lịch sử khách hàng
-          if (navDesktopCustomerHistory) {
-            navDesktopCustomerHistory.style.display = 'none';
-          }
+        if (desktopMenuLinks) {
+          const roleUpper = userRole.trim().toUpperCase();
+          if (roleUpper === 'ADMIN' || roleUpper === 'QUẢN TRỊ VIÊN') {
+            desktopMenuLinks.innerHTML = `
+                <a href="pages/admin/admin-workspace.html" class="dropdown-item-custom"><i class="fa-solid fa-gauge-high"></i> Không gian Quản trị</a>
+                <hr style="margin: 5px 0; opacity: 0.1;">
+                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+            `;
+          } else if (roleUpper === 'DISPATCHER' || roleUpper === 'ĐIỀU PHỐI VIÊN') {
+            desktopMenuLinks.innerHTML = `
+                <a href="pages/dispatcher/dispatcher-workspace.html" class="dropdown-item-custom"><i class="fa-solid fa-headset"></i> Không gian Điều phối</a>
+                <hr style="margin: 5px 0; opacity: 0.1;">
+                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i> Đăng xuất</a>
+            `;
+          } else if (roleUpper === 'DRIVER' || roleUpper === 'TÀI XẾ') {
+            // Ẩn lịch sử khách hàng
+            if (navDesktopCustomerHistory) {
+              navDesktopCustomerHistory.style.display = 'none';
+            }
 
-          // Chèn nút Chế độ Tài xế
-          const driverBtn = document.createElement('a');
-          driverBtn.href = "pages/driver/driver-workspace.html";
-          driverBtn.className = "dropdown-item-custom text-success";
-          driverBtn.innerHTML = '<i class="fa-solid fa-car-side"></i> Chế độ Tài xế';
+            // Chèn nút Chế độ Tài xế
+            const driverBtn = document.createElement('a');
+            driverBtn.href = "pages/driver/driver-workspace.html";
+            driverBtn.className = "dropdown-item-custom text-success";
+            driverBtn.innerHTML = '<i class="fa-solid fa-car-side"></i> Chế độ Tài xế';
 
-          // Chèn vào trước HR
-          const hrElem = desktopMenuLinks.querySelector('hr');
-          if (hrElem) {
-            desktopMenuLinks.insertBefore(driverBtn, hrElem);
-          } else {
-            desktopMenuLinks.appendChild(driverBtn);
+            // Chèn vào trước HR
+            const hrElem = desktopMenuLinks.querySelector('hr');
+            if (hrElem) {
+              desktopMenuLinks.insertBefore(driverBtn, hrElem);
+            } else {
+              desktopMenuLinks.appendChild(driverBtn);
+            }
           }
         }
       }

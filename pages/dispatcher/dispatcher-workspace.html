@@ -38,34 +38,74 @@
             }
         }
 
-        .live-pulse-dot {
-            width: 20px;
-            height: 20px;
-            background-color: #00B14F;
-            border-radius: 50%;
+        /* --- BIỂU TƯỢNG Ô TÔ GPS PHÁT SÁNG TRỰC TIẾP (KHÔNG BACKGROUND TRÒN) --- */
+        .live-pulse-car {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
             position: relative;
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 177, 79, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .live-pulse-dot::after {
+        .live-pulse-car:hover {
+            transform: scale(1.3);
+            z-index: 999;
+        }
+
+        /* Icon ô tô phát sáng hào quang neon trực tiếp trên hình xe */
+        .live-pulse-car .car-inner-icon {
+            font-size: 24px;
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+
+        /* Màu xanh lá phát sáng (mặc định / car-green) */
+        .live-pulse-car.car-green .car-inner-icon,
+        .live-pulse-car .car-inner-icon {
+            color: #00B14F;
+            filter: drop-shadow(0 0 6px rgba(0, 177, 80, 0.367)) drop-shadow(0 0 14px rgba(0, 177, 80, 0.253));
+        }
+
+        /* Màu vàng/gold phát sáng (car-yellow) */
+        .live-pulse-car.car-yellow .car-inner-icon {
+            color: #f5ce35;
+            filter: drop-shadow(0 0 6px rgba(255, 222, 89, 0.545)) drop-shadow(0 0 14px rgba(255, 222, 89, 0.545));
+        }
+
+        /* Vòng sóng radar phát ra từ xe (trong suốt bên trong) */
+        .live-pulse-car::after {
             content: '';
             width: 100%;
             height: 100%;
-            background-color: #00B14F;
+            background: transparent;
+            border: 2px solid #00B14F;
             border-radius: 50%;
             position: absolute;
             top: 0;
             left: 0;
-            animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
-            opacity: 0.7;
+            animation: ping-car 1.8s cubic-bezier(0, 0, 0.2, 1) infinite;
+            opacity: 0.85;
+            z-index: -1;
+            pointer-events: none;
         }
 
-        @keyframes ping {
+        .live-pulse-car.car-yellow::after {
+            border-color: #FFDE59;
+        }
 
-            75%,
+        @keyframes ping-car {
+            0% {
+                transform: scale(0.7);
+                opacity: 0.85;
+            }
+
+            80%,
             100% {
-                transform: scale(2.5);
+                transform: scale(2.2);
                 opacity: 0;
             }
         }
@@ -80,7 +120,7 @@
             padding: 10px 15px;
             position: absolute;
             z-index: 1000;
-            bottom: 150%;
+            bottom: 140%;
             left: 50%;
             transform: translateX(-50%);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
@@ -101,7 +141,7 @@
             border-color: rgba(255, 255, 255, 0.95) transparent transparent transparent;
         }
 
-        .live-pulse-dot:hover .live-marker-tooltip {
+        .live-pulse-car:hover .live-marker-tooltip {
             visibility: visible;
             opacity: 1;
         }
@@ -318,11 +358,8 @@
                         </div>
 
                         <div class="dropdown-menu-modern shadow-lg">
-                            <a href="#profile" class="dropdown-item-custom">
-                                <i class="fa-solid fa-user-shield"></i> Hồ sơ cá nhân
-                            </a>
-                            <a href="#settings" class="dropdown-item-custom">
-                                <i class="fa-solid fa-gear"></i> Cài đặt hệ thống
+                            <a href="dispatcher-workspace.html" class="dropdown-item-custom active">
+                                <i class="fa-solid fa-headset"></i> Không gian Điều phối
                             </a>
 
                             <hr class="divider-custom">
@@ -373,24 +410,30 @@
 
                     <div id="overview" class="dashboard-section active">
                         <div class="glass-panel mb-4">
-                            <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-chart-line text-success me-2"></i>
-                                Chỉ Số Vận Hành Hôm Nay</h4>
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-line text-success me-2"></i>
+                                    Chỉ Số Vận Hành Hôm Nay</h4>
+                                <button class="btn btn-sm btn-outline-success d-flex align-items-center gap-2"
+                                    onclick="loadDispatcherDashboardStats()">
+                                    <i class="fa-solid fa-rotate-right"></i> Làm Mới
+                                </button>
+                            </div>
                             <div class="row g-4">
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-success fw-bold mb-1">128</h2>
+                                        <h2 class="text-success fw-bold mb-1" id="statCompletedTrips"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-success fw-medium">Chuyến hoàn thành</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-warning fw-bold mb-1">15</h2>
+                                        <h2 class="text-warning fw-bold mb-1" id="statPendingBookings"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-warning fw-medium">Đang chờ điều phối</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-danger fw-bold mb-1">2</h2>
+                                        <h2 class="text-danger fw-bold mb-1" id="statNewComplaints"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-danger fw-medium">Khiếu nại mới</span>
                                     </div>
                                 </div>
@@ -402,14 +445,10 @@
                                 <div class="glass-panel h-100">
                                     <h5 class="fw-bold text-white mb-3"><i
                                             class="fa-solid fa-bell text-danger me-2"></i> Sự Cố Hệ Thống Cần Xử Lý</h5>
-                                    <ul class="list-unstyled mb-0">
-                                        <li class="text-white-50 small mb-2"><i
-                                                class="fa-solid fa-circle-exclamation text-danger me-2"></i> Chuyến đi
-                                            <strong>#TR-8080</strong> bị đóng băng do tài xế đi muộn.
+                                    <ul class="list-unstyled mb-0" id="systemAlertList">
+                                        <li class="text-white-50 small py-2">
+                                            <i class="fa-solid fa-spinner fa-spin text-info me-2"></i> Đang quét tình trạng vận hành hệ thống...
                                         </li>
-                                        <li class="text-white-50 small"><i
-                                                class="fa-solid fa-circle-exclamation text-warning me-2"></i> Yêu cầu
-                                            Phân tài cho chuyến <strong>#TR-8091</strong> đang quá hạn phản hồi.</li>
                                     </ul>
                                 </div>
                             </div>
@@ -419,12 +458,16 @@
                                             class="fa-solid fa-bolt text-warning me-2"></i> Trạng Thái Đội Xe Tóm Tắt
                                     </h5>
                                     <div class="d-flex justify-content-between text-white-50 small mb-2">
-                                        <span>Tài xế đang trực tuyến:</span>
-                                        <strong class="text-success">42 xe</strong>
+                                        <span>Tài xế sẵn sàng (Online):</span>
+                                        <strong class="text-success" id="summaryOnlineDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
+                                    </div>
+                                    <div class="d-flex justify-content-between text-white-50 small mb-2">
+                                        <span>Tài xế đang bận chuyến:</span>
+                                        <strong class="text-warning" id="summaryBusyDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                     <div class="d-flex justify-content-between text-white-50 small">
-                                        <span>Tài xế đang bận chuyến:</span>
-                                        <strong class="text-warning">35 xe</strong>
+                                        <span>Tài xế ngoại tuyến (Offline):</span>
+                                        <strong class="text-secondary" id="summaryOfflineDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                 </div>
                             </div>
@@ -451,15 +494,28 @@
                             <h4 class="fw-bold mb-4 text-white"><i class="fa-solid fa-route text-success me-2"></i> Quản
                                 lý chuyến đi</h4>
 
-                            <div class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2">
+                            <div
+                                class="d-flex gap-3 mb-4 border-bottom border-secondary border-opacity-25 pb-2 overflow-auto">
                                 <button class="btn btn-glass-tab active"
                                     onclick="loadBookings('PENDING', 'tbody-main')">
                                     Chờ Xử Lý<span class="badge bg-success rounded-pill ms-1"
                                         id="count-pending">0</span>
                                 </button>
                                 <button class="btn btn-glass-tab" onclick="loadBookings('UNASSIGNED', 'tbody-main')">
-                                    Cần Xử Lý Thủ Công <span class="badge bg-warning text-dark rounded-pill ms-1"
+                                    Cần Xử Lý <span class="badge bg-warning text-dark rounded-pill ms-1"
                                         id="count-unassigned">0</span>
+                                </button>
+                                <button class="btn btn-glass-tab" onclick="loadBookings('DISPATCHED', 'tbody-main')">
+                                    Đã Phân Tài <span class="badge bg-primary rounded-pill ms-1"
+                                        id="count-dispatched">0</span>
+                                </button>
+                                <button class="btn btn-glass-tab" onclick="loadBookings('ONGOING', 'tbody-main')">
+                                    Đang Di Chuyển <span class="badge bg-info text-white rounded-pill ms-1"
+                                        id="count-ongoing">0</span>
+                                </button>
+                                <button class="btn btn-glass-tab" onclick="loadBookings('COMPLETED', 'tbody-main')">
+                                    Chuyến Hoàn Thành <span class="badge bg-secondary rounded-pill ms-1"
+                                        id="count-completed">0</span>
                                 </button>
                                 <button class="btn btn-glass-tab" onclick="loadBookings('REJECTED', 'tbody-main')">
                                     Đã từ chối <span class="badge bg-danger rounded-pill ms-1"
@@ -473,8 +529,8 @@
                                         <tr>
                                             <th width="12%">Mã Đơn</th>
                                             <th width="15%">Khách Hàng</th>
-                                            <th width="32%">Lộ Trình & Dịch Vụ</th>
-                                            <th width="18%">Trạng Thái</th>
+                                            <th width="30%">Lộ Trình & Dịch Vụ</th>
+                                            <th width="20%">Trạng Thái</th>
                                             <th width="23%" class="text-center">Thao Tác</th>
                                         </tr>
                                     </thead>
@@ -488,8 +544,10 @@
                     <div id="driver-status" class="dashboard-section">
                         <div class="glass-panel">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-id-card text-info me-2"></i> Danh sách trạng thái tài xế</h4>
-                                <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-2" onclick="loadDriverStatusList()">
+                                <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-id-card text-info me-2"></i>
+                                    Danh sách trạng thái tài xế</h4>
+                                <button class="btn btn-sm btn-outline-info d-flex align-items-center gap-2"
+                                    onclick="loadDriverStatusList()">
                                     <i class="fa-solid fa-rotate-right"></i> Làm Mới
                                 </button>
                             </div>
@@ -508,7 +566,8 @@
                                     <tbody id="driverStatusTbody">
                                         <tr>
                                             <td colspan="6" class="text-center py-4 text-white-50">
-                                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải danh sách tài xế...
+                                                <i class="fa-solid fa-spinner fa-spin me-2"></i> Đang tải danh sách tài
+                                                xế...
                                             </td>
                                         </tr>
                                     </tbody>
@@ -865,6 +924,10 @@
                             if (typeof window.loadDriverStatusList === 'function') {
                                 window.loadDriverStatusList();
                             }
+                        } else if (targetId === 'overview') {
+                            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                                window.loadDispatcherDashboardStats();
+                            }
                         } else {
                             // Nếu sang tab khác, tạm dừng quét API để nhẹ máy
                             if (typeof window.pauseMapTracking === 'function') {
@@ -879,6 +942,15 @@
             const initialTripTab = document.querySelector('.tab-pill.active');
             if (initialTripTab) {
                 setTimeout(() => moveTripIndicator(initialTripTab), 150);
+            }
+
+            // Tải ngay danh sách tài xế ngầm khi vào trang để cập nhật số liệu cho khối Trạng Thái Đội Xe Tóm Tắt
+            if (typeof window.loadDriverStatusList === 'function') {
+                setTimeout(() => window.loadDriverStatusList(), 200);
+            }
+            // Tải ngay số liệu vận hành và khiếu nại cho Chỉ Số Vận Hành Hôm Nay & Sự Cố Hệ Thống
+            if (typeof window.loadDispatcherDashboardStats === 'function') {
+                setTimeout(() => window.loadDispatcherDashboardStats(), 200);
             }
 
             // Đảm bảo các khối kính tự động căn chỉnh lại khi người dùng thay đổi kích thước màn hình
@@ -989,6 +1061,147 @@
     <script src="../../js/api.js"></script>
     <script src="../../js/base.js"></script>
     <script src="../../js/dispatcher.js"></script>
+    <!-- =================================================== -->
+    <!-- MODAL CHI TIẾT TOÀN DIỆN CHUYẾN ĐI (DISPATCHER)     -->
+    <!-- =================================================== -->
+    <div class="modal fade modal-blur-bg" id="bookingDetailModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content glass-panel border-0 text-white p-4"
+                style="background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.18) !important;">
+
+                <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="badge bg-primary fs-6 py-2 px-3 rounded-pill" id="modBookingId">#BK-0000</span>
+                        <h5 class="modal-title fw-bold m-0"><i class="fa-solid fa-circle-info text-info me-2"></i> Chi
+                            Tiết Toàn Diện Chuyến Đi</h5>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span id="modStatusBadge"></span>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+
+                <div class="modal-body py-4">
+                    <div class="row g-4">
+                        <!-- CỘT 1: LỘ TRÌNH & THÔNG TIN ĐỐI TÁC -->
+                        <div class="col-md-6">
+                            <!-- Khung lộ trình & thời gian -->
+                            <div class="p-3 rounded-4 mb-3"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <h6 class="fw-bold text-info mb-3 small text-uppercase"><i
+                                        class="fa-solid fa-route me-1"></i> Trục Lộ Trình Di Chuyển</h6>
+                                <div class="mb-3 ps-3 border-start border-3 border-danger">
+                                    <div class="small text-danger fw-bold">ĐIỂM ĐÓN KHÁCH</div>
+                                    <div class="text-white mt-1 fs-6" id="modPickup">--</div>
+                                </div>
+                                <div class="ps-3 border-start border-3 border-success mb-3">
+                                    <div class="small text-success fw-bold">ĐIỂM TRẢ KHÁCH</div>
+                                    <div class="text-white mt-1 fs-6" id="modDropoff">--</div>
+                                </div>
+                                <div
+                                    class="border-top border-secondary border-opacity-25 pt-3 mt-2 d-flex flex-column gap-2">
+                                    <div class="d-flex justify-content-between align-items-center small">
+                                        <span class="text-white-50"><i
+                                                class="fa-regular fa-clock text-warning me-1"></i> Giờ khởi hành:</span>
+                                        <span class="fw-bold text-warning" id="modDepTime">--:--</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center small">
+                                        <span class="text-white-50"><i
+                                                class="fa-solid fa-calendar-plus text-info me-1"></i> Thời gian tạo
+                                            đơn:</span>
+                                        <span class="fw-bold text-info" id="modCreatedAt">--:--</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Khung đối tác Khách & Tài xế & Phương tiện -->
+                            <div class="p-3 rounded-4 mb-3"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                    <div class="small text-white-50"><i class="fa-solid fa-user text-warning me-1"></i>
+                                        Khách hàng</div>
+                                    <div class="fw-bold text-white fs-6" id="modCustomerName">--</div>
+                                    <div class="small text-info"><i class="fa-solid fa-phone me-1"></i> <span
+                                            id="modCustomerPhone">--</span></div>
+                                </div>
+                                <div>
+                                    <div class="small text-white-50 mb-1"><i
+                                            class="fa-solid fa-id-card text-success me-1"></i> Tài xế phụ trách</div>
+                                    <div class="fw-bold text-white fs-6 mb-1" id="modDriverName">Chưa chỉ định tài xế
+                                    </div>
+                                    <div class="d-flex flex-wrap align-items-center gap-3 small mb-2"
+                                        id="modDriverDetailsWrapper" style="display: none !important;">
+                                        <span><i class="fa-solid fa-hashtag text-warning me-1"></i>ID: <strong
+                                                class="text-warning" id="modDriverId">--</strong></span>
+                                        <span><i class="fa-solid fa-phone text-info me-1"></i><span class="text-info"
+                                                id="modDriverPhone">--</span></span>
+                                    </div>
+                                    <div class="p-2 rounded-3 d-flex justify-content-between align-items-center"
+                                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);">
+                                        <div>
+                                            <div class="small text-white-50"><i
+                                                    class="fa-solid fa-car text-info me-1"></i> Phương tiện:
+                                            </div>
+                                            <div class="fw-bold text-info fs-6" id="modVehicleName">--</div>
+                                        </div>
+                                        <div class="text-end">
+                                            <div class="small text-white-50">Biển số:</div>
+                                            <span class="badge bg-warning text-dark px-2 py-1"
+                                                id="modLicensePlate">N/A</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Khung cước phí & ghi chú -->
+                            <div class="p-3 rounded-4"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span class="text-white-50"><i class="fa-solid fa-tag me-1"></i> Loại chuyến:</span>
+                                    <span class="fw-bold text-info" id="modBookingType">--</span>
+                                </div>
+                                <div class="d-flex justify-content-between small mb-2">
+                                    <span class="text-white-50"><i class="fa-solid fa-note-sticky me-1"></i> Ghi
+                                        chú:</span>
+                                    <span class="text-white fst-italic" id="modNote">Không có</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CỘT 2: ẢNH BẰNG CHỨNG TRẢ KHÁCH (FULL HD PREVIEW) -->
+                        <div class="col-md-6 d-flex flex-column">
+                            <div class="p-3 rounded-4 flex-grow-1 d-flex flex-column"
+                                style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold text-success m-0 small text-uppercase"><i
+                                            class="fa-solid fa-camera-retro me-1"></i> Ảnh Xác Nhận Trả Khách</h6>
+                                    <span class="badge bg-success bg-opacity-25 border border-success text-white small"
+                                        id="modPhotoStatus">Đã có bằng chứng</span>
+                                </div>
+
+                                <div id="modPhotoContainer"
+                                    class="flex-grow-1 rounded-3 overflow-hidden d-flex align-items-center justify-content-center p-2 my-2"
+                                    style="background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.15); min-height: 260px;">
+                                    <span class="text-muted"><i class="fa-solid fa-spinner fa-spin me-2"></i>Đang tải
+                                        ảnh...</span>
+                                </div>
+
+                                <a href="#" target="_blank" id="btnModFullPhoto"
+                                    class="btn btn-sm btn-outline-info w-100 fw-bold mt-1 d-none">
+                                    <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Mở Ảnh Gốc Full HD Trong
+                                    Tab Mới
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top border-secondary border-opacity-25 pt-3 justify-content-end">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
