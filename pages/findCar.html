@@ -223,6 +223,7 @@
             transform: translateZ(0);
             -webkit-transform: translateZ(0);
             -webkit-mask-image: -webkit-radial-gradient(white, black);
+            mask-image: radial-gradient(white, black);
         }
 
         .vehicle-badge-discount {
@@ -375,6 +376,7 @@
             /* Dùng gradient xanh lá sáng để chữ có độ sâu như kính */
             background: linear-gradient(135deg, var(--color-1, #00B14F) 0%, #00d25e 100%);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1;
             display: inline-block;
@@ -822,8 +824,13 @@
                 <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
                     <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required
                         maxlength="50">
-                    <input type="password" class="glass-input-field" id="loginPassword" placeholder="Mật khẩu" required
-                        maxlength="50">
+                    <div class="position-relative">
+                        <input type="password" class="glass-input-field w-100" id="loginPassword" placeholder="Mật khẩu" required
+                            maxlength="50" style="padding-right: 40px;">
+                        <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning" 
+                           style="cursor: pointer; font-size: 1.1rem; z-index: 10;" 
+                           onclick="const p=document.getElementById('loginPassword'); if(p.type==='password'){p.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
+                    </div>
                     <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
                         <a href="pages/forgotPassword.html" class="text-danger text-decoration-none"
                             style="font-size: 0.85rem; font-weight: 600; text-shadow: 0 0 5px rgba(255, 0, 0, 0.3);">
