@@ -1522,18 +1522,18 @@
                 if (response.ok && data.success) {
                     const fmt = new Intl.NumberFormat('vi-VN');
 
-                    // FRONTEND TỰ TÍNH PHỤ PHÍ NGÀY LỄ
-                    let currentHolidaySurcharge = 0;
+                    // ĐỌC PHỤ PHÍ NGÀY LỄ TỪ BACKEND TRẢ VỀ
+                    let currentHolidaySurcharge = data.holidaySurcharge || 0;
                     let matchedHolidayName = "Ngày lễ";
-                    if (departureTime) {
+                    if (currentHolidaySurcharge > 0 && departureTime) {
                         const depDateStr = departureTime.split('T')[0];
                         const matchedHoliday = globalHolidaysList.find(h => h.holidayDate === depDateStr);
                         if (matchedHoliday) {
-                            currentHolidaySurcharge = Math.round(data.baseFare * 0.2); // 20%
-                            data.estimatedTotal += currentHolidaySurcharge;
-                            data.deposit30Percent = Math.round(data.estimatedTotal * 0.3); // update cọc
                             matchedHolidayName = matchedHoliday.description || "Ngày lễ";
                         }
+                        // Không cộng dồn nữa vì backend đã cộng sẵn vào data.estimatedTotal
+                        // Cập nhật lại tiền cọc (backend trả về deposit30Percent cũng đã chuẩn)
+                        data.deposit30Percent = Math.round(data.estimatedTotal * 0.3);
                     }
 
                     // LƯU LẠI GIÁ TRỊ GỐC ĐỂ DÙNG CHO API VOUCHER TÍNH TOÁN

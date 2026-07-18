@@ -1074,6 +1074,15 @@
                             <span class="label">Tổng chi phí chuyến đi</span>
                             <span class="amount text-success" id="lblTotalAmount">0 đ</span>
                         </div>
+                        <div class="billing-row mt-2" id="rowDepositPaid" style="display: none;">
+                            <span class="label text-muted">Đã đặt cọc (30%)</span>
+                            <span class="amount" id="lblDepositPaid" style="font-weight: 500;">- 0 đ</span>
+                        </div>
+                        <div class="billing-total-row mt-2" id="rowRemainingAmount"
+                            style="display: none; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1);">
+                            <span class="label text-warning">Còn lại cần thanh toán</span>
+                            <span class="amount text-warning" id="lblRemainingAmount">0 đ</span>
+                        </div>
                     </div>
 
                     <div class="action-flex-grid" id="detailActionGrid"></div>
