@@ -502,44 +502,16 @@
                             </div>
                         </div>
 
-                        <!-- SECTION: Danh sách đánh giá từ khách hàng -->
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-3 mt-4">
-                            <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-star text-warning me-2"></i>Đánh
-                                giá từ Khách hàng</h4>
-                            <div class="d-flex align-items-center gap-2">
-                                <label for="driverRatingSort" class="text-white-50 small mb-0"><i
-                                        class="fa-solid fa-arrow-down-short-wide me-1"></i>Sắp xếp:</label>
-                                <select id="driverRatingSort"
-                                    class="form-select form-select-sm glass-select w-auto shadow-none"
-                                    onchange="sortAndRenderDriverRatings()">
-                                    <option value="NEWEST">Mới nhất</option>
-                                    <option value="OLDEST">Cũ nhất</option>
-                                    <option value="HIGHEST">Điểm: Cao đến Thấp</option>
-                                    <option value="LOWEST">Điểm: Thấp đến Cao</option>
-                                </select>
+                        <div class="glass-panel">
+                            <h5 class="fw-bold text-white mb-4"><i class="fa-solid fa-star text-warning me-2"></i>Đánh giá từ khách hàng</h5>
+                            <div id="driverRatingsContainer">
+                                <div class="text-center text-white-50 py-4">
+                                    <div class="spinner-border text-warning spinner-border-sm me-2"></div> Đang tải đánh giá...
+                                </div>
                             </div>
                         </div>
-
-                        <div class="table-glass-wrapper overflow-auto" style="max-height: 450px;">
-                            <table class="table-glass w-100 mb-0 align-middle">
-                                <thead style="position: sticky; top: 0; z-index: 10;">
-                                    <tr>
-                                        <th class="py-3 px-4" style="width: 130px; text-align: center;">Mã chuyến</th>
-                                        <th class="py-3 px-3" style="width: 140px; text-align: center;">Điểm số</th>
-                                        <th class="py-3 px-3">Lời nhận xét</th>
-                                        <th class="py-3 px-4 text-end" style="width: 170px; text-align: center;">Thời
-                                            gian</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="driverRatingCards" class="border-top-0">
-                                    <tr>
-                                        <td colspan="4" class="text-center py-4">
-                                            <div class="spinner-border text-warning"></div>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    </section>
+                </main>
             </div>
             </section>
             </main>
