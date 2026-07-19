@@ -531,9 +531,11 @@
                                 </button>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-glass align-middle">
-                                    <thead>
+                            <div class="table-responsive fleet-scroll-container"
+                                style="max-height: 580px; overflow-y: auto;">
+                                <table class="table table-glass align-middle mb-0">
+                                    <thead
+                                        style="position: sticky; top: 0; z-index: 10; background: rgba(30, 41, 59, 0.96); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
                                         <tr>
                                             <th width="12%">Mã Đơn</th>
                                             <th width="15%">Khách Hàng</th>
@@ -715,21 +717,21 @@
                 </div>
                 <div class="mb-4">
                     <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-list me-1"></i> CHỌN NHÃN NGHIỆP
-                        VỤ (ISSUE TYPE):</label>
+                        VỤ:</label>
                     <select id="tagIssueTypeSelect" class="form-select glass-input-field text-white"
                         style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
                         <option value="VEHICLE_VIOLATION" style="background: #1e293b; color: #fff;">Vi phạm quy chế chất
-                            lượng / xe cộ (VEHICLE_VIOLATION)</option>
+                            lượng / xe cộ</option>
                         <option value="APP_ISSUE" style="background: #1e293b; color: #fff;">Lỗi ứng dụng / Hệ thống đặt
-                            xe (APP_ISSUE)</option>
+                            xe</option>
                         <option value="BILLING_DISPUTE" style="background: #1e293b; color: #fff;">Tranh chấp thanh toán
-                            / Cước phí (BILLING_DISPUTE)</option>
+                            / Cước phí</option>
                         <option value="STAFF_ATTITUDE" style="background: #1e293b; color: #fff;">Thái độ nhân viên / Tài
-                            xế phục vụ (STAFF_ATTITUDE)</option>
+                            xế phục vụ</option>
                         <option value="SAFETY_CONCERN" style="background: #1e293b; color: #fff;">Vấn đề an toàn hành
-                            trình khẩn cấp (SAFETY_CONCERN)</option>
+                            trình khẩn cấp</option>
                         <option value="OTHER_UNCATEGORIZED" style="background: #1e293b; color: #fff;">Vấn đề khác chưa
-                            phân loại (OTHER_UNCATEGORIZED)</option>
+                            phân loại</option>
                     </select>
                     <div class="small text-white-50 mt-2 p-2 rounded" style="background: rgba(0,0,0,0.2);">
                         <i class="fa-solid fa-circle-info text-warning me-1"></i> Gắn nhãn giúp định hướng quy trình xử
@@ -760,9 +762,9 @@
                             class="form-check-input mt-0" checked>
                         <div>
                             <div class="fw-bold text-success"><i class="fa-solid fa-check-circle me-2"></i>Đã xác minh &
-                                Xử lý xong (VERIFIED_HANDLED)</div>
+                                Xử lý xong</div>
                             <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG chốt đơn sang trạng thái ĐÃ GIẢI
-                                QUYẾT (RESOLVED) và thông báo cho Khách.</div>
+                                QUYẾT và thông báo cho Khách.</div>
                         </div>
                     </label>
                     <label class="p-3 rounded-4 d-flex align-items-center gap-3"
@@ -771,9 +773,9 @@
                             class="form-check-input mt-0">
                         <div>
                             <div class="fw-bold text-warning"><i class="fa-solid fa-question-circle me-2"></i>Không đủ
-                                căn cứ xác minh (CANNOT_VERIFY)</div>
-                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do
-                                VIOLATION_NOT_CONFIRMED (CLOSED_UNRESOLVED).</div>
+                                căn cứ xác minh</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do KHÔNG ĐỦ CĂN
+                                CỨ.</div>
                         </div>
                     </label>
                     <label class="p-3 rounded-4 d-flex align-items-center gap-3"
@@ -781,9 +783,9 @@
                         <input type="radio" name="handleActionRadio" value="REJECTED" class="form-check-input mt-0">
                         <div>
                             <div class="fw-bold text-danger"><i class="fa-solid fa-ban me-2"></i>Từ chối khiếu nại không
-                                hợp lệ (REJECTED)</div>
-                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do OUT_OF_SCOPE
-                                (CLOSED_UNRESOLVED).</div>
+                                hợp lệ</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do không hợp lệ.
+                            </div>
                         </div>
                     </label>
                     <label class="p-3 rounded-4 d-flex align-items-center gap-3"
@@ -792,9 +794,9 @@
                         <div>
                             <div class="fw-bold text-info"><i
                                     class="fa-solid fa-arrow-up-right-from-square me-2"></i>Chuyển phòng ban chuyên môn
-                                (ESCALATED)</div>
-                            <div class="small text-white-50 mt-1">Đơn chuyển sang trạng thái ESCALATED (vẫn MỞ) chờ
-                                phòng ban kỹ thuật/kế toán/an toàn phản hồi rồi mới chốt.</div>
+                            </div>
+                            <div class="small text-white-50 mt-1">Đơn chuyển sang trạng thái chờ
+                                Phòng ban Kỹ thuật/Kế toán/An toàn phản hồi.</div>
                         </div>
                     </label>
                 </div>
@@ -818,14 +820,14 @@
 
                 <div class="mb-3">
                     <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-clipboard-check me-1"></i> KẾT QUẢ
-                        CHỐT ĐƠN (OUTCOME):</label>
+                        CHỐT ĐƠN:</label>
                     <select id="resolveOutcomeSelect" class="form-select glass-input-field text-white"
                         style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;"
                         onchange="toggleResolveReasonBox()">
                         <option value="RESOLVED" style="background: #1e293b; color: #fff;">Giải quyết thành công
-                            (RESOLVED - Thỏa đáng / Khách đã nhận đồ)</option>
+                        </option>
                         <option value="CLOSED_UNRESOLVED" style="background: #1e293b; color: #fff;">Đóng đơn không thành
-                            công (CLOSED_UNRESOLVED)</option>
+                            công </option>
                     </select>
                 </div>
 
@@ -836,20 +838,21 @@
                         style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
                         <option value="NO_ITEM_FOUND" class="opt-lost-luggage"
                             style="background: #1e293b; color: #fff;">Tài xế xác nhận không có đồ thất lạc của khách
-                            (NO_ITEM_FOUND)</option>
+                        </option>
                         <option value="DRIVER_UNREACHABLE" class="opt-lost-luggage"
                             style="background: #1e293b; color: #fff;">Không thể liên hệ tài xế [* Yêu cầu ghi nhận tối
-                            thiểu 3 lần NO_RESPONSE]</option>
+                            thiểu 3 lần ]</option>
                         <option value="CUSTOMER_UNREACHABLE" style="background: #1e293b; color: #fff;">Không thể liên hệ
-                            được với Khách hàng sau nhiều lần (CUSTOMER_UNREACHABLE)</option>
+                            được với Khách hàng sau nhiều lần </option>
                         <option value="VIOLATION_NOT_CONFIRMED" class="opt-other"
                             style="background: #1e293b; color: #fff;">Không đủ chứng cứ / Chưa xác nhận được vi phạm
-                            (VIOLATION_NOT_CONFIRMED)</option>
+                        </option>
                     </select>
                     <div id="driverUnreachableAlert" class="small text-danger mt-2 p-2 rounded"
                         style="background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.3);">
                         <i class="fa-solid fa-triangle-exclamation me-1"></i> LƯU Ý: Chốt với lý do
-                        <strong>DRIVER_UNREACHABLE</strong> bắt buộc phải có ít nhất <strong>3 lần</strong> ghi nhận gọi
+                        <strong>KHÔNG THỂ LIÊN LẠC TÀI XẾ</strong> - bắt buộc phải có ít nhất <strong>3 lần</strong> ghi
+                        nhận gọi
                         tài xế KHÔNG NGHE MÁY trước đó.
                     </div>
                 </div>
@@ -952,8 +955,8 @@
                         này. Thông tin sẽ được lưu vào lịch sử (Audit Log) để báo cáo.</p>
 
                     <textarea id="rejectReasonInput" class="form-control w-100" rows="3"
-                        placeholder="Nhập lý do từ chối bắt buộc tại đây..."
-                        style="background: rgba(0, 0, 0, 0.103); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px; box-shadow: none; resize: none;"></textarea>
+                        style="background: rgba(0, 0, 0, 0.103); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px; box-shadow: none; resize: none; "
+                        maxlength="200"></textarea>
 
                     <div id="rejectReasonError" class="text-danger mt-2 fw-medium d-none" style="font-size: 0.85rem;"><i
                             class="fa-solid fa-circle-exclamation me-1"></i> Bắt buộc phải nhập lý do từ chối!</div>

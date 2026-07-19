@@ -341,6 +341,23 @@ async function loadBookings(status, tbodyId, silent = false) {
         const result = await response.json();
 
         if (response.ok && result.success) {
+            // Sắp xếp các chuyến hoàn thành và từ chối theo mới nhất đến cũ nhất
+            if (result.data && Array.isArray(result.data) && ['COMPLETED', 'REJECTED'].includes((status || '').toUpperCase())) {
+                result.data.sort((a, b) => {
+                    const getSortTime = (item) => {
+                        const cTime = item.createdAt || item.CreatedAt;
+                        const dTime = item.departureTime || item.DepartureTime;
+                        if (cTime) return new Date(cTime).getTime();
+                        if (dTime) return new Date(dTime).getTime();
+                        return 0;
+                    };
+                    const timeA = getSortTime(a);
+                    const timeB = getSortTime(b);
+                    if (timeB !== timeA) return timeB - timeA;
+                    return (b.bookingId || b.BookingID || 0) - (a.bookingId || a.BookingID || 0);
+                });
+            }
+
             // Nếu tải ngầm (silent = true), chỉ kiểm tra vẽ lại bảng khi người dùng vẫn đang mở đúng tab đó
             if (!silent || currentActiveTabStatus === status) {
                 const currentDataJson = JSON.stringify(result.data || []);
@@ -372,6 +389,23 @@ function renderBookingTable(bookings, tbody, currentTabStatus) {
     if (!bookings || bookings.length === 0) {
         tbody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-4"><i class="fa-regular fa-folder-open fs-1 mb-2 opacity-50"></i><br>Không có đơn đặt xe nào.</td></tr>';
         return;
+    }
+
+    // Đảm bảo sắp xếp các chuyến hoàn thành và từ chối theo mới nhất đến cũ nhất trước khi vẽ
+    if (['COMPLETED', 'REJECTED'].includes((currentTabStatus || '').toUpperCase())) {
+        bookings.sort((a, b) => {
+            const getSortTime = (item) => {
+                const cTime = item.createdAt || item.CreatedAt;
+                const dTime = item.departureTime || item.DepartureTime;
+                if (cTime) return new Date(cTime).getTime();
+                if (dTime) return new Date(dTime).getTime();
+                return 0;
+            };
+            const timeA = getSortTime(a);
+            const timeB = getSortTime(b);
+            if (timeB !== timeA) return timeB - timeA;
+            return (b.bookingId || b.BookingID || 0) - (a.bookingId || a.BookingID || 0);
+        });
     }
 
     tbody.innerHTML = ''; // Xóa rác loading
@@ -951,7 +985,7 @@ window.loadComplaints = async function () {
                 } else if (upperStatus === 'RESOLVED') {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
                 } else {
-                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(148, 163, 184, 0.2); border: 1px solid rgba(148, 163, 184, 0.6); color: #cbd5e1;"><i class="fa-solid fa-lock me-1"></i>Đã đóng</span>`;
+                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(148, 163, 184, 0.2); border: 1px solid rgba(148, 163, 184, 0.6); color: #7b7d8b86;"><i class="fa-solid fa-lock me-1"></i>Đã đóng</span>`;
                 }
                 statusHtml += `<div class="small mt-1 " title="Thời gian tạo" style="font-size: 0.9rem;"><i class="fa-regular fa-clock me-1" "></i>${createdAt}</div>`;
                 if (resolvedAt) {
@@ -1100,7 +1134,7 @@ window.executeTagComplaint = async function () {
         const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentTagComplaintId}/tag`, {
             method: 'PUT',
             headers: postAuthHeader(),
-            body: JSON.stringify({ issue_type: issueTypeVal })
+            body: JSON.stringify({ issueType: issueTypeVal })
         });
         const result = await response.json();
         if (response.ok && result.success) {
