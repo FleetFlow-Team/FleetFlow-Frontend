@@ -591,7 +591,22 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
 
     // Lặp qua từng chuyến xe ĐANG CHẠY (CONFIRMED/ONGOING)
     activeJobs.forEach(trip => {
-        const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
+        const fVND = val => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+        const totalFare = trip.estimatedTotal ? parseFloat(trip.estimatedTotal) : 0;
+        const totalStr = fVND(totalFare);
+        
+        let moneyHtml = '';
+        if (trip.remainingAmount !== undefined) {
+            const remAmt = parseFloat(trip.remainingAmount);
+            moneyHtml = `
+                <div class="d-flex flex-column align-items-end">
+                    <span class="text-white-50" style="font-size: 0.75rem;">Tổng cước: ${totalStr}</span>
+                    <span class="fw-bold text-warning" style="font-size: 0.95rem;">Cần thu: ${fVND(remAmt)}</span>
+                </div>
+            `;
+        } else {
+            moneyHtml = `<span class="fw-bold text-success">${totalStr}</span>`;
+        }
         let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
         
         let statusBadge = '';
@@ -619,7 +634,7 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
                         <span class="text-white-50 small">
                             <i class="fa-solid fa-road me-1"></i> Quãng đường: <strong class="text-white">${trip.distanceKm ? trip.distanceKm + ' km' : 'N/A'}</strong>
                         </span>
-                        <span class="fw-bold text-success">${moneyStr}</span>
+                        ${moneyHtml}
                     </div>
                     ${trip.bookingStatus === 'CONFIRMED' ? `
                     <button type="button" class="btn btn-success w-100 fw-bold py-2 mb-2"
@@ -721,7 +736,7 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
                             <div class="col-6">
                                 <button class="btn-glass-action bg-primary border-primary text-white w-100 py-3 fs-6 fw-bold" 
                                         onclick="acceptJob(this, ${job.broadcastId}, ${job.bookingId})">
-                                    Nhận chuyến
+                                    Xác nhận
                                 </button>
                             </div>
                         </div>
@@ -1385,6 +1400,11 @@ function renderDriverNotifications() {
             typeText = 'Dispatcher Gán';
             typeIconColor = 'text-primary';
             iconClass = 'fa-user-tie';
+        } else if (n.type === 'EXTENSION_REQUESTED') {
+            typeBadgeClass = 'bg-warning';
+            typeText = 'Yêu cầu Gia hạn';
+            typeIconColor = 'text-warning';
+            iconClass = 'fa-clock';
         }
 
         const readStatusHtml = isUnread
@@ -1394,6 +1414,21 @@ function renderDriverNotifications() {
         // Use text-dark if unread (light background), else text-white if read (dark background)
         const textClass = 'text-white';
         const mutedClass = 'text-white-50';
+
+        // Render Action Buttons for EXTENSION_REQUESTED
+        let actionButtonsHtml = '';
+        if (n.type === 'EXTENSION_REQUESTED') {
+            let bIdMatch = (n.title || '').match(/chuyến #(\d+)/i);
+            let bId = bIdMatch ? bIdMatch[1] : '';
+            if (bId) {
+                actionButtonsHtml = `
+                    <div class="mt-2 d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-success flex-grow-1" onclick="event.stopPropagation(); handleExtensionRespond(${bId}, 'DRIVER', true, this)">Đồng ý</button>
+                        <button class="btn btn-sm btn-outline-danger flex-grow-1" onclick="event.stopPropagation(); handleExtensionRespond(${bId}, 'DRIVER', false, this)">Từ chối</button>
+                    </div>
+                `;
+            }
+        }
 
         li.innerHTML = `
             <div class="notification-item ${isUnread ? 'unread' : ''}">
@@ -1410,10 +1445,10 @@ function renderDriverNotifications() {
                     <div class="d-flex align-items-center ${mutedClass}" style="font-size: 0.75rem;">
                         <i class="fa-regular fa-clock me-1"></i> ${timeStr}
                     </div>
+                    ${actionButtonsHtml}
                 </div>
             </div>
         `;
-
 
         li.addEventListener('click', () => {
             if (window.driverUnreadCount > 0) {
@@ -1492,7 +1527,22 @@ async function fetchDriverHistory(statusFilter = '') {
                     default:
                         badge = `<span class="badge bg-secondary">${trip.bookingStatus || 'Không xác định'}</span>`;
                 }
-                const moneyStr = trip.estimatedTotal ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(trip.estimatedTotal) : '0 ₫';
+                const fVND = val => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+                const totalFare = trip.estimatedTotal ? parseFloat(trip.estimatedTotal) : 0;
+                const totalStr = fVND(totalFare);
+                
+                let moneyHtml = '';
+                if (trip.remainingAmount !== undefined) {
+                    const remAmt = parseFloat(trip.remainingAmount);
+                    moneyHtml = `
+                        <div class="d-flex flex-column align-items-end">
+                            <span class="text-white-50" style="font-size: 0.75rem;">Tổng cước: ${totalStr}</span>
+                            <span class="fw-bold text-warning" style="font-size: 0.95rem;">Cần thu: ${fVND(remAmt)}</span>
+                        </div>
+                    `;
+                } else {
+                    moneyHtml = `<span class="fw-bold text-success">${totalStr}</span>`;
+                }
 
                 let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
                 let directionText = '';
@@ -1522,7 +1572,7 @@ async function fetchDriverHistory(statusFilter = '') {
                                 <span class="text-white-50 small">
                                     <i class="fa-solid fa-road me-1"></i> Quãng đường: <strong class="text-white">${trip.distanceKm ? trip.distanceKm + ' km' : 'N/A'}</strong>
                                 </span>
-                                <span class="fw-bold text-success">${moneyStr}</span>
+                                ${moneyHtml}
                             </div>
                         </div>
                     </div>
@@ -1709,113 +1759,81 @@ function generateStars(rating) {
 // =====================================================================
 // XỬ LÝ YÊU CẦU GIA HẠN GIỜ (EXTENSION RESPOND)
 // =====================================================================
-let currentPendingExtensionId = null;
-let currentExtensionBookingId = null;
 
-async function checkPendingExtension() {
-    let activeBookingId = localStorage.getItem('activeBookingId');
-    // Fallback: nếu localStorage bị mất, thử tìm chuyến đang chạy (ONGOING) trên màn hình
-    if (!activeBookingId) {
-        const ongoingBtn = document.querySelector('button[onclick*="completeTrip"]');
-        if (ongoingBtn) {
-            const match = ongoingBtn.getAttribute('onclick').match(/completeTrip\(this,\s*(\d+)/);
-            if (match && match[1]) {
-                activeBookingId = match[1];
-                localStorage.setItem('activeBookingId', activeBookingId);
-            }
-        }
+// =====================================================================
+// XỬ LÝ YÊU CẦU GIA HẠN GIỜ TRỰC TIẾP TỪ THÔNG BÁO
+// =====================================================================
+
+async function handleExtensionRespond(bookingId, role, approve, btnElement) {
+    if (!bookingId) return;
+    
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('driverAccountId') || 1;
+    const originalText = btnElement.innerHTML;
+    
+    // Disable buttons and show spinner
+    const container = btnElement.closest('.d-flex');
+    if (container) {
+        const buttons = container.querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true);
     }
-    if (!activeBookingId) return;
+    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
 
     try {
-        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${activeBookingId}/extend/pending?t=${Date.now()}`, {
+        // 1. Fetch pending extension to get extensionId
+        const checkRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}/extend/pending`, {
             method: 'GET',
             cache: 'no-store',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
         
-        if (!response.ok) return;
-        
-        const result = await response.json();
-        const data = result.data || result;
-        
-        const extId = data.id || data.extensionId;
-        // Tránh popup lặp lại nếu tài xế đã duyệt nhưng đang chờ dispatcher duyệt
-        if (data && extId && data.status === 'PENDING' && data.counterpartyStatus === 'PENDING') {
-            if (currentPendingExtensionId !== extId) {
-                currentPendingExtensionId = extId;
-                currentExtensionBookingId = activeBookingId;
-                
-                document.getElementById('extendModalText').innerText = `Khách hàng yêu cầu gia hạn thêm ${data.extraUnits || data.extraMinutes / 60} giờ. Bạn có đồng ý không?`;
-                const extendModal = new bootstrap.Modal(document.getElementById('driverExtendModal'));
-                extendModal.show();
-            }
-        } else {
-            if (currentPendingExtensionId) {
-                currentPendingExtensionId = null;
-                const modalEl = document.getElementById('driverExtendModal');
-                if (modalEl && modalEl.classList.contains('show')) {
-                    bootstrap.Modal.getInstance(modalEl).hide();
-                }
-            }
+        if (!checkRes.ok) {
+            throw new Error('Không thể kiểm tra yêu cầu gia hạn');
         }
-    } catch (e) {
-        // Im lặng báo lỗi để không spam console
-    }
-}
-
-async function respondExtension(isApprove) {
-    if (!currentPendingExtensionId || !currentExtensionBookingId) return;
-    
-    const accountId = localStorage.getItem('accountId') || localStorage.getItem('driverAccountId') || 1;
-    const btnApprove = document.getElementById('btnApproveExtend');
-    const btnReject = document.getElementById('btnRejectExtend');
-    
-    if(btnApprove) btnApprove.disabled = true;
-    if(btnReject) btnReject.disabled = true;
-
-    try {
-        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${currentExtensionBookingId}/extend/${currentPendingExtensionId}/respond`, {
+        
+        const checkResult = await checkRes.json();
+        if (!checkResult.success || !checkResult.data) {
+            Swal.fire({ icon: 'info', title: 'Đã hết hạn', text: 'Yêu cầu gia hạn này đã không còn tồn tại hoặc đã bị xử lý.' });
+            if (container) container.innerHTML = '<span class="text-muted small">Đã xử lý</span>';
+            return;
+        }
+        
+        const extensionId = checkResult.data.id || checkResult.data.extensionId;
+        
+        // 2. Respond to extension
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}/extend/${extensionId}/respond`, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json', 
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
             },
-            body: JSON.stringify({
-                role: 'DRIVER',
-                accountId: parseInt(accountId),
-                approve: isApprove
-            })
+            body: JSON.stringify({ role: role, accountId: parseInt(accountId), approve: approve })
         });
 
         const result = await response.json();
         if (response.ok && result.success) {
-            const modalEl = document.getElementById('driverExtendModal');
-            if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
-            
-            setTimeout(() => {
-                if (typeof loadActiveTripData === 'function') {
-                    loadActiveTripData(currentExtensionBookingId);
-                } else if (typeof fetchActiveTrip === 'function') {
-                    fetchActiveTrip(currentExtensionBookingId);
-                } else {
-                    window.location.reload();
-                }
-            }, 1000);
+            if (container) container.innerHTML = `<span class="text-success small fw-bold"><i class="fa-solid fa-check"></i> Đã ${approve ? 'Đồng ý' : 'Từ chối'}</span>`;
+            if (typeof loadActiveTripData === 'function') {
+                loadActiveTripData(bookingId);
+            }
         } else {
-            alert(result.message || 'Lỗi khi phản hồi.');
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: result.error || 'Có lỗi xảy ra khi xử lý yêu cầu.' });
+            btnElement.innerHTML = originalText;
+            if (container) {
+                const buttons = container.querySelectorAll('button');
+                buttons.forEach(b => b.disabled = false);
+            }
         }
     } catch (e) {
         console.error("Lỗi respond gia hạn:", e);
-    } finally {
-        if(btnApprove) btnApprove.disabled = false;
-        if(btnReject) btnReject.disabled = false;
-        currentPendingExtensionId = null;
+        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể kết nối đến máy chủ.' });
+        btnElement.innerHTML = originalText;
+        if (container) {
+            const buttons = container.querySelectorAll('button');
+            buttons.forEach(b => b.disabled = false);
+        }
     }
 }
 
-// Khởi chạy vòng lặp kiểm tra gia hạn mỗi 15 giây
-setTimeout(checkPendingExtension, 3000);
-setInterval(checkPendingExtension, 15000);
+
 
 

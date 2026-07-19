@@ -1,4 +1,4 @@
-﻿// =====================================================================
+// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -347,6 +347,24 @@ async function viewTripDetail(bookingId) {
         // Nhận Object Booking trọn vẹn từ Backend
         const trip = await response.json();
 
+        let totalExtensionAmount = 0;
+        try {
+            const token = localStorage.getItem("accessToken");
+            const extRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}/extend/history`, {
+                headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+            });
+            if (extRes.ok) {
+                const extData = await extRes.json();
+                if (extData.success && extData.data) {
+                    extData.data.forEach(ext => {
+                        if ((ext.status || ext.Status || "").toUpperCase() === 'APPROVED') {
+                            totalExtensionAmount += parseFloat(ext.extraAmount || ext.ExtraAmount || 0);
+                        }
+                    });
+                }
+            }
+        } catch (e) { console.error("Lỗi fetch extension history:", e); }
+
         // 3. Kích hoạt hiệu ứng ẩn/hiển thị màn hình chi tiết
         document.getElementById('historyViewSection').classList.remove('view-active');
         document.getElementById('detailsViewSection').classList.add('view-active');
@@ -417,7 +435,7 @@ async function viewTripDetail(bookingId) {
         }
 
         // Dịch ngược holidaySurcharge từ estimatedTotal vì trong DB không lưu riêng rẽ
-        holidaySurcharge = estimatedTotal - baseFare - weekendSurcharge + discountAmount;
+        holidaySurcharge = estimatedTotal - baseFare - weekendSurcharge - totalExtensionAmount + discountAmount;
         if (holidaySurcharge < 0) holidaySurcharge = 0;
 
         if (holidaySurcharge > 0 && depDateStr && window.globalHolidaysList) {
@@ -437,6 +455,13 @@ async function viewTripDetail(bookingId) {
         // Đổ giá trị bóc tách dự kiến ra UI
         document.getElementById('lblBasePrice').innerText = fVND(baseFare);
         document.getElementById('lblSurcharge').innerHTML = surchargeHtml;
+        const rowExtension = document.getElementById('rowExtensionCost');
+        if (totalExtensionAmount > 0) {
+            document.getElementById('lblExtensionCost').innerText = `+ ${fVND(totalExtensionAmount)}`;
+            if (rowExtension) rowExtension.style.setProperty('display', 'flex', 'important');
+        } else {
+            if (rowExtension) rowExtension.style.display = 'none';
+        }
         document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
         document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
 
@@ -447,7 +472,8 @@ async function viewTripDetail(bookingId) {
         const lblRemaining = document.getElementById('lblRemainingAmount');
 
         if (isDepositPaid && rowDeposit && rowRemaining && lblDeposit && lblRemaining) {
-            const depositAmount = Math.round(estimatedTotal * 0.3);
+            const originalTotal = estimatedTotal - totalExtensionAmount;
+            const depositAmount = Math.round(originalTotal * 0.3);
             const remainingAmount = estimatedTotal - depositAmount;
 
             lblDeposit.innerText = `- ${fVND(depositAmount)}`;
@@ -518,27 +544,27 @@ async function viewTripDetail(bookingId) {
 
             let extendBtnHtml = '';
             const currentBType = (trip.bookingType || (summaryTrip && summaryTrip.bookingType) || 'DISTANCE').toUpperCase();
-            if (currentBType === 'HOURLY' || currentBType === 'DAILY') {
-                extendBtnHtml = `<button type="button" class="btn btn-control-action m-0 mt-2 w-100" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 10px rgba(255,152,0,0.3);" onclick="openExtendModal(${bookingId})"><i class="fa-solid fa-clock-rotate-left me-2"></i>Gia hạn thêm giờ</button>`;
+            if (currentBType === 'HOURLY') {
+                extendBtnHtml = `<button type="button" class="btn btn-control-action m-0 py-2" style="flex:1; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 10px rgba(255,152,0,0.3);" onclick="openExtendModal(${bookingId}, '${currentBType}')"><i class="fa-solid fa-clock-rotate-left me-1"></i>Gia hạn giờ</button>`;
+            } else if (currentBType === 'DAILY') {
+                extendBtnHtml = `<button type="button" class="btn btn-control-action m-0 py-2" style="flex:1; background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 10px rgba(255,152,0,0.3);" onclick="openExtendModal(${bookingId}, '${currentBType}')"><i class="fa-solid fa-calendar-plus me-1"></i>Gia hạn ngày</button>`;
             }
 
             if (remainingOngoing <= 0) {
-                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>` + extendBtnHtml;
+                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>` + (extendBtnHtml ? `<div class="d-flex w-100 gap-2 mt-2">${extendBtnHtml}</div>` : '');
             } else if (pendingCash) {
-                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>` + extendBtnHtml;
+                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>` + (extendBtnHtml ? `<div class="d-flex w-100 gap-2 mt-2">${extendBtnHtml}</div>` : '');
             } else {
                 actionHtml = `
                 <div class="d-flex w-100 gap-2">
-                    <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
-                        <i class="fa-solid fa-credit-card me-2"></i>VNPay
+                    <button type="button" class="btn btn-control-action m-0 py-2" style="flex:1; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
+                        <i class="fa-solid fa-credit-card me-1"></i>VNPay
                     </button>
-                    <!-- <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; font-weight: 600; border: none;" onclick="payViaSePay(${bookingId})">
-                        <i class="fa-solid fa-qrcode me-2"></i>SePay QR
-                    </button> -->
-                    <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'CASH')">
-                        <i class="fa-solid fa-money-bill-wave me-2"></i>Tiền mặt
+                    <button type="button" class="btn btn-control-action m-0 py-2" style="flex:1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'CASH')">
+                        <i class="fa-solid fa-money-bill-wave me-1"></i>Tiền mặt
                     </button>
-                </div>` + extendBtnHtml;
+                    ${extendBtnHtml}
+                </div>`;
             }
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
         } else if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
@@ -547,9 +573,14 @@ async function viewTripDetail(bookingId) {
         } else if (statusCheck === 'COMPLETED') {
             const remainingAmount = summaryTrip ? (summaryTrip.remainingAmount || 0) : (trip.remainingAmount || 0);
             const payButtonHtml = remainingAmount > 0 ? `
-                <button type="button" class="btn btn-control-action m-0" style="flex:1.6; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
-                    <i class="fa-solid fa-credit-card me-2"></i>Thanh toán còn lại
-                </button>` : '';
+                <div class="d-flex w-100 gap-2 mb-2">
+                    <button type="button" class="btn btn-control-action m-0 py-2" style="flex:1; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
+                        <i class="fa-solid fa-credit-card me-1"></i>Thanh toán
+                    </button>
+                    <button type="button" class="btn btn-control-action m-0 py-2" style="flex:1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'CASH')">
+                        <i class="fa-solid fa-money-bill-wave me-1"></i>Tiền mặt
+                    </button>
+                </div>` : '';
             actionHtml = `
                 ${payButtonHtml}
                 <button type="button" class="btn btn-control-action border-primary text-primary m-0" style="flex:1; background: rgba(59, 130, 246, 0.1);" onclick="viewInvoiceModal(${bookingId})">Xem hóa đơn</button>
@@ -615,11 +646,35 @@ async function viewInvoiceModal(bookingId) {
             const discountAmount = parseFloat(inv.discountAmount) || 0;
             const totalAmount = parseFloat(inv.estimatedTotal) || 0;
 
-            let holidaySurcharge = totalAmount - baseFare - weekendSur + discountAmount;
+            let totalExtensionAmount = 0;
+            try {
+                const extRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}/extend/history`, {
+                    headers: { "Authorization": `Bearer ${token}`, "Content-Type": "application/json" }
+                });
+                if (extRes.ok) {
+                    const extData = await extRes.json();
+                    if (extData.success && extData.data) {
+                        extData.data.forEach(ext => {
+                            if ((ext.status || ext.Status || "").toUpperCase() === 'APPROVED') {
+                                totalExtensionAmount += parseFloat(ext.extraAmount || ext.ExtraAmount || 0);
+                            }
+                        });
+                    }
+                }
+            } catch (e) { console.error("Lỗi fetch extension history:", e); }
+
+            let holidaySurcharge = totalAmount - baseFare - weekendSur - totalExtensionAmount + discountAmount;
             if (holidaySurcharge < 0) holidaySurcharge = 0;
 
             document.getElementById('lblInvoiceBasePrice').innerText = fVND(baseFare);
             document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur + holidaySurcharge)}`;
+            const rowInvoiceExtension = document.getElementById('rowInvoiceExtensionCost');
+            if (totalExtensionAmount > 0) {
+                document.getElementById('lblInvoiceExtensionCost').innerText = `+ ${fVND(totalExtensionAmount)}`;
+                if (rowInvoiceExtension) rowInvoiceExtension.style.setProperty('display', 'flex', 'important');
+            } else {
+                if (rowInvoiceExtension) rowInvoiceExtension.style.display = 'none';
+            }
             document.getElementById('lblInvoiceDiscount').innerText = `- ${fVND(discountAmount)}`;
 
             // KHÔNG được gọi POST /payments/final ở đây để "xem trước" số tiền:
@@ -628,6 +683,24 @@ async function viewInvoiceModal(bookingId) {
             // finalAmount thật sự chỉ được biết khi khách bấm nút thanh toán (payFinal).
             document.getElementById('lblInvoiceTotalAmount').innerText = fVND(totalAmount);
 
+            const isDepositPaid = invResult.depositPaid === true || (invResult.detail && invResult.detail.depositPaid === true);
+            const rowInvoiceDeposit = document.getElementById('rowInvoiceDeposit');
+            const rowInvoiceRemaining = document.getElementById('rowInvoiceRemaining');
+
+            if (isDepositPaid && rowInvoiceDeposit && rowInvoiceRemaining) {
+                const originalTotal = totalAmount - totalExtensionAmount;
+                const depositAmt = Math.round(originalTotal * 0.3);
+                const remainAmt = totalAmount - depositAmt;
+
+                document.getElementById('lblInvoiceDeposit').innerText = `- ${fVND(depositAmt)}`;
+                document.getElementById('lblInvoiceRemaining').innerText = fVND(remainAmt);
+
+                rowInvoiceDeposit.style.setProperty('display', 'flex', 'important');
+                rowInvoiceRemaining.style.setProperty('display', 'flex', 'important');
+            } else {
+                if (rowInvoiceDeposit) rowInvoiceDeposit.style.display = 'none';
+                if (rowInvoiceRemaining) rowInvoiceRemaining.style.display = 'none';
+            }
             // Modal hóa đơn CHỈ để xem lại — không đặt nút thanh toán ở đây nữa để tránh
             // trùng lặp với nút "Thanh toán còn lại" đã hiện trực tiếp ngoài danh sách khi
             // remainingAmount > 0. Thanh toán làm ở ngoài, ở đây chỉ xem.
@@ -1430,15 +1503,36 @@ window.addEventListener("message", (event) => {
 // =====================================================================
 let currentExtendBookingId = null;
 
-function openExtendModal(bookingId) {
+function openExtendModal(bookingId, bookingType) {
     currentExtendBookingId = bookingId;
+
+    const extendModalTitle = document.getElementById('extendModalTitle');
+    const extendModalText = document.getElementById('extendModalText');
+    const extendUnitsSelect = document.getElementById('extendUnits');
+
+    if (extendUnitsSelect) {
+        extendUnitsSelect.innerHTML = '';
+        if (bookingType === 'DAILY') {
+            if (extendModalTitle) extendModalTitle.innerHTML = '<i class="fa-solid fa-calendar-plus me-2"></i> Gia hạn ngày thuê';
+            if (extendModalText) extendModalText.innerText = 'Bạn muốn gia hạn thêm bao nhiêu ngày cho chuyến đi này?';
+            extendUnitsSelect.innerHTML = '<option value="1">1 Ngày</option>';
+        } else {
+            if (extendModalTitle) extendModalTitle.innerHTML = '<i class="fa-solid fa-clock-rotate-left me-2"></i> Gia hạn giờ thuê';
+            if (extendModalText) extendModalText.innerText = 'Bạn muốn gia hạn thêm bao nhiêu giờ cho chuyến đi này?';
+            extendUnitsSelect.innerHTML = `
+                <option value="1">1 Giờ</option>
+                <option value="2">2 Giờ</option>
+            `;
+        }
+    }
+
     const extendModal = new bootstrap.Modal(document.getElementById('extendModal'));
     extendModal.show();
 }
 
 async function executeExtendAction() {
     if (!currentExtendBookingId) return;
-    const hours = parseInt(document.getElementById('extendHours').value) || 1;
+    const units = parseInt(document.getElementById('extendUnits').value) || 1;
     const accountId = localStorage.getItem('accountId') || localStorage.getItem('customerId') || 1;
 
     const btnSubmit = document.getElementById('btnSubmitExtend');
@@ -1447,17 +1541,18 @@ async function executeExtendAction() {
     btnSubmit.disabled = true;
 
     try {
+        const payload = {
+            requestedByRole: "CUSTOMER",
+            requestedByAccountId: parseInt(accountId),
+            extraUnits: units
+        };
         const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${currentExtendBookingId}/extend`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
-            body: JSON.stringify({
-                requestedByRole: 'CUSTOMER',
-                requestedByAccountId: parseInt(accountId),
-                extraUnits: hours
-            })
+            body: JSON.stringify(payload)
         });
 
         const result = await response.json();
@@ -1477,7 +1572,7 @@ async function executeExtendAction() {
                 viewTripDetail(currentExtendBookingId);
             }, 1000);
         } else {
-            Swal.fire({ icon: 'error', title: 'Thất bại', text: result.message || 'Không thể gửi yêu cầu gia hạn lúc này.' });
+            Swal.fire({ icon: 'error', title: 'Thất bại', text: result.error || result.message || 'Không thể gửi yêu cầu gia hạn lúc này.' });
         }
     } catch (error) {
         console.error("Error extending booking:", error);
@@ -1487,4 +1582,66 @@ async function executeExtendAction() {
         btnSubmit.disabled = false;
     }
 }
+
+// =========================================================================
+// POLLING ĐỂ BẮT THÔNG BÁO GIA HẠN/QUÁ GIỜ CHO KHÁCH HÀNG
+// =========================================================================
+let customerPollInterval = null;
+
+async function pollCustomerExtensionNotifications() {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return;
+
+    // Only poll if there's an ongoing trip - checked by looking at active tab or existing DOM elements
+    // But since this is Trip History, they might be on any tab. Let's just poll it silently.
+    try {
+        const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/notifications', {
+            method: "GET",
+            headers: { "Authorization": 'Bearer ' + token }
+        });
+        const result = await response.json();
+
+        if (response.ok && result.success && result.data) {
+            const notifications = result.data;
+            const unreadExtNotifs = notifications.filter(n =>
+                (n.IsRead === false || n.IsRead === 0) &&
+                (n.Type === 'EXTENSION_APPROVED' || n.Type === 'EXTENSION_REJECTED' || n.Type === 'OVERTIME_STARTED' || n.Type === 'OVERTIME_CAP_REACHED' || n.Type === 'OVERTIME_SETTLED')
+            );
+
+            if (unreadExtNotifs.length > 0) {
+                // Play notification sound or show sweetalert for the first one
+                const noti = unreadExtNotifs[0];
+                let icon = 'info';
+                if (noti.Type === 'EXTENSION_APPROVED' || noti.Type === 'OVERTIME_SETTLED') icon = 'success';
+                else if (noti.Type === 'EXTENSION_REJECTED') icon = 'error';
+                else if (noti.Type === 'OVERTIME_STARTED' || noti.Type === 'OVERTIME_CAP_REACHED') icon = 'warning';
+
+                Swal.fire({
+                    icon: icon,
+                    title: noti.Title || 'Thông báo mới',
+                    text: noti.Message || 'Có cập nhật về chuyến đi của bạn',
+                    confirmButtonText: 'Đóng'
+                });
+
+                // Mark as read
+                await fetch('http://localhost:8080/FleetFlow/api/v1/customer/notifications/' + noti.NotificationID + '/read', {
+                    method: 'POST',
+                    headers: { "Authorization": 'Bearer ' + token }
+                });
+
+                // Refresh list and global notifications
+                loadTripHistory();
+                if (typeof loadNotifications === 'function') {
+                    loadNotifications();
+                }
+            }
+        }
+    } catch (e) {
+        // Silent error
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    customerPollInterval = setInterval(pollCustomerExtensionNotifications, 15000);
+});
 

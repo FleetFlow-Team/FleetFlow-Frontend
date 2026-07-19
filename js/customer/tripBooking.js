@@ -105,10 +105,9 @@ const CORE_API_BASE = 'http://localhost:8080/FleetFlow/api/v1';
 // Đọc ID xe khách đã chọn từ findCar.html
 const currentVehicleId = parseInt(localStorage.getItem('selectedVehicleId'));
 
-// 🚀 BẢO MẬT LUỒNG: Nếu khách chưa chọn xe mà vào thẳng trang này -> Đuổi về Trạm 1
+// 🚀 BẢO MẬT LUỒNG: Bỏ kiểm tra đuổi về Trạm 1 theo yêu cầu để tiện refresh
 if (!currentVehicleId) {
-    showModalAlert("Vui lòng chọn loại phương tiện trước khi thiết lập lộ trình!", "Cảnh báo", "warning");
-    setTimeout(() => { window.location.replace("../../pages/findCar.html"); }, 1500);
+    console.warn("Chưa chọn loại phương tiện, nhưng cho phép ở lại trang để test/refresh.");
 }
 
 
@@ -737,7 +736,7 @@ document.addEventListener('click', function (event) {
     if (!isClickInsideDropoff && dropoffDropdown) dropoffDropdown.style.display = 'none';
 });
 
-// Validate thời gian khởi hành (Phải cách hiện tại ít nhất 120 phút)
+// Validate thời gian khởi hành (Phải cách hiện tại ít nhất 12 tiếng - 720 phút)
 window.validateDepartureTime = function () {
     const inputTime = document.getElementById('inputDepartureTime');
     const errorMsg = document.getElementById('timeErrorMsg');
@@ -753,7 +752,7 @@ window.validateDepartureTime = function () {
     const currentTime = new Date().getTime();
     const diffMinutes = (selectedTime - currentTime) / (1000 * 60);
 
-    if (diffMinutes < 120) {
+    if (diffMinutes < 720) {
         inputTime.classList.add('is-invalid');
         errorMsg.classList.add('d-block');
         btnSubmitBooking.disabled = true;
@@ -1017,7 +1016,7 @@ window.calculateRealPrice = async function () {
 // Bắt sự kiện đổi giờ -> Tự tính lại giá (bắt phụ phí cuối tuần)
 document.getElementById('inputDepartureTime').addEventListener('change', () => {
     validateDepartureTime();
-    // Nếu khoảng cách hợp lệ và thời gian không bị lỗi (cách hiện tại >= 120p)
+    // Nếu khoảng cách hợp lệ và thời gian không bị lỗi (cách hiện tại >= 720p)
     if (currentDistanceKm >= 20 && !document.getElementById('inputDepartureTime').classList.contains('is-invalid')) {
         calculateRealPrice();
     }
