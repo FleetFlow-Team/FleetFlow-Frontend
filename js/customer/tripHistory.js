@@ -739,6 +739,7 @@ async function renderRatingsTab(mode = 'ratings') {
                         case 'IN_PROGRESS': statusBadge = '<span class="badge bg-info text-dark">Đang xử lý</span>'; break;
                         case 'RESOLVED': statusBadge = '<span class="badge bg-success">Đã giải quyết</span>'; break;
                         case 'CLOSED': statusBadge = '<span class="badge bg-secondary">Đã đóng</span>'; break;
+                        case 'CLOSED_UNRESOLVED': statusBadge = '<span class="badge bg-light text-dark border">Không giải quyết</span>'; break;
                         default: statusBadge = `<span class="badge bg-light text-dark border">${c.status || 'Chưa rõ'}</span>`;
                     }
 
@@ -1315,7 +1316,7 @@ async function submitComplaint() {
 
     try {
         const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
-        
+
         const res = await fetch(`${API_BASE_URL}/complaints`, {
             method: 'POST',
             headers: {
