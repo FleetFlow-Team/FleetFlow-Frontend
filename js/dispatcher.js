@@ -901,10 +901,15 @@ window.loadComplaints = async function () {
 
                 // Cột 5: Tình trạng
                 let statusHtml = '';
-                if (status === 'PENDING') {
+                const upperStatus = (status || 'PENDING').toUpperCase();
+                if (upperStatus === 'PENDING' || upperStatus === 'OPEN') {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: #FBFFB3; border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i>Chờ xử lý</span>`;
-                } else {
+                } else if (upperStatus === 'IN_PROGRESS') {
+                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(14, 165, 233, 0.25); border: 1px solid rgba(14, 165, 233, 0.6); color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin me-1"></i>Đang xử lý</span>`;
+                } else if (upperStatus === 'RESOLVED') {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
+                } else {
+                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(148, 163, 184, 0.2); border: 1px solid rgba(148, 163, 184, 0.6); color: #cbd5e1;"><i class="fa-solid fa-lock me-1"></i>Đã đóng</span>`;
                 }
                 statusHtml += `<div class="small mt-1 " title="Thời gian tạo" style="font-size: 0.9rem;"><i class="fa-regular fa-clock me-1" "></i>${createdAt}</div>`;
                 if (resolvedAt) {
@@ -913,8 +918,14 @@ window.loadComplaints = async function () {
 
                 // Cột 6: Thao tác (Liquid Glass Actions)
                 let actionHtml = '';
-                if (status === 'PENDING') {
+                if (upperStatus === 'PENDING' || upperStatus === 'OPEN') {
+                    actionHtml += `<button class="btn btn-warning w-100 mb-2 fw-bold text-dark" style="font-size: 0.82rem; border-radius: 10px;" onclick="assignComplaint(${id})"><i class="fa-solid fa-hand-pointer me-1"></i> Nhận Xử Lý</button>`;
                     actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Giải Quyết</button>`;
+                } else if (upperStatus === 'IN_PROGRESS') {
+                    if (type === 'LOST_LUGGAGE') {
+                        actionHtml += `<button class="btn btn-info w-100 mb-2 fw-bold text-dark" style="font-size: 0.82rem; border-radius: 10px;" onclick="openContactDriverModal(${id})"><i class="fa-solid fa-phone me-1"></i> Liên Hệ TX</button>`;
+                    }
+                    actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-check-to-slot me-1"></i> Chốt Đơn</button>`;
                 }
                 actionHtml += `<button class="btn btn-glass-dispatch w-100 fw-bold" style="font-size: 0.82rem;" onclick="openComplaintDetailModal(${id})"><i class="fa-solid fa-eye me-1"></i> Chi tiết</button>`;
 
@@ -938,13 +949,121 @@ window.loadComplaints = async function () {
     }
 };
 
+// Hàm Nhận thụ lý khiếu nại (PENDING -> IN_PROGRESS)
+window.assignComplaint = async function (complaintId) {
+    if (!confirm(`Bạn có chắc chắn muốn nhận thụ lý xử lý đơn khiếu nại #${complaintId}?`)) return;
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${complaintId}/assign`, {
+            method: 'POST',
+            headers: postAuthHeader()
+        });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            if (typeof showSystemToast === 'function') showSystemToast(result.message || `Đã nhận xử lý đơn #${complaintId}`, "success");
+            loadComplaints();
+            if (typeof window.loadDispatcherDashboardStats === 'function') window.loadDispatcherDashboardStats();
+        } else {
+            if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi khi nhận xử lý!", "error");
+            else alert(result.message || result.error || "Lỗi khi nhận xử lý!");
+        }
+    } catch (error) {
+        console.error("Lỗi assignComplaint:", error);
+        if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
+    }
+};
+
+// --- CÁC HÀM XỬ LÝ LIÊN HỆ TÀI XẾ (CHO LOST_LUGGAGE) ---
+let currentContactDriverComplaintId = null;
+
+window.openContactDriverModal = function (complaintId) {
+    currentContactDriverComplaintId = complaintId;
+    const idSpan = document.getElementById('contactDriverComplaintIdSpan');
+    if (idSpan) idSpan.textContent = `#${complaintId}`;
+    const modal = document.getElementById('contactDriverModal');
+    if (modal) modal.classList.add('active');
+};
+
+window.closeContactDriverModal = function () {
+    const modal = document.getElementById('contactDriverModal');
+    if (modal) modal.classList.remove('active');
+};
+
+window.executeContactDriver = async function () {
+    const radioChecked = document.querySelector('input[name="contactDriverResultRadio"]:checked');
+    if (!radioChecked) return;
+    const resultValue = radioChecked.value;
+
+    const btn = document.getElementById('btnSubmitContactDriver');
+    const oldHtml = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i> Đang ghi nhận...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentContactDriverComplaintId}/actions/contact-driver`, {
+            method: 'POST',
+            headers: postAuthHeader(),
+            body: JSON.stringify({ result: resultValue })
+        });
+        const result = await response.json();
+        if (response.ok && result.success) {
+            if (typeof showSystemToast === 'function') showSystemToast(result.customerMessage || "Đã ghi nhận liên hệ tài xế vào tiến trình!", "success");
+            closeContactDriverModal();
+            loadComplaints();
+        } else {
+            if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi ghi nhận liên hệ!", "error");
+            else alert(result.message || result.error || "Lỗi ghi nhận liên hệ!");
+        }
+    } catch (error) {
+        if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
+    } finally {
+        btn.innerHTML = oldHtml;
+        btn.disabled = false;
+    }
+};
+
+// --- ẨN HIỆN REASON CODE TRONG MODAL CHỐT ĐƠN ---
+window.toggleReasonCodeSelect = function () {
+    const outcomeSelect = document.getElementById('lostLuggageOutcomeSelect');
+    const reasonBox = document.getElementById('lostLuggageReasonBox');
+    if (!outcomeSelect || !reasonBox) return;
+    if (outcomeSelect.value === 'CLOSED_UNRESOLVED') {
+        reasonBox.classList.remove('d-none');
+    } else {
+        reasonBox.classList.add('d-none');
+    }
+};
+
 // Hàm mở Modal giải quyết
 window.openResolveModal = function (complaintId) {
     currentResolveComplaintId = complaintId;
-    document.getElementById('complaintResolutionInput').value = '';
-    document.getElementById('complaintResolutionError').classList.add('d-none');
+    const idSpan = document.getElementById('resolveComplaintIdSpan');
+    if (idSpan) idSpan.textContent = `#${complaintId}`;
 
-    document.getElementById('resolveComplaintModal').classList.add('active');
+    // Tìm đơn trong currentComplaintsList để xác định loại khiếu nại
+    const c = (window.currentComplaintsList || []).find(item => (item.complaintId || item.ComplaintID) == complaintId);
+    const rawType = c ? ((c.type && c.type !== 'OTHER') ? c.type : (c.complaintType || 'OTHER')) : 'OTHER';
+    window.currentResolveComplaintType = rawType;
+
+    const lostLuggageForm = document.getElementById('resolveLostLuggageForm');
+    const generalForm = document.getElementById('resolveGeneralForm');
+    const errEl = document.getElementById('complaintResolutionError');
+    if (errEl) errEl.classList.add('d-none');
+
+    if (rawType === 'LOST_LUGGAGE') {
+        if (lostLuggageForm) lostLuggageForm.classList.remove('d-none');
+        if (generalForm) generalForm.classList.add('d-none');
+        const outcomeSelect = document.getElementById('lostLuggageOutcomeSelect');
+        if (outcomeSelect) outcomeSelect.value = 'RESOLVED';
+        toggleReasonCodeSelect();
+    } else {
+        if (lostLuggageForm) lostLuggageForm.classList.add('d-none');
+        if (generalForm) generalForm.classList.remove('d-none');
+        const input = document.getElementById('complaintResolutionInput');
+        if (input) input.value = '';
+    }
+
+    const modal = document.getElementById('resolveComplaintModal');
+    if (modal) modal.classList.add('active');
 };
 
 window.closeResolveModal = function () {
@@ -953,16 +1072,28 @@ window.closeResolveModal = function () {
 
 // Hàm Submit giải quyết
 window.executeResolveComplaint = async function () {
-    const input = document.getElementById('complaintResolutionInput');
     const errorMsg = document.getElementById('complaintResolutionError');
-    const resolutionText = input.value.trim();
+    let payload = {};
 
-    if (!resolutionText) {
-        errorMsg.classList.remove('d-none');
-        input.focus();
-        return;
+    if (window.currentResolveComplaintType === 'LOST_LUGGAGE') {
+        const outcomeSelect = document.getElementById('lostLuggageOutcomeSelect');
+        const reasonSelect = document.getElementById('lostLuggageReasonCodeSelect');
+        const outcomeVal = outcomeSelect ? outcomeSelect.value : 'RESOLVED';
+        payload.outcome = outcomeVal;
+        if (outcomeVal === 'CLOSED_UNRESOLVED' && reasonSelect) {
+            payload.reason_code = reasonSelect.value;
+        }
+    } else {
+        const input = document.getElementById('complaintResolutionInput');
+        const resolutionText = input ? input.value.trim() : '';
+        if (!resolutionText) {
+            if (errorMsg) errorMsg.classList.remove('d-none');
+            if (input) input.focus();
+            return;
+        }
+        if (errorMsg) errorMsg.classList.add('d-none');
+        payload.resolution = resolutionText;
     }
-    errorMsg.classList.add('d-none');
 
     const btn = document.getElementById('btnSubmitResolution');
     const oldHtml = btn.innerHTML;
@@ -973,20 +1104,21 @@ window.executeResolveComplaint = async function () {
         const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${currentResolveComplaintId}/resolve`, {
             method: 'PUT',
             headers: postAuthHeader(),
-            body: JSON.stringify({ resolution: resolutionText })
+            body: JSON.stringify(payload)
         });
 
         const result = await response.json();
 
         if (response.ok && result.success) {
-            if (typeof showSystemToast === 'function') showSystemToast("Đã ghi nhận giải quyết khiếu nại!", "success");
+            if (typeof showSystemToast === 'function') showSystemToast(result.customerMessage || "Đã ghi nhận giải quyết khiếu nại!", "success");
             closeResolveModal();
             loadComplaints(); // reload
             if (typeof window.loadDispatcherDashboardStats === 'function') {
                 window.loadDispatcherDashboardStats();
             }
         } else {
-            if (typeof showSystemToast === 'function') showSystemToast(result.error || "Lỗi xử lý!", "error");
+            if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi khi chốt đơn!", "error");
+            else alert(result.message || result.error || "Lỗi khi chốt đơn!");
         }
     } catch (error) {
         if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
@@ -1053,7 +1185,7 @@ window.openComplaintDetailModal = function (complaintId) {
     const finalIssue = (c.issueType && !c.issueType.includes('Họ tên:')) ? c.issueType : (issue || 'Vấn đề chung');
     const finalContent = (c.content && !c.content.includes('Họ tên:')) ? c.content : (actualContent || 'Không có chi tiết');
     const finalResolution = c.resolution || c.Resolution || resolution || '';
-    const finalStatus = c.status || 'PENDING';
+    const finalStatus = (c.status || 'PENDING').toUpperCase();
 
     const formatTime = (timeStr) => {
         if (!timeStr) return 'N/A';
@@ -1086,10 +1218,14 @@ window.openComplaintDetailModal = function (complaintId) {
     setHtml('detailTypeBadge', typeBadgeHtml);
 
     let statusHtml = '';
-    if (finalStatus === 'PENDING') {
+    if (finalStatus === 'PENDING' || finalStatus === 'OPEN') {
         statusHtml = `<span class="glass-badge" style="background: #FBFFB3; border: 1px solid rgba(255, 215, 0, 0.6); color: #ffd700;"><i class="fa-solid fa-hourglass-half me-1"></i> Đang chờ xử lý</span>`;
-    } else {
+    } else if (finalStatus === 'IN_PROGRESS') {
+        statusHtml = `<span class="glass-badge" style="background: rgba(14, 165, 233, 0.25); border: 1px solid rgba(14, 165, 233, 0.6); color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin me-1"></i> Đang thụ lý</span>`;
+    } else if (finalStatus === 'RESOLVED') {
         statusHtml = `<span class="glass-badge" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i> Đã giải quyết xong</span>`;
+    } else {
+        statusHtml = `<span class="glass-badge" style="background: rgba(148, 163, 184, 0.2); border: 1px solid rgba(148, 163, 184, 0.6); color: #cbd5e1;"><i class="fa-solid fa-lock me-1"></i> Đã đóng</span>`;
     }
     setHtml('detailStatus', statusHtml);
 
@@ -1481,7 +1617,7 @@ async function loadDispatcherDashboardStats() {
         const rejectedCount = rejectedRes.success ? (rejectedRes.count !== undefined ? rejectedRes.count : (rejectedRes.data ? rejectedRes.data.length : 0)) : 0;
 
         const complaintsList = complaintsRes.success ? (complaintsRes.data || []) : [];
-        const openComplaints = complaintsList.filter(c => (c.status || 'PENDING').toUpperCase() === 'PENDING' || (c.status || 'PENDING').toUpperCase() === 'OPEN');
+        const openComplaints = complaintsList.filter(c => ['PENDING', 'IN_PROGRESS', 'OPEN'].includes((c.status || 'PENDING').toUpperCase()));
         const newComplaintsCount = openComplaints.length;
 
         // Cập nhật 3 thẻ Chỉ Số Vận Hành Hôm Nay
