@@ -772,6 +772,50 @@ function updateMapMarkers(ongoingTrips) {
 let currentResolveComplaintId = null;
 let resolveModalInstance = null;
 
+// Helper chuẩn hóa & trích xuất thông tin Khách hàng (Tên, SĐT, Email) từ API hoặc Fallback
+window.extractCustomerInfo = function (c, parsed = {}) {
+    const isValid = (val, invalidStrings = []) => {
+        if (val === null || val === undefined) return false;
+        const s = String(val).trim();
+        if (s === '' || s === 'null' || s === 'undefined' || s === 'N/A') return false;
+        for (let inv of invalidStrings) {
+            if (s.toLowerCase() === inv.toLowerCase()) return false;
+        }
+        return true;
+    };
+
+    let fullName = null;
+    if (isValid(c.fullName) && isNaN(c.fullName)) fullName = c.fullName;
+    else if (isValid(c.FullName) && isNaN(c.FullName)) fullName = c.FullName;
+    else if (isValid(c.AccFullName) && isNaN(c.AccFullName)) fullName = c.AccFullName;
+    else if (isValid(c.accFullName) && isNaN(c.accFullName)) fullName = c.accFullName;
+    else if (isValid(c.customerName) && isNaN(c.customerName)) fullName = c.customerName;
+    else if (isValid(parsed.fullName) && isNaN(parsed.fullName)) fullName = parsed.fullName;
+    else fullName = c.customerId ? `Thành viên #${c.customerId}` : 'Khách vãng lai';
+
+    let email = null;
+    const invalidEmail = ['Chưa có Email', 'Chưa cập nhật Email'];
+    if (isValid(c.email, invalidEmail)) email = c.email;
+    else if (isValid(c.Email, invalidEmail)) email = c.Email;
+    else if (isValid(c.AccEmail, invalidEmail)) email = c.AccEmail;
+    else if (isValid(c.accEmail, invalidEmail)) email = c.accEmail;
+    else if (isValid(c.customerEmail, invalidEmail)) email = c.customerEmail;
+    else if (isValid(parsed.email, invalidEmail)) email = parsed.email;
+    else email = 'Chưa có Email';
+
+    let phone = null;
+    const invalidPhone = ['Chưa có SĐT', 'Chưa cập nhật SĐT'];
+    if (isValid(c.phone, invalidPhone)) phone = c.phone;
+    else if (isValid(c.Phone, invalidPhone)) phone = c.Phone;
+    else if (isValid(c.AccPhone, invalidPhone)) phone = c.AccPhone;
+    else if (isValid(c.accPhone, invalidPhone)) phone = c.accPhone;
+    else if (isValid(c.customerPhone, invalidPhone)) phone = c.customerPhone;
+    else if (isValid(parsed.phone, invalidPhone)) phone = parsed.phone;
+    else phone = 'Chưa có SĐT';
+
+    return { fullName, email, phone };
+};
+
 // Hàm tải danh sách khiếu nại
 window.loadComplaints = async function () {
     const tbody = document.getElementById('complaintsListBody');
@@ -848,9 +892,7 @@ window.loadComplaints = async function () {
                 const rawContent = c.content || c.Content || '';
                 const parsed = parseSuperFeedback(rawContent);
 
-                let fullName = (c.fullName && c.fullName !== 'N/A' && isNaN(c.fullName)) ? c.fullName : (parsed.fullName || (c.customerId ? `Thành viên #${c.customerId}` : 'Khách vãng lai'));
-                let email = (c.email && c.email !== 'N/A' && c.email !== 'Chưa có Email') ? c.email : (parsed.email || 'Chưa có Email');
-                let phone = (c.phone && c.phone !== 'N/A' && c.phone !== 'Chưa có SĐT') ? c.phone : (parsed.phone || 'Chưa có SĐT');
+                const { fullName, email, phone } = window.extractCustomerInfo(c, parsed);
                 let province = c.province || c.region || 'Không xác định';
 
                 const type = (c.type && c.type !== 'OTHER') ? c.type : (parsed.type || c.type || c.complaintType || 'OTHER');
@@ -1134,7 +1176,7 @@ window.toggleResolveReasonBox = function () {
     const outcomeSelect = document.getElementById('resolveOutcomeSelect');
     const reasonBox = document.getElementById('resolveReasonBox');
     if (!outcomeSelect || !reasonBox) return;
-    
+
     if (outcomeSelect.value === 'CLOSED_UNRESOLVED') {
         reasonBox.classList.remove('d-none');
         const isLostLuggage = window.currentResolveComplaintType === 'LOST_LUGGAGE';
@@ -1181,7 +1223,7 @@ window.executeResolveComplaint = async function () {
     const outcomeSelect = document.getElementById('resolveOutcomeSelect');
     const reasonSelect = document.getElementById('resolveReasonCodeSelect');
     const outcomeVal = outcomeSelect ? outcomeSelect.value : 'RESOLVED';
-    
+
     let payload = { outcome: outcomeVal };
     if (outcomeVal === 'CLOSED_UNRESOLVED' && reasonSelect) {
         payload.reason_code = reasonSelect.value;
@@ -1269,9 +1311,8 @@ window.openComplaintDetailModal = function (complaintId) {
         issue = str;
     }
 
-    const finalFullName = (c.fullName && c.fullName !== 'N/A' && isNaN(c.fullName)) ? c.fullName : (fullName || (c.customerId ? `Thành viên #${c.customerId}` : 'Khách vãng lai'));
-    const finalEmail = (c.email && c.email !== 'N/A' && c.email !== 'Chưa có Email') ? c.email : (email || 'Chưa cập nhật Email');
-    const finalPhone = (c.phone && c.phone !== 'N/A' && c.phone !== 'Chưa có SĐT') ? c.phone : (phone || 'Chưa cập nhật SĐT');
+    const parsedContact = { fullName, email, phone };
+    const { fullName: finalFullName, email: finalEmail, phone: finalPhone } = window.extractCustomerInfo(c, parsedContact);
     const finalProvince = c.province || c.region || 'Không xác định';
     const finalType = (c.type && c.type !== 'OTHER') ? c.type : (type || c.complaintType || 'OTHER');
     const finalIssue = (c.issueType && !c.issueType.includes('Họ tên:')) ? c.issueType : (issue || 'Vấn đề chung');
