@@ -1,4 +1,4 @@
-// =====================================================================
+﻿// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -263,6 +263,16 @@ function renderTripList(trips) {
             statusClass = "status-completed-card"; badgeClass = "badge-completed"; statusText = "Hoàn thành";
         } else if (rawStatus === "ACTIVE" || rawStatus === "IN_PROGRESS" || rawStatus === "ONGOING") {
             statusClass = "status-active-card"; badgeClass = "badge-active"; statusText = "Đang chạy";
+            // Kểm tra quá giờ
+            const returnTimeStr = trip.returnTime || trip.ReturnTime;
+            if (returnTimeStr) {
+                const rtDate = new Date(returnTimeStr);
+                if (!isNaN(rtDate) && rtDate < new Date()) {
+                    statusText = "QUÁ GIỜ";
+                    badgeClass = "badge-cancelled"; // dùng class màu đỏ có sẵn
+                    statusClass = "status-cancelled-card border-danger";
+                }
+            }
         } else if (rawStatus === "CANCELLED" || rawStatus === "REJECTED") {
             statusClass = "status-cancelled-card"; badgeClass = "badge-cancelled"; statusText = "Đã hủy";
         } else if (rawStatus === "CONFIRMED") {
@@ -505,21 +515,30 @@ async function viewTripDetail(bookingId) {
             // khách phải trả được TRƯỚC COMPLETED, ngay trong lúc ONGOING).
             const remainingOngoing = summaryTrip ? (summaryTrip.remainingAmount || 0) : (trip.remainingAmount || 0);
             const pendingCash = summaryTrip ? summaryTrip.pendingCashFinal === true : trip.pendingCashFinal === true;
+
+            let extendBtnHtml = '';
+            const currentBType = (trip.bookingType || (summaryTrip && summaryTrip.bookingType) || 'DISTANCE').toUpperCase();
+            if (currentBType === 'HOURLY' || currentBType === 'DAILY') {
+                extendBtnHtml = `<button type="button" class="btn btn-control-action m-0 mt-2 w-100" style="background: linear-gradient(135deg, #ff9800, #f57c00); color: #fff; font-weight: 600; border: none; box-shadow: 0 4px 10px rgba(255,152,0,0.3);" onclick="openExtendModal(${bookingId})"><i class="fa-solid fa-clock-rotate-left me-2"></i>Gia hạn thêm giờ</button>`;
+            }
+
             if (remainingOngoing <= 0) {
-                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>`;
+                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>` + extendBtnHtml;
             } else if (pendingCash) {
-                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>`;
+                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>` + extendBtnHtml;
             } else {
                 actionHtml = `
-                <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
-                    <i class="fa-solid fa-credit-card me-2"></i>VNPay
-                </button>
-                <!-- <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; font-weight: 600; border: none;" onclick="payViaSePay(${bookingId})">
-                    <i class="fa-solid fa-qrcode me-2"></i>SePay QR
-                </button> -->
-                <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'CASH')">
-                    <i class="fa-solid fa-money-bill-wave me-2"></i>Tiền mặt
-                </button>`;
+                <div class="d-flex w-100 gap-2">
+                    <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #005A9C, #0077cc); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'VNPAY')">
+                        <i class="fa-solid fa-credit-card me-2"></i>VNPay
+                    </button>
+                    <!-- <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; font-weight: 600; border: none;" onclick="payViaSePay(${bookingId})">
+                        <i class="fa-solid fa-qrcode me-2"></i>SePay QR
+                    </button> -->
+                    <button type="button" class="btn btn-control-action m-0" style="flex:1; background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 600; border: none;" onclick="payFinal(${bookingId}, 'CASH')">
+                        <i class="fa-solid fa-money-bill-wave me-2"></i>Tiền mặt
+                    </button>
+                </div>` + extendBtnHtml;
             }
             if (inlineInvoicePanel) inlineInvoicePanel.style.display = 'block';
         } else if (!['COMPLETED', 'CANCELLED'].includes(statusCheck)) {
@@ -1405,3 +1424,67 @@ window.addEventListener("message", (event) => {
         }
     }
 });
+
+// =====================================================================
+// XỬ LÝ GIA HẠN GIỜ (EXTENSION)
+// =====================================================================
+let currentExtendBookingId = null;
+
+function openExtendModal(bookingId) {
+    currentExtendBookingId = bookingId;
+    const extendModal = new bootstrap.Modal(document.getElementById('extendModal'));
+    extendModal.show();
+}
+
+async function executeExtendAction() {
+    if (!currentExtendBookingId) return;
+    const hours = parseInt(document.getElementById('extendHours').value) || 1;
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('customerId') || 1;
+
+    const btnSubmit = document.getElementById('btnSubmitExtend');
+    const oldHtml = btnSubmit.innerHTML;
+    btnSubmit.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> ĐANG GỬI...';
+    btnSubmit.disabled = true;
+
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${currentExtendBookingId}/extend`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+            },
+            body: JSON.stringify({
+                requestedByRole: 'CUSTOMER',
+                requestedByAccountId: parseInt(accountId),
+                extraUnits: hours
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+            // Ẩn modal
+            const extendModalEl = document.getElementById('extendModal');
+            const extendModalInst = bootstrap.Modal.getInstance(extendModalEl);
+            if (extendModalInst) extendModalInst.hide();
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Đã gửi yêu cầu',
+                text: 'Hệ thống đã nhận yêu cầu gia hạn, vui lòng đợi tài xế xác nhận trong ít phút.'
+            });
+            // Update the view (thực tế backend sẽ trả về status pending)
+            setTimeout(() => {
+                viewTripDetail(currentExtendBookingId);
+            }, 1000);
+        } else {
+            Swal.fire({ icon: 'error', title: 'Thất bại', text: result.message || 'Không thể gửi yêu cầu gia hạn lúc này.' });
+        }
+    } catch (error) {
+        console.error("Error extending booking:", error);
+        Swal.fire({ icon: 'error', title: 'Lỗi kết nối', text: 'Không thể kết nối đến máy chủ.' });
+    } finally {
+        btnSubmit.innerHTML = oldHtml;
+        btnSubmit.disabled = false;
+    }
+}
+

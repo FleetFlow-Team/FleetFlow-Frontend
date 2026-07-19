@@ -88,6 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
         loadDriverNotifications();
         setInterval(loadDriverNotifications, 10000);
     }
+
+    // Tự động kiểm tra yêu cầu gia hạn giờ mỗi 15s
+    setInterval(checkPendingExtension, 15000);
     // Lắng nghe sự kiện bật/tắt ô nhập "Lý do khác" của Modal Từ chối
     const rejectRadios = document.querySelectorAll('input[name="rejectReason"]');
     const otherReasonContainer = document.getElementById('otherReasonContainer');
@@ -1472,6 +1475,13 @@ async function fetchDriverHistory(statusFilter = '') {
                         break;
                     case 'ONGOING':
                         badge = '<span class="badge bg-primary">Đang di chuyển</span>';
+                        if (trip.returnTime || trip.ReturnTime) {
+                            const rtStr = trip.returnTime || trip.ReturnTime;
+                            const rtDate = new Date(rtStr);
+                            if (!isNaN(rtDate) && rtDate < new Date()) {
+                                badge = '<span class="badge bg-danger">QUÁ GIỜ</span>';
+                            }
+                        }
                         break;
                     case 'CONFIRMED':
                         badge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
@@ -1695,4 +1705,117 @@ function generateStars(rating) {
     }
     return stars;
 }
+
+// =====================================================================
+// XỬ LÝ YÊU CẦU GIA HẠN GIỜ (EXTENSION RESPOND)
+// =====================================================================
+let currentPendingExtensionId = null;
+let currentExtensionBookingId = null;
+
+async function checkPendingExtension() {
+    let activeBookingId = localStorage.getItem('activeBookingId');
+    // Fallback: nếu localStorage bị mất, thử tìm chuyến đang chạy (ONGOING) trên màn hình
+    if (!activeBookingId) {
+        const ongoingBtn = document.querySelector('button[onclick*="completeTrip"]');
+        if (ongoingBtn) {
+            const match = ongoingBtn.getAttribute('onclick').match(/completeTrip\(this,\s*(\d+)/);
+            if (match && match[1]) {
+                activeBookingId = match[1];
+                localStorage.setItem('activeBookingId', activeBookingId);
+            }
+        }
+    }
+    if (!activeBookingId) return;
+
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${activeBookingId}/extend/pending?t=${Date.now()}`, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
+        });
+        
+        if (!response.ok) return;
+        
+        const result = await response.json();
+        const data = result.data || result;
+        
+        const extId = data.id || data.extensionId;
+        // Tránh popup lặp lại nếu tài xế đã duyệt nhưng đang chờ dispatcher duyệt
+        if (data && extId && data.status === 'PENDING' && data.counterpartyStatus === 'PENDING') {
+            if (currentPendingExtensionId !== extId) {
+                currentPendingExtensionId = extId;
+                currentExtensionBookingId = activeBookingId;
+                
+                document.getElementById('extendModalText').innerText = `Khách hàng yêu cầu gia hạn thêm ${data.extraUnits || data.extraMinutes / 60} giờ. Bạn có đồng ý không?`;
+                const extendModal = new bootstrap.Modal(document.getElementById('driverExtendModal'));
+                extendModal.show();
+            }
+        } else {
+            if (currentPendingExtensionId) {
+                currentPendingExtensionId = null;
+                const modalEl = document.getElementById('driverExtendModal');
+                if (modalEl && modalEl.classList.contains('show')) {
+                    bootstrap.Modal.getInstance(modalEl).hide();
+                }
+            }
+        }
+    } catch (e) {
+        // Im lặng báo lỗi để không spam console
+    }
+}
+
+async function respondExtension(isApprove) {
+    if (!currentPendingExtensionId || !currentExtensionBookingId) return;
+    
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('driverAccountId') || 1;
+    const btnApprove = document.getElementById('btnApproveExtend');
+    const btnReject = document.getElementById('btnRejectExtend');
+    
+    if(btnApprove) btnApprove.disabled = true;
+    if(btnReject) btnReject.disabled = true;
+
+    try {
+        const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${currentExtensionBookingId}/extend/${currentPendingExtensionId}/respond`, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
+            },
+            body: JSON.stringify({
+                role: 'DRIVER',
+                accountId: parseInt(accountId),
+                approve: isApprove
+            })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+            const modalEl = document.getElementById('driverExtendModal');
+            if (modalEl) bootstrap.Modal.getInstance(modalEl).hide();
+            
+            setTimeout(() => {
+                if (typeof loadActiveTripData === 'function') {
+                    loadActiveTripData(currentExtensionBookingId);
+                } else if (typeof fetchActiveTrip === 'function') {
+                    fetchActiveTrip(currentExtensionBookingId);
+                } else {
+                    window.location.reload();
+                }
+            }, 1000);
+        } else {
+            alert(result.message || 'Lỗi khi phản hồi.');
+        }
+    } catch (e) {
+        console.error("Lỗi respond gia hạn:", e);
+    } finally {
+        if(btnApprove) btnApprove.disabled = false;
+        if(btnReject) btnReject.disabled = false;
+        currentPendingExtensionId = null;
+    }
+}
+
+// Khởi chạy vòng lặp kiểm tra gia hạn mỗi 15 giây
+setTimeout(checkPendingExtension, 3000);
+setInterval(checkPendingExtension, 15000);
+
 
