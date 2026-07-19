@@ -947,17 +947,17 @@ window.calculateRealPrice = async function () {
             currentBaseFare = data.baseFare;
             currentWeekendSurcharge = data.weekendSurcharge;
 
-            // FRONTEND TỰ TÍNH PHỤ PHÍ NGÀY LỄ (Theo yêu cầu)
-            currentHolidaySurcharge = 0;
+            // ĐỌC PHỤ PHÍ NGÀY LỄ TỪ BACKEND
+            currentHolidaySurcharge = data.holidaySurcharge || 0;
             let matchedHolidayName = "Ngày lễ";
-            const depTimeEl = document.getElementById('inputDepartureTime');
-            if (depTimeEl && depTimeEl.value) {
-                const depDateStr = depTimeEl.value.split('T')[0];
-                const matchedHoliday = globalHolidaysList.find(h => h.holidayDate === depDateStr);
-                if (matchedHoliday) {
-                    currentHolidaySurcharge = Math.round(currentBaseFare * 0.2); // 20% surcharge
-                    currentEstimatedTotal += currentHolidaySurcharge;
-                    matchedHolidayName = matchedHoliday.description || "Ngày lễ";
+            if (currentHolidaySurcharge > 0) {
+                const depTimeEl = document.getElementById('inputDepartureTime');
+                if (depTimeEl && depTimeEl.value) {
+                    const depDateStr = depTimeEl.value.split('T')[0];
+                    const matchedHoliday = globalHolidaysList.find(h => h.holidayDate === depDateStr);
+                    if (matchedHoliday) {
+                        matchedHolidayName = matchedHoliday.description || "Ngày lễ";
+                    }
                 }
             }
 

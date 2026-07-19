@@ -406,15 +406,14 @@ async function viewTripDetail(bookingId) {
             if (match) depDateStr = match[1];
         }
 
-        if (depDateStr && window.globalHolidaysList) {
+        // Dịch ngược holidaySurcharge từ estimatedTotal vì trong DB không lưu riêng rẽ
+        holidaySurcharge = estimatedTotal - baseFare - weekendSurcharge + discountAmount;
+        if (holidaySurcharge < 0) holidaySurcharge = 0;
+
+        if (holidaySurcharge > 0 && depDateStr && window.globalHolidaysList) {
             const matchedHoliday = window.globalHolidaysList.find(h => h.holidayDate === depDateStr);
             if (matchedHoliday) {
-                holidaySurcharge = Math.round(baseFare * 0.2); // 20%
                 matchedHolidayName = matchedHoliday.description || "Ngày lễ";
-
-                // Nếu backend chưa cộng vào tổng (thường là chưa, do đã bỏ logic)
-                // Ta cộng thêm vào tổng hiển thị (và tổng thực tế)
-                estimatedTotal += holidaySurcharge;
             }
         }
 
@@ -430,6 +429,26 @@ async function viewTripDetail(bookingId) {
         document.getElementById('lblSurcharge').innerHTML = surchargeHtml;
         document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
         document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
+
+        const isDepositPaid = summaryTrip ? summaryTrip.depositPaid === true : trip.depositPaid === true;
+        const rowDeposit = document.getElementById('rowDepositPaid');
+        const rowRemaining = document.getElementById('rowRemainingAmount');
+        const lblDeposit = document.getElementById('lblDepositPaid');
+        const lblRemaining = document.getElementById('lblRemainingAmount');
+
+        if (isDepositPaid && rowDeposit && rowRemaining && lblDeposit && lblRemaining) {
+            const depositAmount = Math.round(estimatedTotal * 0.3);
+            const remainingAmount = estimatedTotal - depositAmount;
+
+            lblDeposit.innerText = `- ${fVND(depositAmount)}`;
+            lblRemaining.innerText = fVND(remainingAmount);
+
+            rowDeposit.style.setProperty('display', 'flex', 'important');
+            rowRemaining.style.setProperty('display', 'flex', 'important');
+        } else {
+            if (rowDeposit) rowDeposit.style.display = 'none';
+            if (rowRemaining) rowRemaining.style.display = 'none';
+        }
         // =================================================================
 
         // 8. TÍCH HỢP ACTION BUTTONS THEO STATUS
@@ -577,8 +596,11 @@ async function viewInvoiceModal(bookingId) {
             const discountAmount = parseFloat(inv.discountAmount) || 0;
             const totalAmount = parseFloat(inv.estimatedTotal) || 0;
 
+            let holidaySurcharge = totalAmount - baseFare - weekendSur + discountAmount;
+            if (holidaySurcharge < 0) holidaySurcharge = 0;
+
             document.getElementById('lblInvoiceBasePrice').innerText = fVND(baseFare);
-            document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur)}`;
+            document.getElementById('lblInvoiceSurcharge').innerText = `+ ${fVND(weekendSur + tollSur + holidaySurcharge)}`;
             document.getElementById('lblInvoiceDiscount').innerText = `- ${fVND(discountAmount)}`;
 
             // KHÔNG được gọi POST /payments/final ở đây để "xem trước" số tiền:
