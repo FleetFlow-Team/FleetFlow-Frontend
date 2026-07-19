@@ -628,19 +628,22 @@ async function viewInvoiceModal(bookingId) {
 }
 
 // Logic chuyển Tab (Tất cả / Đang chờ / Đang chạy / Hoàn thành...)
+// Logic chuyển Tab (Tất cả / Đang chờ / Đang chạy / Hoàn thành...)
 function filterTrips(status, btnElement) {
     const tabs = document.querySelectorAll('.tab-pill');
     tabs.forEach(tab => tab.classList.remove('active'));
-    btnElement.classList.add('active');
+    if (btnElement) btnElement.classList.add('active');
 
-    const indicator = document.getElementById('tabIndicator');
-    if (indicator) {
-        indicator.style.width = `${btnElement.offsetWidth}px`;
-        indicator.style.transform = `translateX(${btnElement.offsetLeft - 6}px)`;
+    if (btnElement) {
+        const indicator = document.getElementById('tabIndicator');
+        if (indicator) {
+            indicator.style.width = `${btnElement.offsetWidth}px`;
+            indicator.style.transform = `translateX(${btnElement.offsetLeft - 6}px)`;
+        }
     }
 
-    if (status === 'ratings') {
-        renderRatingsTab();
+    if (status === 'ratings' || status === 'complaints') {
+        renderRatingsTab(status);
         return;
     }
 
@@ -667,121 +670,109 @@ function filterTrips(status, btnElement) {
 // Giả lập dữ liệu Khiếu nại khi Backend đang lỗi
 window.fakeComplaints = window.fakeComplaints || [];
 
-// Hàm render cho tab Nhận xét và Đánh giá
-async function renderRatingsTab() {
+// Hàm render cho tab Nhận xét & Đánh giá hoặc Khiếu nại
+async function renderRatingsTab(mode = 'ratings') {
     const container = document.getElementById('tripListContainer');
     const emptyState = document.getElementById('emptyState');
     if (!container) return;
 
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
-    emptyState.style.display = 'none';
-
-    // Load fake complaints from localStorage
-    try {
-        const cached = localStorage.getItem('customerFakeComplaints');
-        if (cached) {
-            window.fakeComplaints = JSON.parse(cached);
-        } else {
-            window.fakeComplaints = [];
-        }
-    } catch (e) {
-        window.fakeComplaints = [];
-    }
+    if (emptyState) emptyState.style.display = 'none';
 
     try {
         const token = localStorage.getItem('accessToken');
         const headers = { 'Authorization': `Bearer ${token}` };
+        let html = '';
 
-        // Fetch Ratings
-        const ratingsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/ratings', { headers });
-        const ratingsResult = await ratingsRes.json();
+        // Nếu là tab đánh giá (hoặc cả 2)
+        if (mode === 'ratings' || mode === 'both') {
+            const ratingsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/ratings', { headers });
+            const ratingsResult = await ratingsRes.json();
+            const ratings = (ratingsResult.success && ratingsResult.data) ? ratingsResult.data : [];
 
-        // Fetch Complaints
-        const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
-        const complaintsResult = await complaintsRes.json();
+            html += '<h4 class="fw-bold mb-4 mt-2 text-dark"><i class="fa-solid fa-star text-warning me-2"></i> Lịch sử Đánh giá</h4>';
+            if (ratings.length === 0) {
+                html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có đánh giá nào.</div>';
+            } else {
+                ratings.forEach(r => {
+                    let stars = '';
+                    for (let i = 1; i <= 5; i++) {
+                        stars += `<i class="fa-solid fa-star ${i <= r.driverRating ? 'text-warning' : 'text-muted opacity-25'}"></i>`;
+                    }
+                    let dateStr = r.createdAt || '';
+                    if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
 
-        let html = '<h4 class="fw-bold mb-4 mt-2 text-dark"><i class="fa-solid fa-star text-warning me-2"></i> Lịch sử Đánh giá</h4>';
-
-        const ratings = (ratingsResult.success && ratingsResult.data) ? ratingsResult.data : [];
-        if (ratings.length === 0) {
-            html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có đánh giá nào.</div>';
-        } else {
-            ratings.forEach(r => {
-                let stars = '';
-                for (let i = 1; i <= 5; i++) {
-                    stars += `<i class="fa-solid fa-star ${i <= r.driverRating ? 'text-warning' : 'text-muted opacity-25'}"></i>`;
-                }
-
-                // For date formatting
-                let dateStr = r.createdAt || '';
-                if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
-
-                html += `
-                    <div class="glass-panel bg-white p-4 mb-3 border border-success border-opacity-25 shadow-sm rounded-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                            <span class="fw-bold text-dark fs-5">Chuyến #${r.bookingId} <span class="badge bg-light text-dark border ms-2 fs-6 fw-normal">${r.vehicleName} (${r.licensePlate})</span></span>
-                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
-                        </div>
-                        <div class="mb-3 d-flex align-items-center">
-                            <div class="me-3 fs-5">${stars}</div>
-                            <span class="fw-semibold text-dark"><i class="fa-solid fa-id-card text-muted me-1"></i> Tài xế: ${r.driverName}</span>
-                        </div>
-                        <div class="text-secondary fst-italic p-3 bg-light rounded-3">"${r.comment || 'Không có nhận xét'}"</div>
-                    </div>
-                `;
-            });
-        }
-
-        html += '<h4 class="fw-bold mb-4 mt-5 text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>';
-
-        const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
-
-        if (complaints.length === 0) {
-            html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có khiếu nại nào.</div>';
-        } else {
-            complaints.forEach(c => {
-                let dateStr = c.createdAt || '';
-                if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
-
-                let statusBadge = '';
-                switch ((c.status || '').toUpperCase()) {
-                    case 'PENDING': statusBadge = '<span class="badge bg-warning text-dark">Đang chờ thụ lý</span>'; break;
-                    case 'IN_PROGRESS': statusBadge = '<span class="badge bg-info text-dark">Đang xử lý</span>'; break;
-                    case 'RESOLVED': statusBadge = '<span class="badge bg-success">Đã giải quyết</span>'; break;
-                    case 'CLOSED': statusBadge = '<span class="badge bg-secondary">Đã đóng</span>'; break;
-                    default: statusBadge = `<span class="badge bg-light text-dark border">${c.status || 'Chưa rõ'}</span>`;
-                }
-
-                let typeTitle = 'Khiếu nại dịch vụ';
-                if (c.type === 'LOST_LUGGAGE') typeTitle = 'Thất lạc hành lý / Tài sản';
-                else if (c.type === 'SERVICE_FEEDBACK') typeTitle = 'Phản ánh chất lượng dịch vụ / Tài xế';
-                else if (c.type === 'OTHER') typeTitle = 'Vấn đề khác';
-
-                let resolutionHtml = '';
-                if (c.resolution && c.resolution.trim() !== '') {
-                    resolutionHtml = `<div class="mt-2 text-success fw-medium small"><i class="fa-solid fa-check-circle me-1"></i>Kết quả xử lý: ${c.resolution}</div>`;
-                }
-
-                html += `
-                    <div class="glass-panel bg-white p-4 mb-3 border border-danger border-opacity-25 shadow-sm rounded-4">
-                        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
-                            <span class="fw-bold text-dark fs-5">Đơn #${c.complaintId || 'N/A'} ${c.bookingId ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${c.bookingId}</span>` : ''}</span>
-                            <div class="d-flex align-items-center gap-2">
-                                ${statusBadge}
+                    html += `
+                        <div class="glass-panel bg-white p-4 mb-3 border border-success border-opacity-25 shadow-sm rounded-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                <span class="fw-bold text-dark fs-5">Chuyến #${r.bookingId} <span class="badge bg-light text-dark border ms-2 fs-6 fw-normal">${r.vehicleName || ''} (${r.licensePlate || ''})</span></span>
                                 <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
                             </div>
+                            <div class="mb-3 d-flex align-items-center">
+                                <div class="me-3 fs-5">${stars}</div>
+                                <span class="fw-semibold text-dark"><i class="fa-solid fa-id-card text-muted me-1"></i> Tài xế: ${r.driverName || 'N/A'}</span>
+                            </div>
+                            <div class="text-secondary fst-italic p-3 bg-light rounded-3">"${r.comment || 'Không có nhận xét'}"</div>
                         </div>
-                        <div class="text-danger fw-bold mb-2 fs-5">${typeTitle}</div>
-                        <div class="text-secondary p-3 bg-light rounded-3" style="line-height: 1.5;">"${c.content || c.description || c.comment || 'Không có chi tiết'}"</div>
-                        ${resolutionHtml}
-                        <div class="mt-3 text-end">
-                            <button class="btn btn-sm btn-outline-success" onclick="openComplaintTimelineModal(${c.complaintId})">
-                                <i class="fa-solid fa-timeline me-1"></i>Xem Tiến Trình Xử Lý
-                            </button>
+                    `;
+                });
+            }
+        }
+
+        // Nếu là tab khiếu nại (hoặc cả 2)
+        if (mode === 'complaints' || mode === 'both') {
+            const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
+            const complaintsResult = await complaintsRes.json();
+            const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
+
+            html += `<h4 class="fw-bold mb-4 ${mode === 'both' ? 'mt-5' : 'mt-2'} text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>`;
+            if (complaints.length === 0) {
+                html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có khiếu nại nào.</div>';
+            } else {
+                complaints.forEach(c => {
+                    let dateStr = c.createdAt || '';
+                    if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
+
+                    let statusBadge = '';
+                    switch ((c.status || '').toUpperCase()) {
+                        case 'PENDING': statusBadge = '<span class="badge bg-warning text-dark">Đang chờ thụ lý</span>'; break;
+                        case 'IN_PROGRESS': statusBadge = '<span class="badge bg-info text-dark">Đang xử lý</span>'; break;
+                        case 'RESOLVED': statusBadge = '<span class="badge bg-success">Đã giải quyết</span>'; break;
+                        case 'CLOSED': statusBadge = '<span class="badge bg-secondary">Đã đóng</span>'; break;
+                        default: statusBadge = `<span class="badge bg-light text-dark border">${c.status || 'Chưa rõ'}</span>`;
+                    }
+
+                    let typeTitle = 'Khiếu nại dịch vụ';
+                    if (c.type === 'LOST_LUGGAGE') typeTitle = 'Thất lạc hành lý / Tài sản';
+                    else if (c.type === 'SERVICE_FEEDBACK') typeTitle = 'Phản ánh chất lượng dịch vụ / Tài xế';
+                    else if (c.type === 'OTHER') typeTitle = 'Vấn đề khác';
+
+                    let resolutionHtml = '';
+                    if (c.resolution && c.resolution.trim() !== '') {
+                        resolutionHtml = `<div class="mt-2 text-success fw-medium small"><i class="fa-solid fa-check-circle me-1"></i>Kết quả xử lý: ${c.resolution}</div>`;
+                    }
+
+                    html += `
+                        <div class="glass-panel bg-white p-4 mb-3 border border-danger border-opacity-25 shadow-sm rounded-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                                <span class="fw-bold text-dark fs-5">Đơn #${c.complaintId || 'N/A'} ${c.bookingId ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${c.bookingId}</span>` : ''}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${statusBadge}
+                                    <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                                </div>
+                            </div>
+                            <div class="text-danger fw-bold mb-2 fs-5">${typeTitle}</div>
+                            <div class="text-secondary p-3 bg-light rounded-3" style="line-height: 1.5;">"${c.content || c.description || c.comment || 'Không có chi tiết'}"</div>
+                            ${resolutionHtml}
+                            <div class="mt-3 text-end">
+                                <button class="btn btn-sm btn-outline-success" onclick="openComplaintTimelineModal(${c.complaintId})">
+                                    <i class="fa-solid fa-timeline me-1"></i>Xem Tiến Trình Xử Lý
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
         container.innerHTML = html;
@@ -1302,41 +1293,44 @@ async function submitComplaint() {
     if (!currentComplaintBookingId) return;
 
     const content = document.getElementById('complaintContent').value.trim();
-    const type = document.getElementById('complaintType').value;
+    const typeSelect = document.getElementById('complaintType');
+    const type = typeSelect ? typeSelect.value : 'OTHER';
+
     if (!content) {
-        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập nội dung khiếu nại.' });
+        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập chi tiết nội dung khiếu nại của bạn.' });
+        document.getElementById('complaintContent').focus();
         return;
     }
 
-    const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
     const token = localStorage.getItem('accessToken');
+    if (!token) {
+        Swal.fire({ icon: 'warning', title: 'Chưa đăng nhập', text: 'Vui lòng đăng nhập lại tài khoản Khách hàng để gửi khiếu nại.' });
+        return;
+    }
+
     const btn = document.getElementById('btnSubmitComplaint');
     const oldText = btn.innerText;
-    btn.innerHTML = '<i class=\"fa-solid fa-spinner fa-spin\"></i> Đang gửi...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tiếp nhận...';
     btn.disabled = true;
 
     try {
-        const res = await fetch('http://localhost:8080/FleetFlow/api/v1/complaints', {
+        const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+        
+        const res = await fetch(`${API_BASE_URL}/complaints`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
             },
             body: JSON.stringify({
-                bookingId: parseInt(currentComplaintBookingId),
-                customerId: parseInt(customerId),
                 type: type,
-                content: content,
-                fullName: localStorage.getItem('fullName') || 'Khách hàng',
-                phone: localStorage.getItem('phone') || '0900000000',
-                email: localStorage.getItem('email') || '',
-                issueType: type === 'SERVICE_FEEDBACK' ? 'Thái độ tài xế / Chất lượng dịch vụ' : null
+                bookingId: parseInt(currentComplaintBookingId, 10),
+                content: content
             })
         });
 
         const data = await res.json();
 
-        // Đóng modal
         const modalEl = document.getElementById('complaintModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
@@ -1344,22 +1338,28 @@ async function submitComplaint() {
         if (res.ok && (data.success || data.complaintId || (data.message && data.message.toLowerCase().includes('thành công')))) {
             Swal.fire({
                 icon: 'success',
-                title: 'Thành công',
-                text: `Đơn khiếu nại #${data.complaintId || ''} đã được gửi thành công. Bạn có thể theo dõi tiến trình xử lý ngay bên dưới.`
+                title: 'Ghi Nhận Khiếu Nại',
+                text: `Đơn khiếu nại ${data.complaintId ? '#' + data.complaintId : ''} cho chuyến đi #${currentComplaintBookingId} đã được tiếp nhận. Đội ngũ Điều phối viên sẽ sớm xử lý.`
             });
 
-            // Reload lại tab khiếu nại từ API
             if (typeof renderRatingsTab === 'function') {
                 setTimeout(() => {
-                    document.querySelector('.tab-pill[onclick*="ratings"]').click();
-                }, 1000);
+                    const complaintsTabBtn = document.querySelector('.tab-pill[onclick*="complaints"]') || document.querySelector('.tab-pill[onclick*="ratings"]');
+                    if (complaintsTabBtn) complaintsTabBtn.click();
+                }, 800);
+            } else if (typeof loadTrips === 'function') {
+                loadTrips();
             }
         } else {
-            Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Gửi khiếu nại thất bại.' });
+            Swal.fire({
+                icon: 'error',
+                title: 'Không thể tiếp nhận',
+                text: data.message || data.error || 'Gửi khiếu nại thất bại. Vui lòng đảm bảo chuyến đi đã hoàn thành và bạn chưa gửi khiếu nại cho chuyến này trước đó.'
+            });
         }
     } catch (error) {
         console.error("Lỗi submitComplaint:", error);
-        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể kết nối đến máy chủ.' });
+        Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow lúc này.' });
     } finally {
         btn.innerHTML = oldText;
         btn.disabled = false;
@@ -1372,7 +1372,12 @@ window.openComplaintTimelineModal = async function (complaintId) {
 
     const token = localStorage.getItem('accessToken');
     if (!token) {
-        Swal.fire({ icon: 'warning', title: 'Chưa đăng nhập', text: 'Vui lòng đăng nhập lại để xem timeline.' });
+        Swal.fire({
+            icon: 'warning',
+            title: 'Chưa đăng nhập',
+            text: 'Vui lòng đăng nhập lại để xem timeline.',
+            customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+        });
         return;
     }
 
@@ -1396,23 +1401,25 @@ window.openComplaintTimelineModal = async function (complaintId) {
                     title: `Tiến trình Đơn #${complaintId}`,
                     text: 'Đơn khiếu nại đang chờ bộ phận CSKH tiếp nhận xử lý.',
                     icon: 'info',
-                    confirmButtonColor: '#16a34a'
+                    confirmButtonColor: '#16a34a',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
                 });
                 return;
             }
 
-            let timelineHtml = `<div class="vertical-timeline text-start mt-3" style="max-height: 420px; overflow-y: auto; padding: 10px;">`;
+            let timelineHtml = `<div class="swal-timeline-container text-start mt-3">`;
 
             result.timeline.forEach((item, index) => {
                 let timeStr = item.time ? item.time.substring(0, 16).replace('T', ' ') : '';
                 let isLatest = (index === result.timeline.length - 1);
 
                 timelineHtml += `
-                    <div class="timeline-node ${isLatest ? 'node-destination' : ''}" style="margin-bottom: 20px; position: relative; padding-left: 20px; border-left: 2px solid #16a34a;">
-                        <div class="node-meta fw-bold text-success" style="font-size: 0.9rem;">
-                            [${timeStr}] - ${item.actionCode || 'CẬP NHẬT'}
+                    <div class="swal-timeline-node ${isLatest ? 'node-destination' : ''}">
+                        <span class="swal-timeline-dot"></span>
+                        <div class="fw-bold ${isLatest ? 'text-primary' : 'text-success'} mb-1" style="font-size: 0.9rem;">
+                            <i class="fa-regular fa-clock me-1"></i> [${timeStr}] - ${item.actionCode || 'CẬP NHẬT'}
                         </div>
-                        <div class="node-location text-dark bg-light p-3 rounded-3 border mt-1 shadow-sm" style="font-size: 0.9rem; line-height: 1.5;">
+                        <div class="swal-timeline-card text-dark" style="font-size: 0.92rem; line-height: 1.5;">
                             ${item.message || 'Cập nhật tiến trình xử lý đơn khiếu nại.'}
                         </div>
                     </div>
@@ -1424,16 +1431,22 @@ window.openComplaintTimelineModal = async function (complaintId) {
             Swal.fire({
                 title: `<i class="fa-solid fa-timeline text-success me-2"></i>Tiến trình Đơn #${complaintId}`,
                 html: timelineHtml,
-                width: '650px',
+                width: '680px',
                 showCloseButton: true,
-                confirmButtonText: 'Đóng',
-                confirmButtonColor: '#16a34a'
+                confirmButtonText: '<i class="fa-solid fa-check me-1"></i> Đóng lại',
+                confirmButtonColor: '#16a34a',
+                customClass: {
+                    popup: 'swal-glass-popup',
+                    title: 'swal-glass-title',
+                    htmlContainer: 'swal-glass-text'
+                }
             });
         } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Không thể xem tiến trình',
-                text: result.message || 'Đơn khiếu nại không tồn tại hoặc không thuộc quyền sở hữu của bạn.'
+                text: result.message || 'Đơn khiếu nại không tồn tại hoặc không thuộc quyền sở hữu của bạn.',
+                customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
             });
         }
     } catch (error) {
@@ -1441,7 +1454,8 @@ window.openComplaintTimelineModal = async function (complaintId) {
         Swal.fire({
             icon: 'error',
             title: 'Lỗi kết nối',
-            text: 'Không thể tải thông tin tiến trình từ máy chủ lúc này.'
+            text: 'Không thể tải thông tin tiến trình từ máy chủ lúc này.',
+            customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
         });
     }
 };

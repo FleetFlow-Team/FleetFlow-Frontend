@@ -680,53 +680,117 @@
             </div>
         </div>
 
-        <!-- MODAL GIẢI QUYẾT KHIẾU NẠI -->
+        <!-- MODAL PHÂN LOẠI KHIẾU NẠI (TAG - BƯỚC 1 CỦA ĐƠN TYPE = OTHER) -->
+        <div class="login-modal-overlay" id="tagComplaintModal" style="z-index: 1066;">
+            <div class="glass-login-container text-white" style="max-width: 520px; text-align: left; padding: 2.2rem;">
+                <button type="button" class="close-modal-btn" onclick="closeTagComplaintModal()">&times;</button>
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-tags text-warning mb-3" style="font-size: 2.8rem; filter: drop-shadow(0 0 10px rgba(245,158,11,0.5));"></i>
+                    <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Gắn Nhãn Phân Loại</h3>
+                    <p class="mt-2 text-white-50 small">Phân loại nghiệp vụ cho đơn khiếu nại <span id="tagComplaintIdSpan" class="fw-bold text-warning">#N/A</span></p>
+                </div>
+                <div class="mb-4">
+                    <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-list me-1"></i> CHỌN NHÃN NGHIỆP VỤ (ISSUE TYPE):</label>
+                    <select id="tagIssueTypeSelect" class="form-select glass-input-field text-white" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
+                        <option value="VEHICLE_VIOLATION" style="background: #1e293b; color: #fff;">Vi phạm quy chế chất lượng / xe cộ (VEHICLE_VIOLATION)</option>
+                        <option value="APP_ISSUE" style="background: #1e293b; color: #fff;">Lỗi ứng dụng / Hệ thống đặt xe (APP_ISSUE)</option>
+                        <option value="BILLING_DISPUTE" style="background: #1e293b; color: #fff;">Tranh chấp thanh toán / Cước phí (BILLING_DISPUTE)</option>
+                        <option value="STAFF_ATTITUDE" style="background: #1e293b; color: #fff;">Thái độ nhân viên / Tài xế phục vụ (STAFF_ATTITUDE)</option>
+                        <option value="SAFETY_CONCERN" style="background: #1e293b; color: #fff;">Vấn đề an toàn hành trình khẩn cấp (SAFETY_CONCERN)</option>
+                        <option value="OTHER_UNCATEGORIZED" style="background: #1e293b; color: #fff;">Vấn đề khác chưa phân loại (OTHER_UNCATEGORIZED)</option>
+                    </select>
+                    <div class="small text-white-50 mt-2 p-2 rounded" style="background: rgba(0,0,0,0.2);">
+                        <i class="fa-solid fa-circle-info text-warning me-1"></i> Gắn nhãn giúp định hướng quy trình xử lý tiếp theo và ghi nhận AuditLog hệ thống.
+                    </div>
+                </div>
+                <button id="btnSubmitTagComplaint" class="glass-btn-submit w-100" onclick="executeTagComplaint()">
+                    <i class="fa-solid fa-tag me-2"></i> Xác Nhận Phân Loại
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL THỰC THI HÀNH ĐỘNG XỬ LÝ (HANDLE - BƯỚC 2 CỦA ĐƠN TYPE = OTHER ĐÃ TAG) -->
+        <div class="login-modal-overlay" id="handleComplaintModal" style="z-index: 1066;">
+            <div class="glass-login-container text-white" style="max-width: 550px; text-align: left; padding: 2.2rem;">
+                <button type="button" class="close-modal-btn" onclick="closeHandleComplaintModal()">&times;</button>
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-gears text-success mb-3" style="font-size: 2.8rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
+                    <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Xử Lý Khiếu Nại (Handle)</h3>
+                    <p class="mt-2 text-white-50 small">Chọn kết luận xử lý cho đơn khiếu nại <span id="handleComplaintIdSpan" class="fw-bold text-success">#N/A</span></p>
+                </div>
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="VERIFIED_HANDLED" class="form-check-input mt-0" checked>
+                        <div>
+                            <div class="fw-bold text-success"><i class="fa-solid fa-check-circle me-2"></i>Đã xác minh & Xử lý xong (VERIFIED_HANDLED)</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG chốt đơn sang trạng thái ĐÃ GIẢI QUYẾT (RESOLVED) và thông báo cho Khách.</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="CANNOT_VERIFY" class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-warning"><i class="fa-solid fa-question-circle me-2"></i>Không đủ căn cứ xác minh (CANNOT_VERIFY)</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do VIOLATION_NOT_CONFIRMED (CLOSED_UNRESOLVED).</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="REJECTED" class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-danger"><i class="fa-solid fa-ban me-2"></i>Từ chối khiếu nại không hợp lệ (REJECTED)</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do OUT_OF_SCOPE (CLOSED_UNRESOLVED).</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3" style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="ESCALATED" class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-info"><i class="fa-solid fa-arrow-up-right-from-square me-2"></i>Chuyển phòng ban chuyên môn (ESCALATED)</div>
+                            <div class="small text-white-50 mt-1">Đơn chuyển sang trạng thái ESCALATED (vẫn MỞ) chờ phòng ban kỹ thuật/kế toán/an toàn phản hồi rồi mới chốt.</div>
+                        </div>
+                    </label>
+                </div>
+                <button id="btnSubmitHandleComplaint" class="glass-btn-submit w-100" onclick="executeHandleComplaint()">
+                    <i class="fa-solid fa-check-to-slot me-2"></i> Xác Nhận Thực Thi
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL CHỐT ĐƠN KHIẾU NẠI (RESOLVE - CHUẨN HÓA KHÔNG CÒN TEXTAREA TỰ DO) -->
         <div class="login-modal-overlay" id="resolveComplaintModal" style="z-index: 1066;">
             <div class="glass-login-container text-white" style="max-width: 550px; text-align: left; padding: 2.2rem;">
                 <button type="button" class="close-modal-btn" onclick="closeResolveModal()">&times;</button>
                 <div class="text-center mb-4">
-                    <i class="fa-solid fa-check-to-slot text-success mb-3"
-                        style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
+                    <i class="fa-solid fa-gavel text-success mb-3" style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
                     <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Đóng & Chốt Khiếu Nại</h3>
-                    <p class="mt-2 text-white-50 small">Chốt hướng xử lý cho khiếu nại <span id="resolveComplaintIdSpan" class="fw-bold text-success">#N/A</span></p>
+                    <p class="mt-2 text-white-50 small">Chốt kết quả cuối cùng cho khiếu nại <span id="resolveComplaintIdSpan" class="fw-bold text-success">#N/A</span></p>
                 </div>
 
-                <!-- FORM CHO ĐƠN THẤT LẠC HÀNH LÝ (LOST_LUGGAGE) -->
-                <div id="resolveLostLuggageForm" class="d-none mb-3">
-                    <div class="mb-3">
-                        <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-gavel me-1"></i> KẾT QUẢ CHỐT ĐƠN:</label>
-                        <select id="lostLuggageOutcomeSelect" class="form-select glass-input-field text-white" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;" onchange="toggleReasonCodeSelect()">
-                            <option value="RESOLVED" style="background: #1e293b; color: #fff;">Giải quyết thành công (Khách đã nhận lại đồ / Thỏa đáng)</option>
-                            <option value="CLOSED_UNRESOLVED" style="background: #1e293b; color: #fff;">Đóng đơn không thành công (Chưa giải quyết được)</option>
-                        </select>
-                    </div>
-                    <div id="lostLuggageReasonBox" class="mb-3 d-none">
-                        <label class="small fw-bold text-warning mb-2"><i class="fa-solid fa-circle-question me-1"></i> LÝ DO ĐÓNG ĐƠN KHÔNG THÀNH CÔNG:</label>
-                        <select id="lostLuggageReasonCodeSelect" class="form-select glass-input-field text-white" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
-                            <option value="NO_ITEM_FOUND" style="background: #1e293b; color: #fff;">Tài xế xác nhận không có đồ thất lạc của khách</option>
-                            <option value="CUSTOMER_UNREACHABLE" style="background: #1e293b; color: #fff;">Không thể liên hệ được với khách hàng sau nhiều lần</option>
-                            <option value="DRIVER_UNREACHABLE" style="background: #1e293b; color: #fff;">Không thể liên hệ được tài xế (Yêu cầu tối thiểu 2 lần ghi nhận NO_RESPONSE)</option>
-                        </select>
-                    </div>
-                    <div class="small text-white-50 p-3 rounded-3" style="background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.2);">
-                        <i class="fa-solid fa-circle-info text-info me-1"></i> Hệ thống sẽ tự động thông báo và ghi nhận dòng thời gian xử lý chuẩn theo quy trình cho Khách hàng.
+                <div class="mb-3">
+                    <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-clipboard-check me-1"></i> KẾT QUẢ CHỐT ĐƠN (OUTCOME):</label>
+                    <select id="resolveOutcomeSelect" class="form-select glass-input-field text-white" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;" onchange="toggleResolveReasonBox()">
+                        <option value="RESOLVED" style="background: #1e293b; color: #fff;">Giải quyết thành công (RESOLVED - Thỏa đáng / Khách đã nhận đồ)</option>
+                        <option value="CLOSED_UNRESOLVED" style="background: #1e293b; color: #fff;">Đóng đơn không thành công (CLOSED_UNRESOLVED)</option>
+                    </select>
+                </div>
+
+                <div id="resolveReasonBox" class="mb-3 d-none">
+                    <label class="small fw-bold text-warning mb-2"><i class="fa-solid fa-circle-question me-1"></i> LÝ DO ĐÓNG ĐƠN KHÔNG THÀNH CÔNG:</label>
+                    <select id="resolveReasonCodeSelect" class="form-select glass-input-field text-white" style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
+                        <option value="NO_ITEM_FOUND" class="opt-lost-luggage" style="background: #1e293b; color: #fff;">Tài xế xác nhận không có đồ thất lạc của khách (NO_ITEM_FOUND)</option>
+                        <option value="DRIVER_UNREACHABLE" class="opt-lost-luggage" style="background: #1e293b; color: #fff;">Không thể liên hệ tài xế [* Yêu cầu ghi nhận tối thiểu 3 lần NO_RESPONSE]</option>
+                        <option value="CUSTOMER_UNREACHABLE" style="background: #1e293b; color: #fff;">Không thể liên hệ được với Khách hàng sau nhiều lần (CUSTOMER_UNREACHABLE)</option>
+                        <option value="VIOLATION_NOT_CONFIRMED" class="opt-other" style="background: #1e293b; color: #fff;">Không đủ chứng cứ / Chưa xác nhận được vi phạm (VIOLATION_NOT_CONFIRMED)</option>
+                    </select>
+                    <div id="driverUnreachableAlert" class="small text-danger mt-2 p-2 rounded" style="background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.3);">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> LƯU Ý: Chốt với lý do <strong>DRIVER_UNREACHABLE</strong> bắt buộc phải có ít nhất <strong>3 lần</strong> ghi nhận gọi tài xế KHÔNG NGHE MÁY trước đó.
                     </div>
                 </div>
 
-                <!-- FORM CHO CÁC ĐƠN KHÁC (SERVICE_FEEDBACK, OTHER) -->
-                <div id="resolveGeneralForm" class="mb-3">
-                    <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-pen-to-square me-1"></i> NỘI DUNG GIẢI QUYẾT / PHẢN HỒI:</label>
-                    <textarea id="complaintResolutionInput"
-                        class="form-control glass-input-field mb-2 text-white" rows="3"
-                        placeholder="Nhập hướng xử lý đã trao đổi hoặc phản hồi cho khách hàng (ví dụ: đã xin lỗi, đã đền bù voucher...)"
-                        style="background: rgba(255,255,255,0.1); border-radius: 15px !important; text-align: left; padding: 15px;"></textarea>
-                    <div id="complaintResolutionError" class="text-danger small text-start d-none mb-2"><i
-                            class="fa-solid fa-triangle-exclamation me-1"></i> Vui lòng nhập hướng xử lý</div>
+                <div class="small text-white-50 p-3 rounded-3 mt-3" style="background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.2);">
+                    <i class="fa-solid fa-circle-info text-info me-1"></i> Hệ thống tự động chuẩn hóa kết luận, cập nhật trạng thái và gửi In-App Notification cho Khách hàng.
                 </div>
 
-                <button id="btnSubmitResolution" class="glass-btn-submit w-100 mt-2"
-                    onclick="executeResolveComplaint()">
-                    <i class="fa-solid fa-floppy-disk me-2"></i> Xác Nhận Đã Xử Lý
+                <button id="btnSubmitResolution" class="glass-btn-submit w-100 mt-4" onclick="executeResolveComplaint()">
+                    <i class="fa-solid fa-floppy-disk me-2"></i> Xác Nhận Đóng & Chốt Đơn
                 </button>
             </div>
         </div>
