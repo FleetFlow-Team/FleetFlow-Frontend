@@ -551,9 +551,9 @@ async function viewTripDetail(bookingId) {
             }
 
             if (remainingOngoing <= 0) {
-                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>` + (extendBtnHtml ? `<div class="d-flex w-100 gap-2 mt-2">${extendBtnHtml}</div>` : '');
+                actionHtml = `<div class="text-success small fw-bold"><i class="fa-solid fa-circle-check me-1"></i>Đã thanh toán đủ — đang chờ tài xế hoàn thành chuyến</div>`;
             } else if (pendingCash) {
-                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>` + (extendBtnHtml ? `<div class="d-flex w-100 gap-2 mt-2">${extendBtnHtml}</div>` : '');
+                actionHtml = `<div class="text-warning small fw-bold"><i class="fa-solid fa-hourglass-half me-1"></i>Đã chọn thanh toán tiền mặt — đang chờ tài xế xác nhận khi nhận tiền</div>`;
             } else {
                 actionHtml = `
                 <div class="d-flex w-100 gap-2">
