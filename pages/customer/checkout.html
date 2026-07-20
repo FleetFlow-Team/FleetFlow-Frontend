@@ -1335,7 +1335,7 @@
                     // Tính lại Tiền cọc mới (30% của tổng mới) và cập nhật nút Đặt xe
                     const newDeposit = Math.round(finalTotal * 0.3);
                     document.getElementById('summaryDeposit').innerText = fmt.format(newDeposit) + ' ₫';
-                    document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(newDeposit) + ' ₫';
+                    document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ';
 
                     // Lưu ID của Voucher và Tiền cọc mới để gửi đi khi tạo Booking
                     localStorage.setItem('appliedVoucherId', result.voucherId);
@@ -1357,7 +1357,7 @@
 
                     const oldDeposit = Math.round(currentEstimatedTotal * 0.3);
                     document.getElementById('summaryDeposit').innerText = fmt.format(oldDeposit) + ' ₫';
-                    document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ' + fmt.format(oldDeposit) + ' ₫';
+                    document.getElementById('btnSubmitCheckout').innerText = 'Xác nhận Đặt xe ';
 
                     localStorage.setItem('currentDepositAmount', oldDeposit);
                     localStorage.setItem('mapEstimatedTotal', currentEstimatedTotal);
@@ -1570,7 +1570,7 @@
 
                     const btnSubmit = document.getElementById('btnSubmitCheckout');
                     btnSubmit.disabled = false;
-                    btnSubmit.innerText = 'Xác nhận Đặt xe ' + fmt.format(data.deposit30Percent) + ' ₫';
+                    btnSubmit.innerText = 'Xác nhận Đặt xe ';
 
                     localStorage.setItem('currentDepositAmount', data.deposit30Percent);
                 }
@@ -1771,21 +1771,31 @@
                     if (modalMsgEl) modalMsgEl.innerText = errorMsg;
 
                     const blockModal = new bootstrap.Modal(document.getElementById('blockBookingModal'));
+
+                    const btnContainer = document.getElementById("blockModalActionContainer");
+                    if (btnContainer) {
+                        const bType = localStorage.getItem('bookingType') || 'HOURLY';
+                        if (bType === 'DISTANCE') {
+                            btnContainer.innerHTML = `
+                                <button type="button" class="btn btn-liquid-danger px-5 py-3 fw-bold shadow-sm"
+                                    onclick="window.location.href='tripBooking.html'">
+                                    <i class="fa-solid fa-arrow-left me-2"></i> Trở về Trang đặt xe
+                                </button>
+                            `;
+                        } else {
+                            btnContainer.innerHTML = `
+                                <button type="button" class="btn btn-liquid-danger px-5 py-3 fw-bold shadow-sm"
+                                    data-bs-dismiss="modal">
+                                    <i class="fa-solid fa-xmark me-2"></i> Đóng
+                                </button>
+                            `;
+                        }
+                    }
+
                     blockModal.show();
 
                     elBtnSubmit.disabled = false;
                     elBtnSubmit.innerText = originalText;
-
-                    let count = 5;
-                    const countdownEl = document.getElementById("redirectCountdown");
-                    const timer = setInterval(() => {
-                        count--;
-                        if (countdownEl) countdownEl.innerText = count;
-                        if (count <= 0) {
-                            clearInterval(timer);
-                            redirectToHome();
-                        }
-                    }, 1000);
                 }
 
             } catch (error) {
@@ -1799,6 +1809,27 @@
                 if (modalMsgEl) modalMsgEl.innerText = "Không thể kết nối đến máy chủ FleetFlow (cổng 8080). Vui lòng kiểm tra lại kết nối mạng hoặc đảm bảo máy chủ Backend đang hoạt động!";
 
                 const blockModal = new bootstrap.Modal(document.getElementById('blockBookingModal'));
+
+                const btnContainer = document.getElementById("blockModalActionContainer");
+                if (btnContainer) {
+                    const bType = localStorage.getItem('bookingType') || 'HOURLY';
+                    if (bType === 'DISTANCE') {
+                        btnContainer.innerHTML = `
+                            <button type="button" class="btn btn-liquid-danger px-5 py-3 fw-bold shadow-sm"
+                                onclick="window.location.href='tripBooking.html'">
+                                <i class="fa-solid fa-arrow-left me-2"></i> Trở về Trang đặt xe
+                            </button>
+                        `;
+                    } else {
+                        btnContainer.innerHTML = `
+                            <button type="button" class="btn btn-liquid-danger px-5 py-3 fw-bold shadow-sm"
+                                data-bs-dismiss="modal">
+                                <i class="fa-solid fa-xmark me-2"></i> Đóng
+                            </button>
+                        `;
+                    }
+                }
+
                 blockModal.show();
 
                 elBtnSubmit.disabled = false;
@@ -1919,9 +1950,8 @@
             keysToRemove.forEach(k => localStorage.removeItem(k));
         }
 
-        function redirectToHome() {
-            clearCheckoutStorage();
-            window.location.href = "../../index.html";
+        function returnToBooking() {
+            window.location.href = "tripBooking.html";
         }
     </script>
 
@@ -1938,23 +1968,17 @@
                             <i class="fa-solid fa-user-lock fa-3x"></i>
                         </div>
                     </div>
-                    <h4 class="fw-bold mb-3 text-dark" id="blockModalLabel">Tài khoản tạm thời bị giới hạn</h4>
+                    <h4 class="fw-bold mb-3 text-dark" id="blockModalLabel">Yêu cầu đặt xe bị từ chối</h4>
                     <p class="text-secondary mb-4 px-2" id="blockModalMessage"
                         style="font-size: 1.05rem; line-height: 1.6; font-weight: 500;">
                         Rất tiếc, yêu cầu đặt xe của bạn không thể thực hiện do tài khoản đang bị giới hạn hoặc vi phạm
                         quy định.
                     </p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <!-- Sử dụng class nút bấm kính lỏng btn-liquid-danger -->
+                    <div class="d-flex justify-content-center gap-3" id="blockModalActionContainer">
                         <button type="button" class="btn btn-liquid-danger px-5 py-3 fw-bold shadow-sm"
-                            onclick="redirectToHome()">
-                            <i class="fa-solid fa-house me-2"></i> Trở về Trang chủ
+                            data-bs-dismiss="modal">
+                            <i class="fa-solid fa-xmark me-2"></i> Đóng
                         </button>
-                    </div>
-                    <div class="mt-4">
-                        <small class="text-muted"><i class="fa-solid fa-clock me-1"></i> Tự động quay về trang chủ sau
-                            <span id="redirectCountdown" class="fw-bold text-danger" style="font-size: 1.1rem;">5</span>
-                            giây...</small>
                     </div>
                 </div>
             </div>
