@@ -1218,6 +1218,10 @@
                                 đ</span></div>
                         <div class="billing-row"><span>Phụ phí lễ / Cuối tuần</span><span id="lblSurcharge"
                                 class="fw-bold text-end">0 đ</span></div>
+                        <div class="billing-row text-danger fw-semibold" id="rowExtensionCost" style="display: none;">
+                            <span>Phí phát sinh gia hạn</span>
+                            <span id="lblExtensionCost" class="fw-bold text-end">+ 0 đ</span>
+                        </div>
                         <div class="billing-row text-success fw-semibold"><span>Khuyến mãi đã áp dụng</span><span
                                 id="lblDiscount">- 0 đ</span></div>
                         <div class="billing-total-row">
@@ -1299,13 +1303,25 @@
                     <div class="billing-row"><span>Cước phí cơ bản</span><span id="lblInvoiceBasePrice"
                             class="fw-bold">0 đ</span></div>
                     <div class="billing-row"><span>Phụ phí lễ / Cuối tuần / Cầu đường</span><span
-                            id="lblInvoiceSurcharge" class="fw-bold">0 đ</span></div>
+                            id="lblInvoiceSurcharge" class="fw-bold text-end">0 đ</span></div>
+                    <div class="billing-row text-danger fw-semibold" id="rowInvoiceExtensionCost" style="display: none;">
+                        <span>Phí phát sinh gia hạn</span>
+                        <span id="lblInvoiceExtensionCost" class="fw-bold text-end">+ 0 đ</span>
+                    </div>
                     <div class="billing-row text-success fw-semibold"><span>Khuyến mãi đã áp dụng</span><span
                             id="lblInvoiceDiscount">- 0 đ</span></div>
                     <hr class="my-3 text-secondary">
                     <div class="billing-total-row">
-                        <span class="label">Tổng thanh toán</span>
+                        <span class="label">Tổng chi phí chuyến đi</span>
                         <span class="amount text-success" id="lblInvoiceTotalAmount">0 đ</span>
+                    </div>
+                    <div class="billing-row mt-2 text-muted" id="rowInvoiceDeposit" style="display: none; font-size: 0.95rem;">
+                        <span>Đã đặt cọc (30%)</span>
+                        <span id="lblInvoiceDeposit">- 0 đ</span>
+                    </div>
+                    <div class="billing-row fw-bold text-warning mt-2" id="rowInvoiceRemaining" style="display: none; font-size: 1.1rem;">
+                        <span>Còn lại cần thanh toán</span>
+                        <span id="lblInvoiceRemaining">0 đ</span>
                     </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 flex-column gap-2" id="invoiceModalFooter">
@@ -1426,6 +1442,28 @@
                 <div class="modal-footer border-0 px-4 pb-4">
                     <button type="button" class="btn btn-control-action btn-rate-action w-100 m-0"
                         id="btnSubmitRatingForm" onclick="executeSubmitAction('rate')">Gửi đánh giá ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Gia Hạn Giờ (Extend Booking) -->
+    <div class="modal fade modal-blur-bg" id="extendModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content modal-content-premium">
+                <div class="modal-header border-0 pb-0 px-4 pt-4 justify-content-center position-relative">
+                    <h4 class="modal-title modal-title-bold text-warning" id="extendModalTitle"><i class="fa-solid fa-clock-rotate-left me-2"></i> Gia hạn giờ thuê</h4>
+                    <button type="button" class="btn-close position-absolute end-0 top-0 mt-4 me-4" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center px-4">
+                    <p class="text-muted fw-medium mb-4" id="extendModalText">Bạn muốn gia hạn thêm bao nhiêu giờ cho chuyến đi này?</p>
+                    <select class="form-select premium-input mb-4 fw-medium text-center" id="extendUnits" style="font-size: 1.1rem;">
+                        <option value="1">1 Giờ</option>
+                        <option value="2">2 Giờ</option>
+                    </select>
+                </div>
+                <div class="modal-footer border-0 px-4 pb-4">
+                    <button type="button" class="btn w-100 text-white fw-bold py-2" style="background-color: #ff9800; border-radius: 12px; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(255,152,0,0.3);" id="btnSubmitExtend" onclick="executeExtendAction()">GỬI YÊU CẦU</button>
                 </div>
             </div>
         </div>

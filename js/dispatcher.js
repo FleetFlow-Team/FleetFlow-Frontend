@@ -1541,12 +1541,31 @@ function renderNotifications(notifications) {
             typeBadgeClass = 'bg-danger';
             typeIconColor = 'text-danger';
             iconClass = 'fa-circle-xmark';
+        } else if (noti.Type === 'EXTENSION_REQUESTED') {
+            typeText = 'Yêu cầu Gia hạn';
+            typeBadgeClass = 'bg-warning';
+            typeIconColor = 'text-warning';
+            iconClass = 'fa-clock';
         }
 
         // Tình trạng Chưa đọc / Đã đọc
         const readStatusHtml = isUnread
             ? `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25" style="font-size: 0.65rem;">Chưa đọc</span>`
             : `<span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" style="font-size: 0.65rem;">Đã đọc</span>`;
+
+        let actionButtonsHtml = '';
+        if (noti.Type === 'EXTENSION_REQUESTED') {
+            let bIdMatch = (noti.Title || '').match(/chuyến #(\d+)/i) || (noti.Message || '').match(/Booking #(\d+)/i);
+            let bId = bIdMatch ? bIdMatch[1] : (noti.ReferenceID || noti.BookingID || '');
+            if (bId) {
+                actionButtonsHtml = `
+                    <div class="mt-2 d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-success flex-grow-1" onclick="event.stopPropagation(); handleExtensionRespond(${bId}, 'DISPATCHER', true, this)">Đồng ý</button>
+                        <button class="btn btn-sm btn-outline-danger flex-grow-1" onclick="event.stopPropagation(); handleExtensionRespond(${bId}, 'DISPATCHER', false, this)">Từ chối</button>
+                    </div>
+                `;
+            }
+        }
 
         html += `
             <div class="notification-item ${isUnread ? 'unread' : ''}" onclick="markNotificationAsRead(${noti.NotificationID}, this)">
@@ -1563,6 +1582,7 @@ function renderNotifications(notifications) {
                     <div class="d-flex align-items-center text-white-50" style="font-size: 0.75rem;">
                         <i class="fa-regular fa-clock me-1"></i> ${formattedTime}
                     </div>
+                    ${actionButtonsHtml}
                 </div>
             </div>
         `;
@@ -1610,6 +1630,66 @@ document.addEventListener('DOMContentLoaded', () => {
     // Vòng lặp lấy thông báo (Polling) mỗi 5 giây
     setInterval(fetchDispatcherNotifications, 5000);
 });
+
+async function handleExtensionRespond(bookingId, role, approve, btnElement) {
+    if (!bookingId) return;
+    
+    const accountId = localStorage.getItem('accountId') || localStorage.getItem('dispatcherAccountId') || 1;
+    const originalText = btnElement.innerHTML;
+    
+    const container = btnElement.closest('.d-flex');
+    if (container) {
+        const buttons = container.querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true);
+    }
+    btnElement.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+
+    try {
+        const checkRes = await fetch(`${DISPATCHER_API_BASE}/bookings/${bookingId}/extend/pending`, {
+            method: 'GET',
+            cache: 'no-store',
+            headers: getAuthHeader()
+        });
+        
+        if (!checkRes.ok) throw new Error('Không thể kiểm tra yêu cầu gia hạn');
+        
+        const checkResult = await checkRes.json();
+        if (!checkResult.success || !checkResult.data) {
+            if (typeof showSystemToast === 'function') showSystemToast('Yêu cầu gia hạn này đã bị xử lý hoặc không tồn tại.', 'info');
+            if (container) container.innerHTML = '<span class="text-muted small">Đã xử lý</span>';
+            return;
+        }
+        
+        const extensionId = checkResult.data.id || checkResult.data.extensionId;
+        
+        const response = await fetch(`${DISPATCHER_API_BASE}/bookings/${bookingId}/extend/${extensionId}/respond`, {
+            method: 'POST',
+            headers: postAuthHeader(),
+            body: JSON.stringify({ role: role, accountId: parseInt(accountId), approve: approve })
+        });
+
+        const result = await response.json();
+        if (response.ok && result.success) {
+            if (container) container.innerHTML = `<span class="text-success small fw-bold"><i class="fa-solid fa-check"></i> Đã ${approve ? 'Đồng ý' : 'Từ chối'}</span>`;
+            if (typeof loadBookings === 'function') {
+                loadBookings('PENDING', 'tbody-main'); // Tùy chọn: Tải lại DS
+            }
+        } else {
+            if (typeof showSystemToast === 'function') showSystemToast(result.error || 'Có lỗi xảy ra', 'error');
+            btnElement.innerHTML = originalText;
+            if (container) {
+                container.querySelectorAll('button').forEach(b => b.disabled = false);
+            }
+        }
+    } catch (e) {
+        console.error("Lỗi respond gia hạn:", e);
+        if (typeof showSystemToast === 'function') showSystemToast('Lỗi mạng', 'error');
+        btnElement.innerHTML = originalText;
+        if (container) {
+            container.querySelectorAll('button').forEach(b => b.disabled = false);
+        }
+    }
+}
 
 
 // Tự động tải sẵn khi load trang
