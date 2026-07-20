@@ -1,17 +1,19 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FleetFlow - 500 Lỗi Máy Chủ</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    
+
     <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
     <link rel="stylesheet" href="../style/base.css">
-    
+
     <style>
         /* =========================================
            500 ERROR PAGE - CĂN GIỮA (CENTERED)
@@ -36,8 +38,15 @@
         }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Mã lỗi 500 Typography */
@@ -51,12 +60,13 @@
             line-height: 1;
             margin-bottom: 20px;
             letter-spacing: 5px;
-            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         /* Bánh răng xoay thay cho số 0 ở giữa */
         .gear-icon {
-            color: #e53e3e; /* Đỏ cảnh báo */
+            color: #e53e3e;
+            /* Đỏ cảnh báo */
             font-size: 12rem;
             margin: 0 10px;
             animation: spin-stutter 4s infinite;
@@ -65,11 +75,26 @@
 
         /* Hiệu ứng bánh răng xoay bị kẹt (phù hợp với lỗi 500) */
         @keyframes spin-stutter {
-            0% { transform: rotate(0deg); }
-            30% { transform: rotate(180deg); }
-            40% { transform: rotate(170deg); } /* Giật lùi lại chút */
-            70% { transform: rotate(360deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            30% {
+                transform: rotate(180deg);
+            }
+
+            40% {
+                transform: rotate(170deg);
+            }
+
+            /* Giật lùi lại chút */
+            70% {
+                transform: rotate(360deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Tiêu đề chính */
@@ -87,7 +112,7 @@
             font-family: 'Inter', sans-serif;
             font-size: 1.5rem;
             font-weight: 400;
-            color: #d1d5db; 
+            color: #d1d5db;
             line-height: 1.7;
             margin: 0 auto 40px auto;
             max-width: 550px;
@@ -114,7 +139,8 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #ffffff;
-            background-color: #e53e3e; /* Màu đỏ cảnh báo */
+            background-color: #e53e3e;
+            /* Màu đỏ cảnh báo */
             border: none;
             border-radius: 6px;
             text-decoration: none;
@@ -155,37 +181,60 @@
 
         /* Responsive Mobile */
         @media (max-width: 576px) {
-            .error-code { font-size: 6rem; }
-            .gear-icon { font-size: 4.5rem; }
-            .error-title { font-size: 1.6rem; }
-            .error-desc { font-size: 1rem; padding: 0 10px; }
-            .error-buttons { flex-direction: column; gap: 12px; }
-            .btn-reload, .btn-futuristic { width: 100%; justify-content: center; }
+            .error-code {
+                font-size: 6rem;
+            }
+
+            .gear-icon {
+                font-size: 4.5rem;
+            }
+
+            .error-title {
+                font-size: 1.6rem;
+            }
+
+            .error-desc {
+                font-size: 1rem;
+                padding: 0 10px;
+            }
+
+            .error-buttons {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .btn-reload,
+            .btn-futuristic {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
+
 <body>
     <main class="error-universe">
         <div class="error-container">
-            
+
             <div class="error-code">
                 <span>5</span>
                 <i class="fa-solid fa-gear gear-icon" title="Động cơ lỗi"></i>
                 <span>0</span>
             </div>
-            
+
             <h1 class="error-title">Lỗi Máy Chủ Nội Bộ</h1>
-            
+
             <p class="error-desc">
-                Động cơ của FleetFlow đang bị quá nhiệt hoặc gặp sự cố kết nối cơ sở dữ liệu. Đội ngũ kỹ sư của chúng tôi đã nhận được cảnh báo và đang dốc sức sửa chữa. 
+                Hệ thống máy chủ của FleetFlow đang gặp sự cố. Đội ngũ kỹ sư của chúng tôi đã nhận được cảnh báo và đang
+                dốc sức sửa chữa.
                 <br> Vui lòng thử lại sau ít phút!
             </p>
-            
+
             <div class="error-buttons">
                 <a href="javascript:window.location.reload();" class="btn-reload">
                     <i class="fa-solid fa-rotate-right me-2"></i> Tải lại trang
                 </a>
-                
+
                 <a href="../index.html" class="btn-futuristic">
                     <i class="fa-solid fa-house me-2"></i> Trở về Trang chủ
                 </a>
@@ -197,4 +246,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../js/api.js"></script>
 </body>
+
 </html>
