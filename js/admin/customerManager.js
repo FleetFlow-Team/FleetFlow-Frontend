@@ -20,7 +20,7 @@ async function fetchAndRenderCustomers() {
     const tbody = document.getElementById('customerListBody');
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info mb-2"></i><div class="text-white-50">Đang đồng bộ dữ liệu...</div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="text-center py-5"><i class="fa-solid fa-circle-notch fa-spin fs-3 text-info mb-2"></i><div class="text-white-50">Đang đồng bộ dữ liệu...</div></td></tr>`;
 
     try {
         // Gọi API thật
@@ -42,7 +42,7 @@ async function fetchAndRenderCustomers() {
 
     } catch (error) {
         console.error("Lỗi khi tải danh sách khách hàng:", error);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation fs-3 mb-2 d-block"></i>Lỗi kết nối máy chủ.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation fs-3 mb-2 d-block"></i>Lỗi kết nối máy chủ.</td></tr>`;
     }
 }
 
@@ -81,18 +81,22 @@ function renderCustomers(customers) {
     tbody.innerHTML = '';
 
     if (!customers || customers.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center text-white-50 py-5"><i class="fa-solid fa-users fs-1 mb-3 d-block text-secondary"></i><div class="fs-5">Chưa có khách hàng nào.</div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center text-white-50 py-5"><i class="fa-solid fa-users fs-1 mb-3 d-block text-secondary"></i><div class="fs-5">Chưa có khách hàng nào.</div></td></tr>`;
         return;
     }
 
     const fmt = new Intl.NumberFormat('vi-VN');
 
     customers.forEach(c => {
-        // Lấy dữ liệu từ BE (key đã thay đổi theo api mới: customerId, email, status, debt)
-        let debtVal = c.debt || 0;
-        let isDebtExceeded = debtVal <= -1000000;
-        let debtHtml = debtVal < 0
-            ? `<span class="fw-bold ${isDebtExceeded ? 'text-danger' : 'text-warning'}">${fmt.format(Math.abs(debtVal))} ₫</span>`
+        // 1. Cột ĐÃ THANH TOÁN (totalPaid)
+        let totalPaidVal = Number(c.totalPaid) || 0;
+        let totalPaidHtml = `<span class="fw-bold text-info">${fmt.format(totalPaidVal)} ₫</span>`;
+
+        // 2. Cột VÍ THANH TOÁN (debt) - Thích ứng với Backend trả về số dương (đã .abs())
+        let debtVal = Number(c.debt) || 0;
+        let isDebtExceeded = debtVal >= 1000000;
+        let debtHtml = debtVal > 0
+            ? `<span class="fw-bold ${isDebtExceeded ? 'text-danger' : 'text-warning'}">${fmt.format(debtVal)} ₫</span>`
             : `<span class="fw-bold text-success">0 ₫</span>`;
 
         // Hiển thị trạng thái
@@ -123,6 +127,7 @@ function renderCustomers(customers) {
                     <div><i class="fa-solid fa-envelope me-1"></i>${c.email || '--'}</div>
                     <div class="small mt-1"><i class="fa-solid fa-phone me-1"></i>${c.phoneNumber || '--'}</div>
                 </td>
+                <td>${totalPaidHtml}</td>
                 <td>${debtHtml}</td>
                 <td>${statusBadge}</td>
                 <td>${actionBtn}</td>
