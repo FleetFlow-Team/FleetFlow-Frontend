@@ -342,7 +342,7 @@ window.applyFiltersAndSort = function () {
         // D. Lọc theo nhiên liệu (Dựa trên FuelType thực tế)
         const fuelTypeStr = (v.fuelType || '').toLowerCase();
         const descLowerStr = (v.description || '').toLowerCase();
-        
+
         // Phân tách các loại nhiên liệu
         const isElectric = fuelTypeStr.includes('điện') || fuelTypeStr.includes('electric') || descLowerStr.includes('điện');
         const isHybrid = fuelTypeStr.includes('hybrid') || descLowerStr.includes('hybrid');
@@ -356,7 +356,7 @@ window.applyFiltersAndSort = function () {
             if (checkedFuels.includes('hybrid') && isHybrid) fuelMatch = true;
             // 'electric' đại diện cho Điện
             if (checkedFuels.includes('electric') && isElectric) fuelMatch = true;
-            
+
             if (!fuelMatch) return false;
         } else {
             // Không chọn nhiên liệu nào -> không hiển thị
@@ -601,11 +601,75 @@ window.changePage = function (pageNumber) {
 };
 
 /**
+ * Hiển thị Toast yêu cầu đăng nhập ở góc dưới phải
+ */
+function showRequireLoginToast() {
+    let toastEl = document.getElementById('requireLoginToast');
+    if (!toastEl) {
+        toastEl = document.createElement('div');
+        toastEl.id = 'requireLoginToast';
+        toastEl.style.cssText = `
+            position: fixed; bottom: 30px; right: 30px; z-index: 999999;
+            background: rgba(13, 110, 253, 0.9); backdrop-filter: blur(14px);
+            color: #fff; padding: 16px 24px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2);
+            display: flex; align-items: center; gap: 12px; max-width: 400px;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 0.3s ease;
+        `;
+        document.body.appendChild(toastEl);
+    }
+    toastEl.style.opacity = '1';
+    toastEl.innerHTML = `
+        <i class="fa-solid fa-circle-info fs-3 text-white"></i>
+        <div>
+            <div style="font-weight: 600; font-size: 1rem;">Bạn hãy đăng nhập để tiếp tục!</div>
+        </div>
+    `;
+
+    // Tự động ẩn sau 4 giây
+    setTimeout(() => {
+        if (toastEl && toastEl.parentElement) {
+            toastEl.style.opacity = '0';
+            setTimeout(() => { if (toastEl.parentElement) toastEl.remove(); }, 300);
+        }
+    }, 4000);
+}
+
+/**
  * Lưu ID xe vào LocalStorage và phân luồng chuyển trang
  */
 window.selectCarAndGo = async function (vehicleId) {
+    // Hàm kiểm tra nhanh JWT có hết hạn hay không
+    function isTokenExpired(jwt) {
+        if (!jwt) return true;
+        try {
+            const base64Url = jwt.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(window.atob(base64));
+            return payload && payload.exp ? (payload.exp * 1000) < Date.now() : false;
+        } catch (e) {
+            return true;
+        }
+    }
+
     // Lấy token để gọi API kiểm tra trạng thái account
     const token = localStorage.getItem('accessToken');
+    const userRole = localStorage.getItem('userRole') || '';
+    const roleUpper = userRole.trim().toUpperCase();
+
+    if (!token || isTokenExpired(token) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
+        // Chưa đăng nhập, token hết hạn, hoặc không phải Khách Hàng -> Hiện popup Đăng nhập thay vì đẩy đi 403
+        const loginModal = document.getElementById('loginModal');
+        if (loginModal) {
+            loginModal.classList.add('active');
+            showRequireLoginToast(); // Hiện thêm thông báo góc dưới phải
+        } else {
+            showModalAlert("Vui lòng đăng nhập để tiếp tục!", "Chưa đăng nhập", "warning");
+        }
+        return; // Dừng lại, không cho chọn xe và không chuyển trang
+    }
+
     if (token) {
         try {
             const response = await fetch('http://localhost:8080/FleetFlow/api/v1/customers/profile', {
@@ -862,15 +926,15 @@ function sendSuggestion(text) {
 async function sendMessage() {
     const input = document.getElementById('chat-input');
     const msgList = document.getElementById('chat-messages');
-    
+
     if (!input || !msgList) return;
-    
+
     const message = input.value.trim();
     if (!message) return;
-    
+
     // Xoá nội dung input
     input.value = '';
-    
+
     // Render tin nhắn của User
     msgList.innerHTML += `
         <div class="d-flex gap-3 mb-4 w-100 flex-row-reverse">
@@ -879,9 +943,9 @@ async function sendMessage() {
             </div>
         </div>
     `;
-    
+
     msgList.scrollTop = msgList.scrollHeight;
-    
+
     // Render tin nhắn chờ của Bot
     const loadingId = 'ai-loading-' + Date.now();
     msgList.innerHTML += `
@@ -895,20 +959,20 @@ async function sendMessage() {
         </div>
     `;
     msgList.scrollTop = msgList.scrollHeight;
-    
+
     try {
         const response = await fetch('http://localhost:8080/FleetFlow/api/v1/ai/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ message: message })
         });
-        
+
         const result = await response.json();
-        
+
         // Remove loading
         const loadingEl = document.getElementById(loadingId);
         if (loadingEl) loadingEl.remove();
-        
+
         if (response.ok && result.success) {
             let botText = "Tôi đã tìm thấy phương tiện phù hợp với nhu cầu của bạn. Danh sách bên dưới đã được cập nhật!";
             if (result.message) {
@@ -918,7 +982,7 @@ async function sendMessage() {
             } else if (result.source === 'FALLBACK') {
                 botText = "Hệ thống AI tạm thời gián đoạn. Dưới đây là gợi ý xe phù hợp theo từ khóa của bạn:";
             }
-            
+
             // Render text
             msgList.innerHTML += `
                 <div class="d-flex gap-3 mb-4 w-100">
@@ -930,7 +994,7 @@ async function sendMessage() {
                     </div>
                 </div>
             `;
-            
+
             // Render list xe mới
             if (result.data && result.data.length > 0) {
                 // Đóng bottom sheet/ẩn chat nếu trên Mobile
@@ -939,7 +1003,7 @@ async function sendMessage() {
                     if (sheet) sheet.classList.remove('expanded');
                     document.body.classList.remove('filter-open');
                 }
-                
+
                 // Override mảng data và render bằng trạng thái nội bộ thực sự
                 filteredVehicles = Array.isArray(result.data) ? result.data : [];
                 currentPage = 1;
@@ -947,7 +1011,7 @@ async function sendMessage() {
                 if (typeof renderPaginationInfo === 'function') {
                     renderPaginationInfo(filteredVehicles.length, 1);
                 }
-                
+
                 // Cuộn xuống danh sách xe sau khi render xong
                 requestAnimationFrame(() => scrollToVehicleList());
             }
@@ -978,7 +1042,7 @@ async function sendMessage() {
             </div>
         `;
     }
-    
+
     msgList.scrollTop = msgList.scrollHeight;
 }
 
