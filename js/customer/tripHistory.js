@@ -1,4 +1,4 @@
-// =====================================================================
+﻿// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -509,7 +509,7 @@ async function viewTripDetail(bookingId) {
                     if (statusCheck === 'CONFIRMED') badgeText = 'Đã cọc - Chờ khởi hành';
                     else if (statusCheck === 'DISPATCHED') badgeText = 'Đã điều phối';
                     else if (statusCheck === 'ACCEPTED') badgeText = 'Đã nhận';
-                    else if (statusCheck === 'UNASSIGNED') badgeText = 'Đang tìm tài xế';
+                    else if (statusCheck === 'UNASSIGNED') badgeText = 'Chờ điều phối';
                     else if (statusCheck === 'APPROVED') badgeText = 'Đã duyệt';
                 } else {
                     badgeText = 'Chờ thanh toán cọc';
