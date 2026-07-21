@@ -580,8 +580,8 @@
               </div>
               <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0"
                 style="width: 350px; max-height: 400px; overflow-y: auto;" id="notificationList">
-                <li class="text-center p-4 text-muted"><i
-                    class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn chưa có thông báo
+                <li class="text-center p-4 text-muted"><i class="fa-regular fa-bell-slash fs-3 mb-2 d-block"></i> Bạn
+                  chưa có thông báo
                   nào</li>
               </ul>
             </div>
@@ -594,17 +594,15 @@
                   <span class="fw-medium" style="font-size: 0.75rem; color: #64748b;"
                     id="navDesktopRole">Customer</span>
                 </div>
-                <img id="navDesktopAvatar" src=""
-                  style="width: 34px; height: 34px; border-radius: 50%;">
+                <img id="navDesktopAvatar" src="" style="width: 34px; height: 34px; border-radius: 50%;">
               </div>
               <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
-                <a href="profile.html" class="dropdown-item-custom"><i
-                    class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                <a href="profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
                 <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
                     class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                 <hr style="margin: 5px 0; opacity: 0.1;">
-                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger"
-                  onclick="handleLogout(event)"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <a href="#" id="btnLogout" class="dropdown-item-custom text-danger" onclick="handleLogout(event)"><i
+                    class="fa-solid fa-arrow-right-from-bracket"></i>
                   Đăng xuất</a>
               </div>
             </div>
@@ -663,27 +661,31 @@
 
           <section id="sec-dat-xe" class="policy-section">
             <h2 class="section-title">1. Quy định Đặt xe & Thanh toán Cọc</h2>
-            <h3 class="sub-title">1.1. Yêu cầu về Lộ trình (Distance Minimization)</h3>
+            <h3 class="sub-title">1.1. Yêu cầu về Lộ trình</h3>
             <p class="policy-text">
               Dịch vụ của FleetFlow được thiết kế chuyên biệt cho phân khúc di
-              chuyển đường dài liên tỉnh. Theo đó, hệ thống sẽ tự động tính
-              toán lộ trình tối ưu thông qua Google Maps API. Chuyến đi chỉ
-              được hệ thống chấp nhận nếu tổng quãng đường di chuyển đạt <b>tối
-                thiểu trên 20km</b>. Các yêu cầu dưới khoảng cách này sẽ bị từ
-              chối phục vụ.
+              chuyển đường dài liên tỉnh và các hành trình chuyên chở cao cấp.
+              Theo đó, hệ thống sẽ tự động tính toán lộ trình tối ưu thông qua
+              Google Maps API. Yêu cầu quãng đường di chuyển đạt <b>tối thiểu 10km
+                đối với các chuyến xe có điểm đến cố định</b>, và <b>tối thiểu 20km đối với
+                dịch vụ thuê xe tự chọn điểm đến</b>. Các yêu cầu dưới khoảng cách này
+              sẽ bị từ chối phục vụ.
             </p>
 
-            <h3 class="sub-title">1.2. Thời gian Đặt trước & Tiền cọc (Lead Time & Deposit)</h3>
+            <h3 class="sub-title">1.2. Thời gian Đặt trước & Tiền cọc</h3>
             <p class="policy-text">
               Để đảm bảo công tác điều phối phương tiện và tài xế đạt chuẩn
-              chất lượng cao nhất, Quý khách vui lòng lưu ý:
+              chất lượng cao nhất, Quý khách vui lòng lưu ý thời gian đặt trước tối thiểu:
             </p>
             <ul class="policy-list policy-text">
-              <li>Thời gian đặt xe thành công phải <b>trước thời điểm khởi hành dự kiến ít nhất 120 phút</b>.</li>
+              <li><b>Thuê xe theo giờ (Hourly):</b> Yêu cầu đặt trước tối thiểu <b>2 tiếng (120 phút)</b> so với giờ
+                khởi hành.</li>
+              <li><b>Thuê xe đường dài, liên tỉnh (Distance/Daily):</b> Yêu cầu đặt trước tối thiểu <b>12 tiếng (720
+                  phút)</b> để tài xế có thời gian chuẩn bị và nghỉ ngơi tốt nhất.</li>
               <li>Ngay sau khi chọn xe, hệ thống yêu cầu thanh toán <b>khoản cọc tương đương 30%</b> tổng cước phí cơ
-                bản qua Cổng thanh toán trực tuyến.</li>
-              <li>Đơn đặt xe chỉ chính thức chuyển sang trạng thái chờ Điều phối viên phát sóng tìm tài xế sau khi giao
-                dịch cọc 30% được hệ thống ghi nhận thành công.</li>
+                bản qua cổng thanh toán trực tuyến.</li>
+              <li>Đơn đặt xe chỉ chính thức chuyển sang trạng thái chờ Điều phối viên tìm tài xế sau khi giao
+                dịch cọc 30% được ghi nhận thành công.</li>
             </ul>
           </section>
 
@@ -693,52 +695,43 @@
               FleetFlow hiểu rằng kế hoạch di chuyển của Quý khách có thể thay
               đổi. Tuy nhiên, việc hủy chuyến sát giờ ảnh hưởng trực tiếp đến
               thu nhập của Tài xế và kế hoạch điều phối xe của công ty. Do đó,
-              hệ thống sẽ <b>tự động tính toán Phí phạt hủy chuyến lũy tiến</b>
-              căn cứ trên mốc thời gian khách hàng thực hiện thao tác hủy trên
-              hệ thống.
+              hệ thống sẽ <b>tự động áp dụng chính sách hủy chuyến và bồi thường</b>
+              căn cứ trên mốc thời gian khách hàng thực hiện thao tác hủy.
             </p>
 
             <table class="table-legal">
               <thead>
                 <tr>
-                  <th width="55%">Thời điểm Hủy chuyến (So với Giờ khởi hành)</th>
-                  <th width="45%">Phí bồi thường phát sinh</th>
+                  <th width="60%">Thời điểm Hủy chuyến (So với Giờ khởi hành)</th>
+                  <th width="40%">Phí bồi thường phát sinh</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
-                  <td><strong>Mức 1 (Miễn phí):</strong> Hủy trong vòng 60 phút đầu kể từ lúc đặt, VÀ cách giờ khởi hành
-                    ít nhất 12 tiếng.</td>
+                  <td><strong>Ân hạn (Grace period):</strong> Hủy trong vòng 10 phút đầu kể từ lúc đặt xe (áp dụng cho
+                    mọi trường hợp).</td>
+                  <td><span class="badge bg-success text-white px-3 py-2" style="border-radius: 50px;">Hoàn
+                      trả 100% cọc</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Mức 1 (Miễn phí):</strong> Hủy trước giờ khởi hành dự kiến <strong>từ 06 tiếng trở
+                      lên</strong>.</td>
                   <td><span class="badge bg-success text-white px-3 py-2" style="border-radius: 50px;">Hoàn trả 100%
                       cọc</span></td>
                 </tr>
                 <tr>
-                  <td><strong>Mức 2:</strong> Từ 06 tiếng đến dưới 12 tiếng.</td>
-                  <td><span class="badge-penalty">Phạt 30%</span> (Khấu trừ cọc)</td>
-                </tr>
-                <tr>
-                  <td><strong>Mức 3:</strong> Dưới 06 tiếng trước giờ khởi hành.</td>
-                  <td><span class="badge-penalty">Phạt 50%</span> cước phí cơ bản</td>
-                </tr>
-                <tr>
-                  <td><strong>Mức 4 (Nghiêm trọng):</strong> Khách hủy khi tài xế đã đến điểm đón, hoặc không xuất hiện
-                    sau 30 phút.</td>
-                  <td><span class="badge-penalty">Phạt 60%</span> cước phí cơ bản</td>
+                  <td><strong>Mức 2 (Mất cọc):</strong> Hủy <strong>dưới 06 tiếng</strong> trước giờ khởi hành dự kiến.
+                  </td>
+                  <td><span class="badge-penalty">Phạt 100% cọc</span> (Khấu trừ cọc)</td>
                 </tr>
               </tbody>
             </table>
 
-            <div class="alert-box shadow-sm">
-              <i class="fa-solid fa-circle-info me-2"></i><strong>Mục đích của phí bồi thường:</strong> 40% khoản phí
-              thu
-              được từ việc hủy chuyến sai quy định sẽ được hệ thống cộng trực
-              tiếp vào ví của Tài xế để bù đắp chi phí cơ hội.
-            </div>
           </section>
 
           <section id="sec-phu-phi" class="policy-section">
             <h2 class="section-title">3. Quy định về Cước phí & Phụ phí</h2>
-            <h3 class="sub-title">3.1. Phụ phí Cao điểm (Dynamic Surge Pricing)</h3>
+            <h3 class="sub-title">3.1. Phụ phí Cao điểm</h3>
             <p class="policy-text">
               Nhằm đảm bảo nguồn cung xe trong các dịp cao điểm, hệ thống được
               cấu hình tự động nhân <b>hệ số 1.1 (tăng 10% giá cước cơ sở)</b>
@@ -754,7 +747,8 @@
             <ul class="policy-list policy-text">
               <li>Tài xế sẽ trực tiếp thanh toán các khoản phí như: Vé trạm thu phí BOT, phà, phí vào cổng sân bay.</li>
               <li>Tài xế bắt buộc chụp ảnh biên lai rõ nét và khai báo lên hệ thống.</li>
-              <li>Khách hàng không cần thanh toán tiền mặt. Các khoản phí này sau khi được phê duyệt sẽ cộng gộp vào Hóa
+              <li>Khách hàng cần thanh toán tiền trực tiếp với Tài xế. Các khoản phí này sau khi được phê duyệt sẽ không
+                được cộng gộp vào Hóa
                 đơn điện tử cuối cùng.</li>
             </ul>
           </section>
@@ -764,10 +758,11 @@
             <ul class="policy-list policy-text mt-3">
               <li>
                 <strong>Phạm vi tiếp cận dữ liệu của Tài xế:</strong> Chỉ xem được <i>Họ Tên</i> và <i>Số điện thoại</i>
-                từ lúc giành đơn. Khi chuyến đi kết thúc/hủy, hệ thống lập tức thu hồi và ẩn thông tin này.
+                từ lúc nhận được điều phối đơn. Khi chuyến đi kết thúc/hủy, hệ thống lập tức thu hồi và ẩn thông tin
+                này.
               </li>
               <li>
-                <strong>Dữ liệu Thanh toán:</strong> Được mã hóa và xử lý bởi Đối tác Cổng thanh toán (như MoMo).
+                <strong>Dữ liệu Thanh toán:</strong> Được mã hóa và xử lý bởi Đối tác Cổng thanh toán (VNPay).
                 FleetFlow không lưu trữ dữ liệu thẻ của khách hàng.
               </li>
             </ul>
@@ -775,7 +770,7 @@
 
           <section id="sec-danh-gia" class="policy-section">
             <h2 class="section-title">5. Đánh giá & Giải quyết Tranh chấp</h2>
-            <h3 class="sub-title">5.1. Quyền Đánh giá (Rating Rights)</h3>
+            <h3 class="sub-title">5.1. Quyền Đánh giá </h3>
             <p class="policy-text">
               Quyền gửi đánh giá sẽ tự động mở khi chuyến đi kết thúc và <b>có hiệu lực trong đúng 168 giờ (7 ngày)</b>.
               Quá thời hạn này, cổng nhận xét sẽ bị khóa vĩnh viễn.
@@ -888,10 +883,10 @@
         <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
         <div class="position-relative">
           <input type="password" class="glass-input-field w-100" id="loginPassword" placeholder="Mật khẩu" required
-                 style="padding-right: 40px;">
-          <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning" 
-             style="cursor: pointer; font-size: 1.1rem; z-index: 10;" 
-             onclick="const p=document.getElementById('loginPassword'); if(p.type==='password'){p.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
+            style="padding-right: 40px;">
+          <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning"
+            style="cursor: pointer; font-size: 1.1rem; z-index: 10;"
+            onclick="const p=document.getElementById('loginPassword'); if(p.type==='password'){p.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
         </div>
         <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
           <a href="../pages/forgotPassword.html" class="text-danger text-decoration-none"
