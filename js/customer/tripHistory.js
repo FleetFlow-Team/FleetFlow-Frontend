@@ -1,4 +1,4 @@
-﻿// =====================================================================
+// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -493,6 +493,23 @@ async function viewTripDetail(bookingId) {
         const rawStatus = summaryTrip ? (summaryTrip.status || summaryTrip.Status) : (trip.status || trip.Status || "PENDING");
         const statusCheck = (rawStatus || '').toUpperCase();
 
+        // Tải danh sách khiếu nại để kiểm tra chuyến đi đã có khiếu nại chưa
+        let complaintsList = window.customerComplaintsList;
+        if (!complaintsList) {
+            try {
+                const token = localStorage.getItem("accessToken");
+                if (token) {
+                    const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+                    const cRes = await fetch(`${API_BASE_URL}/customer/complaints`, { headers: { "Authorization": `Bearer ${token}` } });
+                    if (cRes.ok) {
+                        const cData = await cRes.json();
+                        complaintsList = (cData.success && cData.data) ? cData.data : [];
+                        window.customerComplaintsList = complaintsList;
+                    }
+                }
+            } catch (e) { console.error("Lỗi tải danh sách khiếu nại:", e); }
+        }
+
         // 8b. Badge trạng thái đơn ngay trên trang chi tiết (giống badge ở danh sách)
         const detailBadgeContainer = document.getElementById('detailBadgeContainer');
         if (detailBadgeContainer) {
@@ -816,6 +833,7 @@ async function renderRatingsTab(mode = 'ratings') {
             const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
             const complaintsResult = await complaintsRes.json();
             const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
+            window.customerComplaintsList = complaints;
 
             html += `<h4 class="fw-bold mb-4 ${mode === 'both' ? 'mt-5' : 'mt-2'} text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>`;
             if (complaints.length === 0) {
@@ -1375,9 +1393,43 @@ async function payViaSePay(bookingId) {
 
 let currentComplaintBookingId = null;
 
-function openComplaintModal(bookingId) {
+async function openComplaintModal(bookingId) {
     currentComplaintBookingId = bookingId;
+
+    let complaintsList = window.customerComplaintsList;
+    if (!complaintsList) {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+                const res = await fetch(`${API_BASE_URL}/customer/complaints`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    complaintsList = (result.success && result.data) ? result.data : [];
+                    window.customerComplaintsList = complaintsList;
+                }
+            }
+        } catch (e) { console.error("Lỗi kiểm tra khiếu nại:", e); }
+    }
+
+    const existingForBooking = (complaintsList || []).filter(c => (c.bookingId || c.BookingID) == bookingId);
+    const hasOther = existingForBooking.some(c => (c.type || c.complaintType || "").toUpperCase() === 'OTHER');
+    const hasLostLuggage = existingForBooking.some(c => (c.type || c.complaintType || "").toUpperCase() === 'LOST_LUGGAGE');
+
+    if (hasOther && hasLostLuggage) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Không thể tiếp nhận',
+            text: `Bạn đã gửi đủ khiếu nại cho chuyến đi #${bookingId} (tối đa 1 đơn Thất lạc hành lý và 1 đơn Vấn đề khác).`
+        });
+        return;
+    }
+
     document.getElementById('complaintContent').value = '';
+    const typeSelect = document.getElementById('complaintType');
+    if (typeSelect) typeSelect.value = 'OTHER';
     const modal = new bootstrap.Modal(document.getElementById('complaintModal'));
     modal.show();
 }
@@ -1392,6 +1444,18 @@ async function submitComplaint() {
     if (!content) {
         Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập chi tiết nội dung khiếu nại của bạn.' });
         document.getElementById('complaintContent').focus();
+        return;
+    }
+
+    // Kiểm tra trước nếu khách hàng chọn loại khiếu nại đã gửi cho chuyến đi này rồi
+    const existingForBooking = (window.customerComplaintsList || []).filter(c => (c.bookingId || c.BookingID) == currentComplaintBookingId);
+    if (existingForBooking.some(c => (c.type || c.complaintType || "").toUpperCase() === type.toUpperCase())) {
+        const typeLabel = type === 'LOST_LUGGAGE' ? 'Thất lạc hành lý / Quên đồ trên xe' : 'Vấn đề khác';
+        Swal.fire({
+            icon: 'warning',
+            title: 'Trùng loại khiếu nại',
+            text: `Bạn đã gửi khiếu nại loại "${typeLabel}" cho chuyến đi #${currentComplaintBookingId} rồi. Mỗi chuyến đi chỉ được gửi tối đa 1 đơn cho mỗi loại.`
+        });
         return;
     }
 
@@ -1429,6 +1493,7 @@ async function submitComplaint() {
         if (modalInstance) modalInstance.hide();
 
         if (res.ok && (data.success || data.complaintId || (data.message && data.message.toLowerCase().includes('thành công')))) {
+            window.customerComplaintsList = null; // Xóa cache để làm mới danh sách khiếu nại
             Swal.fire({
                 icon: 'success',
                 title: 'Ghi Nhận Khiếu Nại',
@@ -1447,7 +1512,7 @@ async function submitComplaint() {
             Swal.fire({
                 icon: 'error',
                 title: 'Không thể tiếp nhận',
-                text: data.message || data.error || 'Gửi khiếu nại thất bại. Vui lòng đảm bảo chuyến đi đã hoàn thành và bạn chưa gửi khiếu nại cho chuyến này trước đó.'
+                text: data.message || data.error || 'Mỗi chuyến đi chỉ được gửi tối đa 1 đơn Thất lạc hành lý và 1 đơn Vấn đề khác.'
             });
         }
     } catch (error) {
