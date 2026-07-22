@@ -981,9 +981,9 @@ window.calculateRealPrice = async function () {
             if (surchargeEl) {
                 if (currentWeekendSurcharge > 0) {
                     surchargeEl.innerText = `+ ${fVND(currentWeekendSurcharge)}`;
-                    surchargeEl.parentElement.style.display = 'flex';
+                    surchargeEl.parentElement.style.setProperty('display', 'flex', 'important');
                 } else {
-                    surchargeEl.parentElement.style.display = 'none';
+                    surchargeEl.parentElement.style.setProperty('display', 'none', 'important');
                 }
             }
 
