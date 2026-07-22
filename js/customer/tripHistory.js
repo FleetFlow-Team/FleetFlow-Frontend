@@ -844,10 +844,17 @@ async function renderRatingsTab(mode = 'ratings') {
                     if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
 
                     let statusBadge = '';
+                    const reasonVal = (c.reasonCode || c.ReasonCode || '').toUpperCase();
                     switch ((c.status || '').toUpperCase()) {
                         case 'PENDING': statusBadge = '<span class="badge bg-warning text-dark">Đang chờ thụ lý</span>'; break;
                         case 'IN_PROGRESS': statusBadge = '<span class="badge bg-info text-dark">Đang xử lý</span>'; break;
-                        case 'RESOLVED': statusBadge = '<span class="badge bg-success">Đã giải quyết</span>'; break;
+                        case 'RESOLVED':
+                            if (reasonVal === 'ESCALATED_EXTERNAL') {
+                                statusBadge = '<span class="badge" style="background-color: #6366f1; color: #fff;"><i class="fa-solid fa-share-nodes me-1"></i>Đã chuyển chuyên môn</span>';
+                            } else {
+                                statusBadge = '<span class="badge bg-success">Đã giải quyết</span>';
+                            }
+                            break;
                         case 'CLOSED': statusBadge = '<span class="badge bg-secondary">Đã đóng</span>'; break;
                         case 'CLOSED_UNRESOLVED': statusBadge = '<span class="badge bg-light text-dark border">Không giải quyết</span>'; break;
                         default: statusBadge = `<span class="badge bg-light text-dark border">${c.status || 'Chưa rõ'}</span>`;
@@ -1571,11 +1578,20 @@ window.openComplaintTimelineModal = async function (complaintId) {
                 let timeStr = item.time ? item.time.substring(0, 16).replace('T', ' ') : '';
                 let isLatest = (index === result.timeline.length - 1);
 
+                let actionLabel = item.actionCode || 'CẬP NHẬT';
+                if (actionLabel === 'ESCALATED') actionLabel = 'CHUYỂN BỘ PHẬN CHUYÊN MÔN';
+                else if (actionLabel === 'VERIFIED_HANDLED') actionLabel = 'ĐÃ XÁC MINH & XỬ LÝ';
+                else if (actionLabel === 'CANNOT_VERIFY') actionLabel = 'KHÔNG ĐỦ CĂN CỨ';
+                else if (actionLabel === 'REJECTED') actionLabel = 'TỪ CHỐI TIẾP NHẬN';
+                else if (actionLabel === 'CONTACT_DRIVER_HAS_ITEM') actionLabel = 'TÀI XẾ XÁC NHẬN GIỮ ĐỒ';
+                else if (actionLabel === 'CONTACT_DRIVER_NO_ITEM') actionLabel = 'TÀI XẾ KHÔNG CÓ ĐỒ';
+                else if (actionLabel === 'CONTACT_DRIVER_NO_RESPONSE') actionLabel = 'CHƯA LIÊN HỆ ĐƯỢC TÀI XẾ';
+
                 timelineHtml += `
                     <div class="swal-timeline-node ${isLatest ? 'node-destination' : ''}">
                         <span class="swal-timeline-dot"></span>
                         <div class="fw-bold ${isLatest ? 'text-primary' : 'text-success'} mb-1" style="font-size: 0.9rem;">
-                            <i class="fa-regular fa-clock me-1"></i> [${timeStr}] - ${item.actionCode || 'CẬP NHẬT'}
+                            <i class="fa-regular fa-clock me-1"></i> [${timeStr}] - ${actionLabel}
                         </div>
                         <div class="swal-timeline-card text-dark" style="font-size: 0.92rem; line-height: 1.5;">
                             ${item.message || 'Cập nhật tiến trình xử lý đơn khiếu nại.'}

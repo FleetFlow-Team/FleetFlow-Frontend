@@ -983,7 +983,12 @@ window.loadComplaints = async function () {
                 } else if (upperStatus === 'IN_PROGRESS') {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(14, 165, 233, 0.25); border: 1px solid rgba(14, 165, 233, 0.6); color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin me-1"></i>Đang xử lý</span>`;
                 } else if (upperStatus === 'RESOLVED') {
-                    statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
+                    const reasonCodeVal = (c.reasonCode || c.ReasonCode || '').toUpperCase();
+                    if (reasonCodeVal === 'ESCALATED_EXTERNAL') {
+                        statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(99, 102, 241, 0.6); color: #818cf8;"><i class="fa-solid fa-share-nodes me-1"></i>Đã bàn giao chuyên môn</span>`;
+                    } else {
+                        statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i>Đã giải quyết</span>`;
+                    }
                 } else {
                     statusHtml = `<span class="glass-badge mb-1 d-inline-block" style="background: rgba(148, 163, 184, 0.2); border: 1px solid rgba(148, 163, 184, 0.6); color: #7b7d8b86;"><i class="fa-solid fa-lock me-1"></i>Đã đóng</span>`;
                 }
@@ -1005,7 +1010,6 @@ window.loadComplaints = async function () {
                         actionHtml += `<button class="btn btn-warning w-100 mb-2 fw-bold text-dark" style="font-size: 0.82rem; border-radius: 10px;" onclick="openTagComplaintModal(${id})"><i class="fa-solid fa-tags me-1"></i> Phân Loại (Tag)</button>`;
                     } else {
                         actionHtml += `<button class="btn btn-success w-100 mb-2 fw-bold text-white" style="font-size: 0.82rem; border-radius: 10px;" onclick="openHandleComplaintModal(${id})"><i class="fa-solid fa-gears me-1"></i> Xử Lý (Handle)</button>`;
-                        actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Chốt Đơn</button>`;
                     }
                 } else if (upperStatus === 'ESCALATED') {
                     actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Chốt Đơn</button>`;
@@ -1390,7 +1394,12 @@ window.openComplaintDetailModal = function (complaintId) {
     } else if (finalStatus === 'IN_PROGRESS') {
         statusHtml = `<span class="glass-badge" style="background: rgba(14, 165, 233, 0.25); border: 1px solid rgba(14, 165, 233, 0.6); color: #38bdf8;"><i class="fa-solid fa-spinner fa-spin me-1"></i> Đang thụ lý</span>`;
     } else if (finalStatus === 'RESOLVED') {
-        statusHtml = `<span class="glass-badge" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i> Đã giải quyết xong</span>`;
+        const detailReason = (c.reasonCode || c.ReasonCode || '').toUpperCase();
+        if (detailReason === 'ESCALATED_EXTERNAL') {
+            statusHtml = `<span class="glass-badge" style="background: rgba(99, 102, 241, 0.25); border: 1px solid rgba(99, 102, 241, 0.6); color: #818cf8;"><i class="fa-solid fa-share-nodes me-1"></i> Đã bàn giao bộ phận chuyên môn</span>`;
+        } else {
+            statusHtml = `<span class="glass-badge" style="background: rgba(0, 177, 79, 0.2); border: 1px solid rgba(0, 177, 79, 0.6); color: #00B14F;"><i class="fa-solid fa-check-double me-1"></i> Đã giải quyết xong</span>`;
+        }
     } else {
         statusHtml = `<span class="glass-badge" style="background: rgba(148, 163, 184, 0.2); border: 1px solid rgba(148, 163, 184, 0.6); color: #cbd5e1;"><i class="fa-solid fa-lock me-1"></i> Đã đóng</span>`;
     }
