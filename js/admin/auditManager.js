@@ -4,27 +4,38 @@
 
 let currentAuditLogs = [];
 let currentAuditPage = 1;
+let auditPollingInterval = null;
 
 document.addEventListener("DOMContentLoaded", () => {
     // Để tối ưu, chúng ta có thể load sẵn trang 1 khi trang admin vừa được tải.
     // Nếu muốn lazy load (chỉ load khi bấm tab), bạn có thể gắn vào sự kiện onClick tab trong admin.js
     loadAuditLogs(1);
+    startAuditPolling();
 });
 
-async function loadAuditLogs(page = 1) {
+function startAuditPolling() {
+    if (auditPollingInterval) clearInterval(auditPollingInterval);
+    auditPollingInterval = setInterval(() => {
+        loadAuditLogs(currentAuditPage, true);
+    }, 3000);
+}
+
+async function loadAuditLogs(page = 1, isBackground = false) {
     const listBody = document.getElementById('auditLogListBody');
     const totalInfo = document.getElementById('auditLogTotalInfo');
     const pagination = document.getElementById('auditLogPagination');
 
     if (!listBody) return;
 
-    listBody.innerHTML = `
-        <tr>
-            <td colspan="6" class="text-center text-white-50 py-4">
-                <i class="fa-solid fa-circle-notch fa-spin text-primary me-2"></i> Đang tải dữ liệu nhật ký...
-            </td>
-        </tr>
-    `;
+    if (!isBackground) {
+        listBody.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center text-white-50 py-4">
+                    <i class="fa-solid fa-circle-notch fa-spin text-primary me-2"></i> Đang tải dữ liệu nhật ký...
+                </td>
+            </tr>
+        `;
+    }
 
     try {
         const adminToken = localStorage.getItem('accessToken');
@@ -49,16 +60,26 @@ async function loadAuditLogs(page = 1) {
             currentAuditLogs = json.data || [];
             currentAuditPage = json.page || 1;
 
-            renderAuditLogs(currentAuditLogs);
+            // Nếu đang search thì áp dụng lại filter, ngược lại render tất cả
+            const searchInput = document.getElementById('auditSearchInput');
+            if (searchInput && searchInput.value.trim() !== '') {
+                filterAuditLogs();
+            } else {
+                renderAuditLogs(currentAuditLogs);
+            }
 
             if (totalInfo) totalInfo.innerText = `Tổng cộng: ${json.total || 0} bản ghi`;
-            renderAuditPagination(currentAuditPage, Math.ceil((json.total || 0) / pageSize));
-        } else {
+            if (!isBackground) {
+                renderAuditPagination(currentAuditPage, Math.ceil((json.total || 0) / pageSize));
+            }
+        } else if (!isBackground) {
             listBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">${json.error || 'Lỗi tải dữ liệu'}</td></tr>`;
         }
     } catch (e) {
         console.error("Lỗi fetch audit log:", e);
-        listBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Lỗi kết nối máy chủ!</td></tr>`;
+        if (!isBackground) {
+            listBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Lỗi kết nối máy chủ!</td></tr>`;
+        }
     }
 }
 

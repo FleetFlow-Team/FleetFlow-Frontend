@@ -1014,9 +1014,9 @@ window.loadComplaints = async function () {
                         actionHtml += `<button class="btn btn-info w-100 mb-2 fw-bold text-dark" style="font-size: 0.82rem; border-radius: 10px;" onclick="openContactDriverModal(${id})"><i class="fa-solid fa-phone me-1"></i> Liên Hệ TX</button>`;
                         actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Chốt Đơn</button>`;
                     } else if (type === 'OTHER' && (!issueTypeVal || issueTypeVal === 'OTHER_UNCATEGORIZED')) {
-                        actionHtml += `<button class="btn btn-warning w-100 mb-2 fw-bold text-dark" style="font-size: 0.82rem; border-radius: 10px;" onclick="openTagComplaintModal(${id})"><i class="fa-solid fa-tags me-1"></i> Phân Loại (Tag)</button>`;
+                        actionHtml += `<button class="btn btn-warning w-100 mb-2 fw-bold text-dark" style="font-size: 0.82rem; border-radius: 10px;" onclick="openTagComplaintModal(${id})"><i class="fa-solid fa-tags me-1"></i> Phân Loại</button>`;
                     } else {
-                        actionHtml += `<button class="btn btn-success w-100 mb-2 fw-bold text-white" style="font-size: 0.82rem; border-radius: 10px;" onclick="openHandleComplaintModal(${id})"><i class="fa-solid fa-gears me-1"></i> Xử Lý (Handle)</button>`;
+                        actionHtml += `<button class="btn btn-success w-100 mb-2 fw-bold text-white" style="font-size: 0.82rem; border-radius: 10px;" onclick="openHandleComplaintModal(${id})"><i class="fa-solid fa-gears me-1"></i> Xử Lý</button>`;
                     }
                 } else if (upperStatus === 'ESCALATED') {
                     actionHtml += `<button class="btn btn-glass-approve w-100 mb-2 fw-bold" style="font-size: 0.82rem;" onclick="openResolveModal(${id})"><i class="fa-solid fa-gavel me-1"></i> Chốt Đơn</button>`;
@@ -1700,10 +1700,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function handleExtensionRespond(bookingId, role, approve, btnElement) {
     if (!bookingId) return;
-    
+
     const accountId = localStorage.getItem('accountId') || localStorage.getItem('dispatcherAccountId') || 1;
     const originalText = btnElement.innerHTML;
-    
+
     const container = btnElement.closest('.d-flex');
     if (container) {
         const buttons = container.querySelectorAll('button');
@@ -1717,18 +1717,18 @@ async function handleExtensionRespond(bookingId, role, approve, btnElement) {
             cache: 'no-store',
             headers: getAuthHeader()
         });
-        
+
         if (!checkRes.ok) throw new Error('Không thể kiểm tra yêu cầu gia hạn');
-        
+
         const checkResult = await checkRes.json();
         if (!checkResult.success || !checkResult.data) {
             if (typeof showSystemToast === 'function') showSystemToast('Yêu cầu gia hạn này đã bị xử lý hoặc không tồn tại.', 'info');
             if (container) container.innerHTML = '<span class="text-muted small">Đã xử lý</span>';
             return;
         }
-        
+
         const extensionId = checkResult.data.id || checkResult.data.extensionId;
-        
+
         const response = await fetch(`${DISPATCHER_API_BASE}/bookings/${bookingId}/extend/${extensionId}/respond`, {
             method: 'POST',
             headers: postAuthHeader(),
