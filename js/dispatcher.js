@@ -45,9 +45,16 @@ function handleTokenExpiredLogout() {
         window.pauseMapTracking();
     }
 
-    alert("Phiên đăng nhập hoặc Token JWT đã hết hạn! Hệ thống sẽ tự động đăng xuất về trang chủ.");
-    localStorage.clear();
-    window.location.href = '../../index.html';
+    Swal.fire({
+        icon: 'warning',
+        title: 'Hết phiên đăng nhập',
+        text: 'Phiên đăng nhập hoặc Token JWT đã hết hạn! Hệ thống sẽ tự động đăng xuất về trang chủ.',
+        confirmButtonColor: '#e11d48',
+        customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+    }).then(() => {
+        localStorage.clear();
+        window.location.href = '../../index.html';
+    });
 }
 
 // ==========================================
@@ -1038,7 +1045,18 @@ window.loadComplaints = async function () {
 
 // Hàm Nhận thụ lý khiếu nại (PENDING -> IN_PROGRESS)
 window.assignComplaint = async function (complaintId) {
-    if (!confirm(`Bạn có chắc chắn muốn nhận thụ lý xử lý đơn khiếu nại #${complaintId}?`)) return;
+    const resultConfirm = await Swal.fire({
+        title: 'Nhận xử lý khiếu nại',
+        text: `Bạn có chắc chắn muốn nhận thụ lý xử lý đơn khiếu nại #${complaintId}?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#64748b',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy',
+        customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+    });
+    if (!resultConfirm.isConfirmed) return;
     try {
         const response = await fetch(`${DISPATCHER_API_BASE}/dispatcher/complaints/${complaintId}/assign`, {
             method: 'POST',
@@ -1051,7 +1069,15 @@ window.assignComplaint = async function (complaintId) {
             if (typeof window.loadDispatcherDashboardStats === 'function') window.loadDispatcherDashboardStats();
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi khi nhận xử lý!", "error");
-            else alert(result.message || result.error || "Lỗi khi nhận xử lý!");
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: result.message || result.error || "Lỗi khi nhận xử lý!",
+                    confirmButtonColor: '#e11d48',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+                });
+            }
         }
     } catch (error) {
         console.error("Lỗi assignComplaint:", error);
@@ -1098,7 +1124,15 @@ window.executeContactDriver = async function () {
             loadComplaints();
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi ghi nhận liên hệ!", "error");
-            else alert(result.message || result.error || "Lỗi ghi nhận liên hệ!");
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: result.message || result.error || "Lỗi ghi nhận liên hệ!",
+                    confirmButtonColor: '#e11d48',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+                });
+            }
         }
     } catch (error) {
         if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
@@ -1147,7 +1181,15 @@ window.executeTagComplaint = async function () {
             loadComplaints();
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi phân loại đơn!", "error");
-            else alert(result.message || result.error || "Lỗi phân loại đơn!");
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: result.message || result.error || "Lỗi phân loại đơn!",
+                    confirmButtonColor: '#e11d48',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+                });
+            }
         }
     } catch (error) {
         if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
@@ -1199,7 +1241,15 @@ window.executeHandleComplaint = async function () {
             }
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi thực thi hành động!", "error");
-            else alert(result.message || result.error || "Lỗi thực thi hành động!");
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: result.message || result.error || "Lỗi thực thi hành động!",
+                    confirmButtonColor: '#e11d48',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+                });
+            }
         }
     } catch (error) {
         if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
@@ -1290,7 +1340,15 @@ window.executeResolveComplaint = async function () {
             }
         } else {
             if (typeof showSystemToast === 'function') showSystemToast(result.message || result.error || "Lỗi khi chốt đơn!", "error");
-            else alert(result.message || result.error || "Lỗi khi chốt đơn!");
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: result.message || result.error || "Lỗi khi chốt đơn!",
+                    confirmButtonColor: '#e11d48',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+                });
+            }
         }
     } catch (error) {
         if (typeof showSystemToast === 'function') showSystemToast("Mất kết nối server!", "error");
