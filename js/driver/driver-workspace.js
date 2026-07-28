@@ -513,18 +513,18 @@ async function fetchPendingJobs() {
         // 4. Kiểm tra thành công và render View
         if (response.ok && result.success) {
             let pendingJobs = result.data || [];
-            
+
             // Gọi thêm API lịch sử để lấy các chuyến đang chạy (CONFIRMED, ONGOING)
             let activeJobs = [];
             try {
                 const req1 = await fetch(`${API_DISPATCH_BASE}/history?status=CONFIRMED`, { headers: { "Authorization": `Bearer ${token}` } });
                 const res1 = await req1.json();
                 if (res1.success) activeJobs = activeJobs.concat(res1.data || []);
-                
+
                 const req2 = await fetch(`${API_DISPATCH_BASE}/history?status=ONGOING`, { headers: { "Authorization": `Bearer ${token}` } });
                 const res2 = await req2.json();
                 if (res2.success) activeJobs = activeJobs.concat(res2.data || []);
-            } catch(e) { console.error("Lỗi lấy chuyến đang chạy", e); }
+            } catch (e) { console.error("Lỗi lấy chuyến đang chạy", e); }
 
             if (pendingJobs.length > 0 || activeJobs.length > 0) {
                 // Nếu có cuốc xe -> Render ra thẻ HTML
@@ -594,7 +594,7 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
         const fVND = val => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
         const totalFare = trip.estimatedTotal ? parseFloat(trip.estimatedTotal) : 0;
         const totalStr = fVND(totalFare);
-        
+
         let moneyHtml = '';
         if (trip.remainingAmount !== undefined) {
             const remAmt = parseFloat(trip.remainingAmount);
@@ -608,7 +608,7 @@ function renderPendingJobs(pendingJobs, activeJobs = []) {
             moneyHtml = `<span class="fw-bold text-success">${totalStr}</span>`;
         }
         let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
-        
+
         let statusBadge = '';
         if (trip.bookingStatus === 'CONFIRMED') statusBadge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
         if (trip.bookingStatus === 'ONGOING') statusBadge = '<span class="badge bg-primary">Đang di chuyển</span>';
@@ -798,10 +798,27 @@ window.rejectJob = function (btnElement, broadcastId) {
     const otherInput = document.getElementById('otherReasonInput');
     if (otherInput) otherInput.value = '';
 
-    // Gọi Modal của Bootstrap hiện lên
+    // Đảm bảo sự kiện bật/tắt ô nhập "Lý do khác" luôn hoạt động chính xác mỗi khi mở Modal
+    const rejectRadios = document.querySelectorAll('input[name="rejectReason"]');
+    rejectRadios.forEach(radio => {
+        radio.onchange = (e) => {
+            const container = document.getElementById('otherReasonContainer');
+            const input = document.getElementById('otherReasonInput');
+            if (container) {
+                if (e.target.value === 'other') {
+                    container.style.display = 'block';
+                    if (input) input.focus();
+                } else {
+                    container.style.display = 'none';
+                }
+            }
+        };
+    });
+
+    // Gọi Modal của Bootstrap hiện lên (dùng getOrCreateInstance để tránh lỗi chặn focus khiến không gõ được chữ)
     const rejectModalEl = document.getElementById("rejectModal");
     if (rejectModalEl) {
-        const rejectModal = new bootstrap.Modal(rejectModalEl);
+        const rejectModal = bootstrap.Modal.getOrCreateInstance(rejectModalEl);
         rejectModal.show();
     } else {
         showModalAlert("Lỗi: Không tìm thấy khung giao diện 'rejectModal' trong file HTML!", "Lỗi", "error");
@@ -1483,7 +1500,7 @@ async function fetchDriverHistory(statusFilter = '') {
             const res2 = await req2.json();
             if (res1.success) trips = trips.concat(res1.data || []);
             if (res2.success) trips = trips.concat(res2.data || []);
-            
+
             // Sắp xếp lại theo thời gian mới nhất (RespondedAt)
             trips.sort((a, b) => new Date(b.respondedAt || 0) - new Date(a.respondedAt || 0));
         } else {
@@ -1497,60 +1514,60 @@ async function fetchDriverHistory(statusFilter = '') {
         }
 
         if (trips.length === 0) {
-                historyListContainer.innerHTML = '<div class="text-center py-5 text-white-50">Chưa có chuyến đi nào.</div>';
-                return;
-            }
+            historyListContainer.innerHTML = '<div class="text-center py-5 text-white-50">Chưa có chuyến đi nào.</div>';
+            return;
+        }
 
-            let html = '';
-            trips.forEach(trip => {
-                let badge;
-                switch (trip.bookingStatus) {
-                    case 'COMPLETED':
-                        badge = '<span class="badge bg-success">Hoàn thành</span>';
-                        break;
-                    case 'ONGOING':
-                        badge = '<span class="badge bg-primary">Đang di chuyển</span>';
-                        if (trip.returnTime || trip.ReturnTime) {
-                            const rtStr = trip.returnTime || trip.ReturnTime;
-                            const rtDate = new Date(rtStr);
-                            if (!isNaN(rtDate) && rtDate < new Date()) {
-                                badge = '<span class="badge bg-danger">QUÁ GIỜ</span>';
-                            }
+        let html = '';
+        trips.forEach(trip => {
+            let badge;
+            switch (trip.bookingStatus) {
+                case 'COMPLETED':
+                    badge = '<span class="badge bg-success">Hoàn thành</span>';
+                    break;
+                case 'ONGOING':
+                    badge = '<span class="badge bg-primary">Đang di chuyển</span>';
+                    if (trip.returnTime || trip.ReturnTime) {
+                        const rtStr = trip.returnTime || trip.ReturnTime;
+                        const rtDate = new Date(rtStr);
+                        if (!isNaN(rtDate) && rtDate < new Date()) {
+                            badge = '<span class="badge bg-danger">QUÁ GIỜ</span>';
                         }
-                        break;
-                    case 'CONFIRMED':
-                        badge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
-                        break;
-                    case 'CANCELLED':
-                        badge = '<span class="badge bg-danger">Đã hủy</span>';
-                        break;
-                    default:
-                        badge = `<span class="badge bg-secondary">${trip.bookingStatus || 'Không xác định'}</span>`;
-                }
-                const fVND = val => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
-                const totalFare = trip.estimatedTotal ? parseFloat(trip.estimatedTotal) : 0;
-                const totalStr = fVND(totalFare);
-                
-                let moneyHtml = '';
-                if (trip.remainingAmount !== undefined) {
-                    const remAmt = parseFloat(trip.remainingAmount);
-                    moneyHtml = `
+                    }
+                    break;
+                case 'CONFIRMED':
+                    badge = '<span class="badge bg-warning text-dark">Chờ khởi hành</span>';
+                    break;
+                case 'CANCELLED':
+                    badge = '<span class="badge bg-danger">Đã hủy</span>';
+                    break;
+                default:
+                    badge = `<span class="badge bg-secondary">${trip.bookingStatus || 'Không xác định'}</span>`;
+            }
+            const fVND = val => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+            const totalFare = trip.estimatedTotal ? parseFloat(trip.estimatedTotal) : 0;
+            const totalStr = fVND(totalFare);
+
+            let moneyHtml = '';
+            if (trip.remainingAmount !== undefined) {
+                const remAmt = parseFloat(trip.remainingAmount);
+                moneyHtml = `
                         <div class="d-flex flex-column align-items-end">
                             <span class="text-white-50" style="font-size: 0.75rem;">Tổng cước: ${totalStr}</span>
                             <span class="fw-bold text-warning" style="font-size: 0.95rem;">Cần thu: ${fVND(remAmt)}</span>
                         </div>
                     `;
-                } else {
-                    moneyHtml = `<span class="fw-bold text-success">${totalStr}</span>`;
-                }
+            } else {
+                moneyHtml = `<span class="fw-bold text-success">${totalStr}</span>`;
+            }
 
-                let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
-                let directionText = '';
-                if (trip.bookingType === 'DISTANCE') {
-                    directionText = trip.tripDirection === 'TWO_WAY' ? '<span class="badge bg-warning text-dark ms-1">Hai chiều</span>' : '<span class="badge bg-light text-dark ms-1">Một chiều</span>';
-                }
+            let typeBadge = trip.bookingType === 'HOURLY' ? '<span class="badge bg-secondary ms-2">Thuê theo giờ</span>' : '<span class="badge bg-info text-dark ms-2">Chuyến đường dài</span>';
+            let directionText = '';
+            if (trip.bookingType === 'DISTANCE') {
+                directionText = trip.tripDirection === 'TWO_WAY' ? '<span class="badge bg-warning text-dark ms-1">Hai chiều</span>' : '<span class="badge bg-light text-dark ms-1">Một chiều</span>';
+            }
 
-                html += `
+            html += `
                     <div class="col-md-6 mb-3">
                         <div class="glass-panel p-3 border border-secondary rounded-3">
                             <div class="d-flex justify-content-between align-items-center mb-2">
@@ -1577,8 +1594,8 @@ async function fetchDriverHistory(statusFilter = '') {
                         </div>
                     </div>
                 `;
-            });
-            historyListContainer.innerHTML = html;
+        });
+        historyListContainer.innerHTML = html;
     } catch (e) {
         historyListContainer.innerHTML = '<div class="text-center py-4 text-danger">Lỗi kết nối.</div>';
     }
@@ -1715,7 +1732,7 @@ window.loadDriverRatings = async function () {
                 const dateString = rating.createdAt ? String(rating.createdAt).replace(' ', 'T') : new Date().toISOString();
                 const dateObj = new Date(dateString);
                 const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
-                
+
                 const comment = rating.comment ? rating.comment : "<i class='text-white-50'>Không có nhận xét</i>";
 
                 htmlContent += `
@@ -1766,10 +1783,10 @@ function generateStars(rating) {
 
 async function handleExtensionRespond(bookingId, role, approve, btnElement) {
     if (!bookingId) return;
-    
+
     const accountId = localStorage.getItem('accountId') || localStorage.getItem('driverAccountId') || 1;
     const originalText = btnElement.innerHTML;
-    
+
     // Disable buttons and show spinner
     const container = btnElement.closest('.d-flex');
     if (container) {
@@ -1785,26 +1802,26 @@ async function handleExtensionRespond(bookingId, role, approve, btnElement) {
             cache: 'no-store',
             headers: { 'Authorization': `Bearer ${localStorage.getItem('accessToken')}` }
         });
-        
+
         if (!checkRes.ok) {
             throw new Error('Không thể kiểm tra yêu cầu gia hạn');
         }
-        
+
         const checkResult = await checkRes.json();
         if (!checkResult.success || !checkResult.data) {
             Swal.fire({ icon: 'info', title: 'Đã hết hạn', text: 'Yêu cầu gia hạn này đã không còn tồn tại hoặc đã bị xử lý.' });
             if (container) container.innerHTML = '<span class="text-muted small">Đã xử lý</span>';
             return;
         }
-        
+
         const extensionId = checkResult.data.id || checkResult.data.extensionId;
-        
+
         // 2. Respond to extension
         const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/bookings/${bookingId}/extend/${extensionId}/respond`, {
             method: 'POST',
-            headers: { 
-                'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${localStorage.getItem('accessToken')}` 
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
             },
             body: JSON.stringify({ role: role, accountId: parseInt(accountId), approve: approve })
         });

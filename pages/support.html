@@ -11,9 +11,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../style/base.css">
     <link rel="stylesheet" href="../style/index.css">
+    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
 
     <!-- =====================================================================
-       BỘ LỌC BẢO MẬT: CHỈ CHO PHÉP ROLE CUSTOMER TRUY CẬP VÀ THAO TÁC
+       BỘ LỌC BẢO MẬT: CHO PHÉP KHÁCH VÃNG LAI VÀ CUSTOMER TRUY CẬP
     ====================================================================== -->
     <script>
         (function () {
@@ -40,6 +41,7 @@
             if (!token || (isTokenExpired(token) && isTokenExpired(refreshToken)) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
                 window.location.replace('../error/403.html');
             }
+            // Nếu chưa đăng nhập (!token): CHO PHÉP truy cập trang dưới quyền Khách vãng lai
         })();
     </script>
 
@@ -531,8 +533,8 @@
                                     style="width: 34px; height: 34px; border-radius: 50%;">
                             </div>
                             <div class="dropdown-menu dropdown-menu-modern shadow dropdown-menu-end">
-                                <a href="profile.html" class="dropdown-item-custom"><i
-                                        class="fa-regular fa-user"></i> Hồ sơ của tôi</a>
+                                <a href="profile.html" class="dropdown-item-custom"><i class="fa-regular fa-user"></i>
+                                    Hồ sơ của tôi</a>
                                 <a href="customer/tripHistory.html" class="dropdown-item-custom"><i
                                         class="fa-solid fa-clock-rotate-left"></i> Lịch sử chuyến đi</a>
                                 <hr style="margin: 5px 0; opacity: 0.1;">
@@ -604,23 +606,28 @@
 
                     <div class="tabs-category sliding-tabs-container" id="complaintTabs">
                         <div id="supportTabIndicator" class="tab-indicator"></div>
-                        <div class="tab-item tab-pill active" data-type="LOST_LUGGAGE">Quên đồ trên xe</div>
-                        <div class="tab-item tab-pill" data-type="SERVICE_FEEDBACK">Góp ý tài xế</div>
-                        <div class="tab-item tab-pill" data-type="SERVICE_FEEDBACK">Góp ý thái độ phục vụ</div>
-                        <div class="tab-item tab-pill" data-type="OTHER">Vấn đề khác</div>
+                        <div class="tab-item tab-pill active" data-type="LOST_LUGGAGE">
+                            <i class="fa-solid fa-suitcase me-1"></i> Quên đồ trên xe
+                        </div>
+                        <div class="tab-item tab-pill" data-type="OTHER">
+                            <i class="fa-solid fa-circle-question me-1"></i> Vấn đề khác
+                        </div>
                     </div>
 
-                    <form>
+                    <form id="complaintFormSupport" novalidate>
                         <div class="row g-4">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="text" id="cpFullName" class="glass-input" placeholder="Họ tên ...">
+                                    <input type="text" id="cpFullName" class="glass-input"
+                                        placeholder="Họ tên của bạn ..." maxlength="50" autocomplete="name">
                                 </div>
                                 <div class="form-group">
-                                    <input type="email" id="cpEmail" class="glass-input" placeholder="Email ...">
+                                    <input type="email" id="cpEmail" class="glass-input" placeholder="Email liên hệ ..."
+                                        maxlength="100" autocomplete="email">
                                 </div>
                                 <div class="form-group">
-                                    <input type="tel" id="cpPhone" class="glass-input" placeholder="Điện thoại ...">
+                                    <input type="tel" id="cpPhone" class="glass-input"
+                                        placeholder="Số điện thoại (10 số)..." maxlength="11" autocomplete="tel">
                                 </div>
                                 <div class="form-group">
                                     <div class="time-date-group">
@@ -634,25 +641,36 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <input type="text" id="cpFrom" class="glass-input" placeholder="Đi từ ...">
+                                    <input type="text" id="cpFrom" class="glass-input" placeholder="Điểm đón ..."
+                                        maxlength="150">
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" id="cpTo" class="glass-input" placeholder="Đi đến ...">
+                                    <input type="text" id="cpTo" class="glass-input" placeholder="Điểm đến ..."
+                                        maxlength="150">
                                 </div>
                                 <div class="form-group">
-                                    <input type="text" id="cpExtra" class="glass-input"
-                                        placeholder="Cước phí / Mã chuyến (Nếu có) ...">
+                                    <input type="text" inputmode="numeric" id="cpExtra"
+                                        class="glass-input fw-bold text-warning"
+                                        placeholder="Mã chuyến đi đã hoàn thành" maxlength="10" required>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group position-relative">
                                     <textarea id="cpContent" class="glass-input"
-                                        placeholder="Mô tả hành lý ..."></textarea>
+                                        placeholder="Mô tả hành lý thất lạc (màu sắc, nhãn hiệu, bên trong có gì...)"
+                                        rows="4" minlength="20" maxlength="1000" required></textarea>
+                                    <small id="cpContentCount"
+                                        class="text-muted position-absolute end-0 bottom-0 me-3 mb-2"
+                                        style="font-size: 0.75rem; pointer-events: none;">0/1000</small>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end mt-2">
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div class="text-dark-50 small text-start">
+                                <i class="fa-solid fa-circle-info me-1"></i> Yêu cầu đăng nhập & nhập đúng
+                                <strong>#BookingID</strong> của chuyến đi đã hoàn thành.
+                            </div>
                             <button type="button" id="btnSubmitComplaint" class="btn-submit-glass">
-                                Gửi tin <i class="fa-regular fa-paper-plane"></i>
+                                Gửi phản ánh <i class="fa-regular fa-paper-plane ms-2"></i>
                             </button>
                         </div>
                     </form>
@@ -717,11 +735,11 @@
             <form id="loginForm" class="d-flex flex-column gap-3 mt-4" onsubmit="handleLogin(event)">
                 <input type="email" class="glass-input-field" id="loginEmail" placeholder="Email đăng nhập" required>
                 <div class="position-relative">
-                    <input type="password" class="glass-input-field w-100" id="loginPassword" placeholder="Mật khẩu" required
-                           style="padding-right: 40px;">
-                    <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning" 
-                       style="cursor: pointer; font-size: 1.1rem; z-index: 10;" 
-                       onclick="const p=document.getElementById('loginPassword'); if(p.type==='password'){p.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
+                    <input type="password" class="glass-input-field w-100" id="loginPassword" placeholder="Mật khẩu"
+                        required style="padding-right: 40px;">
+                    <i class="fa-regular fa-eye position-absolute top-50 end-0 translate-middle-y me-3 text-warning"
+                        style="cursor: pointer; font-size: 1.1rem; z-index: 10;"
+                        onclick="const p=document.getElementById('loginPassword'); if(p.type==='password'){p.type='text'; this.classList.replace('fa-eye','fa-eye-slash');}else{p.type='password'; this.classList.replace('fa-eye-slash','fa-eye');}"></i>
                 </div>
                 <div class="text-end d-none" id="errorHelperText" style="margin-top: -5px;">
                     <a href="forgotPassword.html" class="text-danger text-decoration-none"
@@ -852,18 +870,11 @@
 
             tabs.forEach(tab => {
                 tab.addEventListener('click', function () {
-                    // Xóa active cũ
                     tabs.forEach(t => t.classList.remove('active'));
-                    // Thêm active mới
                     this.classList.add('active');
-
-                    // Di chuyển cục kính trượt tới vị trí tab mới
                     updateSupportTabIndicator(this, true);
-
-                    // Tự động cuộn mượt (scrollIntoView) để tab đang chọn nằm giữa màn hình (rất mượt trên mobile)
                     this.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
 
-                    // Hiệu ứng Fade-in mượt mà cho vùng Form khi chuyển tab
                     if (formContainer) {
                         formContainer.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
                         formContainer.style.opacity = '0.3';
@@ -874,19 +885,15 @@
                         }, 100);
                     }
 
-                    // Đổi Placeholder linh hoạt theo chủ đề
                     const type = this.getAttribute('data-type');
                     if (type === 'LOST_LUGGAGE') {
                         contentArea.placeholder = "Mô tả hành lý (màu sắc, nhãn hiệu, bên trong có gì...) ...";
-                    } else if (type === 'SERVICE_FEEDBACK') {
-                        contentArea.placeholder = "Chi tiết ý kiến đóng góp của bạn ...";
                     } else {
-                        contentArea.placeholder = "Mô tả vấn đề bạn gặp phải ...";
+                        contentArea.placeholder = "Mô tả vấn đề bạn gặp phải (Thái độ tài xế, Tranh chấp cước phí, Lỗi app...) ...";
                     }
                 });
             });
 
-            // Khởi tạo vị trí cục kính trượt ban đầu (khi trang vừa load xong)
             const activeTab = document.querySelector('#complaintTabs .tab-item.active');
             if (activeTab) {
                 updateSupportTabIndicator(activeTab, false);
@@ -898,136 +905,293 @@
                 }, 100);
             }
 
-            // Cập nhật lại vị trí cục kính khi resize màn hình
             window.addEventListener('resize', () => {
                 const currentActive = document.querySelector('#complaintTabs .tab-item.active');
                 if (currentActive) updateSupportTabIndicator(currentActive, false);
             });
 
-            // 2. Logic gửi Data Lên Backend
+            // 1.5 Thiết lập ràng buộc và tự động điền cho form hỗ trợ
+            const cpFullName = document.getElementById('cpFullName');
+            if (cpFullName && fullName && !cpFullName.value) cpFullName.value = fullName;
+
+            const storedEmail = localStorage.getItem('userEmail') || localStorage.getItem('customerEmail');
+            const cpEmail = document.getElementById('cpEmail');
+            if (cpEmail && storedEmail && !cpEmail.value) cpEmail.value = storedEmail;
+
+            const storedPhone = localStorage.getItem('userPhone') || localStorage.getItem('customerPhone');
+            const cpPhone = document.getElementById('cpPhone');
+            if (cpPhone && storedPhone && !cpPhone.value) cpPhone.value = storedPhone;
+
+            const cpExtraInput = document.getElementById('cpExtra');
+            if (cpExtraInput) {
+                cpExtraInput.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);
+                });
+            }
+
+            const cpPhoneInput = document.getElementById('cpPhone');
+            if (cpPhoneInput) {
+                cpPhoneInput.addEventListener('input', function () {
+                    this.value = this.value.replace(/[^0-9+]/g, '').slice(0, 11);
+                });
+            }
+
+            const cpDateInput = document.getElementById('cpDate');
+            if (cpDateInput) {
+                const todayStr = new Date().toISOString().split('T')[0];
+                cpDateInput.setAttribute('max', todayStr);
+            }
+
+            const cpContentInput = document.getElementById('cpContent');
+            const cpContentCount = document.getElementById('cpContentCount');
+            if (cpContentInput && cpContentCount) {
+                cpContentInput.addEventListener('input', function () {
+                    if (this.value.length > 1000) {
+                        this.value = this.value.slice(0, 1000);
+                    }
+                    cpContentCount.innerText = `${this.value.length}/1000`;
+                    if (this.value.length >= 20 && this.value.length <= 1000) {
+                        cpContentCount.classList.remove('text-danger');
+                        cpContentCount.classList.add('text-success');
+                    } else {
+                        cpContentCount.classList.remove('text-success');
+                        cpContentCount.classList.add('text-muted');
+                    }
+                });
+            }
+
+            // 2. Logic gửi Data Lên Backend (Chuẩn hóa Complaint Flow V2 - Bắt buộc Đăng nhập & BookingID)
             const btnSubmit = document.getElementById('btnSubmitComplaint');
             if (btnSubmit) {
                 btnSubmit.addEventListener('click', async () => {
-                    // Kiểm tra quyền: Phải là Customer đã đăng nhập thì mới được gửi tin nhắn
                     const userRole = (localStorage.getItem('userRole') || '').toUpperCase();
                     const accessToken = localStorage.getItem('accessToken');
+                    const loggedIn = !!accessToken && (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG');
 
-                    if (accessToken && (userRole === 'CUSTOMER' || userRole === 'KHÁCH HÀNG')) {
-                        // Thu thập dữ liệu
-                        const fullName = document.getElementById('cpFullName').value.trim();
-                        const email = document.getElementById('cpEmail').value.trim();
-                        const phone = document.getElementById('cpPhone').value.trim();
-                        const content = document.getElementById('cpContent').value.trim();
-
-                        // Validate cơ bản
-                        if (!fullName || !phone || !content) {
-                            showModalAlert("Vui lòng nhập đầy đủ: Họ tên, Số điện thoại và Nội dung góp ý!", "Thiếu thông tin", "warning");
-                            return;
-                        }
-
-                        // Lấy type từ Tab đang active
-                        const activeTab = document.querySelector('#complaintTabs .tab-item.active');
-                        const type = activeTab ? activeTab.getAttribute('data-type') : 'OTHER';
-
-                        // Lắp ráp thời gian lên xe (nếu có)
-                        const dateVal = document.getElementById('cpDate').value;
-                        const timeVal = document.getElementById('cpTime').value;
-                        let boardingTime = "";
-                        if (dateVal && timeVal) {
-                            // Backend cần dạng Timestamp nên ta ghép chuỗi chuẩn ISO (hoặc T)
-                            boardingTime = `${dateVal}T${timeVal}:00`;
-                        }
-
-                        // Phân loại "Cước phí / Mã chuyến"
-                        const extraVal = document.getElementById('cpExtra').value.trim();
-                        let bookingId = null;
-                        let fare = null;
-
-                        if (extraVal) {
-                            // Xử lý heuristic nhẹ nhàng:
-                            // Nếu bắt đầu bằng # và toàn số, hoặc toàn số ngắn -> khả năng là Booking ID
-                            const digitsOnly = extraVal.replace(/[^\d]/g, '');
-                            if (digitsOnly.length > 0 && digitsOnly.length < 10 && /^[#\d]+$/.test(extraVal.trim())) {
-                                bookingId = parseInt(digitsOnly, 10);
-                            } else if (digitsOnly.length > 0) {
-                                fare = parseFloat(digitsOnly); // Nếu dài hoặc có chữ, tách số ra coi như tiền cước
-                            }
-                        }
-
-                        // Xây dựng JSON Request
-                        const payload = {
-                            type: type,
-                            fullName: fullName,
-                            email: email,
-                            phone: phone,
-                            content: content,
-                            fromLocation: document.getElementById('cpFrom').value.trim(),
-                            toLocation: document.getElementById('cpTo').value.trim()
-                        };
-
-                        if (boardingTime) payload.boardingTime = boardingTime;
-                        if (bookingId) payload.bookingId = bookingId;
-                        if (fare) payload.fare = fare;
-
-                        // UX Loading
-                        const originalText = btnSubmit.innerHTML;
-                        btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang gửi...';
-                        btnSubmit.disabled = true;
-
-                        try {
-                            // API Backend URL (Dùng API_BASE nếu api.js có khai báo sẵn, hoặc fallback)
-                            const API_URL = typeof API_BASE !== 'undefined' ? `${API_BASE}/complaints` : 'http://localhost:8080/FleetFlow/api/v1/complaints';
-
-                            const response = await fetch(API_URL, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(payload)
-                            });
-
-                            const data = await response.json();
-
-                            if (response.ok) {
-                                showModalAlert("Cảm ơn bạn đã gửi ý kiến! Đội ngũ CSKH sẽ liên hệ lại với bạn trong thời gian sớm nhất.", "Gửi thành công", "success");
-
-                                // Reset sạch sẽ form
-                                document.getElementById('cpFullName').value = '';
-                                document.getElementById('cpEmail').value = '';
-                                document.getElementById('cpPhone').value = '';
-                                document.getElementById('cpTime').value = '';
-                                document.getElementById('cpDate').value = '';
-                                document.getElementById('cpFrom').value = '';
-                                document.getElementById('cpTo').value = '';
-                                document.getElementById('cpExtra').value = '';
-                                document.getElementById('cpContent').value = '';
-                            } else {
-                                showModalAlert(data.message || "Đã xảy ra lỗi hệ thống khi xử lý. Vui lòng thử lại!", "Thất bại", "error");
-                            }
-                        } catch (error) {
-                            console.error("Lỗi gửi góp ý:", error);
-                            showModalAlert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền mạng!", "Mất kết nối", "error");
-                        } finally {
-                            btnSubmit.innerHTML = originalText;
-                            btnSubmit.disabled = false;
-                        }
-                    } else {
-                        // Không phải Customer -> Kích hoạt loginModal yêu cầu khách đăng nhập
+                    if (!loggedIn) {
                         const loginModal = document.getElementById('loginModal');
                         if (loginModal) {
                             loginModal.classList.add('active');
                             document.body.style.overflow = 'hidden';
                         }
-                        // Hiển thị toast nhắc đăng nhập
                         const toastEl = document.getElementById('loginRequireToast');
                         if (toastEl && typeof bootstrap !== 'undefined') {
-                            const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500 });
-                            toast.show();
+                            bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3500 }).show();
+                        } else {
+                            showModalAlert("Theo quy định mới, vui lòng đăng nhập tài khoản Khách hàng và cung cấp Mã chuyến đi (#BookingID) đã hoàn thành để gửi khiếu nại.", "Yêu cầu đăng nhập", "warning");
                         }
+                        return;
+                    }
+
+                    // --- BẮT ĐẦU VALIDATION ---
+                    // 1. Kiểm tra Email định dạng chuẩn (nếu có điền)
+                    const emailVal = document.getElementById('cpEmail')?.value.trim() || '';
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (emailVal && !emailRegex.test(emailVal)) {
+                        showModalAlert("Vui lòng nhập đúng định dạng địa chỉ Email (ví dụ: name@domain.com)!", "Email không hợp lệ", "warning");
+                        document.getElementById('cpEmail')?.focus();
+                        return;
+                    }
+
+                    // 2. Kiểm tra Số điện thoại di động VN 10 chữ số (nếu có điền)
+                    const phoneVal = document.getElementById('cpPhone')?.value.trim() || '';
+                    const phoneRegex = /^(0|(\+84))[3|5|7|8|9][0-9]{8}$/;
+                    if (phoneVal && !phoneRegex.test(phoneVal)) {
+                        showModalAlert("Vui lòng nhập đúng định dạng số điện thoại di động Việt Nam (10 chữ số, bắt đầu bằng 03, 05, 07, 08, 09 hoặc +84)!", "Số điện thoại không hợp lệ", "warning");
+                        document.getElementById('cpPhone')?.focus();
+                        return;
+                    }
+
+                    // 3. Kiểm tra Ngày lên xe không được vượt quá thời gian hiện tại (nếu có điền)
+                    const dateVal = document.getElementById('cpDate')?.value || '';
+                    if (dateVal) {
+                        const selectedDate = new Date(dateVal);
+                        const today = new Date();
+                        today.setHours(23, 59, 59, 999);
+                        if (selectedDate > today) {
+                            showModalAlert("Ngày lên xe không được vượt quá thời gian hiện tại!", "Thời gian không hợp lệ", "warning");
+                            document.getElementById('cpDate')?.focus();
+                            return;
+                        }
+                    }
+
+                    // 4. Kiểm tra Điểm đón / Điểm đến độ dài hợp lệ 2 - 150 ký tự (nếu có điền)
+                    const fromVal = document.getElementById('cpFrom')?.value.trim() || '';
+                    const toVal = document.getElementById('cpTo')?.value.trim() || '';
+                    if (fromVal && (fromVal.length < 2 || fromVal.length > 150)) {
+                        showModalAlert("Điểm đón phải có độ dài từ 2 đến 150 ký tự!", "Điểm đón chưa hợp lệ", "warning");
+                        document.getElementById('cpFrom')?.focus();
+                        return;
+                    }
+                    if (toVal && (toVal.length < 2 || toVal.length > 150)) {
+                        showModalAlert("Điểm đến phải có độ dài từ 2 đến 150 ký tự!", "Điểm đến chưa hợp lệ", "warning");
+                        document.getElementById('cpTo')?.focus();
+                        return;
+                    }
+
+                    const activeTab = document.querySelector('#complaintTabs .tab-item.active');
+                    const type = activeTab ? activeTab.getAttribute('data-type') : 'OTHER';
+
+                    // 5. Kiểm tra Mã chuyến đi (#BookingID): Bắt buộc phải là số nguyên dương lớn hơn 0
+                    const extraVal = document.getElementById('cpExtra').value.trim();
+                    const bookingIdNum = parseInt(extraVal.replace(/[^\d]/g, ''), 10);
+                    if (!bookingIdNum || isNaN(bookingIdNum) || bookingIdNum <= 0) {
+                        showModalAlert("Vui lòng nhập Mã chuyến đi (#BookingID) hợp lệ (số nguyên dương lớn hơn 0)!", "Thiếu Mã Chuyến Đi", "warning");
+                        document.getElementById('cpExtra').focus();
+                        return;
+                    }
+
+                    // 6. Kiểm tra Nội dung chi tiết phản ánh
+                    const content = document.getElementById('cpContent').value.trim();
+                    if (!content || content.length < 20) {
+                        showModalAlert("Vui lòng mô tả chi tiết nội dung phản ánh / khiếu nại (tối thiểu 20 ký tự) để bộ phận CSKH có đủ thông tin kiểm tra và xử lý!", "Nội dung quá ngắn", "warning");
+                        document.getElementById('cpContent').focus();
+                        return;
+                    }
+                    if (content.length > 1000) {
+                        showModalAlert("Nội dung khiếu nại tối đa 1000 ký tự!", "Nội dung quá dài", "warning");
+                        document.getElementById('cpContent').focus();
+                        return;
+                    }
+                    // --- KẾT THÚC VALIDATION ---
+
+                    const payload = {
+                        type: type,
+                        bookingId: bookingIdNum,
+                        content: content
+                    };
+
+                    const originalText = btnSubmit.innerHTML;
+                    btnSubmit.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tiếp nhận...';
+                    btnSubmit.disabled = true;
+
+                    try {
+                        const API_URL = typeof API_BASE !== 'undefined' ? `${API_BASE}/complaints` : 'http://localhost:8080/FleetFlow/api/v1/complaints';
+                        const headers = {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
+                        };
+
+                        const response = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: headers,
+                            body: JSON.stringify(payload)
+                        });
+
+                        const data = await response.json();
+
+                        if (response.ok && (data.success || data.complaintId || (data.message && data.message.toLowerCase().includes('thành công')))) {
+                            sessionStorage.setItem('lastComplaintSubmitTime', Date.now().toString());
+                            const cid = data.complaintId || '';
+                            showModalAlert(`Đơn khiếu nại ${cid ? '#' + cid : ''} cho chuyến đi #${bookingIdNum} đã được ghi nhận. Bạn có thể tra cứu tiến trình chi tiết trong mục Lịch sử chuyến đi -> Chi tiết khiếu nại.`, "Tiếp Nhận Thành Công", "success");
+
+                            document.getElementById('cpContent').value = '';
+                            document.getElementById('cpExtra').value = '';
+                            const counter = document.getElementById('cpContentCount');
+                            if (counter) counter.innerText = '0/1000';
+                        } else {
+                            showModalAlert(data.message || data.error || "Đã xảy ra lỗi hệ thống khi xử lý khiếu nại. Vui lòng kiểm tra lại trạng thái chuyến đi hoặc thử lại!", "Thất bại", "error");
+                        }
+                    } catch (error) {
+                        console.error("Lỗi gửi góp ý:", error);
+                        showModalAlert("Không thể kết nối đến máy chủ. Vui lòng kiểm tra lại đường truyền mạng!", "Mất kết nối", "error");
+                    } finally {
+                        btnSubmit.innerHTML = originalText;
+                        btnSubmit.disabled = false;
                     }
                 });
             }
         });
+
+        // Hàm tra cứu cho Khách vãng lai (Guest Lookup)
+        window.lookupGuestComplaint = async function () {
+            if (typeof Swal === 'undefined') {
+                alert("Vui lòng tải thư viện SweetAlert2 hoặc sử dụng trình duyệt hỗ trợ để tra cứu.");
+                return;
+            }
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Tra Cứu Tiến Trình Khiếu Nại',
+                html:
+                    '<p class="text-muted small mb-3">Dành cho Khách vãng lai tra cứu đơn phản ánh loại Vấn đề khác (OTHER).</p>' +
+                    '<input id="swal-cid" class="swal2-input" placeholder="Mã đơn khiếu nại (VD: 15)" maxlength="10" inputmode="numeric">' +
+                    '<input id="swal-phone" class="swal2-input" placeholder="Số điện thoại lúc gửi (VD: 0901234567)" maxlength="11" inputmode="tel">',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Tra cứu ngay',
+                cancelButtonText: 'Hủy',
+                confirmButtonColor: '#16a34a',
+                preConfirm: () => {
+                    const cid = document.getElementById('swal-cid').value.trim();
+                    const phone = document.getElementById('swal-phone').value.trim();
+                    if (!cid || !phone) {
+                        Swal.showValidationMessage('Vui lòng nhập đầy đủ Mã đơn và Số điện thoại!');
+                        return false;
+                    }
+                    if (!/^\d+$/.test(cid)) {
+                        Swal.showValidationMessage('Mã đơn khiếu nại chỉ được chứa chữ số!');
+                        return false;
+                    }
+                    if (!/^(0|(\+84))[3|5|7|8|9][0-9]{8}$/.test(phone)) {
+                        Swal.showValidationMessage('Số điện thoại không đúng định dạng di động VN (10 chữ số)!');
+                        return false;
+                    }
+                    return { complaintId: cid, phone: phone };
+                }
+            });
+
+            if (formValues && formValues.complaintId && formValues.phone) {
+                try {
+                    Swal.showLoading();
+                    const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+                    const res = await fetch(`${API_BASE_URL}/customer/complaints/timeline?complaintId=${encodeURIComponent(formValues.complaintId)}&phone=${encodeURIComponent(formValues.phone)}`);
+                    const result = await res.json();
+                    Swal.close();
+
+                    if (res.ok && result.success && result.timeline && result.timeline.length > 0) {
+                        let timelineHtml = `<div class="vertical-timeline text-start mt-3" style="max-height: 400px; overflow-y: auto; padding: 10px;">`;
+                        result.timeline.forEach((item, index) => {
+                            let timeStr = item.time ? item.time.substring(0, 16).replace('T', ' ') : '';
+                            let isLatest = (index === result.timeline.length - 1);
+                            timelineHtml += `
+                                <div class="timeline-node ${isLatest ? 'node-destination' : ''}" style="margin-bottom: 18px; position: relative; padding-left: 20px; border-left: 2px solid #16a34a;">
+                                    <div class="fw-bold text-success" style="font-size: 0.9rem;">[${timeStr}] - ${item.actionCode || 'CẬP NHẬT'}</div>
+                                    <div class="bg-light p-2 rounded border mt-1 text-dark" style="font-size: 0.88rem;">
+                                        ${item.message || 'Hệ thống đã ghi nhận cập nhật đơn phản ánh.'}
+                                    </div>
+                                </div>`;
+                        });
+                        timelineHtml += `</div>`;
+                        Swal.fire({
+                            title: `Tiến trình Đơn phản ánh #${formValues.complaintId}`,
+                            html: timelineHtml,
+                            width: '600px',
+                            confirmButtonText: 'Đóng',
+                            confirmButtonColor: '#16a34a'
+                        });
+                    } else if (res.status === 401 || res.status === 403) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Quy định tra cứu API',
+                            text: 'Theo API Spec mục 7, tra cứu trực tuyến qua cổng Timeline yêu cầu đăng nhập tài khoản sở hữu đơn. Khách vãng lai (đơn Vấn đề khác - OTHER) vui lòng kiểm tra kết quả giải quyết qua Email hoặc Số điện thoại đã đăng ký.'
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Không tìm thấy thông tin',
+                            text: result.message || 'Mã đơn hoặc Số điện thoại không khớp. Vui lòng kiểm tra lại!'
+                        });
+                    }
+                } catch (error) {
+                    console.error("Lỗi tra cứu đơn guest:", error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Lỗi kết nối',
+                        text: 'Không thể kết nối đến máy chủ tra cứu ngay lúc này.'
+                    });
+                }
+            }
+        };
 
         function handleLogout(e) {
             e.preventDefault();

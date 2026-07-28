@@ -2,6 +2,16 @@
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
+    // Resize map khi modal Tracking được mở
+    const mapModal = document.getElementById('mapTrackingModal');
+    if (mapModal) {
+        mapModal.addEventListener('shown.bs.modal', function () {
+            if (customerMap) {
+                customerMap.resize();
+            }
+        });
+    }
+
     const fullName = localStorage.getItem('fullName');
     const accessToken = localStorage.getItem('accessToken');
     const userRole = localStorage.getItem('userRole') || 'Khách hàng';
@@ -539,6 +549,23 @@ async function viewTripDetail(bookingId) {
         const rawStatus = summaryTrip ? (summaryTrip.status || summaryTrip.Status) : (trip.status || trip.Status || "PENDING");
         const statusCheck = (rawStatus || '').toUpperCase();
 
+        // Tải danh sách khiếu nại để kiểm tra chuyến đi đã có khiếu nại chưa
+        let complaintsList = window.customerComplaintsList;
+        if (!complaintsList) {
+            try {
+                const token = localStorage.getItem("accessToken");
+                if (token) {
+                    const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+                    const cRes = await fetch(`${API_BASE_URL}/customer/complaints`, { headers: { "Authorization": `Bearer ${token}` } });
+                    if (cRes.ok) {
+                        const cData = await cRes.json();
+                        complaintsList = (cData.success && cData.data) ? cData.data : [];
+                        window.customerComplaintsList = complaintsList;
+                    }
+                }
+            } catch (e) { console.error("Lỗi tải danh sách khiếu nại:", e); }
+        }
+
         // 8b. Badge trạng thái đơn ngay trên trang chi tiết (giống badge ở danh sách)
         const detailBadgeContainer = document.getElementById('detailBadgeContainer');
         if (detailBadgeContainer) {
@@ -645,6 +672,20 @@ async function viewTripDetail(bookingId) {
         // 9. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        // 10. Logic Bật/Tắt Map Tracking
+        if (statusCheck === 'ONGOING') {
+            document.getElementById('btnViewMapContainer').style.display = 'block';
+            let destLat = null, destLng = null;
+            if ((trip.bookingType || 'DISTANCE').toUpperCase() === 'DISTANCE' && trip.detail) {
+                destLat = trip.detail.dropoffLat;
+                destLng = trip.detail.dropoffLng;
+            }
+            startGpsTracking(bookingId, destLat, destLng);
+        } else {
+            document.getElementById('btnViewMapContainer').style.display = 'none';
+            clearCustomerMapData();
+        }
+
     } catch (error) {
         console.error("Lỗi xử lý luồng hiển thị chi tiết hành trình:", error);
         // Tận dụng SweetAlert2 đã được import trong HTML của bạn để thông báo lỗi trực quan
@@ -656,9 +697,200 @@ async function viewTripDetail(bookingId) {
     }
 }
 
+// =====================================================================
+// LOGIC MAP TRACKING CHO CUSTOMER
+// =====================================================================
+function initCustomerMap(lat, lng) {
+    if (customerMap) {
+        customerMap.remove();
+        customerMap = null;
+        customerCarMarker = null;
+    }
+
+    const mapContainer = document.getElementById('customerMap');
+    if (!mapContainer) return;
+    mapContainer.innerHTML = '';
+
+    customerMap = new vietmapgl.Map({
+        container: 'customerMap',
+        style: 'https://maps.vietmap.vn/maps/styles/tm/style.json?apikey=9c63b68ed14a6f2327e9f9fa0170ce81f6f5e0678471c64d',
+        center: [lng, lat],
+        zoom: 15,
+        pitch: 0,
+        bearing: 0
+    });
+
+    customerMap.on('load', () => {
+        customerMap.resize();
+        
+        // Khởi tạo source và layer cho route
+        customerMap.addSource('route', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': []
+                }
+            }
+        });
+        
+        customerMap.addLayer({
+            'id': 'route-line',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#00B14F',
+                'line-width': 4
+            }
+        });
+    });
+
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.innerHTML = '<i class="fa-solid fa-car-side" style="color:#00B14F; font-size: 24px; filter: drop-shadow(0px 0px 4px rgba(0,177,79,0.8));"></i>';
+    
+    customerCarMarker = new vietmapgl.Marker({ element: el })
+        .setLngLat([lng, lat])
+        .addTo(customerMap);
+}
+
+// =====================================================================
+// HÀM HỖ TRỢ BẢN ĐỒ VÀ GỌI API ROUTE
+// =====================================================================
+function decodePolyline(str, precision = 5) {
+    let index = 0, lat = 0, lng = 0, coordinates = [], shift = 0, result = 0, byte = null, latitude_change, longitude_change, factor = Math.pow(10, precision);
+    while (index < str.length) {
+        byte = null; shift = 0; result = 0;
+        do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+        latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        shift = result = 0;
+        do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+        longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lat += latitude_change; lng += longitude_change;
+        coordinates.push([lng / factor, lat / factor]);
+    }
+    return coordinates;
+}
+
+async function fetchRoute(pLat, pLng, dLat, dLng) {
+    const res = await fetch(`${TRACKING_MAPS_API_BASE}/route?fromLat=${pLat}&fromLng=${pLng}&toLat=${dLat}&toLng=${dLng}`);
+    if (!res.ok) throw new Error("Không thể lấy lộ trình");
+    return await res.json();
+}
+
+async function startGpsTracking(bookingId, destLat = null, destLng = null) {
+    if (gpsTrackingInterval) {
+        clearInterval(gpsTrackingInterval);
+    }
+
+    const fetchLocation = async () => {
+        try {
+            console.log("[GPS Tracking] Đang lấy tọa độ mới cho chuyến đi " + bookingId + "...");
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/trips/${bookingId}/location?_t=${Date.now()}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await response.json();
+            
+            if (data.success && data.hasLocation) {
+                const lat = data.location.latitude;
+                const lng = data.location.longitude;
+                const recordedAt = data.location.recordedAt;
+
+                if (!customerMap) {
+                    initCustomerMap(lat, lng);
+                } else if (customerCarMarker) {
+                    customerCarMarker.setLngLat([lng, lat]);
+                    
+                    if (destLat && destLng) {
+                        customerMap.fitBounds(
+                            [
+                                [Math.min(lng, destLng), Math.min(lat, destLat)], 
+                                [Math.max(lng, destLng), Math.max(lat, destLat)]
+                            ],
+                            { padding: 50, speed: 1.2 }
+                        );
+                    } else {
+                        customerMap.flyTo({ center: [lng, lat], zoom: 16, speed: 1.2 });
+                    }
+                }
+
+                // Cập nhật marker điểm đến và vẽ route nếu là chuyến DISTANCE
+                if (destLat && destLng && customerMap) {
+                    if (!customerDestMarker) {
+                        const elDest = document.createElement('div');
+                        elDest.className = 'marker';
+                        elDest.innerHTML = '<i class="fa-solid fa-location-dot" style="color:#DC3545; font-size: 24px; filter: drop-shadow(0px 0px 4px rgba(220,53,69,0.8));"></i>';
+                        customerDestMarker = new vietmapgl.Marker({ element: elDest })
+                            .setLngLat([destLng, destLat])
+                            .addTo(customerMap);
+                    }
+
+                    try {
+                        const routeData = await fetchRoute(lat, lng, destLat, destLng);
+                        if (routeData && routeData.points) {
+                            const coordinates = decodePolyline(routeData.points);
+                            if (customerMap.getSource('route')) {
+                                customerMap.getSource('route').setData({
+                                    type: 'Feature',
+                                    geometry: {
+                                        type: 'LineString',
+                                        coordinates: coordinates
+                                    }
+                                });
+                            }
+                        }
+                    } catch (routeErr) {
+                        console.error("Lỗi vẽ đường đi:", routeErr);
+                    }
+                }
+
+                if (recordedAt) {
+                    const timeStr = recordedAt.split(' ')[1] || recordedAt;
+                    document.getElementById('mapLastUpdated').innerText = `Cập nhật lúc ${timeStr.substring(0,8)}`;
+                }
+            } else {
+                document.getElementById('mapLastUpdated').innerText = data.message || "Chưa có tín hiệu GPS...";
+            }
+        } catch (e) {
+            console.error("Lỗi fetch vị trí GPS:", e);
+        }
+    };
+
+    // Gọi lần đầu ngay lập tức
+    fetchLocation();
+    // Sau đó lặp lại mỗi 10 giây
+    gpsTrackingInterval = setInterval(fetchLocation, 10000);
+}
+
+function clearCustomerMapData() {
+    if (gpsTrackingInterval) {
+        clearInterval(gpsTrackingInterval);
+        gpsTrackingInterval = null;
+    }
+    if (customerDestMarker) {
+        customerDestMarker.remove();
+        customerDestMarker = null;
+    }
+    if (customerMap && customerMap.getSource('route')) {
+        customerMap.getSource('route').setData({
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [] }
+        });
+    }
+}
+
 function navigateBackToHistory() {
     document.getElementById('detailsViewSection').classList.remove('view-active');
     document.getElementById('historyViewSection').classList.add('view-active');
+    
+    // Tắt tracking và dọn dẹp bản đồ khi rời khỏi trang chi tiết
+    clearCustomerMapData();
 }
 
 // Logic Fetch và hiển thị Modal Hóa Đơn
@@ -766,19 +998,22 @@ async function viewInvoiceModal(bookingId) {
 }
 
 // Logic chuyển Tab (Tất cả / Đang chờ / Đang chạy / Hoàn thành...)
+// Logic chuyển Tab (Tất cả / Đang chờ / Đang chạy / Hoàn thành...)
 function filterTrips(status, btnElement) {
     const tabs = document.querySelectorAll('.tab-pill');
     tabs.forEach(tab => tab.classList.remove('active'));
-    btnElement.classList.add('active');
+    if (btnElement) btnElement.classList.add('active');
 
-    const indicator = document.getElementById('tabIndicator');
-    if (indicator) {
-        indicator.style.width = `${btnElement.offsetWidth}px`;
-        indicator.style.transform = `translateX(${btnElement.offsetLeft - 6}px)`;
+    if (btnElement) {
+        const indicator = document.getElementById('tabIndicator');
+        if (indicator) {
+            indicator.style.width = `${btnElement.offsetWidth}px`;
+            indicator.style.transform = `translateX(${btnElement.offsetLeft - 6}px)`;
+        }
     }
 
-    if (status === 'ratings') {
-        renderRatingsTab();
+    if (status === 'ratings' || status === 'complaints') {
+        renderRatingsTab(status);
         return;
     }
 
@@ -805,96 +1040,118 @@ function filterTrips(status, btnElement) {
 // Giả lập dữ liệu Khiếu nại khi Backend đang lỗi
 window.fakeComplaints = window.fakeComplaints || [];
 
-// Hàm render cho tab Nhận xét và Đánh giá
-async function renderRatingsTab() {
+// Hàm render cho tab Nhận xét & Đánh giá hoặc Khiếu nại
+async function renderRatingsTab(mode = 'ratings') {
     const container = document.getElementById('tripListContainer');
     const emptyState = document.getElementById('emptyState');
     if (!container) return;
 
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
-    emptyState.style.display = 'none';
-
-    // Load fake complaints from localStorage
-    try {
-        const cached = localStorage.getItem('customerFakeComplaints');
-        if (cached) {
-            window.fakeComplaints = JSON.parse(cached);
-        } else {
-            window.fakeComplaints = [];
-        }
-    } catch (e) {
-        window.fakeComplaints = [];
-    }
+    if (emptyState) emptyState.style.display = 'none';
 
     try {
         const token = localStorage.getItem('accessToken');
         const headers = { 'Authorization': `Bearer ${token}` };
+        let html = '';
 
-        // Fetch Ratings
-        const ratingsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/ratings', { headers });
-        const ratingsResult = await ratingsRes.json();
+        // Nếu là tab đánh giá (hoặc cả 2)
+        if (mode === 'ratings' || mode === 'both') {
+            const ratingsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/ratings', { headers });
+            const ratingsResult = await ratingsRes.json();
+            const ratings = (ratingsResult.success && ratingsResult.data) ? ratingsResult.data : [];
 
-        // Fetch Complaints
-        const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
-        const complaintsResult = await complaintsRes.json();
+            html += '<h4 class="fw-bold mb-4 mt-2 text-dark"><i class="fa-solid fa-star text-warning me-2"></i> Lịch sử Đánh giá</h4>';
+            if (ratings.length === 0) {
+                html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có đánh giá nào.</div>';
+            } else {
+                ratings.forEach(r => {
+                    let stars = '';
+                    for (let i = 1; i <= 5; i++) {
+                        stars += `<i class="fa-solid fa-star ${i <= r.driverRating ? 'text-warning' : 'text-muted opacity-25'}"></i>`;
+                    }
+                    let dateStr = r.createdAt || '';
+                    if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
 
-        let html = '<h4 class="fw-bold mb-4 mt-2 text-dark"><i class="fa-solid fa-star text-warning me-2"></i> Lịch sử Đánh giá</h4>';
-
-        const ratings = (ratingsResult.success && ratingsResult.data) ? ratingsResult.data : [];
-        if (ratings.length === 0) {
-            html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có đánh giá nào.</div>';
-        } else {
-            ratings.forEach(r => {
-                let stars = '';
-                for (let i = 1; i <= 5; i++) {
-                    stars += `<i class="fa-solid fa-star ${i <= r.driverRating ? 'text-warning' : 'text-muted opacity-25'}"></i>`;
-                }
-
-                // For date formatting
-                let dateStr = r.createdAt || '';
-                if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
-
-                html += `
-                    <div class="glass-panel bg-white p-4 mb-3 border border-success border-opacity-25 shadow-sm rounded-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                            <span class="fw-bold text-dark fs-5">Chuyến #${r.bookingId} <span class="badge bg-light text-dark border ms-2 fs-6 fw-normal">${r.vehicleName} (${r.licensePlate})</span></span>
-                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                    html += `
+                        <div class="glass-panel bg-white p-4 mb-3 border border-success border-opacity-25 shadow-sm rounded-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                                <span class="fw-bold text-dark fs-5">Chuyến #${r.bookingId} <span class="badge bg-light text-dark border ms-2 fs-6 fw-normal">${r.vehicleName || ''} (${r.licensePlate || ''})</span></span>
+                                <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                            </div>
+                            <div class="mb-3 d-flex align-items-center">
+                                <div class="me-3 fs-5">${stars}</div>
+                                <span class="fw-semibold text-dark"><i class="fa-solid fa-id-card text-muted me-1"></i> Tài xế: ${r.driverName || 'N/A'}</span>
+                            </div>
+                            <div class="text-secondary fst-italic p-3 bg-light rounded-3">"${r.comment || 'Không có nhận xét'}"</div>
                         </div>
-                        <div class="mb-3 d-flex align-items-center">
-                            <div class="me-3 fs-5">${stars}</div>
-                            <span class="fw-semibold text-dark"><i class="fa-solid fa-id-card text-muted me-1"></i> Tài xế: ${r.driverName}</span>
-                        </div>
-                        <div class="text-secondary fst-italic p-3 bg-light rounded-3">"${r.comment || 'Không có nhận xét'}"</div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
-        html += '<h4 class="fw-bold mb-4 mt-5 text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>';
+        // Nếu là tab khiếu nại (hoặc cả 2)
+        if (mode === 'complaints' || mode === 'both') {
+            const complaintsRes = await fetch('http://localhost:8080/FleetFlow/api/v1/customer/complaints', { headers });
+            const complaintsResult = await complaintsRes.json();
+            const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
+            window.customerComplaintsList = complaints;
 
-        const complaints = (complaintsResult.success && complaintsResult.data) ? complaintsResult.data : [];
+            html += `<h4 class="fw-bold mb-4 ${mode === 'both' ? 'mt-5' : 'mt-2'} text-dark"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Lịch sử Khiếu nại</h4>`;
+            if (complaints.length === 0) {
+                html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có khiếu nại nào.</div>';
+            } else {
+                complaints.forEach(c => {
+                    let dateStr = c.createdAt || '';
+                    if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
 
-        // Thêm các khiếu nại giả lập (nếu có) vào danh sách hiển thị
-        const allComplaints = [...window.fakeComplaints, ...complaints];
+                    let statusBadge = '';
+                    const reasonVal = (c.reasonCode || c.ReasonCode || '').toUpperCase();
+                    switch ((c.status || '').toUpperCase()) {
+                        case 'PENDING': statusBadge = '<span class="badge bg-warning text-dark">Đang chờ thụ lý</span>'; break;
+                        case 'IN_PROGRESS': statusBadge = '<span class="badge bg-info text-dark">Đang xử lý</span>'; break;
+                        case 'RESOLVED':
+                            if (reasonVal === 'ESCALATED_EXTERNAL') {
+                                statusBadge = '<span class="badge" style="background-color: #6366f1; color: #fff;"><i class="fa-solid fa-share-nodes me-1"></i>Đã chuyển chuyên môn</span>';
+                            } else {
+                                statusBadge = '<span class="badge bg-success">Đã giải quyết</span>';
+                            }
+                            break;
+                        case 'CLOSED': statusBadge = '<span class="badge bg-secondary">Đã đóng</span>'; break;
+                        case 'CLOSED_UNRESOLVED': statusBadge = '<span class="badge bg-light text-dark border">Không giải quyết</span>'; break;
+                        default: statusBadge = `<span class="badge bg-light text-dark border">${c.status || 'Chưa rõ'}</span>`;
+                    }
 
-        if (allComplaints.length === 0) {
-            html += '<div class="alert alert-light border border-secondary text-center text-muted">Bạn chưa có khiếu nại nào.</div>';
-        } else {
-            allComplaints.forEach(c => {
-                let dateStr = c.createdAt || '';
-                if (dateStr.endsWith('.0')) dateStr = dateStr.slice(0, -2);
+                    let typeTitle = 'Khiếu nại dịch vụ';
+                    if (c.type === 'LOST_LUGGAGE') typeTitle = 'Thất lạc hành lý / Tài sản';
+                    else if (c.type === 'SERVICE_FEEDBACK') typeTitle = 'Phản ánh chất lượng dịch vụ / Tài xế';
+                    else if (c.type === 'OTHER') typeTitle = 'Vấn đề khác';
 
-                html += `
-                    <div class="glass-panel bg-white p-4 mb-3 border border-danger border-opacity-25 shadow-sm rounded-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                            <span class="fw-bold text-dark fs-5">Chuyến #${c.bookingId || 'N/A'}</span>
-                            <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                    let resolutionHtml = '';
+                    if (c.resolution && c.resolution.trim() !== '') {
+                        resolutionHtml = `<div class="mt-2 text-success fw-medium small"><i class="fa-solid fa-check-circle me-1"></i>Kết quả xử lý: ${c.resolution}</div>`;
+                    }
+
+                    html += `
+                        <div class="glass-panel bg-white p-4 mb-3 border border-danger border-opacity-25 shadow-sm rounded-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                                <span class="fw-bold text-dark fs-5">Đơn #${c.complaintId || 'N/A'} ${c.bookingId ? `<span class="badge bg-light text-dark border ms-2">Chuyến #${c.bookingId}</span>` : ''}</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    ${statusBadge}
+                                    <span class="text-muted small"><i class="fa-regular fa-clock me-1"></i> ${dateStr}</span>
+                                </div>
+                            </div>
+                            <div class="text-danger fw-bold mb-2 fs-5">${typeTitle}</div>
+                            <div class="text-secondary p-3 bg-light rounded-3" style="line-height: 1.5;">"${c.content || c.description || c.comment || 'Không có chi tiết'}"</div>
+                            ${resolutionHtml}
+                            <div class="mt-3 text-end">
+                                <button class="btn btn-sm btn-outline-success" onclick="openComplaintTimelineModal(${c.complaintId})">
+                                    <i class="fa-solid fa-timeline me-1"></i>Xem Tiến Trình Xử Lý
+                                </button>
+                            </div>
                         </div>
-                        <div class="text-danger fw-bold mb-2 fs-5">${c.title || 'Khiếu nại dịch vụ'}</div>
-                        <div class="text-secondary p-3 bg-light rounded-3">"${c.description || c.comment || 'Không có chi tiết'}"</div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
         }
 
         container.innerHTML = html;
@@ -1404,9 +1661,43 @@ async function payViaSePay(bookingId) {
 
 let currentComplaintBookingId = null;
 
-function openComplaintModal(bookingId) {
+async function openComplaintModal(bookingId) {
     currentComplaintBookingId = bookingId;
+
+    let complaintsList = window.customerComplaintsList;
+    if (!complaintsList) {
+        try {
+            const token = localStorage.getItem('accessToken');
+            if (token) {
+                const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+                const res = await fetch(`${API_BASE_URL}/customer/complaints`, {
+                    headers: { 'Authorization': 'Bearer ' + token }
+                });
+                if (res.ok) {
+                    const result = await res.json();
+                    complaintsList = (result.success && result.data) ? result.data : [];
+                    window.customerComplaintsList = complaintsList;
+                }
+            }
+        } catch (e) { console.error("Lỗi kiểm tra khiếu nại:", e); }
+    }
+
+    const existingForBooking = (complaintsList || []).filter(c => (c.bookingId || c.BookingID) == bookingId);
+    const hasOther = existingForBooking.some(c => (c.type || c.complaintType || "").toUpperCase() === 'OTHER');
+    const hasLostLuggage = existingForBooking.some(c => (c.type || c.complaintType || "").toUpperCase() === 'LOST_LUGGAGE');
+
+    if (hasOther && hasLostLuggage) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Không thể tiếp nhận',
+            text: `Bạn đã gửi đủ khiếu nại cho chuyến đi #${bookingId} (tối đa 1 đơn Thất lạc hành lý và 1 đơn Vấn đề khác).`
+        });
+        return;
+    }
+
     document.getElementById('complaintContent').value = '';
+    const typeSelect = document.getElementById('complaintType');
+    if (typeSelect) typeSelect.value = 'OTHER';
     const modal = new bootstrap.Modal(document.getElementById('complaintModal'));
     modal.show();
 }
@@ -1415,83 +1706,194 @@ async function submitComplaint() {
     if (!currentComplaintBookingId) return;
 
     const content = document.getElementById('complaintContent').value.trim();
-    const type = document.getElementById('complaintType').value;
+    const typeSelect = document.getElementById('complaintType');
+    const type = typeSelect ? typeSelect.value : 'OTHER';
+
     if (!content) {
-        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập nội dung khiếu nại.' });
+        Swal.fire({ icon: 'warning', title: 'Thiếu thông tin', text: 'Vui lòng nhập chi tiết nội dung khiếu nại của bạn.' });
+        document.getElementById('complaintContent').focus();
         return;
     }
 
-    const customerId = localStorage.getItem('customerId') || localStorage.getItem('accountId') || 1;
+    // Kiểm tra trước nếu khách hàng chọn loại khiếu nại đã gửi cho chuyến đi này rồi
+    const existingForBooking = (window.customerComplaintsList || []).filter(c => (c.bookingId || c.BookingID) == currentComplaintBookingId);
+    if (existingForBooking.some(c => (c.type || c.complaintType || "").toUpperCase() === type.toUpperCase())) {
+        const typeLabel = type === 'LOST_LUGGAGE' ? 'Thất lạc hành lý / Quên đồ trên xe' : 'Vấn đề khác';
+        Swal.fire({
+            icon: 'warning',
+            title: 'Trùng loại khiếu nại',
+            text: `Bạn đã gửi khiếu nại loại "${typeLabel}" cho chuyến đi #${currentComplaintBookingId} rồi. Mỗi chuyến đi chỉ được gửi tối đa 1 đơn cho mỗi loại.`
+        });
+        return;
+    }
+
     const token = localStorage.getItem('accessToken');
+    if (!token) {
+        Swal.fire({ icon: 'warning', title: 'Chưa đăng nhập', text: 'Vui lòng đăng nhập lại tài khoản Khách hàng để gửi khiếu nại.' });
+        return;
+    }
+
     const btn = document.getElementById('btnSubmitComplaint');
     const oldText = btn.innerText;
-    btn.innerHTML = '<i class=\"fa-solid fa-spinner fa-spin\"></i> Đang gửi...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang tiếp nhận...';
     btn.disabled = true;
 
     try {
-        const res = await fetch('http://localhost:8080/FleetFlow/api/v1/complaints', {
+        const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+
+        const res = await fetch(`${API_BASE_URL}/complaints`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token
             },
             body: JSON.stringify({
-                bookingId: parseInt(currentComplaintBookingId),
-                customerId: parseInt(customerId),
                 type: type,
-                content: content,
-                fullName: localStorage.getItem('fullName') || 'Khách hàng',
-                phone: localStorage.getItem('phone') || '0900000000',
-                email: localStorage.getItem('email') || '',
-                issueType: type === 'SERVICE_FEEDBACK' ? 'Thái độ tài xế / Chất lượng dịch vụ' : null
+                bookingId: parseInt(currentComplaintBookingId, 10),
+                content: content
             })
         });
 
         const data = await res.json();
 
-        // Đóng modal
         const modalEl = document.getElementById('complaintModal');
         const modalInstance = bootstrap.Modal.getInstance(modalEl);
         if (modalInstance) modalInstance.hide();
 
-        // Xử lý tạm thời ở Frontend do Backend đang lỗi cột ComplaintType
-        if (data.success || (data.message && data.message.includes("ComplaintType"))) {
-            Swal.fire({ icon: 'success', title: 'Thành công', text: 'Đã gửi khiếu nại. Quản trị viên sẽ sớm liên hệ với bạn.' });
+        if (res.ok && (data.success || data.complaintId || (data.message && data.message.toLowerCase().includes('thành công')))) {
+            window.customerComplaintsList = null; // Xóa cache để làm mới danh sách khiếu nại
+            Swal.fire({
+                icon: 'success',
+                title: 'Ghi Nhận Khiếu Nại',
+                text: `Đơn khiếu nại ${data.complaintId ? '#' + data.complaintId : ''} cho chuyến đi #${currentComplaintBookingId} đã được tiếp nhận. Đội ngũ Điều phối viên sẽ sớm xử lý.`
+            });
 
-            // Cập nhật giao diện giả lập (thêm thẳng vào local UI cache)
             if (typeof renderRatingsTab === 'function') {
-                const now = new Date();
-                const fakeComplaint = {
-                    bookingId: currentComplaintBookingId,
-                    title: type === 'SERVICE_FEEDBACK' ? 'Thái độ tài xế / Chất lượng dịch vụ' : 'Khiếu nại dịch vụ',
-                    description: content,
-                    createdAt: now.toISOString().replace('T', ' ').substring(0, 19)
-                };
-                try {
-                    const cached = localStorage.getItem('customerFakeComplaints');
-                    window.fakeComplaints = cached ? JSON.parse(cached) : [];
-                } catch (e) {
-                    window.fakeComplaints = [];
-                }
-                window.fakeComplaints.unshift(fakeComplaint); // Thêm lên đầu danh sách
-                localStorage.setItem('customerFakeComplaints', JSON.stringify(window.fakeComplaints));
-
-                // Thêm vào UI tạm thời
                 setTimeout(() => {
-                    document.querySelector('.tab-pill[onclick*="ratings"]').click();
-                }, 1500);
+                    const complaintsTabBtn = document.querySelector('.tab-pill[onclick*="complaints"]') || document.querySelector('.tab-pill[onclick*="ratings"]');
+                    if (complaintsTabBtn) complaintsTabBtn.click();
+                }, 800);
+            } else if (typeof loadTrips === 'function') {
+                loadTrips();
             }
         } else {
-            Swal.fire({ icon: 'error', title: 'Lỗi', text: data.message || 'Gửi khiếu nại thất bại.' });
+            Swal.fire({
+                icon: 'error',
+                title: 'Không thể tiếp nhận',
+                text: data.message || data.error || 'Mỗi chuyến đi chỉ được gửi tối đa 1 đơn Thất lạc hành lý và 1 đơn Vấn đề khác.'
+            });
         }
     } catch (error) {
-        console.error(error);
-        Swal.fire({ icon: 'error', title: 'Lỗi', text: 'Không thể kết nối đến máy chủ.' });
+        console.error("Lỗi submitComplaint:", error);
+        Swal.fire({ icon: 'error', title: 'Lỗi mạng', text: 'Không thể kết nối đến máy chủ FleetFlow lúc này.' });
     } finally {
         btn.innerHTML = oldText;
         btn.disabled = false;
     }
 }
+
+// Hàm hiển thị tiến trình khiếu nại cho Customer
+window.openComplaintTimelineModal = async function (complaintId) {
+    if (!complaintId || complaintId === 'N/A') return;
+
+    const token = localStorage.getItem('accessToken');
+    if (!token) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Chưa đăng nhập',
+            text: 'Vui lòng đăng nhập lại để xem timeline.',
+            customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+        });
+        return;
+    }
+
+    try {
+        Swal.showLoading();
+        const API_BASE_URL = typeof API_BASE !== 'undefined' ? API_BASE : 'http://localhost:8080/FleetFlow/api/v1';
+        const response = await fetch(`${API_BASE_URL}/customer/complaints/timeline?complaintId=${complaintId}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+        Swal.close();
+
+        if (response.ok && result.success && result.timeline) {
+            if (result.timeline.length === 0) {
+                Swal.fire({
+                    title: `Tiến trình Đơn #${complaintId}`,
+                    text: 'Đơn khiếu nại đang chờ bộ phận CSKH tiếp nhận xử lý.',
+                    icon: 'info',
+                    confirmButtonColor: '#16a34a',
+                    customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+                });
+                return;
+            }
+
+            let timelineHtml = `<div class="swal-timeline-container text-start mt-3">`;
+
+            result.timeline.forEach((item, index) => {
+                let timeStr = item.time ? item.time.substring(0, 16).replace('T', ' ') : '';
+                let isLatest = (index === result.timeline.length - 1);
+
+                let actionLabel = item.actionCode || 'CẬP NHẬT';
+                if (actionLabel === 'ESCALATED') actionLabel = 'CHUYỂN BỘ PHẬN CHUYÊN MÔN';
+                else if (actionLabel === 'VERIFIED_HANDLED') actionLabel = 'ĐÃ XÁC MINH & XỬ LÝ';
+                else if (actionLabel === 'CANNOT_VERIFY') actionLabel = 'KHÔNG ĐỦ CĂN CỨ';
+                else if (actionLabel === 'REJECTED') actionLabel = 'TỪ CHỐI TIẾP NHẬN';
+                else if (actionLabel === 'CONTACT_DRIVER_HAS_ITEM') actionLabel = 'TÀI XẾ XÁC NHẬN GIỮ ĐỒ';
+                else if (actionLabel === 'CONTACT_DRIVER_NO_ITEM') actionLabel = 'TÀI XẾ KHÔNG CÓ ĐỒ';
+                else if (actionLabel === 'CONTACT_DRIVER_NO_RESPONSE') actionLabel = 'CHƯA LIÊN HỆ ĐƯỢC TÀI XẾ';
+
+                timelineHtml += `
+                    <div class="swal-timeline-node ${isLatest ? 'node-destination' : ''}">
+                        <span class="swal-timeline-dot"></span>
+                        <div class="fw-bold ${isLatest ? 'text-primary' : 'text-success'} mb-1" style="font-size: 0.9rem;">
+                            <i class="fa-regular fa-clock me-1"></i> [${timeStr}] - ${actionLabel}
+                        </div>
+                        <div class="swal-timeline-card text-dark" style="font-size: 0.92rem; line-height: 1.5;">
+                            ${item.message || 'Cập nhật tiến trình xử lý đơn khiếu nại.'}
+                        </div>
+                    </div>
+                `;
+            });
+
+            timelineHtml += `</div>`;
+
+            Swal.fire({
+                title: `<i class="fa-solid fa-timeline text-success me-2"></i>Tiến trình Đơn #${complaintId}`,
+                html: timelineHtml,
+                width: '680px',
+                showCloseButton: true,
+                confirmButtonText: '<i class="fa-solid fa-check me-1"></i> Đóng lại',
+                confirmButtonColor: '#16a34a',
+                customClass: {
+                    popup: 'swal-glass-popup',
+                    title: 'swal-glass-title',
+                    htmlContainer: 'swal-glass-text'
+                }
+            });
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Không thể xem tiến trình',
+                text: result.message || 'Đơn khiếu nại không tồn tại hoặc không thuộc quyền sở hữu của bạn.',
+                customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+            });
+        }
+    } catch (error) {
+        console.error("Lỗi tải timeline khiếu nại:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi kết nối',
+            text: 'Không thể tải thông tin tiến trình từ máy chủ lúc này.',
+            customClass: { popup: 'swal-glass-popup', title: 'swal-glass-title', htmlContainer: 'swal-glass-text' }
+        });
+    }
+};
 
 // LẮNG NGHE KẾT QUẢ THANH TOÁN TỪ CỬA SỔ POPUP VNPAY (MÔ HÌNH 1 - SIÊU MƯỢT)
 window.addEventListener("message", (event) => {

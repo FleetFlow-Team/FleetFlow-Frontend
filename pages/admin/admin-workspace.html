@@ -289,8 +289,6 @@
                                             <i class="fa-solid fa-wallet"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-success"><i
-                                            class="fa-solid fa-arrow-trend-up me-1"></i> +15% so với tháng trước</div>
                                 </div>
                             </div>
 
@@ -306,8 +304,6 @@
                                             <i class="fa-solid fa-piggy-bank"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-success"><i
-                                            class="fa-solid fa-arrow-trend-up me-1"></i> +8.5% so với tháng trước</div>
                                 </div>
                             </div>
 
@@ -323,8 +319,6 @@
                                             <i class="fa-solid fa-car-side"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-success"><i
-                                            class="fa-solid fa-arrow-trend-up me-1"></i> +12% hoàn thành</div>
                                 </div>
                             </div>
 
@@ -340,8 +334,6 @@
                                             <i class="fa-solid fa-triangle-exclamation"></i>
                                         </div>
                                     </div>
-                                    <div class="small fw-bold text-danger"><i
-                                            class="fa-solid fa-arrow-trend-down me-1"></i> Tăng 1.2% cần lưu ý</div>
                                 </div>
                             </div>
                         </div>
@@ -855,6 +847,7 @@
                                             <th>ID</th>
                                             <th>Khách hàng</th>
                                             <th>Liên hệ</th>
+                                            <th>Đã thanh toán</th>
                                             <th>Ví thanh toán</th>
                                             <th>Trạng thái</th>
                                             <th>Hành động</th>
@@ -863,7 +856,7 @@
                                     <tbody id="customerListBody">
                                         <!-- Dữ liệu render từ JS -->
                                         <tr>
-                                            <td colspan="6" class="text-center text-white-50 py-4">
+                                            <td colspan="7" class="text-center text-white-50 py-4">
                                                 <i class="fa-solid fa-circle-notch fa-spin text-info me-2"></i>Đang đồng
                                                 bộ dữ liệu...
                                             </td>
@@ -1200,7 +1193,8 @@
                                 <div class="row g-2">
                                     <div class="col-md-5">
                                         <input type="text" id="vtNewTagName" maxlength="30"
-                                            class="form-control form-control-sm glass-input" placeholder="Tên Tag (tối đa 30 ký tự)">
+                                            class="form-control form-control-sm glass-input"
+                                            placeholder="Tên Tag (tối đa 30 ký tự)">
                                     </div>
                                     <div class="col-md-7">
                                         <div class="d-flex gap-2">
@@ -1471,6 +1465,13 @@
                                         <input type="number" id="vMaxUsage" class="form-control glass-input text-white"
                                             placeholder="Để trống = Không giới hạn" min="1">
                                     </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label text-white-50 fw-bold small">Tổng số suất phát
+                                            hành</label>
+                                        <input type="number" id="vTotalQuantity"
+                                            class="form-control glass-input text-white"
+                                            placeholder="Để trống = Không giới hạn" min="1">
+                                    </div>
 
                                     <div class="col-md-6">
                                         <label class="form-label text-white-50 fw-bold small">Từ ngày</label>
@@ -1536,6 +1537,11 @@
                                     <div class="text-white-50 small mb-1"><i
                                             class="fa-solid fa-user-check me-1"></i>Lượt tối đa / Khách</div>
                                     <div class="fw-bold text-warning" id="detailVMaxUsage">--</div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-white-50 small mb-1"><i
+                                            class="fa-solid fa-layer-group me-1"></i>Tổng số suất</div>
+                                    <div class="fw-bold text-info" id="detailVTotalQuantity">--</div>
                                 </div>
                                 <div class="col-12 border-top border-secondary pt-3 mt-3">
                                     <div class="text-white-50 small mb-1"><i class="fa-solid fa-car me-1"></i>Loại xe áp
@@ -1717,21 +1723,27 @@
                     <div class="modal-content border-0 rounded-4"
                         style="background: rgba(26, 30, 41, 0.92); backdrop-filter: blur(35px); -webkit-backdrop-filter: blur(35px); border: 1px solid rgba(255, 255, 255, 0.18) !important; color: #ffffff; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.8);">
                         <!-- HEADER -->
-                        <div class="modal-header border-bottom border-light border-opacity-10 px-4 py-3 d-flex justify-content-between align-items-center">
+                        <div
+                            class="modal-header border-bottom border-light border-opacity-10 px-4 py-3 d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center gap-3">
-                                <div id="modalHeaderIconBox" class="p-2 rounded-4 d-flex align-items-center justify-content-center"
+                                <div id="modalHeaderIconBox"
+                                    class="p-2 rounded-4 d-flex align-items-center justify-content-center"
                                     style="background: rgba(255, 222, 89, 0.15); color: #ffde59; width: 48px; height: 48px; border: 1px solid rgba(255, 222, 89, 0.3);">
                                     <span style="font-size: 1.5rem; font-weight: 800;">★</span>
                                 </div>
                                 <div>
                                     <div class="d-flex align-items-center gap-2">
-                                        <h5 class="fw-bold m-0" style="color: #ffffff;" id="modalRatingTitle">Chi Tiết Đánh Giá #---</h5>
-                                        <span id="modalBookingTypeBadge" class="badge rounded-pill font-monospace" style="background: rgba(255, 255, 255, 0.12); color: #ffffff; font-size: 0.75rem;">--</span>
+                                        <h5 class="fw-bold m-0" style="color: #ffffff;" id="modalRatingTitle">Chi Tiết
+                                            Đánh Giá #---</h5>
+                                        <span id="modalBookingTypeBadge" class="badge rounded-pill font-monospace"
+                                            style="background: rgba(255, 255, 255, 0.12); color: #ffffff; font-size: 0.75rem;">--</span>
                                     </div>
-                                    <span class="small" style="color: rgba(255, 255, 255, 0.6);" id="modalRatingTime">--</span>
+                                    <span class="small" style="color: rgba(255, 255, 255, 0.6);"
+                                        id="modalRatingTime">--</span>
                                 </div>
                             </div>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </div>
 
                         <!-- BODY -->
@@ -1743,11 +1755,16 @@
                                         style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12);">
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span id="modalReviewerIcon" class="fs-5">👤</span>
-                                            <span class="small fw-bold text-uppercase" style="color: rgba(255, 255, 255, 0.6); letter-spacing: 0.5px;">NGƯỜI ĐÁNH GIÁ</span>
+                                            <span class="small fw-bold text-uppercase"
+                                                style="color: rgba(255, 255, 255, 0.6); letter-spacing: 0.5px;">NGƯỜI
+                                                ĐÁNH GIÁ</span>
                                         </div>
                                         <div>
-                                            <div class="fw-bold fs-5 mb-1" style="color: #ffffff;" id="modalReviewerName">--</div>
-                                            <div class="small font-monospace p-1 rounded px-2 d-inline-block" style="background: rgba(255, 255, 255, 0.08); color: #ffde59;" id="modalReviewerRole">--</div>
+                                            <div class="fw-bold fs-5 mb-1" style="color: #ffffff;"
+                                                id="modalReviewerName">--</div>
+                                            <div class="small font-monospace p-1 rounded px-2 d-inline-block"
+                                                style="background: rgba(255, 255, 255, 0.08); color: #ffde59;"
+                                                id="modalReviewerRole">--</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1756,11 +1773,16 @@
                                         style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12);">
                                         <div class="d-flex align-items-center gap-2 mb-2">
                                             <span id="modalTargetIcon" class="fs-5">🚖</span>
-                                            <span class="small fw-bold text-uppercase" style="color: rgba(255, 255, 255, 0.6); letter-spacing: 0.5px;">ĐỐI TƯỢNG NHẬN ĐÁNH GIÁ</span>
+                                            <span class="small fw-bold text-uppercase"
+                                                style="color: rgba(255, 255, 255, 0.6); letter-spacing: 0.5px;">ĐỐI
+                                                TƯỢNG NHẬN ĐÁNH GIÁ</span>
                                         </div>
                                         <div>
-                                            <div class="fw-bold fs-5 mb-1" style="color: #ffffff;" id="modalTargetName">--</div>
-                                            <div class="small font-monospace p-1 rounded px-2 d-inline-block" style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8);" id="modalTargetDetail">--</div>
+                                            <div class="fw-bold fs-5 mb-1" style="color: #ffffff;" id="modalTargetName">
+                                                --</div>
+                                            <div class="small font-monospace p-1 rounded px-2 d-inline-block"
+                                                style="background: rgba(255, 255, 255, 0.08); color: rgba(255, 255, 255, 0.8);"
+                                                id="modalTargetDetail">--</div>
                                         </div>
                                     </div>
                                 </div>
@@ -1768,7 +1790,9 @@
 
                             <!-- Khối 2: Chi tiết bảng Điểm số trực quan (Stars + Status Badge) -->
                             <div class="d-flex flex-column gap-2">
-                                <div class="fw-bold small text-uppercase" style="color: rgba(255, 255, 255, 0.7); letter-spacing: 0.5px;">TỔNG HỢP ĐIỂM SỐ CHẤT LƯỢNG</div>
+                                <div class="fw-bold small text-uppercase"
+                                    style="color: rgba(255, 255, 255, 0.7); letter-spacing: 0.5px;">TỔNG HỢP ĐIỂM SỐ
+                                    CHẤT LƯỢNG</div>
                                 <div class="p-3 rounded-4 d-flex flex-column gap-3"
                                     style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 222, 89, 0.3);"
                                     id="modalScoresContainer">
@@ -1778,20 +1802,26 @@
 
                             <!-- Khối 3: Nội dung Góp ý / Nhận xét -->
                             <div class="d-flex flex-column gap-2">
-                                <div class="fw-bold small text-uppercase" style="color: rgba(255, 255, 255, 0.7); letter-spacing: 0.5px;">NỘI DUNG NHẬN XÉT & GÓP Ý</div>
+                                <div class="fw-bold small text-uppercase"
+                                    style="color: rgba(255, 255, 255, 0.7); letter-spacing: 0.5px;">NỘI DUNG NHẬN XÉT &
+                                    GÓP Ý</div>
                                 <div class="p-3 rounded-4 font-monospace position-relative"
                                     style="background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.12); min-height: 90px; font-size: 0.95rem; line-height: 1.6;"
                                     id="modalRatingCommentBox">
-                                    <div id="modalRatingComment" style="white-space: pre-wrap; word-break: break-word;">--</div>
+                                    <div id="modalRatingComment" style="white-space: pre-wrap; word-break: break-word;">
+                                        --</div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- FOOTER -->
-                        <div class="modal-footer border-top border-light border-opacity-10 px-4 py-3 d-flex justify-content-between align-items-center">
-                            <span class="small font-monospace" style="color: rgba(255, 255, 255, 0.4);" id="modalRatingIdFoot">Rating ID: #---</span>
+                        <div
+                            class="modal-footer border-top border-light border-opacity-10 px-4 py-3 d-flex justify-content-between align-items-center">
+                            <span class="small font-monospace" style="color: rgba(255, 255, 255, 0.4);"
+                                id="modalRatingIdFoot">Rating ID: #---</span>
                             <button type="button" class="btn px-4 py-2 rounded-pill fw-bold"
-                                style="background: #ffffff; color: #1a1e29; border: 1px solid #ffffff; transition: all 0.2s;" data-bs-dismiss="modal">Đóng cửa sổ</button>
+                                style="background: #ffffff; color: #1a1e29; border: 1px solid #ffffff; transition: all 0.2s;"
+                                data-bs-dismiss="modal">Đóng cửa sổ</button>
                         </div>
                     </div>
                 </div>

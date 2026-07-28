@@ -1425,11 +1425,20 @@
             if (selectedCar) {
                 document.getElementById('checkoutCarName').innerText = `${selectedCar.brand} ${selectedCar.model}`;
 
-                // Lấy tên file từ từ điển hoặc ưu tiên URL
+                // Lấy tên file từ từ điển hoặc ưu tiên URL (hỗ trợ Google URL và map tên biến)
                 let carImage = 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
-                if (selectedCar.imageUrl && (selectedCar.imageUrl.startsWith('http://') || selectedCar.imageUrl.startsWith('https://'))) {
-                    carImage = selectedCar.imageUrl;
-                } else {
+                let rawUrl = selectedCar.imageUrl || selectedCar.image_url || selectedCar.image || selectedCar.avatarUrl || selectedCar.url || '';
+                if (typeof rawUrl === 'string' && rawUrl.trim() !== '') {
+                    rawUrl = rawUrl.trim();
+                    if (rawUrl.includes('drive.google.com') || rawUrl.includes('docs.google.com')) {
+                        const match = rawUrl.match(/[-\w]{25,}/);
+                        if (match && match[0]) rawUrl = `https://drive.google.com/uc?export=view&id=${match[0]}`;
+                    }
+                    if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://') || rawUrl.startsWith('data:image/')) {
+                        carImage = rawUrl;
+                    }
+                }
+                if (carImage === 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600') {
                     let fileName = vehicleImageMap[selectedCar.vehicleId];
                     if (fileName) {
                         carImage = fileName.startsWith('http') ? fileName : `../../assets/img/car-show/ImageUrl/${fileName}`;

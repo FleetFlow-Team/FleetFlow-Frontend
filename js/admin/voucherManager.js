@@ -93,6 +93,7 @@ async function openVoucherModal(id = null) {
                 document.getElementById('vMaxDiscount').value = data.MaxDiscountAmount || '';
                 document.getElementById('vMinBooking').value = data.MinBookingValue || '';
                 document.getElementById('vMaxUsage').value = data.MaxUsagePerUser || '';
+                document.getElementById('vTotalQuantity').value = (data.TotalQuantity != null ? data.TotalQuantity : (data.totalQuantity != null ? data.totalQuantity : ''));
                 document.getElementById('vVehicleTypeId').value = data.ApplicableVehicleTypeID || 1;
                 // Backend trả về YYYY-MM-DDTHH:mm:ss, input type="datetime-local" cần YYYY-MM-DDTHH:mm
                 document.getElementById('vValidFrom').value = data.ValidFrom ? data.ValidFrom.substring(0, 16) : '';
@@ -141,6 +142,7 @@ async function viewVoucherDetail(id) {
             document.getElementById('detailVMaxDiscount').innerText = data.MaxDiscountAmount ? `${data.MaxDiscountAmount.toLocaleString()} đ` : 'Không giới hạn';
             document.getElementById('detailVMinBooking').innerText = data.MinBookingValue ? `${data.MinBookingValue.toLocaleString()} đ` : 'Không giới hạn';
             document.getElementById('detailVMaxUsage').innerText = data.MaxUsagePerUser ? `${data.MaxUsagePerUser} lượt / khách` : 'Không giới hạn';
+            document.getElementById('detailVTotalQuantity').innerText = (data.TotalQuantity != null || data.totalQuantity != null) ? `${data.TotalQuantity ?? data.totalQuantity} suất` : 'Không giới hạn';
 
             const vehicleTypes = {
                 1: 'Sedan 4 chỗ', 2: 'SUV/MPV 7 chỗ', 3: 'Limousine 9 chỗ',
@@ -167,10 +169,16 @@ async function viewVoucherDetail(id) {
 async function saveVoucher() {
     const form = document.getElementById('voucherForm');
 
-    // TC_ADM_18: Kiểm tra Tổng lượt phát hành phải >= 1 trước
+    // TC_ADM_18: Kiểm tra Lượt tối đa / Khách phải >= 1
     const maxUsageStr = document.getElementById('vMaxUsage').value.trim();
     if (maxUsageStr !== '' && parseInt(maxUsageStr) <= 0) {
-        showGlassAlert("Tổng lượt phát hành của mã khuyến mãi tối thiểu phải đạt từ 1 lượt.", "warning");
+        showGlassAlert("Lượt tối đa của mã khuyến mãi tối thiểu phải đạt từ 1 lượt.", "warning");
+        return;
+    }
+
+    const totalQtyStr = document.getElementById('vTotalQuantity').value.trim();
+    if (totalQtyStr !== '' && parseInt(totalQtyStr) <= 0) {
+        showGlassAlert("Tổng số suất voucher tối thiểu phải đạt từ 1 suất.", "warning");
         return;
     }
 
@@ -207,6 +215,7 @@ async function saveVoucher() {
         maxDiscountAmount: parseFloat(document.getElementById('vMaxDiscount').value) || null,
         minBookingValue: minBookingValue > 0 ? minBookingValue : null,
         maxUsagePerUser: parseInt(maxUsageStr) || null,
+        totalQuantity: totalQtyStr !== '' ? parseInt(totalQtyStr) : null,
         applicableVehicleTypeId: parseInt(document.getElementById('vVehicleTypeId').value) || null,
         validFrom: validFromStr ? validFromStr + ':00' : null,
         validTo: validToStr ? validToStr + ':00' : null

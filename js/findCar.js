@@ -184,6 +184,38 @@ const vehicleImageMap = {
     41: 'HyundaiSolati16.jpg', 42: 'MercedesSprinter16.jpg', 43: 'ThacoTB7929.jpg', 44: 'HyundaiCounty29.jpg', 45: 'SamcoFelix29.jpg',
     46: 'ThacoTB7929.jpg', 47: 'ThacoUniverse45.jpg', 48: 'HyundaiUniverse45.jpg', 49: 'SamcoGrowin45.jpg', 50: 'ThacoUniverse45.jpg'
 };
+
+/**
+ * Chuẩn hóa URL hình ảnh phương tiện (hỗ trợ Google URL, link chia sẻ Drive, database rules, fallback)
+ */
+function resolveVehicleImageUrl(v, idParam) {
+    if (!v) v = {};
+    const vehicleId = idParam || v.vehicleId || v.id;
+    let url = v.imageUrl || v.image_url || v.image || v.avatarUrl || v.url || v.vehicleImageUrl || v.imgUrl || v.photoUrl || v.pictureUrl || v.vehicleImage || v.thumbnailUrl || v.avatar || v.pic || v.img || v.photo || v.picture || v.vehicle_image_url || v.vImageUrl || (v.vehicle && (v.vehicle.imageUrl || v.vehicle.image_url)) || '';
+    if (typeof url === 'string' && url.trim() !== '') {
+        url = url.trim();
+        if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('data:image/') && (url.includes('google.com') || url.includes('googleusercontent.com') || url.startsWith('www.'))) {
+            url = 'https://' + url;
+        }
+        // Chuyển đổi link chia sẻ Google Drive thành link xem trực tiếp ảnh
+        if (url.includes('drive.google.com') || url.includes('docs.google.com')) {
+            const idMatch = url.match(/[-\w]{25,}/);
+            if (idMatch && idMatch[0]) {
+                return `https://drive.google.com/uc?export=view&id=${idMatch[0]}`;
+            }
+        }
+        if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image/')) {
+            return url;
+        }
+    }
+    // Ưu tiên lấy theo từ điển quy tắc cấu hình sẵn theo VehicleID
+    let fileName = vehicleImageMap[vehicleId];
+    if (fileName) {
+        return fileName.startsWith('http') ? fileName : `../assets/img/car-show/ImageUrl/${fileName}`;
+    }
+    return 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
+}
+
 /**
  * Khởi tạo tính năng xe, đăng ký các sự kiện tương tác bộ lọc
  */
@@ -275,7 +307,11 @@ async function fetchVehicles() {
         const result = await response.json();
 
         if (result.data) {
-            globalVehicles = result.data;
+            globalVehicles = Array.isArray(result.data) ? result.data.map(v => {
+                const img = v.imageUrl || v.image_url || v.image || v.avatarUrl || v.url || v.vehicleImageUrl || v.imgUrl || '';
+                if (img && !v.imageUrl) v.imageUrl = img;
+                return v;
+            }) : [];
             // Sắp xếp xe tăng dần theo ID để hiển thị nhất quán ban đầu
             globalVehicles.sort((a, b) => (a.vehicleId || 0) - (b.vehicleId || 0));
 
@@ -284,6 +320,33 @@ async function fetchVehicles() {
 
             // Áp dụng bộ lọc lần đầu
             applyFiltersAndSort();
+
+            // Tự động tải ngầm ảnh từ API chi tiết nếu API danh sách (fetch api gốc) trả về thiếu imageUrl hoặc null cho các xe mới
+            globalVehicles.forEach(async (v, idx) => {
+                const currentImg = resolveVehicleImageUrl(v);
+                if (currentImg === 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600' || !v.imageUrl) {
+                    try {
+                        const detailRes = await fetch(`${VEHICLE_API_URL}/${v.vehicleId || v.id}`);
+                        if (detailRes.ok) {
+                            const detailResult = await detailRes.json();
+                            if (detailResult.success && detailResult.data) {
+                                const fullV = detailResult.data;
+                                const resolvedDetailImg = fullV.imageUrl || fullV.image_url || fullV.image || fullV.avatarUrl || fullV.url || fullV.vehicleImageUrl || fullV.imgUrl || '';
+                                if (resolvedDetailImg) {
+                                    globalVehicles[idx].imageUrl = resolvedDetailImg;
+                                    localStorage.setItem('allVehicles', JSON.stringify(globalVehicles));
+                                    const cardImgEl = document.querySelector(`.vehicle-img-box[onclick*="${v.vehicleId || v.id}"] img`);
+                                    if (cardImgEl) {
+                                        cardImgEl.src = resolveVehicleImageUrl(globalVehicles[idx]);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        // Bỏ qua nếu lỗi kết nối ngầm
+                    }
+                }
+            });
         }
     } catch (error) {
         console.error("Hệ thống không thể tải danh sách phương tiện từ máy chủ:", error);
@@ -466,16 +529,8 @@ function renderVehiclesByPage(page) {
         let fuelType = v.fuelType || 'Xăng';
         let transType = (descLower.includes("số sàn") || descLower.includes("mt")) ? "Số sàn" : "Tự động";
 
-        // Xử lý hình ảnh: Ưu tiên imageUrl từ DB, nếu không có thì lấy theo VehicleID từ bộ từ điển
-        let carImage = 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
-        if (v.imageUrl && (v.imageUrl.startsWith('http://') || v.imageUrl.startsWith('https://'))) {
-            carImage = v.imageUrl;
-        } else {
-            let fileName = vehicleImageMap[v.vehicleId];
-            if (fileName) {
-                carImage = fileName.startsWith('http') ? fileName : `../assets/img/car-show/ImageUrl/${fileName}`;
-            }
-        }
+        // Xử lý hình ảnh: Sử dụng hàm chuẩn hóa chung cho ảnh cấu hình từ Google URL / DB / Bộ từ điển
+        let carImage = resolveVehicleImageUrl(v);
         // Giá xe
 
         const rawPrice = getMockPrice(v);
@@ -737,14 +792,17 @@ window.viewCarDetail = async function (id) {
         if (result.success && result.data) {
             const v = result.data;
 
-            // Xử lý hình ảnh Modal: Ưu tiên imageUrl từ DB, nếu không có thì lấy theo ID từ bộ từ điển
-            let modalImage = 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=600';
-            if (v.imageUrl && (v.imageUrl.startsWith('http://') || v.imageUrl.startsWith('https://'))) {
-                modalImage = v.imageUrl;
-            } else {
-                let fileName = vehicleImageMap[id];
-                if (fileName) {
-                    modalImage = fileName.startsWith('http') ? fileName : `../assets/img/car-show/ImageUrl/${fileName}`;
+            // Xử lý hình ảnh Modal: Sử dụng hàm chuẩn hóa chung cho ảnh cấu hình từ Google URL / DB / Bộ từ điển
+            let modalImage = resolveVehicleImageUrl(v, id);
+            // Đồng bộ dữ liệu chi tiết vào globalVehicles và localStorage để màn hình danh sách ngoài cập nhật ngay
+            const imgResolved = v.imageUrl || v.image_url || v.image || v.avatarUrl || v.url;
+            if (imgResolved) {
+                const idx = globalVehicles.findIndex(item => (item.vehicleId || item.id) == (v.vehicleId || id));
+                if (idx !== -1) {
+                    globalVehicles[idx].imageUrl = imgResolved;
+                    localStorage.setItem('allVehicles', JSON.stringify(globalVehicles));
+                    const cardImg = document.querySelector(`.vehicle-img-box[onclick*="${id}"] img`);
+                    if (cardImg) cardImg.src = modalImage;
                 }
             }
             // Xử lý giá tiền dịch vụ cho modal

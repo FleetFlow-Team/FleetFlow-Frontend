@@ -58,7 +58,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok && result.success) {
                     showSystemToast("Đăng ký phương tiện mới thành công!", "success");
                     addVehicleForm.reset();
+                    const inputLicense = document.getElementById('vLicensePlate');
+                    if (inputLicense) inputLicense.classList.remove('is-invalid', 'border-danger');
                     // Bạn có thể reload lại bảng fleet ở tab Quản lý Bảo dưỡng ở đây nếu cần
+                } else if (response.status === 409) {
+                    const errorMsg = result.error || result.message || `Biển số xe ${licensePlate} đã tồn tại trong hệ thống.`;
+                    showSystemToast(errorMsg, "error");
+                    const inputLicense = document.getElementById('vLicensePlate');
+                    if (inputLicense) {
+                        inputLicense.classList.add('is-invalid', 'border-danger');
+                        inputLicense.focus();
+                        const removeErr = () => {
+                            inputLicense.classList.remove('is-invalid', 'border-danger');
+                            inputLicense.removeEventListener('input', removeErr);
+                        };
+                        inputLicense.addEventListener('input', removeErr);
+                    }
                 } else {
                     showSystemToast(result.message || result.error || "Có lỗi xảy ra khi tạo xe", "error");
                 }

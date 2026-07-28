@@ -14,8 +14,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
+    <!-- Vietmap GL -->
+    <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
+    <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
+
     <link rel="stylesheet" href="../../style/base.css" />
-    <link rel="icon" type="image/jpeg" href="../assets/img/FleetFlow - Logo.png">
+    <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
 
     <!-- =====================================================================
        BỘ LỌC BẢO MẬT: CHỈ CHO PHÉP ROLE CUSTOMER TRUY CẬP VÀ THAO TÁC
@@ -922,6 +926,173 @@
                 bottom: 110px !important;
             }
         }
+
+        /* =========================================
+           SWEETALERT2 LIQUID GLASSMORPHISM STYLES
+        ========================================= */
+        .swal-glass-popup,
+        .swal2-popup.swal2-modal.swal2-show {
+            background: rgba(255, 255, 255, 0.85) !important;
+            backdrop-filter: blur(24px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 32px !important;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.6) inset !important;
+            padding: 2.2rem 1.8rem !important;
+            color: #1e293b !important;
+        }
+
+        /* Fix lỗi viền trắng hình chữ nhật cắt ngang icon success khi dùng nền trong suốt/glassmorphism */
+        .swal2-success-fix,
+        .swal2-success-circular-line-left,
+        .swal2-success-circular-line-right {
+            background-color: transparent !important;
+        }
+
+        .swal-glass-title,
+        .swal2-title {
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 800 !important;
+            font-size: 1.45rem !important;
+            color: #0f172a !important;
+            letter-spacing: -0.5px !important;
+            margin-bottom: 0.75rem !important;
+        }
+
+        .swal-glass-text,
+        .swal2-html-container {
+            font-family: 'Inter', sans-serif !important;
+            font-size: 0.95rem !important;
+            color: #475569 !important;
+            line-height: 1.6 !important;
+        }
+
+        /* Đồng bộ nút bấm SweetAlert2 theo giao diện tripHistory */
+        .swal2-actions .swal2-confirm {
+            background: linear-gradient(135deg, #16a34a, #15803d) !important;
+            color: #ffffff !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 600 !important;
+            border-radius: 50px !important;
+            padding: 12px 32px !important;
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.25) !important;
+            border: none !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-actions .swal2-confirm:hover {
+            transform: translateY(-2px) !important;
+            box-shadow: 0 12px 25px rgba(22, 163, 74, 0.35) !important;
+        }
+
+        .swal2-actions .swal2-cancel {
+            background: rgba(241, 245, 249, 0.8) !important;
+            color: #64748b !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 600 !important;
+            border-radius: 50px !important;
+            padding: 12px 28px !important;
+            border: 1px solid #cbd5e1 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .swal2-actions .swal2-cancel:hover {
+            background: #e2e8f0 !important;
+            color: #334155 !important;
+        }
+
+        .swal2-close {
+            color: #64748b !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .swal2-close:hover {
+            color: #0f172a !important;
+            transform: scale(1.1);
+        }
+
+        /* Tùy chỉnh timeline-node bên trong swal timeline */
+        .swal-timeline-container {
+            max-height: 420px;
+            overflow-y: auto;
+            padding: 10px 15px 10px 5px;
+        }
+
+        .swal-timeline-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .swal-timeline-container::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 10px;
+        }
+
+        .swal-timeline-container::-webkit-scrollbar-thumb {
+            background: rgba(22, 163, 74, 0.3);
+            border-radius: 10px;
+        }
+
+        .swal-timeline-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(22, 163, 74, 0.6);
+        }
+
+        .swal-timeline-node {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 20px;
+            border-left: 2px dashed #86efac;
+        }
+
+        .swal-timeline-node:last-child {
+            border-left: 2px solid transparent;
+        }
+
+        .swal-timeline-dot {
+            position: absolute;
+            left: -7px;
+            top: 2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #16a34a;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.2);
+        }
+
+        .swal-timeline-node.node-destination .swal-timeline-dot {
+            background: #2563eb;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25);
+            width: 14px;
+            height: 14px;
+            left: -8px;
+            top: 0px;
+        }
+
+        .swal-timeline-card {
+            background: rgba(255, 255, 255, 0.6) !important;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(22, 163, 74, 0.2);
+            border-radius: 18px;
+            padding: 14px 18px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .swal-timeline-node.node-destination .swal-timeline-card {
+            border: 1px solid rgba(37, 99, 235, 0.3);
+            background: rgba(239, 246, 255, 0.7) !important;
+        }
+
+        /* Tuỳ chỉnh Modal Backdrop mờ trong suốt (Glassmorphism) */
+        .modal-backdrop {
+            background-color: rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1 !important;
+        }
     </style>
 </head>
 
@@ -992,7 +1163,8 @@
                         <button class="tab-pill" onclick="filterTrips('active', this)">Đang chạy</button>
                         <button class="tab-pill" onclick="filterTrips('completed', this)">Hoàn thành</button>
                         <button class="tab-pill" onclick="filterTrips('cancelled', this)">Đã hủy</button>
-                        <button class="tab-pill" onclick="filterTrips('ratings', this)">Nhận xét và Đánh giá</button>
+                        <button class="tab-pill" onclick="filterTrips('ratings', this)">Đánh giá</button>
+                        <button class="tab-pill" onclick="filterTrips('complaints', this)">Khiếu nại</button>
                     </div>
 
                     <div class="empty-state-box" id="emptyState">
@@ -1026,6 +1198,15 @@
                             <div class="node-meta">Điểm trả khách hành trình</div>
                             <div class="node-location" id="lblDropoffAddress">--</div>
                         </div>
+                    </div>
+
+                    <!-- NÚT XEM BẢN ĐỒ TRACKING -->
+                    <div id="btnViewMapContainer" class="text-start" style="display: none; margin-bottom: 20px;">
+                        <button type="button" class="btn btn-primary fw-bold rounded-pill py-2 px-4 shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#mapTrackingModal"
+                            style="background: linear-gradient(135deg, #00B14F, #008a3d); border: none;">
+                            Theo dõi lộ trình
+                        </button>
                     </div>
 
                     <!-- THẺ TÀI XẾ: KÍNH LỎNG 30PX -->
@@ -1135,8 +1316,8 @@
                     <div class="mt-4">
                         <label class="form-label small fw-bold text-muted text-uppercase">Lý do hủy chuyến (Tùy
                             chọn)</label>
-                        <textarea class="form-control" rows="3"
-                            placeholder="Lý do của bạn giúp chúng tôi cải tiến dịch vụ..." maxlength="500"></textarea>
+                        <textarea class="form-control" rows="3" placeholder="Vui lòng nhập nội dung (tối đa 200 từ)..."
+                            maxlength="200"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4 pt-3">
@@ -1236,12 +1417,12 @@
                     <p class="text-muted mb-4 fs-6">Chúng tôi rất tiếc về trải nghiệm không tốt của bạn. Vui lòng cho
                         chúng tôi biết chi tiết vấn đề.</p>
                     <select class="form-select premium-input mb-3 fw-medium" id="complaintType">
-                        <option value="SERVICE_FEEDBACK" selected>Chất lượng dịch vụ / Thái độ tài xế</option>
-                        <option value="LOST_LUGGAGE">Thất lạc hành lý / Đồ đạc</option>
-                        <option value="OTHER">Lý do khác</option>
+                        <option value="OTHER" selected>Vấn đề khác (Thái độ tài xế, Chất lượng xe, Tranh chấp cước
+                            phí...)</option>
+                        <option value="LOST_LUGGAGE">Thất lạc hành lý / Quên đồ trên xe</option>
                     </select>
                     <textarea class="form-control premium-input mt-3" id="complaintContent" rows="4"
-                        placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, thái độ không tốt...)"
+                        placeholder="Nhập nội dung khiếu nại chi tiết tại đây (VD: Tài xế đến trễ, biển số xe không đúng, quên vali màu đen...)"
                         style="resize: none;" maxlength="1000"></textarea>
                 </div>
                 <div class="modal-footer border-0 d-flex flex-column gap-2 pt-4">
@@ -1359,6 +1540,30 @@
             <i class="fa-solid fa-user mobile-icon"></i>
             <span class="nav-text">Tài khoản</span>
         </a>
+    </div>
+
+    <!-- MAP TRACKING MODAL -->
+    <div class="modal fade" id="mapTrackingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content glass-card-30 border-0 shadow-lg"
+                style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark"><i
+                            class="fa-solid fa-location-crosshairs text-primary me-2"></i> Vị trí xe hiện tại</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="customerMap"
+                        style="width: 100%; height: 65vh; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); box-shadow: inset 0 0 10px rgba(0,0,0,0.05);">
+                    </div>
+                    <div class="text-muted small mt-3 d-flex align-items-center justify-content-between px-2">
+                        <span id="mapLastUpdated">Đang cập nhật...</span>
+                        <span class="text-success fw-bold"><i class="fa-solid fa-circle-dot fa-fade me-1"></i> Trực
+                            tiếp</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JS Logic giữ nguyên bản gốc -->

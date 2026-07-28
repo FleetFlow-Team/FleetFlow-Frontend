@@ -17,6 +17,31 @@
     <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
     <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
     <style>
+        /* SweetAlert2 Dark Glassmorphism Styling */
+        .swal-glass-popup {
+            background: rgba(15, 23, 42, 0.75) !important;
+            backdrop-filter: blur(16px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(16px) saturate(180%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.125) !important;
+            border-radius: 24px !important;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5) !important;
+            color: #ffffff !important;
+        }
+        .swal-glass-title {
+            color: #ffffff !important;
+            font-family: 'Inter', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 1.4rem !important;
+        }
+        .swal-glass-text {
+            color: rgba(255, 255, 255, 0.7) !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 0.95rem !important;
+        }
+        .swal2-html-container {
+            color: rgba(255, 255, 255, 0.7) !important;
+        }
+
         .live-pulse {
             animation: pulse-animation 1.5s infinite;
         }
@@ -411,7 +436,8 @@
                     <div id="overview" class="dashboard-section active">
                         <div class="glass-panel mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h4 class="fw-bold m-0 text-white"><i class="fa-solid fa-chart-line text-success me-2"></i>
+                                <h4 class="fw-bold m-0 text-white"><i
+                                        class="fa-solid fa-chart-line text-success me-2"></i>
                                     Chỉ Số Vận Hành Hôm Nay</h4>
                                 <button class="btn btn-sm btn-outline-success d-flex align-items-center gap-2"
                                     onclick="loadDispatcherDashboardStats()">
@@ -421,19 +447,22 @@
                             <div class="row g-4">
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-success fw-bold mb-1" id="statCompletedTrips"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
+                                        <h2 class="text-success fw-bold mb-1" id="statCompletedTrips"><i
+                                                class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-success fw-medium">Chuyến hoàn thành</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-warning fw-bold mb-1" id="statPendingBookings"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
+                                        <h2 class="text-warning fw-bold mb-1" id="statPendingBookings"><i
+                                                class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-warning fw-medium">Đang chờ điều phối</span>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="glass-panel text-center p-4">
-                                        <h2 class="text-danger fw-bold mb-1" id="statNewComplaints"><i class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
+                                        <h2 class="text-danger fw-bold mb-1" id="statNewComplaints"><i
+                                                class="fa-solid fa-spinner fa-spin fs-4"></i></h2>
                                         <span class="text-danger fw-medium">Khiếu nại mới</span>
                                     </div>
                                 </div>
@@ -447,7 +476,8 @@
                                             class="fa-solid fa-bell text-danger me-2"></i> Sự Cố Hệ Thống Cần Xử Lý</h5>
                                     <ul class="list-unstyled mb-0" id="systemAlertList">
                                         <li class="text-white-50 small py-2">
-                                            <i class="fa-solid fa-spinner fa-spin text-info me-2"></i> Đang quét tình trạng vận hành hệ thống...
+                                            <i class="fa-solid fa-spinner fa-spin text-info me-2"></i> Đang quét tình
+                                            trạng vận hành hệ thống...
                                         </li>
                                     </ul>
                                 </div>
@@ -459,15 +489,18 @@
                                     </h5>
                                     <div class="d-flex justify-content-between text-white-50 small mb-2">
                                         <span>Tài xế sẵn sàng (Online):</span>
-                                        <strong class="text-success" id="summaryOnlineDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
+                                        <strong class="text-success" id="summaryOnlineDrivers"><i
+                                                class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                     <div class="d-flex justify-content-between text-white-50 small mb-2">
                                         <span>Tài xế đang bận chuyến:</span>
-                                        <strong class="text-warning" id="summaryBusyDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
+                                        <strong class="text-warning" id="summaryBusyDrivers"><i
+                                                class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                     <div class="d-flex justify-content-between text-white-50 small">
                                         <span>Tài xế ngoại tuyến (Offline):</span>
-                                        <strong class="text-secondary" id="summaryOfflineDrivers"><i class="fa-solid fa-spinner fa-spin"></i></strong>
+                                        <strong class="text-secondary" id="summaryOfflineDrivers"><i
+                                                class="fa-solid fa-spinner fa-spin"></i></strong>
                                     </div>
                                 </div>
                             </div>
@@ -523,9 +556,11 @@
                                 </button>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-glass align-middle">
-                                    <thead>
+                            <div class="table-responsive fleet-scroll-container"
+                                style="max-height: 580px; overflow-y: auto;">
+                                <table class="table table-glass align-middle mb-0">
+                                    <thead
+                                        style="position: sticky; top: 0; z-index: 10; background: rgba(30, 41, 59, 0.96); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);">
                                         <tr>
                                             <th width="12%">Mã Đơn</th>
                                             <th width="15%">Khách Hàng</th>
@@ -553,7 +588,7 @@
                             </div>
                             <div class="table-glass-wrapper">
                                 <table class="table-glass w-100 align-middle">
-                                    <thead>
+                                    <thead style="background-color: white;">
                                         <tr>
                                             <th width="10%">Mã TX</th>
                                             <th width="28%">Họ Tên Tài Xế</th>
@@ -581,9 +616,9 @@
                             <h4 class="fw-bold mb-4 text-white"><i
                                     class="fa-solid fa-triangle-exclamation text-danger me-2"></i> Phòng xử lý khiếu nại
                                 & tranh chấp</h4>
-                            <div class="table-glass-wrapper overflow-auto" style="max-height: 450px;">
+                            <div class="table-glass-wrapper overflow-auto" style="max-height: 50rem;">
                                 <table class="table-glass w-100 mb-0">
-                                    <thead style="position: sticky; top: 0; z-index: 10;">
+                                    <thead style="position: sticky; top: 0; z-index: 10; background-color: white;">
                                         <tr>
                                             <th width="5%">ID</th>
                                             <th width="22%">Tên khách hàng</th>
@@ -642,28 +677,219 @@
             </div>
         </div>
 
-        <!-- MODAL GIẢI QUYẾT KHIẾU NẠI -->
-        <div class="login-modal-overlay" id="resolveComplaintModal">
-            <div class="glass-login-container text-white">
+        <!-- MODAL GHI NHẬN LIÊN HỆ TÀI XẾ (CHO ĐƠN THẤT LẠC HÀNH LÝ) -->
+        <div class="login-modal-overlay" id="contactDriverModal" style="z-index: 1066;">
+            <div class="glass-login-container text-white" style="max-width: 520px; text-align: left; padding: 2.2rem;">
+                <button type="button" class="close-modal-btn" onclick="closeContactDriverModal()">&times;</button>
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-phone-volume text-info mb-3"
+                        style="font-size: 2.8rem; filter: drop-shadow(0 0 10px rgba(14,165,233,0.5));"></i>
+                    <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Liên Hệ Tài Xế</h3>
+                    <p class="mt-2 text-white-50 small">Ghi nhận kết quả trao đổi với tài xế cho khiếu nại <span
+                            id="contactDriverComplaintIdSpan" class="fw-bold text-info">#N/A</span></p>
+                </div>
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                        <input type="radio" name="contactDriverResultRadio" value="HAS_ITEM"
+                            class="form-check-input mt-0" checked>
+                        <div>
+                            <div class="fw-bold text-warning"><i class="fa-solid fa-suitcase me-2"></i>Tài xế xác nhận
+                                ĐANG GIỮ ĐỒ</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ tự động thông báo cho khách hàng SĐT tài
+                                xế để hai bên thỏa thuận sắp xếp nhận lại hành lý.</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                        <input type="radio" name="contactDriverResultRadio" value="NO_ITEM"
+                            class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-danger"><i class="fa-solid fa-box-open me-2"></i>Tài xế xác nhận
+                                KHÔNG CÓ ĐỒ</div>
+                            <div class="small text-white-50 mt-1">Ghi nhận vào tiến trình tài xế đã kiểm tra kỹ trên xe
+                                và xác nhận không tìm thấy hành lý thất lạc.</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer; box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);">
+                        <input type="radio" name="contactDriverResultRadio" value="NO_RESPONSE"
+                            class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-info"><i class="fa-solid fa-phone-slash me-2"></i>CHƯA GỌI ĐƯỢC cho
+                                tài xế</div>
+                            <div class="small text-white-50 mt-1">Tài xế không nghe máy hoặc tắt máy. Ghi nhận lần thử
+                                liên hệ chưa thành công vào hồ sơ.</div>
+                        </div>
+                    </label>
+                </div>
+                <button id="btnSubmitContactDriver" class="glass-btn-submit w-100" onclick="executeContactDriver()">
+                    <i class="fa-solid fa-check-double me-2"></i> Xác Nhận Ghi Nhận
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL PHÂN LOẠI KHIẾU NẠI (TAG - BƯỚC 1 CỦA ĐƠN TYPE = OTHER) -->
+        <div class="login-modal-overlay" id="tagComplaintModal" style="z-index: 1066;">
+            <div class="glass-login-container text-white" style="max-width: 520px; text-align: left; padding: 2.2rem;">
+                <button type="button" class="close-modal-btn" onclick="closeTagComplaintModal()">&times;</button>
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-tags text-warning mb-3"
+                        style="font-size: 2.8rem; filter: drop-shadow(0 0 10px rgba(245,158,11,0.5));"></i>
+                    <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Gắn Nhãn Phân Loại</h3>
+                    <p class="mt-2 text-white-50 small">Phân loại nghiệp vụ cho đơn khiếu nại <span
+                            id="tagComplaintIdSpan" class="fw-bold text-warning">#N/A</span></p>
+                </div>
+                <div class="mb-4">
+                    <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-list me-1"></i> CHỌN NHÃN NGHIỆP
+                        VỤ:</label>
+                    <select id="tagIssueTypeSelect" class="form-select glass-input-field text-white"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
+                        <option value="VEHICLE_VIOLATION" style="background: #1e293b; color: #fff;">Vi phạm quy chế chất
+                            lượng / xe cộ</option>
+                        <option value="APP_ISSUE" style="background: #1e293b; color: #fff;">Lỗi ứng dụng / Hệ thống đặt
+                            xe</option>
+                        <option value="BILLING_DISPUTE" style="background: #1e293b; color: #fff;">Tranh chấp thanh toán
+                            / Cước phí</option>
+                        <option value="STAFF_ATTITUDE" style="background: #1e293b; color: #fff;">Thái độ nhân viên / Tài
+                            xế phục vụ</option>
+                        <option value="SAFETY_CONCERN" style="background: #1e293b; color: #fff;">Vấn đề an toàn hành
+                            trình khẩn cấp</option>
+                        <option value="OTHER_UNCATEGORIZED" style="background: #1e293b; color: #fff;">Vấn đề khác chưa
+                            phân loại</option>
+                    </select>
+                    <div class="small text-white-50 mt-2 p-2 rounded" style="background: rgba(0,0,0,0.2);">
+                        <i class="fa-solid fa-circle-info text-warning me-1"></i> Gắn nhãn giúp định hướng quy trình xử
+                        lý tiếp theo và ghi nhận AuditLog hệ thống.
+                    </div>
+                </div>
+                <button id="btnSubmitTagComplaint" class="glass-btn-submit w-100" onclick="executeTagComplaint()">
+                    <i class="fa-solid fa-tag me-2"></i> Xác Nhận Phân Loại
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL THỰC THI HÀNH ĐỘNG XỬ LÝ (HANDLE - BƯỚC 2 CỦA ĐƠN TYPE = OTHER ĐÃ TAG) -->
+        <div class="login-modal-overlay" id="handleComplaintModal" style="z-index: 1066;">
+            <div class="glass-login-container text-white" style="max-width: 550px; text-align: left; padding: 2.2rem;">
+                <button type="button" class="close-modal-btn" onclick="closeHandleComplaintModal()">&times;</button>
+                <div class="text-center mb-4">
+                    <i class="fa-solid fa-gears text-success mb-3"
+                        style="font-size: 2.8rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
+                    <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Xử Lý Khiếu Nại (Handle)</h3>
+                    <p class="mt-2 text-white-50 small">Chọn kết luận xử lý cho đơn khiếu nại <span
+                            id="handleComplaintIdSpan" class="fw-bold text-success">#N/A</span></p>
+                </div>
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="VERIFIED_HANDLED"
+                            class="form-check-input mt-0" checked>
+                        <div>
+                            <div class="fw-bold text-success"><i class="fa-solid fa-check-circle me-2"></i>Đã xác minh &
+                                Xử lý xong</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG chốt đơn sang trạng thái ĐÃ GIẢI
+                                QUYẾT và thông báo cho Khách.</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="CANNOT_VERIFY"
+                            class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-warning"><i class="fa-solid fa-question-circle me-2"></i>Không đủ
+                                căn cứ xác minh</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do KHÔNG ĐỦ CĂN
+                                CỨ.</div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="REJECTED" class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-danger"><i class="fa-solid fa-ban me-2"></i>Từ chối khiếu nại không
+                                hợp lệ</div>
+                            <div class="small text-white-50 mt-1">Hệ thống sẽ TỰ ĐỘNG đóng đơn với lý do không hợp lệ.
+                            </div>
+                        </div>
+                    </label>
+                    <label class="p-3 rounded-4 d-flex align-items-center gap-3"
+                        style="background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); cursor: pointer;">
+                        <input type="radio" name="handleActionRadio" value="ESCALATED" class="form-check-input mt-0">
+                        <div>
+                            <div class="fw-bold text-info"><i
+                                    class="fa-solid fa-arrow-up-right-from-square me-2"></i>Chuyển phòng ban chuyên môn
+                            </div>
+                            <div class="small text-white-50 mt-1">Hệ thống TỰ ĐỘNG ĐÓNG ĐƠN và bàn giao phòng ban chuyên môn liên hệ trực tiếp với khách.</div>
+                        </div>
+                    </label>
+                </div>
+                <button id="btnSubmitHandleComplaint" class="glass-btn-submit w-100" onclick="executeHandleComplaint()">
+                    <i class="fa-solid fa-check-to-slot me-2"></i> Xác Nhận Thực Thi
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL CHỐT ĐƠN KHIẾU NẠI (RESOLVE - CHUẨN HÓA KHÔNG CÒN TEXTAREA TỰ DO) -->
+        <div class="login-modal-overlay" id="resolveComplaintModal" style="z-index: 1066;">
+            <div class="glass-login-container text-white" style="max-width: 550px; text-align: left; padding: 2.2rem;">
                 <button type="button" class="close-modal-btn" onclick="closeResolveModal()">&times;</button>
                 <div class="text-center mb-4">
-                    <i class="fa-solid fa-check-to-slot text-success mb-3"
+                    <i class="fa-solid fa-gavel text-success mb-3"
                         style="font-size: 3rem; filter: drop-shadow(0 0 10px rgba(16,185,129,0.5));"></i>
-                    <h3 class="glass-login-title" style="font-size: 2rem;">Đóng Khiếu Nại</h3>
-                    <p class="mt-2 text-white-50 small">Nhập hướng xử lý (ví dụ: đã đền bù, đã xin lỗi, huỷ chuyến) cho
-                        khiếu nại này.</p>
+                    <h3 class="glass-login-title m-0" style="font-size: 1.8rem;">Đóng & Chốt Khiếu Nại</h3>
+                    <p class="mt-2 text-white-50 small">Chốt kết quả cuối cùng cho khiếu nại <span
+                            id="resolveComplaintIdSpan" class="fw-bold text-success">#N/A</span></p>
                 </div>
 
-                <textarea id="complaintResolutionInput"
-                    class="form-control glass-input-field mb-2 text-white text-center" rows="3"
-                    placeholder="Cách giải quyết..."
-                    style="background: rgba(255,255,255,0.1); border-radius: 15px !important; text-align: center; padding-top: 20px;"></textarea>
-                <div id="complaintResolutionError" class="text-danger small text-start d-none mb-3"><i
-                        class="fa-solid fa-triangle-exclamation me-1"></i> Vui lòng nhập hướng xử lý</div>
+                <div class="mb-3">
+                    <label class="small fw-bold text-info mb-2"><i class="fa-solid fa-clipboard-check me-1"></i> KẾT QUẢ
+                        CHỐT ĐƠN:</label>
+                    <select id="resolveOutcomeSelect" class="form-select glass-input-field text-white"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;"
+                        onchange="toggleResolveReasonBox()">
+                        <option value="RESOLVED" style="background: #1e293b; color: #fff;">Giải quyết thành công
+                        </option>
+                        <option value="CLOSED_UNRESOLVED" style="background: #1e293b; color: #fff;">Đóng đơn không thành
+                            công </option>
+                    </select>
+                </div>
 
-                <button id="btnSubmitResolution" class="glass-btn-submit w-100 mt-2"
+                <div id="resolveReasonBox" class="mb-3 d-none">
+                    <label class="small fw-bold text-warning mb-2"><i class="fa-solid fa-circle-question me-1"></i> LÝ
+                        DO ĐÓNG ĐƠN KHÔNG THÀNH CÔNG:</label>
+                    <select id="resolveReasonCodeSelect" class="form-select glass-input-field text-white"
+                        style="background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 12px; padding: 12px;">
+                        <option value="NO_ITEM_FOUND" class="opt-lost-luggage"
+                            style="background: #1e293b; color: #fff;">Tài xế xác nhận không có đồ thất lạc của khách
+                        </option>
+                        <option value="DRIVER_UNREACHABLE" class="opt-lost-luggage"
+                            style="background: #1e293b; color: #fff;">Không thể liên hệ tài xế [* Yêu cầu ghi nhận tối
+                            thiểu 3 lần ]</option>
+                        <option value="CUSTOMER_UNREACHABLE" style="background: #1e293b; color: #fff;">Không thể liên hệ
+                            được với Khách hàng sau nhiều lần </option>
+                        <option value="VIOLATION_NOT_CONFIRMED" class="opt-other"
+                            style="background: #1e293b; color: #fff;">Không đủ chứng cứ / Chưa xác nhận được vi phạm
+                        </option>
+                    </select>
+                    <div id="driverUnreachableAlert" class="small text-danger mt-2 p-2 rounded"
+                        style="background: rgba(220,53,69,0.15); border: 1px solid rgba(220,53,69,0.3);">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> LƯU Ý: Chốt với lý do
+                        <strong>KHÔNG THỂ LIÊN LẠC TÀI XẾ</strong> - bắt buộc phải có ít nhất <strong>3 lần</strong> ghi
+                        nhận gọi
+                        tài xế KHÔNG NGHE MÁY trước đó.
+                    </div>
+                </div>
+
+                <div class="small text-white-50 p-3 rounded-3 mt-3"
+                    style="background: rgba(0,0,0,0.25); border: 1px dashed rgba(255,255,255,0.2);">
+                    <i class="fa-solid fa-circle-info text-info me-1"></i> Hệ thống tự động chuẩn hóa kết luận, cập nhật
+                    trạng thái và gửi In-App Notification cho Khách hàng.
+                </div>
+
+                <button id="btnSubmitResolution" class="glass-btn-submit w-100 mt-4"
                     onclick="executeResolveComplaint()">
-                    <i class="fa-solid fa-floppy-disk me-2"></i> Xác Nhận Đã Xử Lý
+                    <i class="fa-solid fa-floppy-disk me-2"></i> Xác Nhận Đóng & Chốt Đơn
                 </button>
             </div>
         </div>
@@ -753,8 +979,8 @@
                         này. Thông tin sẽ được lưu vào lịch sử (Audit Log) để báo cáo.</p>
 
                     <textarea id="rejectReasonInput" class="form-control w-100" rows="3"
-                        placeholder="Nhập lý do từ chối bắt buộc tại đây..."
-                        style="background: rgba(0, 0, 0, 0.103); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px; box-shadow: none; resize: none;"></textarea>
+                        style="background: rgba(0, 0, 0, 0.103); color: white; border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 12px; box-shadow: none; resize: none; "
+                        maxlength="200"></textarea>
 
                     <div id="rejectReasonError" class="text-danger mt-2 fw-medium d-none" style="font-size: 0.85rem;"><i
                             class="fa-solid fa-circle-exclamation me-1"></i> Bắt buộc phải nhập lý do từ chối!</div>
@@ -1058,6 +1284,7 @@
 
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../js/api.js"></script>
     <script src="../../js/base.js"></script>
     <script src="../../js/dispatcher.js"></script>
