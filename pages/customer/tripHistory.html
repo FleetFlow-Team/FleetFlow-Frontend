@@ -1081,6 +1081,17 @@
             border: 1px solid rgba(37, 99, 235, 0.3);
             background: rgba(239, 246, 255, 0.7) !important;
         }
+
+        /* Tuỳ chỉnh Modal Backdrop mờ trong suốt (Glassmorphism) */
+        .modal-backdrop {
+            background-color: rgba(255, 255, 255, 0.4) !important;
+            backdrop-filter: blur(8px) !important;
+            -webkit-backdrop-filter: blur(8px) !important;
+        }
+
+        .modal-backdrop.show {
+            opacity: 1 !important;
+        }
     </style>
 </head>
 
@@ -1188,14 +1199,13 @@
                         </div>
                     </div>
 
-                    <!-- THẺ MAP TRACKING: KÍNH LỎNG 30PX -->
-                    <div class="panel-card glass-card-30" id="customerTripMapContainer" style="display: none; padding: 15px;">
-                        <h6 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-location-crosshairs text-primary me-2"></i> Vị trí xe hiện tại</h6>
-                        <div id="customerMap" style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);"></div>
-                        <div class="text-muted small mt-2 d-flex align-items-center justify-content-between">
-                            <span id="mapLastUpdated">Đang cập nhật...</span>
-                            <span class="text-success"><i class="fa-solid fa-circle-dot fa-fade me-1"></i> Trực tiếp</span>
-                        </div>
+                    <!-- NÚT XEM BẢN ĐỒ TRACKING -->
+                    <div id="btnViewMapContainer" class="text-start" style="display: none; margin-bottom: 20px;">
+                        <button type="button" class="btn btn-primary fw-bold rounded-pill py-2 px-4 shadow-sm"
+                            data-bs-toggle="modal" data-bs-target="#mapTrackingModal"
+                            style="background: linear-gradient(135deg, #00B14F, #008a3d); border: none;">
+                            Theo dõi lộ trình
+                        </button>
                     </div>
 
                     <!-- THẺ TÀI XẾ: KÍNH LỎNG 30PX -->
@@ -1325,7 +1335,8 @@
                             class="fw-bold">0 đ</span></div>
                     <div class="billing-row"><span>Phụ phí lễ / Cuối tuần / Cầu đường</span><span
                             id="lblInvoiceSurcharge" class="fw-bold text-end">0 đ</span></div>
-                    <div class="billing-row text-danger fw-semibold" id="rowInvoiceExtensionCost" style="display: none;">
+                    <div class="billing-row text-danger fw-semibold" id="rowInvoiceExtensionCost"
+                        style="display: none;">
                         <span>Phí phát sinh gia hạn</span>
                         <span id="lblInvoiceExtensionCost" class="fw-bold text-end">+ 0 đ</span>
                     </div>
@@ -1336,11 +1347,13 @@
                         <span class="label">Tổng chi phí chuyến đi</span>
                         <span class="amount text-success" id="lblInvoiceTotalAmount">0 đ</span>
                     </div>
-                    <div class="billing-row mt-2 text-muted" id="rowInvoiceDeposit" style="display: none; font-size: 0.95rem;">
+                    <div class="billing-row mt-2 text-muted" id="rowInvoiceDeposit"
+                        style="display: none; font-size: 0.95rem;">
                         <span>Đã đặt cọc (30%)</span>
                         <span id="lblInvoiceDeposit">- 0 đ</span>
                     </div>
-                    <div class="billing-row fw-bold text-warning mt-2" id="rowInvoiceRemaining" style="display: none; font-size: 1.1rem;">
+                    <div class="billing-row fw-bold text-warning mt-2" id="rowInvoiceRemaining"
+                        style="display: none; font-size: 1.1rem;">
                         <span>Còn lại cần thanh toán</span>
                         <span id="lblInvoiceRemaining">0 đ</span>
                     </div>
@@ -1473,18 +1486,24 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content modal-content-premium">
                 <div class="modal-header border-0 pb-0 px-4 pt-4 justify-content-center position-relative">
-                    <h4 class="modal-title modal-title-bold text-warning" id="extendModalTitle"><i class="fa-solid fa-clock-rotate-left me-2"></i> Gia hạn giờ thuê</h4>
-                    <button type="button" class="btn-close position-absolute end-0 top-0 mt-4 me-4" data-bs-dismiss="modal"></button>
+                    <h4 class="modal-title modal-title-bold text-warning" id="extendModalTitle"><i
+                            class="fa-solid fa-clock-rotate-left me-2"></i> Gia hạn giờ thuê</h4>
+                    <button type="button" class="btn-close position-absolute end-0 top-0 mt-4 me-4"
+                        data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center px-4">
-                    <p class="text-muted fw-medium mb-4" id="extendModalText">Bạn muốn gia hạn thêm bao nhiêu giờ cho chuyến đi này?</p>
-                    <select class="form-select premium-input mb-4 fw-medium text-center" id="extendUnits" style="font-size: 1.1rem;">
+                    <p class="text-muted fw-medium mb-4" id="extendModalText">Bạn muốn gia hạn thêm bao nhiêu giờ cho
+                        chuyến đi này?</p>
+                    <select class="form-select premium-input mb-4 fw-medium text-center" id="extendUnits"
+                        style="font-size: 1.1rem;">
                         <option value="1">1 Giờ</option>
                         <option value="2">2 Giờ</option>
                     </select>
                 </div>
                 <div class="modal-footer border-0 px-4 pb-4">
-                    <button type="button" class="btn w-100 text-white fw-bold py-2" style="background-color: #ff9800; border-radius: 12px; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(255,152,0,0.3);" id="btnSubmitExtend" onclick="executeExtendAction()">GỬI YÊU CẦU</button>
+                    <button type="button" class="btn w-100 text-white fw-bold py-2"
+                        style="background-color: #ff9800; border-radius: 12px; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(255,152,0,0.3);"
+                        id="btnSubmitExtend" onclick="executeExtendAction()">GỬI YÊU CẦU</button>
                 </div>
             </div>
         </div>
@@ -1511,6 +1530,30 @@
             <i class="fa-solid fa-user mobile-icon"></i>
             <span class="nav-text">Tài khoản</span>
         </a>
+    </div>
+
+    <!-- MAP TRACKING MODAL -->
+    <div class="modal fade" id="mapTrackingModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
+            <div class="modal-content glass-card-30 border-0 shadow-lg"
+                style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-dark"><i
+                            class="fa-solid fa-location-crosshairs text-primary me-2"></i> Vị trí xe hiện tại</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div id="customerMap"
+                        style="width: 100%; height: 65vh; border-radius: 16px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1); box-shadow: inset 0 0 10px rgba(0,0,0,0.05);">
+                    </div>
+                    <div class="text-muted small mt-3 d-flex align-items-center justify-content-between px-2">
+                        <span id="mapLastUpdated">Đang cập nhật...</span>
+                        <span class="text-success fw-bold"><i class="fa-solid fa-circle-dot fa-fade me-1"></i> Trực
+                            tiếp</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- JS Logic giữ nguyên bản gốc -->

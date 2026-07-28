@@ -3,12 +3,24 @@
 // =====================================================================
 let customerMap = null;
 let customerCarMarker = null;
+let customerDestMarker = null;
 let gpsTrackingInterval = null;
+const TRACKING_MAPS_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/maps';
 
 // =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
+    // Resize map khi modal Tracking được mở
+    const mapModal = document.getElementById('mapTrackingModal');
+    if (mapModal) {
+        mapModal.addEventListener('shown.bs.modal', function () {
+            if (customerMap) {
+                customerMap.resize();
+            }
+        });
+    }
+
     const fullName = localStorage.getItem('fullName');
     const accessToken = localStorage.getItem('accessToken');
     const userRole = localStorage.getItem('userRole') || 'Khách hàng';
@@ -625,14 +637,16 @@ async function viewTripDetail(bookingId) {
 
         // 10. Logic Bật/Tắt Map Tracking
         if (statusCheck === 'ONGOING') {
-            document.getElementById('customerTripMapContainer').style.display = 'block';
-            startGpsTracking(bookingId);
-        } else {
-            document.getElementById('customerTripMapContainer').style.display = 'none';
-            if (gpsTrackingInterval) {
-                clearInterval(gpsTrackingInterval);
-                gpsTrackingInterval = null;
+            document.getElementById('btnViewMapContainer').style.display = 'block';
+            let destLat = null, destLng = null;
+            if ((trip.bookingType || 'DISTANCE').toUpperCase() === 'DISTANCE' && trip.detail) {
+                destLat = trip.detail.dropoffLat;
+                destLng = trip.detail.dropoffLng;
             }
+            startGpsTracking(bookingId, destLat, destLng);
+        } else {
+            document.getElementById('btnViewMapContainer').style.display = 'none';
+            clearCustomerMapData();
         }
 
     } catch (error) {
@@ -671,6 +685,32 @@ function initCustomerMap(lat, lng) {
 
     customerMap.on('load', () => {
         customerMap.resize();
+        
+        // Khởi tạo source và layer cho route
+        customerMap.addSource('route', {
+            'type': 'geojson',
+            'data': {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'LineString',
+                    'coordinates': []
+                }
+            }
+        });
+        
+        customerMap.addLayer({
+            'id': 'route-line',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#00B14F',
+                'line-width': 4
+            }
+        });
     });
 
     const el = document.createElement('div');
@@ -682,7 +722,31 @@ function initCustomerMap(lat, lng) {
         .addTo(customerMap);
 }
 
-async function startGpsTracking(bookingId) {
+// =====================================================================
+// HÀM HỖ TRỢ BẢN ĐỒ VÀ GỌI API ROUTE
+// =====================================================================
+function decodePolyline(str, precision = 5) {
+    let index = 0, lat = 0, lng = 0, coordinates = [], shift = 0, result = 0, byte = null, latitude_change, longitude_change, factor = Math.pow(10, precision);
+    while (index < str.length) {
+        byte = null; shift = 0; result = 0;
+        do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+        latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        shift = result = 0;
+        do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
+        longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
+        lat += latitude_change; lng += longitude_change;
+        coordinates.push([lng / factor, lat / factor]);
+    }
+    return coordinates;
+}
+
+async function fetchRoute(pLat, pLng, dLat, dLng) {
+    const res = await fetch(`${TRACKING_MAPS_API_BASE}/route?fromLat=${pLat}&fromLng=${pLng}&toLat=${dLat}&toLng=${dLng}`);
+    if (!res.ok) throw new Error("Không thể lấy lộ trình");
+    return await res.json();
+}
+
+async function startGpsTracking(bookingId, destLat = null, destLng = null) {
     if (gpsTrackingInterval) {
         clearInterval(gpsTrackingInterval);
     }
@@ -705,7 +769,48 @@ async function startGpsTracking(bookingId) {
                     initCustomerMap(lat, lng);
                 } else if (customerCarMarker) {
                     customerCarMarker.setLngLat([lng, lat]);
-                    customerMap.flyTo({ center: [lng, lat], zoom: 16, speed: 1.2 });
+                    
+                    if (destLat && destLng) {
+                        customerMap.fitBounds(
+                            [
+                                [Math.min(lng, destLng), Math.min(lat, destLat)], 
+                                [Math.max(lng, destLng), Math.max(lat, destLat)]
+                            ],
+                            { padding: 50, speed: 1.2 }
+                        );
+                    } else {
+                        customerMap.flyTo({ center: [lng, lat], zoom: 16, speed: 1.2 });
+                    }
+                }
+
+                // Cập nhật marker điểm đến và vẽ route nếu là chuyến DISTANCE
+                if (destLat && destLng && customerMap) {
+                    if (!customerDestMarker) {
+                        const elDest = document.createElement('div');
+                        elDest.className = 'marker';
+                        elDest.innerHTML = '<i class="fa-solid fa-location-dot" style="color:#DC3545; font-size: 24px; filter: drop-shadow(0px 0px 4px rgba(220,53,69,0.8));"></i>';
+                        customerDestMarker = new vietmapgl.Marker({ element: elDest })
+                            .setLngLat([destLng, destLat])
+                            .addTo(customerMap);
+                    }
+
+                    try {
+                        const routeData = await fetchRoute(lat, lng, destLat, destLng);
+                        if (routeData && routeData.points) {
+                            const coordinates = decodePolyline(routeData.points);
+                            if (customerMap.getSource('route')) {
+                                customerMap.getSource('route').setData({
+                                    type: 'Feature',
+                                    geometry: {
+                                        type: 'LineString',
+                                        coordinates: coordinates
+                                    }
+                                });
+                            }
+                        }
+                    } catch (routeErr) {
+                        console.error("Lỗi vẽ đường đi:", routeErr);
+                    }
                 }
 
                 if (recordedAt) {
@@ -726,15 +831,29 @@ async function startGpsTracking(bookingId) {
     gpsTrackingInterval = setInterval(fetchLocation, 10000);
 }
 
-function navigateBackToHistory() {
-    document.getElementById('detailsViewSection').classList.remove('view-active');
-    document.getElementById('historyViewSection').classList.add('view-active');
-    
-    // Tắt tracking khi rời khỏi trang chi tiết
+function clearCustomerMapData() {
     if (gpsTrackingInterval) {
         clearInterval(gpsTrackingInterval);
         gpsTrackingInterval = null;
     }
+    if (customerDestMarker) {
+        customerDestMarker.remove();
+        customerDestMarker = null;
+    }
+    if (customerMap && customerMap.getSource('route')) {
+        customerMap.getSource('route').setData({
+            type: 'Feature',
+            geometry: { type: 'LineString', coordinates: [] }
+        });
+    }
+}
+
+function navigateBackToHistory() {
+    document.getElementById('detailsViewSection').classList.remove('view-active');
+    document.getElementById('historyViewSection').classList.add('view-active');
+    
+    // Tắt tracking và dọn dẹp bản đồ khi rời khỏi trang chi tiết
+    clearCustomerMapData();
 }
 
 // Logic Fetch và hiển thị Modal Hóa Đơn
