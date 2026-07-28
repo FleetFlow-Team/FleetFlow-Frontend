@@ -1,13 +1,4 @@
 // =====================================================================
-// BIẾN TOÀN CỤC CHO MAP TRACKING CUSTOMER
-// =====================================================================
-let customerMap = null;
-let customerCarMarker = null;
-let customerDestMarker = null;
-let gpsTrackingInterval = null;
-const TRACKING_MAPS_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/maps';
-
-// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -470,6 +461,32 @@ async function viewTripDetail(bookingId) {
         if (holidaySurcharge > 0) {
             surchargeHtml += ` <br><small class="text-danger">(${matchedHolidayName})</small>`;
         }
+        
+        // Tích hợp overtime-preview
+        let currentOvertimeFee = 0;
+        let isOvertime = false;
+        let overtimeDetailsStr = "";
+        
+        const currentStatus = (trip.status || trip.Status || '').toUpperCase();
+        if (currentStatus === 'ONGOING') {
+            try {
+                const token = localStorage.getItem("accessToken");
+                const otRes = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/trips/${bookingId}/overtime-preview`, {
+                    headers: { "Authorization": `Bearer ${token}` }
+                });
+                if (otRes.ok) {
+                    const otData = await otRes.json();
+                    if (otData.success && otData.isOvertime) {
+                        isOvertime = true;
+                        currentOvertimeFee = otData.estimatedOvertimeFee || 0;
+                        estimatedTotal += currentOvertimeFee; // Cộng dồn vào tổng
+                        overtimeDetailsStr = `(Trễ ${otData.overtimeMinutes} phút ~ Tính ${otData.billedHours} giờ)`;
+                    }
+                }
+            } catch (e) {
+                console.error("Lỗi fetch overtime-preview:", e);
+            }
+        }
 
         // Đổ giá trị bóc tách dự kiến ra UI
         document.getElementById('lblBasePrice').innerText = fVND(baseFare);
@@ -481,28 +498,48 @@ async function viewTripDetail(bookingId) {
         } else {
             if (rowExtension) rowExtension.style.display = 'none';
         }
+        
+        const rowOvertimeFee = document.getElementById('rowOvertimeFee');
+        if (isOvertime && rowOvertimeFee) {
+            document.getElementById('lblOvertimeFee').innerText = `+ ${fVND(currentOvertimeFee)}`;
+            document.getElementById('lblOvertimeDetails').innerText = overtimeDetailsStr;
+            rowOvertimeFee.style.setProperty('display', 'flex', 'important');
+        } else {
+            if (rowOvertimeFee) rowOvertimeFee.style.display = 'none';
+        }
+        
         document.getElementById('lblDiscount').innerText = `- ${fVND(discountAmount)}`;
         document.getElementById('lblTotalAmount').innerHTML = `${fVND(estimatedTotal)} <span style="font-size: 0.85rem; font-weight: 500;" class="text-muted">(Tạm tính)</span>`;
 
         const isDepositPaid = summaryTrip ? summaryTrip.depositPaid === true : trip.depositPaid === true;
         const rowDeposit = document.getElementById('rowDepositPaid');
+        const rowUnpaidDeposit = document.getElementById('rowUnpaidDeposit');
         const rowRemaining = document.getElementById('rowRemainingAmount');
         const lblDeposit = document.getElementById('lblDepositPaid');
+        const lblUnpaidDeposit = document.getElementById('lblUnpaidDeposit');
         const lblRemaining = document.getElementById('lblRemainingAmount');
 
+        const originalTotal = (estimatedTotal - currentOvertimeFee) - totalExtensionAmount;
+        const depositAmount = Math.round(originalTotal * 0.3);
+
         if (isDepositPaid && rowDeposit && rowRemaining && lblDeposit && lblRemaining) {
-            const originalTotal = estimatedTotal - totalExtensionAmount;
-            const depositAmount = Math.round(originalTotal * 0.3);
             const remainingAmount = estimatedTotal - depositAmount;
 
             lblDeposit.innerText = `- ${fVND(depositAmount)}`;
             lblRemaining.innerText = fVND(remainingAmount);
 
             rowDeposit.style.setProperty('display', 'flex', 'important');
+            if (rowUnpaidDeposit) rowUnpaidDeposit.style.display = 'none';
             rowRemaining.style.setProperty('display', 'flex', 'important');
         } else {
             if (rowDeposit) rowDeposit.style.display = 'none';
             if (rowRemaining) rowRemaining.style.display = 'none';
+
+            // Chưa cọc -> Hiển thị số tiền chưa cọc
+            if (rowUnpaidDeposit && lblUnpaidDeposit) {
+                lblUnpaidDeposit.innerText = fVND(depositAmount);
+                rowUnpaidDeposit.style.setProperty('display', 'flex', 'important');
+            }
         }
         // =================================================================
 

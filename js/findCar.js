@@ -710,11 +710,12 @@ window.selectCarAndGo = async function (vehicleId) {
 
     // Lấy token để gọi API kiểm tra trạng thái account
     const token = localStorage.getItem('accessToken');
+    const refreshToken = localStorage.getItem('refreshToken');
     const userRole = localStorage.getItem('userRole') || '';
     const roleUpper = userRole.trim().toUpperCase();
 
-    if (!token || isTokenExpired(token) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
-        // Chưa đăng nhập, token hết hạn, hoặc không phải Khách Hàng -> Hiện popup Đăng nhập thay vì đẩy đi 403
+    if (!token || (isTokenExpired(token) && isTokenExpired(refreshToken)) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
+        // Chưa đăng nhập, cả 2 token hết hạn, hoặc không phải Khách Hàng -> Hiện popup Đăng nhập
         const loginModal = document.getElementById('loginModal');
         if (loginModal) {
             loginModal.classList.add('active');

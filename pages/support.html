@@ -35,17 +35,11 @@
                 }
             }
 
-            // Nếu đã có Token mà hết hạn -> xóa token để chuyển về Khách vãng lai thay vì chặn
-            if (token && isTokenExpired(token)) {
-                localStorage.removeItem('accessToken');
-                localStorage.removeItem('userRole');
-                localStorage.removeItem('customerId');
-                localStorage.removeItem('accountId');
-            } else if (token && !isTokenExpired(token)) {
-                // Nếu đã đăng nhập với Role khác Customer/Khách hàng -> chuyển hướng sang 403
-                if (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG' && roleUpper !== '') {
-                    window.location.replace('../error/403.html');
-                }
+            // 1. Kiểm tra chưa đăng nhập hoặc CẢ 2 token đều đã hết hạn
+            // 2. Kiểm tra role không phải là CUSTOMER (hoặc KHÁCH HÀNG)
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!token || (isTokenExpired(token) && isTokenExpired(refreshToken)) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
+                window.location.replace('../error/403.html');
             }
             // Nếu chưa đăng nhập (!token): CHO PHÉP truy cập trang dưới quyền Khách vãng lai
         })();

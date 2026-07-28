@@ -43,9 +43,10 @@
                 }
             }
 
-            // 1. Kiểm tra chưa đăng nhập hoặc token đã hết hạn
+            // 1. Kiểm tra chưa đăng nhập hoặc CẢ 2 token đều đã hết hạn
             // 2. Kiểm tra role không phải là CUSTOMER (hoặc KHÁCH HÀNG)
-            if (!token || isTokenExpired(token) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!token || (isTokenExpired(token) && isTokenExpired(refreshToken)) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
                 window.location.replace('../../error/403.html');
             }
         })();
@@ -1253,6 +1254,10 @@
                             <span>Phí phát sinh gia hạn</span>
                             <span id="lblExtensionCost" class="fw-bold text-end">+ 0 đ</span>
                         </div>
+                        <div class="billing-row text-danger fw-semibold" id="rowOvertimeFee" style="display: none;">
+                            <span><i class="fa-solid fa-clock-rotate-left fa-spin me-2"></i>Phí quá giờ (Tạm tính) <br><small id="lblOvertimeDetails" class="text-muted fw-normal" style="font-size: 0.8rem;"></small></span>
+                            <span id="lblOvertimeFee" class="fw-bold text-end">+ 0 đ</span>
+                        </div>
                         <div class="billing-row text-success fw-semibold"><span>Khuyến mãi đã áp dụng</span><span
                                 id="lblDiscount">- 0 đ</span></div>
                         <div class="billing-total-row">
@@ -1262,6 +1267,11 @@
                         <div class="billing-row mt-2" id="rowDepositPaid" style="display: none;">
                             <span class="label text-muted">Đã đặt cọc (30%)</span>
                             <span class="amount" id="lblDepositPaid" style="font-weight: 500;">- 0 đ</span>
+                        </div>
+                        <div class="billing-row mt-2 text-warning fw-semibold" id="rowUnpaidDeposit"
+                            style="display: none;">
+                            <span class="label">Số tiền chưa cọc (30%)</span>
+                            <span class="amount text-warning" id="lblUnpaidDeposit">0 đ</span>
                         </div>
                         <div class="billing-total-row mt-2" id="rowRemainingAmount"
                             style="display: none; padding-top: 10px; border-top: 1px dashed rgba(0,0,0,0.1);">
