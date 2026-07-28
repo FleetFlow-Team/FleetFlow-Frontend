@@ -34,9 +34,10 @@
                 }
             }
 
-            // 1. Kiểm tra chưa đăng nhập hoặc token đã hết hạn
+            // 1. Kiểm tra chưa đăng nhập hoặc CẢ 2 token đều đã hết hạn
             // 2. Kiểm tra role không phải là CUSTOMER (hoặc KHÁCH HÀNG)
-            if (!token || isTokenExpired(token) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!token || (isTokenExpired(token) && isTokenExpired(refreshToken)) || (roleUpper !== 'CUSTOMER' && roleUpper !== 'KHÁCH HÀNG')) {
                 window.location.replace('../error/403.html');
             }
         })();
