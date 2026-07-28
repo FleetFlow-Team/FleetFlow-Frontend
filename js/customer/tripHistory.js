@@ -1,4 +1,13 @@
 // =====================================================================
+// 1. BIẾN TOÀN CỤC CHO MAP TRACKING CUSTOMER
+// =====================================================================
+let customerMap = null;
+let customerCarMarker = null;
+let customerDestMarker = null;
+let gpsTrackingInterval = null;
+const TRACKING_MAPS_API_BASE = 'http://localhost:8080/FleetFlow/api/v1/maps';
+
+// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
