@@ -1,4 +1,11 @@
 // =====================================================================
+// BIẾN TOÀN CỤC CHO MAP TRACKING CUSTOMER
+// =====================================================================
+let customerMap = null;
+let customerCarMarker = null;
+let gpsTrackingInterval = null;
+
+// =====================================================================
 // 2. KHỞI TẠO USER PROFILE UI
 // =====================================================================
 document.addEventListener("DOMContentLoaded", function () {
@@ -616,6 +623,18 @@ async function viewTripDetail(bookingId) {
         // 9. Cuộn mượt mà màn hình lên vị trí đầu trang chi tiết
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        // 10. Logic Bật/Tắt Map Tracking
+        if (statusCheck === 'ONGOING') {
+            document.getElementById('customerTripMapContainer').style.display = 'block';
+            startGpsTracking(bookingId);
+        } else {
+            document.getElementById('customerTripMapContainer').style.display = 'none';
+            if (gpsTrackingInterval) {
+                clearInterval(gpsTrackingInterval);
+                gpsTrackingInterval = null;
+            }
+        }
+
     } catch (error) {
         console.error("Lỗi xử lý luồng hiển thị chi tiết hành trình:", error);
         // Tận dụng SweetAlert2 đã được import trong HTML của bạn để thông báo lỗi trực quan
@@ -627,9 +646,95 @@ async function viewTripDetail(bookingId) {
     }
 }
 
+// =====================================================================
+// LOGIC MAP TRACKING CHO CUSTOMER
+// =====================================================================
+function initCustomerMap(lat, lng) {
+    if (customerMap) {
+        customerMap.remove();
+        customerMap = null;
+        customerCarMarker = null;
+    }
+
+    const mapContainer = document.getElementById('customerMap');
+    if (!mapContainer) return;
+    mapContainer.innerHTML = '';
+
+    customerMap = new vietmapgl.Map({
+        container: 'customerMap',
+        style: 'https://maps.vietmap.vn/maps/styles/tm/style.json?apikey=9c63b68ed14a6f2327e9f9fa0170ce81f6f5e0678471c64d',
+        center: [lng, lat],
+        zoom: 15,
+        pitch: 0,
+        bearing: 0
+    });
+
+    customerMap.on('load', () => {
+        customerMap.resize();
+    });
+
+    const el = document.createElement('div');
+    el.className = 'marker';
+    el.innerHTML = '<i class="fa-solid fa-car-side" style="color:#00B14F; font-size: 24px; filter: drop-shadow(0px 0px 4px rgba(0,177,79,0.8));"></i>';
+    
+    customerCarMarker = new vietmapgl.Marker({ element: el })
+        .setLngLat([lng, lat])
+        .addTo(customerMap);
+}
+
+async function startGpsTracking(bookingId) {
+    if (gpsTrackingInterval) {
+        clearInterval(gpsTrackingInterval);
+    }
+
+    const fetchLocation = async () => {
+        try {
+            console.log("[GPS Tracking] Đang lấy tọa độ mới cho chuyến đi " + bookingId + "...");
+            const token = localStorage.getItem("accessToken");
+            const response = await fetch(`http://localhost:8080/FleetFlow/api/v1/customer/trips/${bookingId}/location?_t=${Date.now()}`, {
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const data = await response.json();
+            
+            if (data.success && data.hasLocation) {
+                const lat = data.location.latitude;
+                const lng = data.location.longitude;
+                const recordedAt = data.location.recordedAt;
+
+                if (!customerMap) {
+                    initCustomerMap(lat, lng);
+                } else if (customerCarMarker) {
+                    customerCarMarker.setLngLat([lng, lat]);
+                    customerMap.flyTo({ center: [lng, lat], zoom: 16, speed: 1.2 });
+                }
+
+                if (recordedAt) {
+                    const timeStr = recordedAt.split(' ')[1] || recordedAt;
+                    document.getElementById('mapLastUpdated').innerText = `Cập nhật lúc ${timeStr.substring(0,8)}`;
+                }
+            } else {
+                document.getElementById('mapLastUpdated').innerText = data.message || "Chưa có tín hiệu GPS...";
+            }
+        } catch (e) {
+            console.error("Lỗi fetch vị trí GPS:", e);
+        }
+    };
+
+    // Gọi lần đầu ngay lập tức
+    fetchLocation();
+    // Sau đó lặp lại mỗi 10 giây
+    gpsTrackingInterval = setInterval(fetchLocation, 10000);
+}
+
 function navigateBackToHistory() {
     document.getElementById('detailsViewSection').classList.remove('view-active');
     document.getElementById('historyViewSection').classList.add('view-active');
+    
+    // Tắt tracking khi rời khỏi trang chi tiết
+    if (gpsTrackingInterval) {
+        clearInterval(gpsTrackingInterval);
+        gpsTrackingInterval = null;
+    }
 }
 
 // Logic Fetch và hiển thị Modal Hóa Đơn

@@ -14,6 +14,10 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 
+    <!-- Vietmap GL -->
+    <link rel='stylesheet' href='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.css' />
+    <script src='https://unpkg.com/@vietmap/vietmap-gl-js@6.0.1/dist/vietmap-gl.js'></script>
+
     <link rel="stylesheet" href="../../style/base.css" />
     <link rel="icon" type="image/jpeg" href="../../assets/img/FleetFlow - Logo.png">
 
@@ -1181,6 +1185,16 @@
                         <div class="timeline-node node-destination">
                             <div class="node-meta">Điểm trả khách hành trình</div>
                             <div class="node-location" id="lblDropoffAddress">--</div>
+                        </div>
+                    </div>
+
+                    <!-- THẺ MAP TRACKING: KÍNH LỎNG 30PX -->
+                    <div class="panel-card glass-card-30" id="customerTripMapContainer" style="display: none; padding: 15px;">
+                        <h6 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-location-crosshairs text-primary me-2"></i> Vị trí xe hiện tại</h6>
+                        <div id="customerMap" style="width: 100%; height: 250px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(0,0,0,0.1);"></div>
+                        <div class="text-muted small mt-2 d-flex align-items-center justify-content-between">
+                            <span id="mapLastUpdated">Đang cập nhật...</span>
+                            <span class="text-success"><i class="fa-solid fa-circle-dot fa-fade me-1"></i> Trực tiếp</span>
                         </div>
                     </div>
 
